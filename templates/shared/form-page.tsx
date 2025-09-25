@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,6 +75,15 @@ const designStyles = {
   }
 };
 
+const yilDonumuCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as const;
+
+const yilDonumuDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+  modern: ['headlineMessage', 'timelineIntro', 'timelineEvents', 'timelineCta', 'timelineClosing', 'timelineFinalMessage'],
+  classic: ['hatiraHeadline', 'hatiraSubtitle', 'hatiraLetter', 'hatiraMemories', 'hatiraButtonLabel'],
+  minimalist: ['minimalistTitle', 'minimalistSubtitle', 'minimalistLockMessage', 'minimalistRevealMessage', 'minimalistHighlights', 'minimalistFooter'],
+  eglenceli: ['quizHeadline', 'quizIntro', 'quizButtonLabel', 'quizItems', 'quizHintLabel', 'quizCompletionTitle', 'quizCompletionMessage', 'quizFinalMessage', 'quizReplay']
+};
+
 interface TemplateFormPageProps {
   template: Template;
   durations: Duration[];
@@ -96,6 +105,19 @@ export default function TemplateFormPage({ template, durations, templatePricing,
   
   // Çoklu mesaj desteği için yeni state
   const templateConfig = getTemplateConfig(template.slug);
+  const visibleTextFieldConfig = useMemo(() => {
+    if (!templateConfig) return [];
+    if (template.slug !== 'yil-donumu') {
+      return templateConfig.fields;
+    }
+
+    const allowedKeys = new Set<string>([
+      ...yilDonumuCommonFields,
+      ...(yilDonumuDesignFieldMap[selectedDesignStyle] ?? [])
+    ]);
+
+    return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+  }, [template.slug, templateConfig, selectedDesignStyle]);
   const [textFields, setTextFields] = useState<TemplateTextFields>(() => {
     const defaults = getDefaultTextFields(template.slug);
     if (isPreview) {
@@ -316,9 +338,9 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                   </div>
 
                   {/* Dynamic Text Fields */}
-                  {templateConfig && templateConfig.fields.map((field) => (
+                  {visibleTextFieldConfig.map((field) => (
                     <div key={field.key} className="space-y-2">
-                      <Label htmlFor={field.key}>{field.label} *</Label>
+                      <Label htmlFor={field.key}>{field.label}{field.required ? ' *' : ''}</Label>
                       {field.type === 'textarea' ? (
                         <Textarea
                           id={field.key}
@@ -326,7 +348,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                           rows={4}
                           value={textFields[field.key] || ''}
                           onChange={(e) => handleTextFieldChange(field.key, e.target.value)}
-                          required
+                          required={field.required}
                         />
                       ) : field.key === 'musicUrl' ? (
                         <div className="flex items-center gap-2">
@@ -352,7 +374,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                           placeholder={field.placeholder}
                           value={textFields[field.key] || ''}
                           onChange={(e) => handleTextFieldChange(field.key, e.target.value)}
-                          required
+                          required={field.required}
                         />
                       )}
                       {field.type === 'textarea' && (

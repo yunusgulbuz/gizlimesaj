@@ -19,6 +19,10 @@ import KlasikElegansTemplate from '../mutlu-yillar-fun/components/KlasikElegansT
 import MinimalistNeonTemplate from '../mutlu-yillar-fun/components/MinimalistNeonTemplate';
 import EglenceliInteraktifTemplate from '../mutlu-yillar-fun/components/EglenceliInteraktifTemplate';
 import CikmaTeklifiTemplate from '../cikma-teklifi/components/CikmaTeklifiTemplate';
+import ModernTimelineAnniversary from '../yil-donumu/components/ModernTimelineAnniversary';
+import ClassicMemoryBoxTemplate from '../yil-donumu/components/ClassicMemoryBoxTemplate';
+import MinimalistSecretMessage from '../yil-donumu/components/MinimalistSecretMessage';
+import InteractiveQuizCelebration from '../yil-donumu/components/InteractiveQuizCelebration';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -220,6 +224,54 @@ export default function TemplateRenderer({
               footerMessage={textFields?.footerMessage}
               creatorName={creatorName}
             />;
+        }
+      case 'yil-donumu':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <ModernTimelineAnniversary
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                primaryMessage={textFields?.mainMessage || message}
+              />
+            );
+          case 'classic':
+            return (
+              <ClassicMemoryBoxTemplate
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                primaryMessage={textFields?.mainMessage || message}
+              />
+            );
+          case 'minimalist':
+            return (
+              <MinimalistSecretMessage
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                primaryMessage={textFields?.mainMessage || message}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <InteractiveQuizCelebration
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                primaryMessage={textFields?.mainMessage || message}
+              />
+            );
+          default:
+            return (
+              <ModernTimelineAnniversary
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                primaryMessage={textFields?.mainMessage || message}
+              />
+            );
         }
       case 'cikma-teklifi':
         return (
