@@ -19,6 +19,8 @@ import TesekkurAdultForm from './tesekkur-adult/form';
 import TesekkurAdultPreview from './tesekkur-adult/preview';
 import MutluYillarFunForm from './mutlu-yillar-fun/form';
 import MutluYillarFunPreview from './mutlu-yillar-fun/preview';
+import CikmaTeklifiForm from './cikma-teklifi/form';
+import CikmaTeklifiPreview from './cikma-teklifi/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => JSX.Element;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => JSX.Element;
@@ -74,6 +76,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'mutlu-yillar-fun',
     form: MutluYillarFunForm,
     preview: MutluYillarFunPreview,
+  },
+  'cikma-teklifi': {
+    slug: 'cikma-teklifi',
+    form: CikmaTeklifiForm,
+    preview: CikmaTeklifiPreview,
   },
 };
 

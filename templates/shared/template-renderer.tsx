@@ -18,6 +18,7 @@ import PremiumModernTemplate from '../mutlu-yillar-fun/components/PremiumModernT
 import KlasikElegansTemplate from '../mutlu-yillar-fun/components/KlasikElegansTemplate';
 import MinimalistNeonTemplate from '../mutlu-yillar-fun/components/MinimalistNeonTemplate';
 import EglenceliInteraktifTemplate from '../mutlu-yillar-fun/components/EglenceliInteraktifTemplate';
+import CikmaTeklifiTemplate from '../cikma-teklifi/components/CikmaTeklifiTemplate';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -220,6 +221,16 @@ export default function TemplateRenderer({
               creatorName={creatorName}
             />;
         }
+      case 'cikma-teklifi':
+        return (
+          <CikmaTeklifiTemplate
+            recipientName={recipientName}
+            message={message}
+            designStyle={designStyle as 'modern' | 'classic' | 'minimalist' | 'eglenceli'}
+            creatorName={creatorName}
+            textFields={textFields}
+          />
+        );
       case 'romantik-mesaj':
         return <RomantikMesajTemplate 
           recipientName={recipientName} 

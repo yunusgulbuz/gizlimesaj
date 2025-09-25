@@ -1,0 +1,50 @@
+1️⃣ Zamanda Yolculuk (Modern 3D Timeline)
+“Yıl Dönümü” temalı modern bir web sayfası tasarla.  
+Stil: premium, 3D timeline konsepti.  
+Renk paleti: gece mavisi, altın, krem.  
+Arka plan: yavaşça dönen yıldızlı gökyüzü, ortada 3D timeline şeridi.  
+Orta bölüm: kullanıcı tarihleri girsin, timeline üzerinde önemli anları fotoğraf ya da metin olarak göstersin.  
+Tipografi: modern serif + ince sans serif.  
+Animasyon:  
+- Sayfa açıldığında yıldızlar ve timeline şeridi akmaya başlıyor.  
+- Scroll veya swipe ettikçe her tarih noktasında fotoğraf ve kısa anı açılıyor.  
+- Buton “Birlikte Geçen Yıllarımız” — hover’da altın parıltı, tıklayınca tüm timeline hızla geri sarıyor ve büyük “Mutlu Yıl Dönümü” mesajı beliriyor.  
+Format: tam ekran + mobil uyumlu.  
+
+2️⃣ Klasik Hatıra Kutusu (Mektup + Fotoğraf Albümü)
+“Yıl Dönümü” için klasik hatıra kutusu temalı bir sayfa tasarla.  
+Stil: nostaljik, zarif, romantik.  
+Renk paleti: pastel pembe, krem, altın.  
+Arka plan: vintage hatıra kutusu / dantel dokulu arka plan.  
+Orta bölüm: “Mutlu Yıl Dönümü” kaligrafik fontla yazılı; kutunun içinden fotoğraf albümü, notlar ve küçük eşyalar çıkıyor gibi.  
+Tipografi: kaligrafi + serif kombinasyonu.  
+Animasyon:  
+- Sayfa açılınca hatıra kutusu yavaşça açılıyor.  
+- Kullanıcı fotoğraflar arasında sağ/sol kaydırma yapabiliyor.  
+- Buton “Hatıraları Gör” — hover’da zarif ışık efekti, tıklanınca kutudan minik gül yaprakları süzülüyor.  
+Format: web + mobil uyumlu.  
+
+3️⃣ Minimalist & Şifreli Mesaj (Kilidi Açınca Hatıra)
+“Yıl Dönümü” için minimalist ve şifreli bir mesaj sayfası tasarla.  
+Stil: sade, gizemli, premium.  
+Renk paleti: beyaz arka plan, siyah tipografi, tek vurgu rengi (ör. altın).  
+Yerleşim: ortada kilit simgesi ve “Mutlu Yıl Dönümü” başlığı, altında “Kilidi Aç” butonu.  
+Tipografi: ince sans serif.  
+Animasyon:  
+- Sayfa açılınca kilit hafif titreşiyor.  
+- Kullanıcı butona basınca küçük bir animasyonla kilit açılıyor, altından birlikte geçirilen yılları anlatan minimal bir animasyon akıyor (ör. kalp şekline dönüşen çizgiler).  
+- Buton hover’da altın çizgi animasyonu.  
+Format: mobil öncelikli tasarım.  
+
+4️⃣ Eğlenceli & Interaktif (Quiz + Hediye Avı)
+“Yıl Dönümü” temalı eğlenceli ve interaktif bir web sayfası tasarla.  
+Stil: oyunlaştırılmış kutlama.  
+Renk paleti: canlı kırmızı, mor, turuncu, pastel balonlar.  
+Arka plan: konfeti, balon, havai fişek animasyonları.  
+Orta bölüm: “Mutlu Yıl Dönümü” yazısı renkli balonlarla çevrili.  
+Mini Quiz: kullanıcıya “İlk nerede tanıştık?”, “En sevdiğimiz film?” gibi 3-4 soru soruluyor.  
+Animasyon:  
+- Her doğru cevaptan sonra ekranın kenarından yeni bir hatıra fotoğrafı açılıyor.  
+- Tüm sorular tamamlanınca büyük bir kalp patlaması ve havai fişek gösterisi + özel mesaj.  
+Buton: “Kutlamayı Başlat” — hover’da titreşim ve renk geçişi.  
+Format: web + mobil uyumlu.  

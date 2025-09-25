@@ -404,6 +404,54 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         maxLength: 200
       }
     ]
+  },
+  'cikma-teklifi': {
+    slug: 'cikma-teklifi',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'proposalQuestion',
+        label: 'Teklif Sorusu',
+        placeholder: 'Örn: Benimle çıkar mısın?',
+        type: 'input',
+        required: true,
+        maxLength: 80,
+        defaultValue: 'Benimle çıkar mısın?'
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Duygularınızı paylaşmak için özel mesajınız...',
+        type: 'textarea',
+        required: true,
+        maxLength: 500,
+        defaultValue: 'Kalbim her gün seninle daha da hızlanıyor. Bu anı birlikte büyülü kılmak için sana kalbimin en içten sorusunu soruyorum...'
+      },
+      {
+        key: 'secondaryMessage',
+        label: 'Ek Mesaj',
+        placeholder: 'Örn: Bu anı sonsuza dek hatırlayalım.',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Bu anı sonsuza dek hatırlayalım. 💫'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
   }
 };
 
