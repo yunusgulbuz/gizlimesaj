@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Heart, ArrowLeft, Play, Pause, Volume2, Eye, X } from "lucide-react";
 import TemplateRenderer from "./template-renderer";
+import { getTemplateConfig, getDefaultTextFields, TemplateTextFields } from "./types";
 
 interface Template {
   id: string;
@@ -80,13 +81,42 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
   const [customMessage, setCustomMessage] = useState(isPreview ? 'Bu bir örnek mesajdır. Gerçek mesajınızı buraya yazabilirsiniz.' : '');
   const [showPreview, setShowPreview] = useState(isPreview);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Çoklu mesaj desteği için yeni state
+  const templateConfig = getTemplateConfig(template.slug);
+  const [textFields, setTextFields] = useState<TemplateTextFields>(() => {
+    const defaults = getDefaultTextFields(template.slug);
+    if (isPreview) {
+      // Preview modunda örnek değerler
+      return {
+        recipientName: 'Örnek Alıcı',
+        mainMessage: 'Bu bir örnek mesajdır. Gerçek mesajınızı buraya yazabilirsiniz.',
+        footerMessage: defaults.footerMessage || '',
+        subtitle: defaults.subtitle || '',
+        quoteMessage: defaults.quoteMessage || ''
+      };
+    }
+    return defaults;
+  });
 
   const selectedDurationData = durations.find(d => d.id === selectedDuration);
+
+  const handleTextFieldChange = (key: string, value: string) => {
+    setTextFields(prev => ({
+      ...prev,
+      [key]: value
+    }));
+    
+    // Backward compatibility için eski state'leri de güncelle
+    if (key === 'recipientName') setRecipientName(value);
+    if (key === 'mainMessage') setCustomMessage(value);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Form submission logic here
     console.log('Form submitted with design style:', selectedDesignStyle);
+    console.log('Text fields:', textFields);
   };
 
   return (
@@ -128,10 +158,11 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
                       <TemplateRenderer 
                         template={template}
                         designStyle={selectedDesignStyle}
-                        recipientName={recipientName || "Örnek Alıcı"}
-                        message={customMessage || "Bu bir örnek mesajdır. Kendi mesajınızı yazarak nasıl görüneceğini görebilirsiniz."}
+                        recipientName={textFields.recipientName || recipientName || "Örnek Alıcı"}
+                        message={textFields.mainMessage || customMessage || "Bu bir örnek mesajdır. Kendi mesajınızı yazarak nasıl görüneceğini görebilirsiniz."}
                         isPreview={true}
                         creatorName={creatorName}
+                        textFields={textFields}
                       />
                     </div>
                   </div>
@@ -305,33 +336,35 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
                     />
                   </div>
 
-                  {/* Recipient Name */}
-                  <div className="space-y-2">
-                    <Label htmlFor="recipient-name">Gönderilecek Kişi Adı *</Label>
-                    <Input
-                      id="recipient-name"
-                      placeholder="Mesajı alacak kişinin adını girin"
-                      value={recipientName}
-                      onChange={(e) => setRecipientName(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  {/* Custom Message */}
-                  <div className="space-y-2">
-                    <Label htmlFor="custom-message">Özel Mesajınız *</Label>
-                    <Textarea
-                      id="custom-message"
-                      placeholder="Sevdiklerinize iletmek istediğiniz özel mesajı yazın..."
-                      rows={4}
-                      value={customMessage}
-                      onChange={(e) => setCustomMessage(e.target.value)}
-                      required
-                    />
-                    <p className="text-xs text-gray-500">
-                      En az 10, en fazla 500 karakter
-                    </p>
-                  </div>
+                  {/* Dynamic Text Fields */}
+                  {templateConfig && templateConfig.fields.map((field) => (
+                    <div key={field.key} className="space-y-2">
+                      <Label htmlFor={field.key}>{field.label} *</Label>
+                      {field.type === 'textarea' ? (
+                        <Textarea
+                          id={field.key}
+                          placeholder={field.placeholder}
+                          rows={4}
+                          value={textFields[field.key] || ''}
+                          onChange={(e) => handleTextFieldChange(field.key, e.target.value)}
+                          required
+                        />
+                      ) : (
+                        <Input
+                          id={field.key}
+                          placeholder={field.placeholder}
+                          value={textFields[field.key] || ''}
+                          onChange={(e) => handleTextFieldChange(field.key, e.target.value)}
+                          required
+                        />
+                      )}
+                      {field.type === 'textarea' && (
+                        <p className="text-xs text-gray-500">
+                          En az 10, en fazla 500 karakter
+                        </p>
+                      )}
+                    </div>
+                  ))}
 
                   {/* Design Style Selection */}
                   <div className="space-y-3">

@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { Heart, Music, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import SeniSeviyorumTemplate from './components/SeniSeviyorumTemplate';
+import AffetBeniTemplate from './components/AffetBeniTemplate';
+import { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
   template: {
@@ -17,6 +20,7 @@ interface TemplateRendererProps {
   designStyle: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
   isPreview?: boolean;
   creatorName?: string;
+  textFields?: TemplateTextFields;
 }
 
 export default function TemplateRenderer({ 
@@ -25,7 +29,8 @@ export default function TemplateRenderer({
   message, 
   designStyle,
   isPreview = false,
-  creatorName
+  creatorName,
+  textFields
 }: TemplateRendererProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
@@ -72,13 +77,16 @@ export default function TemplateRenderer({
           message={message} 
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
           creatorName={creatorName}
+          textFields={textFields}
         />;
       case 'affet-beni':
+      case 'affet-beni-classic':
         return <AffetBeniTemplate 
           recipientName={recipientName} 
           message={message} 
-          designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
+          designStyle={designStyle}
           creatorName={creatorName}
+          textFields={textFields}
         />;
       case 'evlilik-teklifi':
         return <EvlilikTeklifiTemplate 
@@ -151,141 +159,7 @@ export default function TemplateRenderer({
   );
 }
 
-// Template Components
-function SeniSeviyorumTemplate({ recipientName, message, designStyle, creatorName }: {
-  recipientName: string;
-  message: string;
-  designStyle: 'modern' | 'classic' | 'minimalist';
-  creatorName?: string;
-}) {
-  const styles = getSeniSeviyorumStyles(designStyle);
-  
-  return (
-    <div className={`min-h-screen flex items-center justify-center ${styles.background} relative overflow-hidden`}>
-      {/* Animated background elements */}
-      <div className={styles.backgroundElements}>
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className={`absolute ${styles.floatingHeart} animate-pulse`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`
-            }}
-          >
-            ❤️
-          </div>
-        ))}
-      </div>
-      
-      <div className={`max-w-4xl mx-auto p-8 text-center relative z-10 ${styles.container}`}>
-        {/* Creator Name Display */}
-        {creatorName && (
-          <div className="text-center mb-6">
-            <p className={`text-sm ${styles.creatorNameColor || 'text-gray-600'}`}>
-              Hazırlayan: {creatorName}
-            </p>
-          </div>
-        )}
-        
-        {/* Header Section */}
-        <div className="mb-12">
-          <div className={`${styles.iconContainer} mx-auto mb-6`}>
-            <Heart className={`${styles.iconSize} ${styles.heartColor} animate-bounce`} />
-          </div>
-          <h1 className={`${styles.titleSize} font-bold ${styles.titleColor} mb-4 ${styles.titleAnimation}`}>
-            {recipientName ? `Sevgili ${recipientName},` : 'Sevgilim,'}
-          </h1>
-          <h2 className={`${styles.subtitleSize} ${styles.subtitleColor} mb-8 ${styles.subtitleAnimation}`}>
-            💕 Seni Seviyorum 💕
-          </h2>
-        </div>
-        
-        {/* Message Section */}
-        <div className={`${styles.messageContainer} p-8 rounded-2xl mb-12 ${styles.messageAnimation}`}>
-          <div className="mb-6">
-            <div className="flex justify-center space-x-2 mb-4">
-              {['💖', '✨', '🌟', '✨', '💖'].map((emoji, i) => (
-                <span 
-                  key={i}
-                  className={`text-3xl ${styles.emojiAnimation}`}
-                  style={{animationDelay: `${i * 0.1}s`}}
-                >
-                  {emoji}
-                </span>
-              ))}
-            </div>
-            <p className={`${styles.messageSize} ${styles.messageColor} leading-relaxed mb-6`}>
-              {message || "Sen benim hayatımın en güzel parçasısın. Seninle geçirdiğim her an bir hayal gibi. Seni ne kadar sevdiğimi kelimelerle anlatmak mümkün değil. Her gün seni daha çok seviyorum. 💕"}
-            </p>
-          </div>
-        </div>
-        
-        {/* Footer Section */}
-        <div className={`${styles.footerSection} space-y-6`}>
-          <p className={`${styles.footerText} font-medium`}>
-            Sen benim her şeyimsin! 💝
-          </p>
-          
-          <div className="flex justify-center space-x-3">
-            <span className="text-3xl animate-bounce" style={{animationDelay: '0s'}}>💖</span>
-            <span className="text-3xl animate-bounce" style={{animationDelay: '0.1s'}}>💕</span>
-            <span className="text-3xl animate-bounce" style={{animationDelay: '0.2s'}}>💗</span>
-            <span className="text-3xl animate-bounce" style={{animationDelay: '0.3s'}}>💓</span>
-            <span className="text-3xl animate-bounce" style={{animationDelay: '0.4s'}}>💘</span>
-            <span className="text-3xl animate-bounce" style={{animationDelay: '0.5s'}}>💝</span>
-          </div>
-          
- 
-        </div>
-      </div>
-    </div>
-  );
-}
 
-function AffetBeniTemplate({ recipientName, message, designStyle, creatorName }: {
-  recipientName: string;
-  message: string;
-  designStyle: 'modern' | 'classic' | 'minimalist';
-  creatorName?: string;
-}) {
-  const styles = getDesignStyles(designStyle);
-  
-  return (
-    <div className={`min-h-screen flex items-center justify-center ${styles.background}`}>
-      <div className={`max-w-2xl mx-auto p-8 text-center ${styles.container}`}>
-        {/* Creator Name Display */}
-        {creatorName && (
-          <div className="text-center mb-6">
-            <p className="text-sm text-white/70">
-              Hazırlayan: {creatorName}
-            </p>
-          </div>
-        )}
-        
-        <div className="mb-8">
-          <div className="text-6xl mb-4">🙏</div>
-          <h1 className={`${styles.titleSize} font-bold ${styles.titleColor} mb-4`}>
-            {recipientName ? `${recipientName},` : 'Sevgilim,'}
-          </h1>
-          <h2 className={`${styles.subtitleSize} ${styles.subtitleColor} mb-8`}>
-            Affet Beni 💔
-          </h2>
-        </div>
-        
-        <div className={`${styles.messageContainer} p-6 rounded-lg mb-8`}>
-          <p className={`${styles.messageSize} ${styles.messageColor} leading-relaxed`}>
-            {message || "Yaptığım hatalar için çok üzgünüm. Seni incittiğim için kalbim acıyor. Lütfen beni affet, bir daha asla böyle bir hata yapmayacağım."}
-          </p>
-        </div>
-        
-        <div className="text-4xl">💝</div>
-      </div>
-    </div>
-  );
-}
 
 function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorName }: {
   recipientName: string;
@@ -923,95 +797,4 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, designStyle, c
   }
 
   return null;
-}
-
-function getSeniSeviyorumStyles(designStyle: 'modern' | 'classic' | 'minimalist') {
-  switch (designStyle) {
-    case 'modern':
-      return {
-        background: 'bg-gradient-to-br from-purple-400 via-pink-500 to-red-500',
-        backgroundElements: 'absolute inset-0 pointer-events-none',
-        floatingHeart: 'text-white/20 text-lg',
-        container: 'bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20',
-        iconContainer: 'bg-gradient-to-br from-pink-100 to-purple-100 rounded-full p-6 w-fit',
-        titleSize: 'text-4xl md:text-6xl',
-        titleColor: 'text-gray-800',
-        titleAnimation: 'animate-fade-in-up',
-        subtitleSize: 'text-2xl md:text-4xl',
-        subtitleColor: 'text-pink-600',
-        subtitleAnimation: 'animate-fade-in-up',
-        messageContainer: 'bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 border border-pink-200/50 shadow-inner',
-        messageSize: 'text-lg md:text-xl',
-        messageColor: 'text-gray-700',
-        messageAnimation: 'animate-fade-in-up',
-        iconSize: 'h-20 w-20',
-        smallHeartSize: 'h-6 w-6',
-        heartColor: 'text-pink-500',
-        emojiAnimation: 'hover:scale-125 transition-transform',
-        footerSection: 'animate-fade-in-up',
-        footerText: 'text-xl text-gray-700',
-        featureCard: 'bg-white/80 backdrop-blur-sm border border-pink-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105',
-        featureText: 'text-gray-600',
-        cardAnimation: 'animate-fade-in-up',
-        creatorNameColor: 'text-gray-600'
-      };
-    case 'classic':
-      return {
-        background: 'bg-gradient-to-br from-amber-50 via-orange-50 to-red-50',
-        backgroundElements: 'absolute inset-0 pointer-events-none',
-        floatingHeart: 'text-amber-200/40 text-base',
-        container: 'bg-white border-4 border-amber-300 rounded-2xl shadow-2xl',
-        iconContainer: 'bg-amber-100 rounded-full p-6 w-fit border-2 border-amber-200',
-        titleSize: 'text-3xl md:text-5xl',
-        titleColor: 'text-amber-800',
-        titleAnimation: 'animate-fade-in-up',
-        subtitleSize: 'text-xl md:text-3xl',
-        subtitleColor: 'text-amber-700',
-        subtitleAnimation: 'animate-fade-in-up',
-        messageContainer: 'bg-amber-50 border-2 border-amber-200 shadow-inner',
-        messageSize: 'text-base md:text-lg',
-        messageColor: 'text-amber-900',
-        messageAnimation: 'animate-fade-in-up',
-        iconSize: 'h-16 w-16',
-        smallHeartSize: 'h-5 w-5',
-        heartColor: 'text-amber-600',
-        emojiAnimation: 'hover:scale-110 transition-transform',
-        footerSection: 'animate-fade-in-up',
-        footerText: 'text-lg text-amber-800',
-        featureCard: 'bg-amber-50 border-2 border-amber-200 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105',
-        featureText: 'text-amber-700',
-        cardAnimation: 'animate-fade-in-up',
-        creatorNameColor: 'text-amber-700'
-      };
-    case 'minimalist':
-      return {
-        background: 'bg-gray-50',
-        backgroundElements: 'absolute inset-0 pointer-events-none',
-        floatingHeart: 'text-gray-200/30 text-sm',
-        container: 'bg-white border border-gray-300 rounded-xl shadow-lg',
-        iconContainer: 'bg-gray-100 rounded-full p-4 w-fit',
-        titleSize: 'text-2xl md:text-4xl',
-        titleColor: 'text-gray-900',
-        titleAnimation: 'animate-fade-in-up',
-        subtitleSize: 'text-lg md:text-2xl',
-        subtitleColor: 'text-gray-600',
-        subtitleAnimation: 'animate-fade-in-up',
-        messageContainer: 'bg-gray-50 border border-gray-200',
-        messageSize: 'text-base md:text-lg',
-        messageColor: 'text-gray-800',
-        messageAnimation: 'animate-fade-in-up',
-        iconSize: 'h-12 w-12',
-        smallHeartSize: 'h-4 w-4',
-        heartColor: 'text-gray-600',
-        emojiAnimation: 'hover:scale-105 transition-transform',
-        footerSection: 'animate-fade-in-up',
-        footerText: 'text-base text-gray-700',
-        featureCard: 'bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300',
-        featureText: 'text-gray-600',
-        cardAnimation: 'animate-fade-in-up',
-        creatorNameColor: 'text-gray-600'
-      };
-    default:
-      return getSeniSeviyorumStyles('modern');
-  }
 }

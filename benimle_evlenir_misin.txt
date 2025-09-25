@@ -1,0 +1,68 @@
+🎨 Genel İpuçları (Prompt Hazırlarken Dikkat Edilmesi)
+
+Stil belirleyici sözcükler kullan (“modern / minimalist / retro / playful / whimsical / elegant / baroque / neon / pastel / gold accents” gibi).
+
+Kompozisyon talimatı ver: “orta kısımda büyük metin”, “arka planda siluet”, “animasyonlu ögeler”, “hover efekti”, “konfeti patlatma”, vs.
+
+Renk paleti öner: “soft pembe + krem + altın”, “siyah + beyaz + altın detay”, “pastel tonlar” vb.
+
+Tipografi yönlendirmesi: “ince serif”, “sans serif modern”, “el yazısı”, “kaligrafi” gibi.
+
+Dinamik etkileşim istersen (“buton büyüsün”, “konfeti patlasın”, “metin değişsin”) açık belirt.
+
+Görselle uyum: “kalp motifleri”, “çiçek desenleri”, “ışık hüzmeleri”, “minimal çizgiler” alanında öner.
+
+Oran / format belirt: “1080×1920 dikey”, “1920×1080 yatay”, “web hero banner”.
+
+
+1. Modern Stil
+“Benimle Evlenir misin?” temalı modern bir web sayfası tasarımı oluştur.  
+Stil: modern, lüks, zarif ama sade.  
+Renk paleti: koyu lacivert, altın, fildişi.  
+Kompozisyon: orta bölümde büyük “Benimle Evlenir misin?” metni, altına küçük alıcı adı ve kısa not.  
+Arka plan: yumuşak degrade (lacivert → fildişi), ince ışık hüzmesi ya da altın toz efekti.  
+Tipografi: ince serif + modern sans serif kombinasyonu.  
+Detay: metin altına küçük çizgiler / altın aksesuar motifleri.  
+Responsive: buton hover’ında hafif parlama efekti.  
+Boyut: geniş ekran (1920×1080).  
+
+
+Ek olarak, “Butona tıklayınca konfeti patlasın, kutlama animasyonu olsun” gibi etkileşim isteğini de ekleyebilirsin.
+
+2. Klasik Stil
+“Benimle Evlenir misin?” konsepti için sofistike klasik bir tasarım iste.  
+Stil: romantik klasik, zarif detaylarla.  
+Renk paleti: krem, şampanya, pastel gül rengi, altın vurgu.  
+Arka plan: ince dantel dokular, klasik çiçek süslemeleri, soft ışık geçişleri.  
+Merkezde büyük metin “Benimle Evlenir misin?” dekoratif çerçeve içinde.  
+Alt kısımda alıcı adı + not, zarif el yazısı font ile.  
+Tipografi: kaligrafik font + serif font kombinasyonu.  
+Detay motifler: küçük çiçek buseleri, yaprak süslemeleri, altın çerçeveler.  
+Animasyon: sayfa açıldığında hafif soluklukla elementler beliriyor, yaprak süzülmesi efekti.  
+Format: web banner + mobil versiyon düşünülerek.  
+
+3. Minimalist Stil
+“Benimle Evlenir misin?” için minimalist, sade ve şık sayfa tasarımı üret.  
+Stil: minimal — gereksiz süslerden arındırılmış.  
+Renk paleti: beyaz arka plan, koyu gri / siyah metin, tek vurgu rengi (örneğin natürel pembe).  
+Yerleşim: çok temiz — üstte logo (opsiyonel), ortada büyük “Benimle Evlenir misin?” metni, altında alıcı adı + kısa not.  
+Tipografi: modern sans serif (ince çizgili).  
+Boşluk (white space) bol olsun.  
+Detay: hover efektli buton (kenar çizgisiyle), ince ayırıcı çizgiler, küçük animasyon: buton hafif büyüsün.  
+Arka planda gölge ya da çok hafif doku olabilir ama dikkatli ol.  
+Animasyon: metin fade-in ile gelsin; butona tıklayınca sade kutlama animasyonu (örneğin minimal yıldız parıltısı).  
+
+4. Eğlenceli Stil
+“Benimle Evlenir misin?” temalı eğlenceli ve interaktif sayfa tasarımı yarat.  
+Stil: enerjik, renkli, esprili dokunuşlar ile.  
+Renk paleti: canlı pembe, mercan, turkuaz, altın detaylar.  
+Arka plan: hafif desenli — polka dot, kalp patlamaları, balon motifleri.  
+Orta bölüm: büyük metin “Benimle Evlenir misin?” — metnin etrafında küçük yıldız/parıltı simleri.  
+İki buton: “Evet” ve “Hayır”.  
+Etkileşim senaryosu:  
+- Kullanıcı “Hayır” butonuna basarsa buton kaçın, yer değiştir, titrek hareket et.  
+- “Evet” butonuna basınca konfeti patlasın, balonlar yukarı çıkıp kutlama sahnesi belirsin.  
+- Butonlar üzerine gelince renk değiştirme/ölçek büyüme efekti.  
+Tipografi: eğlenceli el yazısı + sans serif kombinasyonu.  
+Detay: küçük animasyonlu kalpler, patlama efektleri, geçiş efektleri.  
+Boyut: web + mobil uyumlu.  
