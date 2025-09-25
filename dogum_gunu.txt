@@ -1,0 +1,44 @@
+1️⃣ Modern Stil
+“Doğum Günün Kutlu Olsun” temalı modern bir web sayfası tasarımı oluştur.  
+Stil: modern, renkli ama zarif.  
+Renk paleti: neon pembe, mor, turkuaz; degrade arka plan.  
+Orta bölüm: büyük “Doğum Günün Kutlu Olsun” metni; altında isim ve kısa mesaj alanı.  
+Tipografi: kalın modern sans serif.  
+Arka plan: neon çizgiler, yumuşak geometrik şekiller, parlama efektleri.  
+Detay: hover’lı buton (hediye butonu) üzerinde neon glow efekti.  
+Animasyon: sayfa açılınca balon ve konfeti yukarı süzülsün.  
+Format: 1920×1080 (responsive).  
+
+2️⃣ Klasik Stil
+“Doğum Günün Kutlu Olsun” konseptli klasik ve zarif bir web sayfası tasarımı yap.  
+Stil: klasik, sıcak ve romantik.  
+Renk paleti: pastel krem, altın, pudra pembe.  
+Arka plan: dantel dokular, soft ışık geçişleri, altın çerçeve.  
+Orta bölüm: dekoratif çerçeve içinde “Doğum Günün Kutlu Olsun” yazısı.  
+Tipografi: kaligrafik font (el yazısı) + serif alt başlıklar.  
+Detay: küçük çiçekler, zarif balon simgeleri.  
+Animasyon: sayfa açılınca altın tozu ve yumuşak ışık efekti belirsin.  
+Format: web banner + mobil uyumlu.  
+
+3️⃣ Minimalist Stil
+“Doğum Günün Kutlu Olsun” için minimalist, sade ve şık bir sayfa tasarımı oluştur.  
+Stil: minimal — sade renk blokları.  
+Renk paleti: beyaz arka plan, siyah tipografi, tek vurgu rengi (ör. pastel turuncu).  
+Yerleşim: üstte logo (opsiyonel), ortada büyük “Doğum Günün Kutlu Olsun” metni, altında isim ve not.  
+Tipografi: ince sans serif, düz çizgiler.  
+Arka plan: düz beyaz ya da çok hafif doku.  
+Buton: basit çizgili kutu, hover’da renk değiştiriyor.  
+Animasyon: metin fade-in ile geliyor; butona tıklanınca küçük minimal konfeti efekti.  
+Format: mobil öncelikli tasarım.  
+
+4️⃣ Eğlenceli Stil
+“Doğum Günün Kutlu Olsun” temalı eğlenceli ve interaktif web sayfası tasarla.  
+Stil: renkli, enerjik, kutlama havasında.  
+Renk paleti: canlı turuncu, fuşya, sarı, mavi; pastel balon tonları.  
+Arka plan: çizgi film tarzı doğum günü pastaları, balonlar, konfeti desenleri.  
+Orta bölüm: büyük “Doğum Günün Kutlu Olsun” metni — etrafında dönen balon ikonları.  
+Buton: “Sürprizi Gör” butonu.  
+Etkileşim senaryosu: butona basılınca doğum günü pastası mumları yanıyor, konfeti patlıyor, happy birthday müziği çalıyor gibi animasyon.  
+Tipografi: eğlenceli el yazısı + renkli bold font kombinasyonu.  
+Detay: küçük animasyonlu emojiler (🎉🎂🎈) sayfanın kenarlarından içeri kayıyor.  
+Format: web + mobil uyumlu.  

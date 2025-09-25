@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import TemplateRenderer from '../template-renderer';
+import { getDefaultTextFields, TemplateTextFields } from '../types';
 
 interface Template {
   id: string;
@@ -57,6 +58,18 @@ export default function PreviewClient({ template }: PreviewClientProps) {
     creatorName: "Örnek Oluşturan"
   };
 
+  const defaultTextFields = getDefaultTextFields(template.slug);
+  const sampleTextFields: TemplateTextFields = {
+    ...defaultTextFields,
+  };
+
+  if (!sampleTextFields.recipientName) {
+    sampleTextFields.recipientName = sampleData.recipientName;
+  }
+  if (!sampleTextFields.mainMessage) {
+    sampleTextFields.mainMessage = sampleData.message;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -101,10 +114,11 @@ export default function PreviewClient({ template }: PreviewClientProps) {
         <TemplateRenderer 
           template={template}
           designStyle={selectedDesignStyle}
-          recipientName={sampleData.recipientName}
-          message={sampleData.message}
+          recipientName={sampleTextFields.recipientName || sampleData.recipientName}
+          message={sampleTextFields.mainMessage || sampleData.message}
           creatorName={sampleData.creatorName}
           isPreview={true}
+          textFields={sampleTextFields}
         />
       </div>
     </div>

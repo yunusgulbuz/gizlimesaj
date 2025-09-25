@@ -258,6 +258,62 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         maxLength: 200
       }
     ]
+  },
+  'dogum-gunu-fun': {
+    slug: 'dogum-gunu-fun',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Doğum Günü Sahibinin Adı',
+        placeholder: 'Doğum günü kutlanacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'age',
+        label: 'Yaş',
+        placeholder: 'Kaç yaşına girdiğini yazın (ör: 25)',
+        type: 'input',
+        required: false,
+        maxLength: 3
+      },
+      {
+        key: 'mainMessage',
+        label: 'Doğum Günü Mesajınız',
+        placeholder: 'Doğum günü mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 500,
+        defaultValue: 'Doğum günün kutlu olsun! Bu özel günde sana en güzel dilekleri gönderiyorum. Yeni yaşın sana sağlık, mutluluk ve başarı getirsin! 🎉🎂'
+      },
+      {
+        key: 'wishMessage',
+        label: 'Dilek Mesajı',
+        placeholder: 'Özel bir dileğiniz varsa yazın...',
+        type: 'input',
+        required: false,
+        maxLength: 150,
+        defaultValue: 'Tüm hayallerin gerçek olsun! 🌟'
+      },
+      {
+        key: 'footerMessage',
+        label: 'Alt Mesaj',
+        placeholder: 'Sayfanın altında görünecek mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Nice mutlu yıllara! 🎈🎊'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
   }
 };
 
