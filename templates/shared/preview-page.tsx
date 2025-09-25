@@ -65,11 +65,21 @@ export default function TemplatePreviewPage({ template }: TemplatePreviewPagePro
     ...defaultTextFields,
   };
 
-  if (!sampleTextFields.recipientName) {
-    sampleTextFields.recipientName = sampleData.recipientName;
-  }
-  if (!sampleTextFields.mainMessage) {
-    sampleTextFields.mainMessage = sampleData.message;
+  // Template'e göre özel default değerler
+  if (template.slug === 'mutlu-yillar-fun') {
+    if (!sampleTextFields.recipientName) {
+      sampleTextFields.recipientName = "Canım Arkadaşım";
+    }
+    if (!sampleTextFields.mainMessage) {
+      sampleTextFields.mainMessage = defaultTextFields.mainMessage || "Yeni yılın sana sağlık, mutluluk ve başarı getirmesini diliyorum! Bu yıl tüm hayallerin gerçek olsun. Mutlu yıllar! 🎉✨";
+    }
+  } else {
+    if (!sampleTextFields.recipientName) {
+      sampleTextFields.recipientName = sampleData.recipientName;
+    }
+    if (!sampleTextFields.mainMessage) {
+      sampleTextFields.mainMessage = sampleData.message;
+    }
   }
 
   return (

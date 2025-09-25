@@ -1,0 +1,421 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+
+interface PremiumModernTemplateProps {
+  recipientName: string;
+  mainMessage: string;
+  wishMessage?: string;
+  footerMessage?: string;
+  creatorName?: string;
+}
+
+function PremiumModernTemplate({ 
+  recipientName, 
+  mainMessage, 
+  wishMessage, 
+  footerMessage, 
+  creatorName 
+}: PremiumModernTemplateProps) {
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, size: number, delay: number}>>([]);
+  const [spheres, setSpheres] = useState<Array<{id: number, x: number, y: number, rotation: number}>>([]);
+
+  useEffect(() => {
+    // Create floating golden particles
+    const newParticles = Array.from({ length: 50 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 2,
+      delay: Math.random() * 5
+    }));
+    setParticles(newParticles);
+
+    // Create 3D spheres
+    const newSpheres = Array.from({ length: 8 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 80 + 10,
+      y: Math.random() * 80 + 10,
+      rotation: Math.random() * 360
+    }));
+    setSpheres(newSpheres);
+  }, []);
+
+  const handleCelebrationStart = () => {
+    setShowCelebration(true);
+    
+    // Create explosion effect
+    setTimeout(() => {
+      const explosionParticles = Array.from({ length: 100 }, (_, i) => ({
+        id: i + 1000,
+        x: 50 + (Math.random() - 0.5) * 60,
+        y: 50 + (Math.random() - 0.5) * 60,
+        size: Math.random() * 6 + 3,
+        delay: Math.random() * 2
+      }));
+      setParticles(prev => [...prev, ...explosionParticles]);
+    }, 500);
+  };
+
+  if (showCelebration) {
+    return (
+      <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center">
+        {/* Space Background with Stars */}
+        <div className="absolute inset-0">
+          {[...Array(100)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-white rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${Math.random() * 3 + 1}px`,
+                height: `${Math.random() * 3 + 1}px`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${2 + Math.random() * 3}s`
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Enhanced Golden Particles */}
+        {particles.map(particle => (
+          <div
+            key={particle.id}
+            className="absolute rounded-full animate-bounce"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              background: 'linear-gradient(45deg, #ffd700, #ffed4e, #ffd700)',
+              boxShadow: `0 0 ${particle.size * 2}px #ffd700, 0 0 ${particle.size * 4}px #ffd700`,
+              animationDelay: `${particle.delay}s`,
+              animationDuration: `${3 + Math.random() * 2}s`,
+              zIndex: 10
+            }}
+          />
+        ))}
+
+        {/* Rotating 3D Spheres */}
+        {spheres.map(sphere => (
+          <div
+            key={sphere.id}
+            className="absolute animate-spin"
+            style={{
+              left: `${sphere.x}%`,
+              top: `${sphere.y}%`,
+              width: '60px',
+              height: '60px',
+              background: 'linear-gradient(135deg, #4a0e4e, #81007f, #4a0e4e)',
+              borderRadius: '50%',
+              boxShadow: 'inset -10px -10px 20px rgba(0,0,0,0.5), inset 10px 10px 20px rgba(255,255,255,0.1)',
+              animationDuration: `${10 + Math.random() * 10}s`,
+              transform: `rotate(${sphere.rotation}deg)`,
+              zIndex: 5
+            }}
+          />
+        ))}
+
+        {/* Main Content */}
+        <div className="relative z-20 text-center space-y-8 p-8 max-w-4xl">
+          {showCelebration && creatorName && (
+            <div className="text-center mb-6">
+              <p className="text-sm text-white" style={{
+                textShadow: '2px 2px 4px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,1)',
+                background: 'rgba(0,0,0,0.8)',
+                padding: '8px 16px',
+                borderRadius: '20px',
+                border: '1px solid rgba(255,215,0,0.3)',
+                backdropFilter: 'blur(5px)'
+              }}>
+                Hazırlayan: {creatorName}
+              </p>
+            </div>
+          )}
+
+          {/* 3D Metallic Title */}
+          <div className="relative">
+            <h1 
+              className="text-6xl md:text-8xl font-bold mb-8 animate-pulse"
+              style={{
+                background: 'linear-gradient(45deg, #ffd700, #ffed4e, #ffd700, #b8860b)',
+                backgroundSize: '400% 400%',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: '0 0 30px rgba(255, 215, 0, 0.8)',
+                animation: 'gradient 3s ease infinite, glow 2s ease-in-out infinite alternate'
+              }}
+            >
+              MUTLU YILLAR
+            </h1>
+            <div className="absolute inset-0 text-6xl md:text-8xl font-bold opacity-30 blur-sm"
+                 style={{
+                   background: 'linear-gradient(45deg, #ffd700, #ffed4e)',
+                   WebkitBackgroundClip: 'text',
+                   WebkitTextFillColor: 'transparent',
+                   transform: 'translateY(4px)'
+                 }}>
+              MUTLU YILLAR
+            </div>
+          </div>
+
+          {showCelebration && (
+            <h2 className="text-2xl md:text-4xl text-white font-bold mb-6 drop-shadow-lg">
+              {recipientName ? `${recipientName}!` : 'Sevgili Dostum!'}
+            </h2>
+          )}
+
+          {showCelebration && (
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 border border-gold-500/30 shadow-2xl">
+              <p className="text-xl md:text-2xl text-black leading-relaxed font-medium">
+                {mainMessage}
+              </p>
+            </div>
+          )}
+
+          {showCelebration && wishMessage && (
+            <div className="text-lg md:text-xl text-white font-semibold animate-pulse drop-shadow-lg bg-black/30 rounded-lg p-4">
+              {wishMessage}
+            </div>
+          )}
+
+          {showCelebration && footerMessage && (
+            <div className="text-lg text-white font-medium mt-8 drop-shadow-lg bg-black/30 rounded-lg p-4">
+              {footerMessage}
+            </div>
+          )}
+
+
+        </div>
+
+        <style jsx>{`
+          @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6); }
+            to { text-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 215, 0, 0.8); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center">
+      {/* Space Background */}
+      <div className="absolute inset-0">
+        {[...Array(80)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute bg-white rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${Math.random() * 2 + 1}px`,
+              height: `${Math.random() * 2 + 1}px`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Golden Particles */}
+      {particles.map(particle => (
+        <div
+          key={particle.id}
+          className="absolute rounded-full animate-pulse"
+          style={{
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
+            background: 'linear-gradient(45deg, #ffd700, #ffed4e)',
+            boxShadow: `0 0 ${particle.size * 2}px #ffd700`,
+            animationDelay: `${particle.delay}s`,
+            animationDuration: `${3 + Math.random() * 2}s`,
+            zIndex: 5
+          }}
+        />
+      ))}
+
+      {/* Rotating Spheres */}
+      {spheres.map(sphere => (
+        <div
+          key={sphere.id}
+          className="absolute animate-spin"
+          style={{
+            left: `${sphere.x}%`,
+            top: `${sphere.y}%`,
+            width: '40px',
+            height: '40px',
+            background: 'linear-gradient(135deg, #4a0e4e, #81007f)',
+            borderRadius: '50%',
+            boxShadow: 'inset -5px -5px 10px rgba(0,0,0,0.5), inset 5px 5px 10px rgba(255,255,255,0.1)',
+            animationDuration: `${15 + Math.random() * 10}s`,
+            transform: `rotate(${sphere.rotation}deg)`,
+            zIndex: 3
+          }}
+        />
+      ))}
+
+      {/* Main Content */}
+      <div className="relative z-10 text-center space-y-8 p-8 max-w-4xl">
+        {!showCelebration && (
+          <div className="text-center">
+            <h1 
+              className="text-5xl md:text-7xl font-bold mb-8"
+              style={{
+                background: 'linear-gradient(45deg, #ffd700, #ffed4e, #ffd700)',
+                backgroundSize: '200% 200%',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: '0 0 20px rgba(255, 215, 0, 0.6)',
+                animation: 'gradient 3s ease infinite'
+              }}
+            >
+              MUTLU YILLAR
+            </h1>
+            <p className="text-white text-xl mb-8" style={{
+              textShadow: '2px 2px 4px rgba(0,0,0,1)',
+              background: 'rgba(0,0,0,0.8)',
+              padding: '16px 24px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,215,0,0.3)',
+              backdropFilter: 'blur(5px)'
+            }}>
+              Kutlamayı başlatmak için butona tıklayın
+            </p>
+          </div>
+        )}
+
+        {showCelebration && creatorName && (
+          <div className="text-center mb-6">
+            <p className="text-sm text-white" style={{
+              textShadow: '2px 2px 4px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,1)',
+              background: 'rgba(0,0,0,0.8)',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              border: '1px solid rgba(255,215,0,0.3)',
+              backdropFilter: 'blur(5px)'
+            }}>
+              Hazırlayan: {creatorName}
+            </p>
+          </div>
+        )}
+
+        {showCelebration && (
+          <h1 
+            className="text-5xl md:text-7xl font-bold mb-8"
+            style={{
+              background: 'linear-gradient(45deg, #ffd700, #ffed4e, #ffd700)',
+              backgroundSize: '200% 200%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              textShadow: '0 0 20px rgba(255, 215, 0, 0.6)',
+              animation: 'gradient 3s ease infinite'
+            }}
+          >
+            MUTLU YILLAR
+          </h1>
+        )}
+
+        {showCelebration && (
+          <h2 className="text-2xl md:text-4xl text-white font-bold mb-6" style={{
+            textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.8), 2px 2px 0px rgba(0,0,0,1)',
+            background: 'rgba(0,0,0,0.95)',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            border: '3px solid rgba(255,255,255,0.4)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            {recipientName ? `${recipientName}!` : 'Sevgili Dostum!'}
+          </h2>
+        )}
+
+        {showCelebration && (
+          <div className="backdrop-blur-sm rounded-2xl p-8 border border-gold-500/30 shadow-2xl" style={{
+            background: 'rgba(0,0,0,0.95)',
+            border: '3px solid rgba(255,215,0,0.7)',
+            backdropFilter: 'blur(15px)'
+          }}>
+            <p className="text-xl md:text-2xl leading-relaxed font-medium" style={{
+              color: '#ffffff',
+              textShadow: '3px 3px 6px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,1), 0 0 35px rgba(255,255,255,0.6), 1px 1px 0px rgba(0,0,0,1)'
+            }}>
+              {mainMessage}
+            </p>
+          </div>
+        )}
+
+        {showCelebration && wishMessage && (
+          <div className="text-lg md:text-xl font-semibold animate-pulse rounded-lg p-4" style={{
+            color: '#ffffff',
+            textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.7), 2px 2px 0px rgba(0,0,0,1)',
+            background: 'rgba(0,0,0,0.95)',
+            border: '2px solid rgba(255,255,255,0.5)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            {wishMessage}
+          </div>
+        )}
+
+        {showCelebration && footerMessage && (
+          <div className="text-lg font-medium mt-8 rounded-lg p-4" style={{
+            color: '#ffffff',
+            textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.7), 2px 2px 0px rgba(0,0,0,1)',
+            background: 'rgba(0,0,0,0.95)',
+            border: '2px solid rgba(255,255,255,0.5)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            {footerMessage}
+          </div>
+        )}
+
+        <Button
+          onClick={handleCelebrationStart}
+          className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-bold px-12 py-6 rounded-full text-xl transition-all duration-300 shadow-2xl border-2 border-gold-400 relative overflow-hidden group"
+          style={{
+            boxShadow: '0 0 30px rgba(255, 215, 0, 0.5)',
+            textShadow: '2px 2px 4px rgba(0,0,0,1)'
+          }}
+        >
+          <span className="relative z-10 flex items-center gap-3">
+            ✨ Kutlamayı Başlat ✨
+          </span>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+        </Button>
+      </div>
+
+      <style jsx>{`
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .text-gold-100 { color: #fef3c7; }
+        .text-gold-200 { color: #fde68a; }
+        .text-gold-300 { color: #fcd34d; }
+        .text-gold-400 { color: #fbbf24; }
+        .text-gold-500 { color: #f59e0b; }
+        .bg-gold-500 { background-color: #f59e0b; }
+        .bg-gold-600 { background-color: #d97706; }
+        .from-gold-500 { --tw-gradient-from: #f59e0b; }
+        .to-gold-600 { --tw-gradient-to: #d97706; }
+        .hover\\:from-gold-600:hover { --tw-gradient-from: #d97706; }
+        .hover\\:to-gold-700:hover { --tw-gradient-to: #b45309; }
+        .border-gold-400 { border-color: #fbbf24; }
+        .border-gold-500\\/20 { border-color: rgba(251, 191, 36, 0.2); }
+        .border-gold-500\\/30 { border-color: rgba(251, 191, 36, 0.3); }
+      `}</style>
+    </div>
+  );
+}
+
+export default PremiumModernTemplate;

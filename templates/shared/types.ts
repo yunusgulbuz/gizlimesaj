@@ -374,6 +374,36 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         maxLength: 200
       }
     ]
+  },
+  'mutlu-yillar-fun': {
+    slug: 'mutlu-yillar-fun',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'mainMessage',
+        label: 'Yeni Yıl Mesajınız',
+        placeholder: 'Yeni yıl mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 500,
+        defaultValue: 'Yeni yılın sana sağlık, mutluluk ve başarı getirmesini diliyorum! Bu yıl tüm hayallerin gerçek olsun. Mutlu yıllar! 🎉✨'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
   }
 };
 

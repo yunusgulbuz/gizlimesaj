@@ -154,7 +154,7 @@ function KlasikElegansTesekkur({ recipientName, message, creatorName }: KlasikEl
             border: '2px solid #ffd700'
           }}
         >
-          <span className="relative z-10">Şampanya Patlat</span>
+          <span className="relative z-10">Minnettarlık Ölçüsü</span>
           {showCelebration && (
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
           )}

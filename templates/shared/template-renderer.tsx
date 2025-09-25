@@ -14,6 +14,10 @@ import PremiumModernTesekkur from '../tesekkur-adult/components/PremiumModernTes
 import KlasikElegansTesekkur from '../tesekkur-adult/components/KlasikElegansTesekkur';
 import MinimalistNeonTesekkur from '../tesekkur-adult/components/MinimalistNeonTesekkur';
 import EglenceliInteraktifTesekkur from '../tesekkur-adult/components/EglenceliInteraktifTesekkur';
+import PremiumModernTemplate from '../mutlu-yillar-fun/components/PremiumModernTemplate';
+import KlasikElegansTemplate from '../mutlu-yillar-fun/components/KlasikElegansTemplate';
+import MinimalistNeonTemplate from '../mutlu-yillar-fun/components/MinimalistNeonTemplate';
+import EglenceliInteraktifTemplate from '../mutlu-yillar-fun/components/EglenceliInteraktifTemplate';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -173,6 +177,49 @@ export default function TemplateRenderer({
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
           creatorName={creatorName}
         />;
+      case 'mutlu-yillar-fun':
+        switch (designStyle) {
+          case 'modern':
+            return <PremiumModernTemplate 
+              recipientName={recipientName} 
+              mainMessage={textFields?.mainMessage || message} 
+              wishMessage={textFields?.wishMessage}
+              footerMessage={textFields?.footerMessage}
+              creatorName={creatorName}
+            />;
+          case 'classic':
+            return <KlasikElegansTemplate 
+              recipientName={recipientName} 
+              mainMessage={textFields?.mainMessage || message} 
+              wishMessage={textFields?.wishMessage}
+              footerMessage={textFields?.footerMessage}
+              creatorName={creatorName}
+            />;
+          case 'minimalist':
+            return <MinimalistNeonTemplate 
+              recipientName={recipientName} 
+              mainMessage={textFields?.mainMessage || message} 
+              wishMessage={textFields?.wishMessage}
+              footerMessage={textFields?.footerMessage}
+              creatorName={creatorName}
+            />;
+          case 'eglenceli':
+            return <EglenceliInteraktifTemplate 
+              recipientName={recipientName} 
+              mainMessage={textFields?.mainMessage || message} 
+              wishMessage={textFields?.wishMessage}
+              footerMessage={textFields?.footerMessage}
+              creatorName={creatorName}
+            />;
+          default:
+            return <PremiumModernTemplate 
+              recipientName={recipientName} 
+              mainMessage={textFields?.mainMessage || message} 
+              wishMessage={textFields?.wishMessage}
+              footerMessage={textFields?.footerMessage}
+              creatorName={creatorName}
+            />;
+        }
       case 'romantik-mesaj':
         return <RomantikMesajTemplate 
           recipientName={recipientName} 
