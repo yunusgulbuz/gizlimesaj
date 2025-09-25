@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -76,15 +75,16 @@ const designStyles = {
   }
 };
 
-interface ClientTemplatePageProps {
+interface TemplateFormPageProps {
   template: Template;
   durations: Duration[];
   templatePricing: TemplatePricing[];
   isPreview?: boolean;
 }
 
-export default function ClientTemplatePage({ template, durations, templatePricing, isPreview = false }: ClientTemplatePageProps) {
-  const pathname = usePathname();
+export type { TemplateFormPageProps };
+
+export default function TemplateFormPage({ template, durations, templatePricing, isPreview = false }: TemplateFormPageProps) {
   const [selectedDesignStyle, setSelectedDesignStyle] = useState<keyof typeof designStyles>('modern');
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [isPlaying, setIsPlaying] = useState(false);

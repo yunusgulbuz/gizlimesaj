@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import PreviewClient from './preview-client';
+import { getTemplateEntry } from '@/templates';
 
 interface Template {
   id: string;
@@ -29,32 +29,7 @@ async function getTemplate(slug: string): Promise<Template | null> {
   return template;
 }
 
-interface TemplatePreviewPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
-}
-
-export default async function TemplatePage({ params }: { params: { slug: string } }) {
-  const supabase = await createServerSupabaseClient();
-  
-  const { data: template, error } = await supabase
-    .from('templates')
-    .select('*')
-    .eq('slug', params.slug)
-    .eq('is_active', true)
-    .single();
-
-  if (error || !template) {
-    notFound();
-  }
-
-  return (
-    <PreviewClient template={template} />
-  );
-}
-
-export async function generateMetadata({ params }: TemplatePreviewPageProps) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const template = await getTemplate(slug);
   
@@ -68,4 +43,23 @@ export async function generateMetadata({ params }: TemplatePreviewPageProps) {
     title: `${template.title} - Tam Ekran Önizleme | Gizli Mesaj`,
     description: template.description || `${template.title} şablonunun tam ekran önizlemesi`,
   };
+}
+
+export default async function TemplatePreviewPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  const templateEntry = getTemplateEntry(slug);
+
+  if (!templateEntry) {
+    notFound();
+  }
+
+  const template = await getTemplate(slug);
+
+  if (!template) {
+    notFound();
+  }
+
+  const PreviewComponent = templateEntry.preview;
+
+  return <PreviewComponent template={template} />;
 }

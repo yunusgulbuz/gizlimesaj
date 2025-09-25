@@ -1,7 +1,7 @@
 'use client';
 
 import { Heart } from 'lucide-react';
-import { TemplateTextFields } from '../types';
+import type { TemplateTextFields } from '../../shared/types';
 
 interface SeniSeviyorumTemplateProps {
   recipientName: string;

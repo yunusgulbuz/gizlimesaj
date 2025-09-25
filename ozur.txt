@@ -1,0 +1,42 @@
+1️⃣ Modern Stil (Sinema Sahnesi Etkisi)
+“Özür Dilerim” temalı modern bir web sayfası tasarla.  
+Stil: sinema sahnesi gibi dramatik ve modern.  
+Renk paleti: koyu lacivert, gece mavisi, neon kırmızı vurgu.  
+Arka plan: sinema perdesi ya da spot ışıkları hissi, ortada dramatik bir “Özür Dilerim” yazısı.  
+Tipografi: modern bold sans serif + ince alt başlık.  
+Buton: “Özürümü Kabul Et” — hover’da yumuşak parıltı.  
+Animasyon: sayfa açıldığında perdeler açılıyormuş gibi efekt; butona basınca dramatik bir ışık huzmesi ve alkış efekti belirsin.  
+Format: geniş ekran (1920×1080).  
+
+2️⃣ Klasik Stil (Mektup & Çiçek Teması)
+“Özür Dilerim” temalı klasik ve romantik bir sayfa tasarla.  
+Stil: mektup zarfı + çiçek dokusu.  
+Renk paleti: krem, soft gül, altın.  
+Arka plan: eski tarz mektup kağıdı dokusu, kenarlarda gül yaprakları.  
+Orta bölüm: zarftan çıkan bir not gibi “Özür Dilerim” metni.  
+Tipografi: kaligrafik el yazısı, alt satırlarda serif açıklama.  
+Buton: “Mektubu Aç” — hover’da zarif animasyon.  
+Animasyon: butona basınca zarftan mektup çıkar ve “Özürümü Kabul Et” mesajı görünür; gül yaprakları yavaşça süzülür.  
+Format: web + mobil uyumlu.  
+
+3️⃣ Minimalist Stil (Sessizlik & Sadelik)
+“Özür Dilerim” için minimalist ve duygusal bir web sayfası tasarla.  
+Stil: sade, beyaz alan, tek bir güçlü renk.  
+Renk paleti: beyaz arka plan, siyah tipografi, tek vurgu rengi (ör. pastel mavi).  
+Yerleşim: ortada küçük bir kalp ikonu, altında sade “Özür Dilerim” metni.  
+Tipografi: ince sans serif.  
+Buton: “Kabul Et” — minimal kenarlık.  
+Animasyon: sayfa açıldığında kalp yavaşça büyür; butona basılınca ekranın ortasında minimal bir dalga efekti.  
+Format: mobil öncelikli tasarım.  
+
+4️⃣ Eğlenceli Stil (Oyunlaştırılmış Özür)
+“Özür Dilerim” temalı eğlenceli ve interaktif bir sayfa tasarla.  
+Stil: oyun sahnesi gibi renkli ve dinamik.  
+Renk paleti: canlı turuncu, mor, mavi, yeşil.  
+Arka plan: çizgi film tarzı şehir manzarası veya sahne.  
+Orta bölüm: “Özür Dilerim” yazısı balon/kutu gibi.  
+Buton: “Özürümü Kabul Et” + küçük karakter avatarı (örneğin diz çökmüş emoji).  
+Etkileşim senaryosu: butona basınca karakter çiçek veriyor, emoji gözleri yaşlı oluyor, ardından konfeti ve “Teşekkürler” yazısı beliriyor.  
+Animasyon: buton üzerine gelince titreşim; karakter küçük hoplama hareketi.  
+Tipografi: eğlenceli el yazısı + comic sans benzeri bold font.  
+Format: web + mobil uyumlu.  

@@ -1,6 +1,6 @@
 'use client';
 
-import { TemplateTextFields } from '../types';
+import type { TemplateTextFields } from '../../shared/types';
 
 interface AffetBeniTemplateProps {
   recipientName: string;

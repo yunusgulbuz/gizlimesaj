@@ -4,8 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import TemplateRenderer from '../template-renderer';
-import { getDefaultTextFields, TemplateTextFields } from '../types';
+import TemplateRenderer from './template-renderer';
+import { getDefaultTextFields, TemplateTextFields } from './types';
 
 interface Template {
   id: string;
@@ -17,9 +17,11 @@ interface Template {
   description: string | null;
 }
 
-interface PreviewClientProps {
+interface TemplatePreviewPageProps {
   template: Template;
 }
+
+export type { TemplatePreviewPageProps };
 
 const designStyles = {
   modern: {
@@ -48,7 +50,7 @@ const designStyles = {
   }
 };
 
-export default function PreviewClient({ template }: PreviewClientProps) {
+export default function TemplatePreviewPage({ template }: TemplatePreviewPageProps) {
   const [selectedDesignStyle, setSelectedDesignStyle] = useState<'modern' | 'classic' | 'minimalist' | 'eglenceli'>('modern');
   
   // Örnek veriler

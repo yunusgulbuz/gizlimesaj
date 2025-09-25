@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { generateTemplateMetadata } from "@/lib/seo";
-import ClientTemplatePage from "./client-page";
+import { getTemplateEntry } from "@/templates";
 
 interface Template {
   id: string;
@@ -113,6 +113,12 @@ export default async function TemplateDetailPage({
 }) {
   const { slug } = await params;
   const searchParamsResolved = await searchParams;
+  const templateEntry = getTemplateEntry(slug);
+
+  if (!templateEntry) {
+    notFound();
+  }
+
   const template = await getTemplate(slug);
   const durations = await getDurations();
   const templatePricing = template ? await getTemplatePricing(template.id) : [];
@@ -123,5 +129,14 @@ export default async function TemplateDetailPage({
 
   const isPreview = searchParamsResolved?.preview === 'true';
 
-  return <ClientTemplatePage template={template} durations={durations} templatePricing={templatePricing} isPreview={isPreview} />;
+  const FormComponent = templateEntry.form;
+
+  return (
+    <FormComponent 
+      template={template}
+      durations={durations}
+      templatePricing={templatePricing}
+      isPreview={isPreview}
+    />
+  );
 }
