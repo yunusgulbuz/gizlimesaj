@@ -47,6 +47,14 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         required: false,
         maxLength: 100,
         defaultValue: 'Sen benim her şeyimsin! 💝'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
       }
     ]
   },
@@ -96,6 +104,14 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         required: false,
         maxLength: 200,
         defaultValue: '"Gerçek aşk, hatalarımızı kabul etmek ve affedilmeyi umut etmektir."'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
       }
     ]
   },
@@ -127,6 +143,14 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         required: false,
         maxLength: 100,
         defaultValue: 'Sen harikasın! 🌟💝'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
       }
     ]
   },
@@ -176,6 +200,62 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         required: false,
         maxLength: 200,
         defaultValue: '"Gerçek aşk, hatalarımızı kabul etmek ve affedilmeyi umut etmektir."'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
+  },
+  'evlilik-teklifi-elegant': {
+    slug: 'evlilik-teklifi-elegant',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Evlilik teklifi mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 500,
+        defaultValue: 'Seninle geçirdiğim her an hayatımın en güzel anları. Artık hayatımın geri kalanını da seninle geçirmek istiyorum. Benimle evlenir misin?'
+      },
+      {
+        key: 'footerMessage',
+        label: 'Alt Mesaj',
+        placeholder: 'Sayfanın altında görünecek mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 150,
+        defaultValue: 'Seni sonsuza kadar seviyorum! 💍💕'
+      },
+      {
+        key: 'specialMessage',
+        label: 'Özel Mesaj',
+        placeholder: 'Ek bir özel mesaj eklemek isterseniz...',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Sen benim hayatımın aşkısın, ruhuma dokunduğun ilk günden beri seni seviyorum.'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
       }
     ]
   }

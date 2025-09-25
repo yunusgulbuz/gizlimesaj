@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Heart, ArrowLeft, Play, Pause, Volume2, Eye, X } from "lucide-react";
 import TemplateRenderer from "./template-renderer";
 import { getTemplateConfig, getDefaultTextFields, TemplateTextFields } from "./types";
+import { YouTubePlayer, extractVideoId } from "@/components/ui/youtube-player";
 
 interface Template {
   id: string;
@@ -141,96 +142,6 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
-          {/* Template Preview - Hidden on mobile, shown on desktop */}
-          <div className="hidden lg:block lg:col-span-1 space-y-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
-                  <Eye className="w-4 h-4" />
-                  Önizleme
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-2 lg:p-6">
-                <div className="relative bg-gray-50 rounded-lg overflow-hidden min-h-[200px] lg:min-h-[300px]">
-                  {/* Interactive Preview - Better mobile scaling */}
-                  <div className="p-1 lg:p-3">
-                    <div className="transform scale-75 lg:scale-75 origin-top-left w-[133%] lg:w-[133%] min-h-[180px] lg:h-auto overflow-visible">
-                      <TemplateRenderer 
-                        template={template}
-                        designStyle={selectedDesignStyle}
-                        recipientName={textFields.recipientName || recipientName || "Örnek Alıcı"}
-                        message={textFields.mainMessage || customMessage || "Bu bir örnek mesajdır. Kendi mesajınızı yazarak nasıl görüneceğini görebilirsiniz."}
-                        isPreview={true}
-                        creatorName={creatorName}
-                        textFields={textFields}
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Back to Templates Button - Hidden on mobile to save space */}
-                  {!isPreview && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="hidden lg:flex absolute top-2 right-2 bg-white/90 backdrop-blur-sm"
-                      asChild
-                    >
-                      <Link href="/templates">
-                        <ArrowLeft className="w-4 h-4 mr-1" />
-                        Şablonlar
-                      </Link>
-                    </Button>
-                  )}
-                  
-                  {/* Full Screen Preview Button */}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="absolute top-1 right-1 lg:top-2 lg:left-2 bg-white/90 backdrop-blur-sm text-xs lg:text-sm"
-                    onClick={() => window.open(`/templates/${template.slug}/preview`, '_blank')}
-                  >
-                    <svg className="w-3 h-3 lg:w-4 lg:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                    </svg>
-                    <span className="hidden lg:inline">Tam Ekran</span>
-                    <span className="lg:hidden">Büyüt</span>
-                  </Button>
-                </div>
-
-                {/* Audio Player */}
-                {template.bg_audio_url && (
-                  <div className="flex items-center gap-2 lg:gap-3 p-2 lg:p-3 bg-gray-50 rounded-lg text-sm">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setIsPlaying(!isPlaying)}
-                    >
-                      {isPlaying ? <Pause className="w-3 h-3 lg:w-4 lg:h-4" /> : <Play className="w-3 h-3 lg:w-4 lg:h-4" />}
-                    </Button>
-                    <Volume2 className="w-3 h-3 lg:w-4 lg:h-4 text-gray-500" />
-                    <span className="text-xs lg:text-sm text-gray-600">Arka Plan Müziği</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Mobile Back Button */}
-            {!isPreview && (
-              <div className="lg:hidden">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  asChild
-                >
-                  <Link href="/templates">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Şablonlara Dön
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </div>
-
           {/* Mobile Preview Button - Only visible on mobile */}
           <div className="lg:hidden mb-4">
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -248,11 +159,18 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
                   <DialogTitle className="flex items-center gap-2">
                     <Eye className="w-4 h-4" />
                     Önizleme
+                    {textFields.musicUrl && (
+                      <YouTubePlayer 
+                        videoId={extractVideoId(textFields.musicUrl) || undefined} 
+                        autoPlay={false}
+                        className="ml-auto flex-shrink-0"
+                      />
+                    )}
                   </DialogTitle>
                 </DialogHeader>
                 <div className="mt-4">
                   <div className="relative bg-gray-50 rounded-lg overflow-hidden">
-                    <div className="p-3">
+                    <div className="p-1">
                       <TemplateRenderer 
                         template={template}
                         designStyle={selectedDesignStyle}
@@ -260,26 +178,12 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
                         message={customMessage || "Bu bir örnek mesajdır. Kendi mesajınızı yazarak nasıl görüneceğini görebilirsiniz."}
                         isPreview={true}
                         creatorName={creatorName}
+                        textFields={textFields}
                       />
                     </div>
                   </div>
                   
-                  {/* Audio Player in Modal */}
-                  {template.bg_audio_url && (
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg text-sm mt-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setIsPlaying(!isPlaying)}
-                      >
-                        {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                      </Button>
-                      <Volume2 className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">Arka Plan Müziği</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex gap-2 mt-2">
                     <Button
                       size="sm"
                       variant="outline"
@@ -299,6 +203,55 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
                 </div>
               </DialogContent>
             </Dialog>
+          </div>
+
+          {/* Mobile Back Button */}
+          {!isPreview && (
+            <div className="lg:hidden mb-4">
+              <Button
+                variant="outline"
+                className="w-full"
+                asChild
+              >
+                <Link href="/templates">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Şablonlara Dön
+                </Link>
+              </Button>
+            </div>
+          )}
+
+          {/* Desktop Preview - Responsive and optimized */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="sticky top-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Önizleme</h3>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => window.open(`/templates/${template.slug}/preview`, '_blank')}
+                >
+                  <Eye className="w-4 h-4" />
+                  Tam Ekran
+                </Button>
+              </div>
+              
+              <div className="relative bg-gray-50 rounded-lg overflow-hidden border">
+                <div className="p-1">
+                  <div className="w-full">
+                    <TemplateRenderer 
+                      template={template}
+                      designStyle={selectedDesignStyle}
+                      recipientName={textFields.recipientName || recipientName || "Örnek Alıcı"}
+                      message={textFields.mainMessage || customMessage || "Bu bir örnek mesajdır. Kendi mesajınızı yazarak nasıl görüneceğini görebilirsiniz."}
+                      isPreview={true}
+                      creatorName={creatorName}
+                      textFields={textFields}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Order Form - Takes more space */}
@@ -349,6 +302,24 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
                           onChange={(e) => handleTextFieldChange(field.key, e.target.value)}
                           required
                         />
+                      ) : field.key === 'musicUrl' ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            id={field.key}
+                            placeholder={field.placeholder}
+                            value={textFields[field.key] || ''}
+                            onChange={(e) => handleTextFieldChange(field.key, e.target.value)}
+                            required={field.required}
+                            className="flex-1"
+                          />
+                          {textFields[field.key] && (
+                            <YouTubePlayer 
+                              videoId={extractVideoId(textFields[field.key]) || undefined} 
+                              autoPlay={false}
+                              className="flex-shrink-0"
+                            />
+                          )}
+                        </div>
                       ) : (
                         <Input
                           id={field.key}
