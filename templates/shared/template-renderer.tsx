@@ -10,6 +10,10 @@ import EvlilikTeklifiTemplate from '../evlilik-teklifi-elegant/components/Evlili
 import DogumGunuStandardTemplate from '../dogum-gunu/components/DogumGunuStandardTemplate';
 import DogumGunuFunTemplate from '../dogum-gunu-fun/components/DogumGunuFunTemplate';
 import OzurDilerimClassicTemplate from '../ozur-dilerim-classic/components/OzurDilerimClassicTemplate';
+import PremiumModernTesekkur from '../tesekkur-adult/components/PremiumModernTesekkur';
+import KlasikElegansTesekkur from '../tesekkur-adult/components/KlasikElegansTesekkur';
+import MinimalistNeonTesekkur from '../tesekkur-adult/components/MinimalistNeonTesekkur';
+import EglenceliInteraktifTesekkur from '../tesekkur-adult/components/EglenceliInteraktifTesekkur';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -120,6 +124,39 @@ export default function TemplateRenderer({
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
           creatorName={creatorName}
         />;
+      case 'tesekkur-adult':
+        switch (designStyle) {
+          case 'modern':
+            return <PremiumModernTesekkur 
+              recipientName={recipientName} 
+              message={message} 
+              creatorName={creatorName}
+            />;
+          case 'classic':
+            return <KlasikElegansTesekkur 
+              recipientName={recipientName} 
+              message={message} 
+              creatorName={creatorName}
+            />;
+          case 'minimalist':
+            return <MinimalistNeonTesekkur 
+              recipientName={recipientName} 
+              message={message} 
+              creatorName={creatorName}
+            />;
+          case 'eglenceli':
+            return <EglenceliInteraktifTesekkur 
+              recipientName={recipientName} 
+              message={message} 
+              creatorName={creatorName}
+            />;
+          default:
+            return <PremiumModernTesekkur 
+              recipientName={recipientName} 
+              message={message} 
+              creatorName={creatorName}
+            />;
+        }
       case 'ozur-dilerim':
       case 'ozur-dilerim-classic':
         return <OzurDilerimClassicTemplate 

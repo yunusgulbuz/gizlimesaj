@@ -45,8 +45,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function TemplatePreviewPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function TemplatePreviewPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const templateEntry = getTemplateEntry(slug);
 
   if (!templateEntry) {

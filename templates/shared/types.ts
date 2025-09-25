@@ -344,6 +344,36 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         maxLength: 200
       }
     ]
+  },
+  'tesekkur-adult': {
+    slug: 'tesekkur-adult',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'mainMessage',
+        label: 'Teşekkür Mesajınız',
+        placeholder: 'Teşekkür mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 500,
+        defaultValue: 'Hayatımda olduğun için çok şanslıyım. Bana verdiğin destek, sevgi ve anlayış için sana ne kadar teşekkür etsem az. Sen gerçekten çok özelsin ve seni ne kadar takdir ettiğimi bilmeni istiyorum. 🙏💕'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
   }
 };
 
