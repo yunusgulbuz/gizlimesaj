@@ -79,7 +79,7 @@ const yilDonumuCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as co
 
 const yilDonumuDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
   modern: ['headlineMessage', 'timelineIntro', 'timelineEvents', 'timelineCta', 'timelineClosing', 'timelineFinalMessage'],
-  classic: ['hatiraHeadline', 'hatiraSubtitle', 'hatiraLetter', 'hatiraMemories', 'hatiraButtonLabel'],
+  classic: ['hatiraHeadline', 'hatiraSubtitle', 'hatiraLetter', 'hatiraMemories', 'hatiraBackgroundUrl', 'hatiraButtonLabel'],
   minimalist: ['minimalistTitle', 'minimalistSubtitle', 'minimalistLockMessage', 'minimalistRevealMessage', 'minimalistHighlights', 'minimalistFooter'],
   eglenceli: ['quizHeadline', 'quizIntro', 'quizButtonLabel', 'quizItems', 'quizHintLabel', 'quizCompletionTitle', 'quizCompletionMessage', 'quizFinalMessage', 'quizReplay']
 };

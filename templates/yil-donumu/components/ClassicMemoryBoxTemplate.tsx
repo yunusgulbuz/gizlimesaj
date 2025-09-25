@@ -31,6 +31,7 @@ export default function ClassicMemoryBoxTemplate({
   const buttonLabel = textFields?.hatiraButtonLabel || 'Hatıraları Gör';
   const headerTitle = textFields?.hatiraHeadline || 'Klasik Hatıra Kutusu';
   const subtitle = textFields?.hatiraSubtitle || 'Mutlu Yıl Dönümü';
+  const albumBackground = textFields?.hatiraBackgroundUrl || 'https://images.unsplash.com/photo-1520854221050-0f4caff449fb?w=1280&q=80&auto=format&fit=crop';
 
   const memories = useMemo<MemoryItem[]>(() => {
     const raw = (textFields?.hatiraMemories && textFields.hatiraMemories.trim().length > 0)
@@ -138,8 +139,15 @@ export default function ClassicMemoryBoxTemplate({
                 <span className="text-xs uppercase tracking-[0.35em] text-rose-300">{activeIndex + 1} / {memories.length}</span>
               </div>
 
-              <div className="relative flex-1 overflow-hidden rounded-2xl border border-rose-100 bg-rose-50/90 p-5">
-                <div className="absolute inset-0 bg-gradient-to-tr from-rose-200/10 via-transparent to-white/20" />
+              <div
+                className="relative flex-1 overflow-hidden rounded-2xl border border-rose-100 bg-rose-50/90 p-5"
+                style={albumBackground ? {
+                  backgroundImage: `linear-gradient(135deg, rgba(255, 192, 203, 0.45), rgba(255,255,255,0.55)), url(${albumBackground})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                } : undefined}
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-rose-200/20 via-white/10 to-transparent" />
                 <div className="relative h-full">
                   <div className="flex h-full flex-col gap-3">
                     <div className="text-5xl md:text-6xl">📷</div>

@@ -525,6 +525,15 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         defaultValue: 'Polaroid Fotoğraf|Gülen yüzünün arkasında saklanan heyecanın ilk anı.|2016\nSinema Bileti|İlk film gecemiz; popcorn, kahkahalar ve kalp çarpıntıları.|2018\nEl Yazısı Not|"Sonsuza dek" dediğin o satırlar, kalbime mühür oldu.|2020\nMinik Deniz Kabuğu|Birlikte topladığımız o gün, güneş kadar parlaktın.|2022'
       },
       {
+        key: 'hatiraBackgroundUrl',
+        label: 'Hatıra Albümü Arka Plan Fotoğrafı',
+        placeholder: 'https://... şeklinde görsel bağlantısı',
+        type: 'input',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'https://images.unsplash.com/photo-1520854221050-0f4caff449fb?w=1280&q=80'
+      },
+      {
         key: 'hatiraButtonLabel',
         label: 'Hatıra Butonu Metni',
         placeholder: 'Hatıraları Gör',
