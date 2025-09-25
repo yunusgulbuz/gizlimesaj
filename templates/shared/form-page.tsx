@@ -84,6 +84,15 @@ const yilDonumuDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
   eglenceli: ['quizHeadline', 'quizIntro', 'quizButtonLabel', 'quizItems', 'quizHintLabel', 'quizCompletionTitle', 'quizCompletionMessage', 'quizFinalMessage', 'quizReplay']
 };
 
+const isTebrigiCommonFields = ['recipientName', 'mainMessage', 'newPosition', 'companyName'] as const;
+
+const isTebrigiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+  modern: ['highlightMessage', 'highlightOne', 'highlightTwo', 'ctaLabel', 'ctaUrl', 'secondaryCtaLabel'],
+  classic: ['certificateTitle', 'certificateSubtitle', 'footerMessage', 'downloadLabel'],
+  minimalist: ['minimalTitle', 'supplementMessage', 'messageButtonLabel', 'messageButtonUrl', 'startDate'],
+  eglenceli: ['headline', 'subHeadline', 'celebrationButtonLabel', 'teamName', 'secondaryMessage']
+};
+
 interface TemplateFormPageProps {
   template: Template;
   durations: Duration[];
@@ -107,16 +116,23 @@ export default function TemplateFormPage({ template, durations, templatePricing,
   const templateConfig = getTemplateConfig(template.slug);
   const visibleTextFieldConfig = useMemo(() => {
     if (!templateConfig) return [];
-    if (template.slug !== 'yil-donumu') {
-      return templateConfig.fields;
+    if (template.slug === 'yil-donumu') {
+      const allowedKeys = new Set<string>([
+        ...yilDonumuCommonFields,
+        ...(yilDonumuDesignFieldMap[selectedDesignStyle] ?? [])
+      ]);
+      return templateConfig.fields.filter(field => allowedKeys.has(field.key));
     }
 
-    const allowedKeys = new Set<string>([
-      ...yilDonumuCommonFields,
-      ...(yilDonumuDesignFieldMap[selectedDesignStyle] ?? [])
-    ]);
+    if (template.slug === 'is-tebrigi') {
+      const allowedKeys = new Set<string>([
+        ...isTebrigiCommonFields,
+        ...(isTebrigiDesignFieldMap[selectedDesignStyle] ?? [])
+      ]);
+      return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+    }
 
-    return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+    return templateConfig.fields;
   }, [template.slug, templateConfig, selectedDesignStyle]);
   const [textFields, setTextFields] = useState<TemplateTextFields>(() => {
     const defaults = getDefaultTextFields(template.slug);

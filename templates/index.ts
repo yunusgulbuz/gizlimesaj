@@ -23,6 +23,8 @@ import CikmaTeklifiForm from './cikma-teklifi/form';
 import CikmaTeklifiPreview from './cikma-teklifi/preview';
 import YilDonumuForm from './yil-donumu/form';
 import YilDonumuPreview from './yil-donumu/preview';
+import IsTebrigiForm from './is-tebrigi/form';
+import IsTebrigiPreview from './is-tebrigi/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => JSX.Element;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => JSX.Element;
@@ -88,6 +90,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'cikma-teklifi',
     form: CikmaTeklifiForm,
     preview: CikmaTeklifiPreview,
+  },
+  'is-tebrigi': {
+    slug: 'is-tebrigi',
+    form: IsTebrigiForm,
+    preview: IsTebrigiPreview,
   },
 };
 

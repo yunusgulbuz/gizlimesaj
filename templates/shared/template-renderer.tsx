@@ -23,6 +23,10 @@ import ModernTimelineAnniversary from '../yil-donumu/components/ModernTimelineAn
 import ClassicMemoryBoxTemplate from '../yil-donumu/components/ClassicMemoryBoxTemplate';
 import MinimalistSecretMessage from '../yil-donumu/components/MinimalistSecretMessage';
 import InteractiveQuizCelebration from '../yil-donumu/components/InteractiveQuizCelebration';
+import ModernCorporateCongrats from '../is-tebrigi/components/ModernCorporateCongrats';
+import ClassicPrestigeCertificate from '../is-tebrigi/components/ClassicPrestigeCertificate';
+import MinimalistProfessionalCard from '../is-tebrigi/components/MinimalistProfessionalCard';
+import PremiumDynamicCelebration from '../is-tebrigi/components/PremiumDynamicCelebration';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -270,6 +274,54 @@ export default function TemplateRenderer({
                 creatorName={creatorName}
                 textFields={textFields}
                 primaryMessage={textFields?.mainMessage || message}
+              />
+            );
+        }
+      case 'is-tebrigi':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <ModernCorporateCongrats
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+              />
+            );
+          case 'classic':
+            return (
+              <ClassicPrestigeCertificate
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+              />
+            );
+          case 'minimalist':
+            return (
+              <MinimalistProfessionalCard
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <PremiumDynamicCelebration
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+              />
+            );
+          default:
+            return (
+              <ModernCorporateCongrats
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
               />
             );
         }
