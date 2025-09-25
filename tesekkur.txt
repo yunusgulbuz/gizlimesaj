@@ -1,0 +1,45 @@
+1️⃣ Premium Modern (3D ve Parçacık Efekti)
+“Mutlu Yıllar” temalı 3D ve parçacık efektli premium bir web sayfası tasarla.  
+Stil: modern + futuristik.  
+Renk paleti: siyah, koyu mor, altın parıltılar.  
+Arka plan: karanlık uzay hissi, altın parçacıklar, yavaşça dönen 3D küreler.  
+Orta bölüm: devasa 3D “Mutlu Yıllar” yazısı, yansımalı metalik efekt.  
+Tipografi: modern sans serif, altın gradient.  
+Animasyon: sayfa açıldığında altın konfeti ve partiküller orbitler çizerek hareket ediyor; butona basınca 3D yazı patlayarak parçacık hâline gelip tekrar birleşiyor.  
+Buton: “Kutlamayı Başlat” — hover’da altın ışık yayıyor.  
+Format: tam ekran, mobil adaptif.  
+
+2️⃣ Klasik Elegans (Art Deco + Şampanya Köpüğü)
+“Mutlu Yıllar” için klasik art deco tarzında lüks bir sayfa tasarla.  
+Stil: premium, zarif, 1920’ler Gatsby havası.  
+Renk paleti: siyah, beyaz, altın, şampanya tonları.  
+Arka plan: ince art deco desenler, ortada altın çerçeve.  
+Orta bölüm: “Mutlu Yıllar” kaligrafik fontla; kenarlarda ince geometrik çizgiler.  
+Tipografi: altın kaplama kaligrafi + serif alt başlık.  
+Animasyon: sayfa açıldığında şampanya köpükleri ekranın altından yukarı süzülüyor, altın çizgiler parlayıp kayboluyor. Butona basınca “Yeni Yılınız Kutlu Olsun” mesajı lazer efektiyle beliriyor.  
+Buton: “Şampanya Patlat” — hover’da kabarcık efekti.  
+Format: geniş ekran + mobil uyum.  
+
+3️⃣ Minimalist Neon (Siberpunk Yılbaşı)
+“Mutlu Yıllar” için minimalist ama neon siberpunk temalı bir sayfa tasarla.  
+Stil: neon çizgiler + minimal grid.  
+Renk paleti: siyah arka plan, neon mavi, pembe, turkuaz.  
+Orta bölüm: “Mutlu Yıllar” neon tüp yazısı gibi parlıyor.  
+Tipografi: ince ama parlak neon font.  
+Animasyon: neon hatları yavaşça yanıp sönüyor; butona basınca lazer ışınları “2025” yazısı çiziyor; arka planda yavaşça kayan grid efekt.  
+Buton: “Yeni Yıla Gir” — hover’da neon dalgalanma efekti.  
+Format: web + mobil uyumlu.  
+
+4️⃣ Eğlenceli & Interaktif (Mini Oyun: Hediye Avı)
+“Mutlu Yıllar” temalı eğlenceli ve interaktif bir mini oyun sayfası tasarla.  
+Stil: çizgi film tarzı, renkli ve enerjik.  
+Renk paleti: parlak kırmızı, yeşil, altın, pastel gökkuşağı.  
+Arka plan: kar yağışı animasyonu, ışıklı çam ağacı, uçan hediye kutuları.  
+Orta bölüm: “Mutlu Yıllar” metni patlayan balonlarla çevrili.  
+Animasyon:  
+- Sayfa açılınca kar taneleri ve havai fişek animasyonu.  
+- Ekranın farklı yerlerinde minik hediye ikonları belirsin; kullanıcı fareyle/ekranla yakalayınca puan kazanıyor.  
+- 10 hediye toplayınca “Yeni Yılınız Kutlu Olsun” ve büyük konfeti patlaması.  
+Tipografi: eğlenceli el yazısı + bold comic font.  
+Buton: “Hediye Avını Başlat” — hover’da titreşim ve renk geçişi.  
+Format: mobil + masaüstü. 

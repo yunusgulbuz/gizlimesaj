@@ -13,6 +13,8 @@ import EvlilikTeklifiElegantForm from './evlilik-teklifi-elegant/form';
 import EvlilikTeklifiElegantPreview from './evlilik-teklifi-elegant/preview';
 import DogumGunuFunForm from './dogum-gunu-fun/form';
 import DogumGunuFunPreview from './dogum-gunu-fun/preview';
+import OzurDilerimClassicForm from './ozur-dilerim-classic/form';
+import OzurDilerimClassicPreview from './ozur-dilerim-classic/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => JSX.Element;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => JSX.Element;
@@ -53,6 +55,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'dogum-gunu-fun',
     form: DogumGunuFunForm,
     preview: DogumGunuFunPreview,
+  },
+  'ozur-dilerim-classic': {
+    slug: 'ozur-dilerim-classic',
+    form: OzurDilerimClassicForm,
+    preview: OzurDilerimClassicPreview,
   },
 };
 

@@ -9,6 +9,7 @@ import EglenceliSeniSeviyorumTemplate from '../seni-seviyorum-teen/components/Eg
 import EvlilikTeklifiTemplate from '../evlilik-teklifi-elegant/components/EvlilikTeklifiTemplate';
 import DogumGunuStandardTemplate from '../dogum-gunu/components/DogumGunuStandardTemplate';
 import DogumGunuFunTemplate from '../dogum-gunu-fun/components/DogumGunuFunTemplate';
+import OzurDilerimClassicTemplate from '../ozur-dilerim-classic/components/OzurDilerimClassicTemplate';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -120,11 +121,13 @@ export default function TemplateRenderer({
           creatorName={creatorName}
         />;
       case 'ozur-dilerim':
-        return <OzurDilerimTemplate 
+      case 'ozur-dilerim-classic':
+        return <OzurDilerimClassicTemplate 
           recipientName={recipientName} 
           message={message} 
-          designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
+          designStyle={designStyle as 'modern' | 'classic' | 'minimalist' | 'eglenceli'}
           creatorName={creatorName}
+          textFields={textFields}
         />;
       case 'mutlu-yillar':
         return <MutluYillarTemplate 

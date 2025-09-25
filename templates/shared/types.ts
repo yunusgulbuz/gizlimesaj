@@ -259,6 +259,36 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'ozur-dilerim-classic': {
+    slug: 'ozur-dilerim-classic',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'mainMessage',
+        label: 'Özür Mesajınız',
+        placeholder: 'Özür mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 500,
+        defaultValue: 'Biliyorum ki seni üzdüm ve bunun için çok pişmanım. Yaptığım hatalar için senden özür diliyorum. Sen benim için çok değerlisin ve seni kaybetmek istemiyorum. Lütfen beni affet. 🙏💕'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
+  },
   'dogum-gunu-fun': {
     slug: 'dogum-gunu-fun',
     fields: [
