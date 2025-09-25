@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { checkoutRateLimit } from '@/lib/rateLimit';
 import { generateShortId } from '@/lib/shortid';
 

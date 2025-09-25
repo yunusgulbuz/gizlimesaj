@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { generateTemplateMetadata } from "@/lib/seo";
 import ClientTemplatePage from "./client-page";
 
@@ -14,10 +14,17 @@ interface Template {
 }
 
 interface Duration {
-  id: string;
-  name: string;
-  hours: number;
-  price: number;
+  id: number;
+  label: string;
+  days: number;
+}
+
+interface TemplatePricing {
+  id: number;
+  template_id: string;
+  duration_id: number;
+  price_try: string;
+  is_active: boolean;
 }
 
 const audienceLabels = {
@@ -52,9 +59,9 @@ async function getDurations(): Promise<Duration[]> {
   
   const { data: durations, error } = await supabase
     .from('durations')
-    .select('*')
+    .select('id, label, days')
     .eq('is_active', true)
-    .order('hours', { ascending: true });
+    .order('days', { ascending: true });
 
   if (error) {
     console.error('Error fetching durations:', error);
@@ -62,6 +69,23 @@ async function getDurations(): Promise<Duration[]> {
   }
 
   return durations || [];
+}
+
+async function getTemplatePricing(templateId: string): Promise<TemplatePricing[]> {
+  const supabase = await createServerSupabaseClient();
+  
+  const { data: pricing, error } = await supabase
+    .from('template_pricing')
+    .select('*')
+    .eq('template_id', templateId)
+    .eq('is_active', true);
+
+  if (error) {
+    console.error('Error fetching template pricing:', error);
+    return [];
+  }
+
+  return pricing || [];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -91,6 +115,7 @@ export default async function TemplateDetailPage({
   const searchParamsResolved = await searchParams;
   const template = await getTemplate(slug);
   const durations = await getDurations();
+  const templatePricing = template ? await getTemplatePricing(template.id) : [];
   
   if (!template) {
     notFound();
@@ -98,5 +123,5 @@ export default async function TemplateDetailPage({
 
   const isPreview = searchParamsResolved?.preview === 'true';
 
-  return <ClientTemplatePage template={template} durations={durations} isPreview={isPreview} />;
+  return <ClientTemplatePage template={template} durations={durations} templatePricing={templatePricing} isPreview={isPreview} />;
 }

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { Heart, ArrowLeft, Trash2, Plus, Minus, ShoppingCart } from "lucide-react";
 import { generateMetadata } from "@/lib/seo";
 
@@ -52,16 +53,24 @@ export default function CartPage() {
   const tax = subtotal * 0.18; // 18% KDV
   const total = subtotal + tax;
 
+  // Breadcrumb items for cart page
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Sepet' }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
-      {/* Header */}
-      <header className="container mx-auto px-4 py-6">
-        <nav className="flex items-center justify-between">
+      <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb items={breadcrumbItems} />
+        
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/templates">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Şablonlar
+                Şablonlara Dön
               </Link>
             </Button>
             <div className="flex items-center space-x-2">
@@ -69,18 +78,8 @@ export default function CartPage() {
               <span className="text-2xl font-bold text-gray-900">Gizli Mesaj</span>
             </div>
           </div>
-          <div className="hidden md:flex items-center space-x-6">
-            <Link href="/about" className="text-gray-600 hover:text-gray-900">
-              Hakkında
-            </Link>
-            <Button variant="outline" size="sm">
-              Giriş Yap
-            </Button>
-          </div>
-        </nav>
-      </header>
+        </div>
 
-      <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Page Header */}
           <div className="text-center mb-8">

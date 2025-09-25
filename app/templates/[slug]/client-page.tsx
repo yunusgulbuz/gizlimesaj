@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Heart, ArrowLeft, Play, Pause, Volume2, Eye, X } from "lucide-react";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import TemplateRenderer from "./template-renderer";
 import { getTemplateConfig, getDefaultTextFields, TemplateTextFields } from "./types";
 import { YouTubePlayer, extractVideoId } from "@/components/ui/youtube-player";
@@ -26,10 +28,17 @@ interface Template {
 }
 
 interface Duration {
-  id: string;
-  name: string;
-  hours: number;
-  price: number;
+  id: number;
+  label: string;
+  days: number;
+}
+
+interface TemplatePricing {
+  id: number;
+  template_id: string;
+  duration_id: number;
+  price_try: string;
+  is_active: boolean;
 }
 
 const audienceLabels = {
@@ -70,10 +79,12 @@ const designStyles = {
 interface ClientTemplatePageProps {
   template: Template;
   durations: Duration[];
+  templatePricing: TemplatePricing[];
   isPreview?: boolean;
 }
 
-export default function ClientTemplatePage({ template, durations, isPreview = false }: ClientTemplatePageProps) {
+export default function ClientTemplatePage({ template, durations, templatePricing, isPreview = false }: ClientTemplatePageProps) {
+  const pathname = usePathname();
   const [selectedDesignStyle, setSelectedDesignStyle] = useState<keyof typeof designStyles>('modern');
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -100,7 +111,13 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
     return defaults;
   });
 
-  const selectedDurationData = durations.find(d => d.id === selectedDuration);
+  const selectedDurationData = durations.find(d => d.id.toString() === selectedDuration);
+
+  // Helper function to get price for a duration
+  const getPriceForDuration = (durationId: number): string => {
+    const pricing = templatePricing.find((p: TemplatePricing) => p.duration_id === durationId);
+    return pricing ? pricing.price_try : '0';
+  };
 
   const handleTextFieldChange = (key: string, value: string) => {
     setTextFields(prev => ({
@@ -120,9 +137,18 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
     console.log('Text fields:', textFields);
   };
 
+  // Create custom breadcrumb items for template pages
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Şablonlar', href: '/templates' },
+    { label: template.title }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb items={breadcrumbItems} />
+        
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link href="/templates">
@@ -392,11 +418,11 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
                       </SelectTrigger>
                       <SelectContent>
                         {durations.map((duration) => (
-                          <SelectItem key={duration.id} value={duration.id}>
+                          <SelectItem key={duration.id} value={duration.id.toString()}>
                             <div className="flex justify-between items-center w-full">
-                              <span>{duration.name}</span>
+                              <span>{duration.label}</span>
                               <span className="ml-4 font-semibold text-green-600">
-                                ₺{duration.price}
+                                ₺{getPriceForDuration(duration.id)}
                               </span>
                             </div>
                           </SelectItem>
@@ -444,12 +470,12 @@ export default function ClientTemplatePage({ template, durations, isPreview = fa
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Süre:</span>
-                      <span>{selectedDurationData ? selectedDurationData.name : 'Seçilmedi'}</span>
+                      <span>{selectedDurationData ? selectedDurationData.label : 'Seçilmedi'}</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-semibold">
                       <span>Toplam:</span>
                       <span className="text-green-600">
-                        ₺{selectedDurationData ? selectedDurationData.price : 0}
+                        ₺{selectedDurationData ? getPriceForDuration(selectedDurationData.id) : 0}
                       </span>
                     </div>
                   </div>

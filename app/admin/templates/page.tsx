@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { 
   Eye, 
   Edit,
@@ -15,7 +16,7 @@ import {
   Play,
   Pause
 } from 'lucide-react';
-import { createServerSupabaseClient } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 interface Template {
   id: string;
@@ -171,8 +172,17 @@ export default async function AdminTemplatesPage({
   const currentPage = parseInt(searchParams.page || '1');
   const totalPages = Math.ceil(total / 12);
 
+  // Breadcrumb items for admin templates page
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Yönetim', href: '/admin' },
+    { label: 'Şablonlar' }
+  ];
+
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb items={breadcrumbItems} />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

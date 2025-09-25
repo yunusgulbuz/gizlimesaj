@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { 
   Users, 
   FileText, 
@@ -12,7 +13,7 @@ import {
   Plus,
   Eye
 } from 'lucide-react';
-import { createServerSupabaseClient } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 interface DashboardStats {
   totalOrders: number;
@@ -159,8 +160,16 @@ function RecentOrdersTable({ orders }: { orders: DashboardStats['recentOrders'] 
 export default async function AdminDashboard() {
   const stats = await getDashboardStats();
 
+  // Breadcrumb items for admin dashboard
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Yönetim' }
+  ];
+
   return (
     <div className="container mx-auto p-6 space-y-8">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb items={breadcrumbItems} />
+      
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

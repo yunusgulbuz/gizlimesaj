@@ -3,13 +3,18 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save, Eye } from 'lucide-react';
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
+import { 
+  ArrowLeft,
+  Save,
+  Eye
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 interface TemplateFormData {
@@ -34,6 +39,13 @@ export default function NewTemplatePage() {
     bg_audio_url: '',
     is_active: true
   });
+
+  // Breadcrumb items for new template page
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Yönetim', href: '/admin' },
+    { label: 'Şablonlar', href: '/admin/templates' },
+    { label: 'Yeni Şablon' }
+  ];
 
   const generateSlug = (title: string) => {
     return title
@@ -96,17 +108,28 @@ export default function NewTemplatePage() {
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb items={breadcrumbItems} />
+      
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin/templates">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Geri
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Yeni Şablon</h1>
-          <p className="text-muted-foreground">Yeni bir şablon oluşturun</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/admin/templates">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Şablonlara Dön
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">Yeni Şablon Oluştur</h1>
+            <p className="text-muted-foreground">Yeni bir mesaj şablonu oluşturun</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={handleSubmit} disabled={isLoading}>
+            <Save className="h-4 w-4 mr-2" />
+            {isLoading ? 'Kaydediliyor...' : 'Kaydet'}
+          </Button>
         </div>
       </div>
 

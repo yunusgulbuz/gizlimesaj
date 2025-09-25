@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { Heart, ArrowLeft, CreditCard, Shield, Lock } from "lucide-react";
 import { generateMetadata } from "@/lib/seo";
 
@@ -38,11 +39,16 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.18; // 18% KDV
   const total = subtotal + tax;
 
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: "Sepet", href: "/cart" },
+    { label: "Ödeme" }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
       {/* Header */}
-      <header className="container mx-auto px-4 py-6">
-        <nav className="flex items-center justify-between">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/cart">
@@ -65,6 +71,9 @@ export default function CheckoutPage() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb items={breadcrumbItems} />
+        
         <div className="max-w-6xl mx-auto">
           {/* Progress Steps */}
           <div className="flex items-center justify-center mb-8">

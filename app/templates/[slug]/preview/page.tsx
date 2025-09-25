@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import PreviewClient from './preview-client';
 
 interface Template {
@@ -35,15 +35,23 @@ interface TemplatePreviewPageProps {
   }>;
 }
 
-export default async function TemplatePreviewPage({ params }: TemplatePreviewPageProps) {
-  const { slug } = await params;
-  const template = await getTemplate(slug);
+export default async function TemplatePage({ params }: { params: { slug: string } }) {
+  const supabase = await createServerSupabaseClient();
   
-  if (!template) {
+  const { data: template, error } = await supabase
+    .from('templates')
+    .select('*')
+    .eq('slug', params.slug)
+    .eq('is_active', true)
+    .single();
+
+  if (error || !template) {
     notFound();
   }
 
-  return <PreviewClient template={template} />;
+  return (
+    <PreviewClient template={template} />
+  );
 }
 
 export async function generateMetadata({ params }: TemplatePreviewPageProps) {

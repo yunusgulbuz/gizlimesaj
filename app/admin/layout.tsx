@@ -37,6 +37,11 @@ const navigation = [
     icon: FileText
   },
   {
+    name: 'Fiyatlandırma',
+    href: '/admin/pricing',
+    icon: TrendingUp
+  },
+  {
     name: 'Kişisel Sayfalar',
     href: '/admin/pages',
     icon: Users

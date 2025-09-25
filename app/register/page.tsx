@@ -2,10 +2,15 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Breadcrumb, BreadcrumbItem } from '@/components/ui/breadcrumb';
 import { Heart, ArrowLeft, Github } from 'lucide-react';
 import RegisterForm from './register-form';
 
 export default function RegisterPage() {
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: "Kayıt Ol" }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex items-center justify-center p-4">
       {/* Background decoration */}
@@ -16,6 +21,11 @@ export default function RegisterPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-4">
+          <Breadcrumb items={breadcrumbItems} />
+        </div>
+        
         {/* Back to home button */}
         <div className="mb-6">
           <Button variant="ghost" size="sm" asChild>

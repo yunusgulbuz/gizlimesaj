@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import PaymentForm from './payment-form';
 

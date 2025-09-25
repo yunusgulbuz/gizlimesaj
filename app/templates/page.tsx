@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, ArrowLeft, Filter } from "lucide-react";
-import { createServerSupabaseClient } from "@/lib/supabase";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateMetadata } from "@/lib/seo";
 import { CacheService, CACHE_KEYS, CACHE_TTL } from "@/lib/redis";
 
@@ -60,8 +61,18 @@ async function getTemplates(): Promise<Template[]> {
 export default async function TemplatesPage() {
   const templates = await getTemplates();
 
+  // Breadcrumb items for templates page
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Şablonlar' }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+      {/* Breadcrumb Navigation */}
+      <div className="container mx-auto px-4 pt-6">
+        <Breadcrumb items={breadcrumbItems} />
+      </div>
+      
       {/* Header */}
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">

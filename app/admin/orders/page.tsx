@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { 
   Eye, 
   Search,
@@ -12,7 +13,7 @@ import {
   Download,
   ArrowLeft
 } from 'lucide-react';
-import { createServerSupabaseClient } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 interface Order {
   id: string;
@@ -174,8 +175,17 @@ export default async function AdminOrdersPage({
   const currentPage = parseInt(searchParams.page || '1');
   const totalPages = Math.ceil(total / 20);
 
+  // Breadcrumb items for admin orders page
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Yönetim', href: '/admin' },
+    { label: 'Siparişler' }
+  ];
+
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb items={breadcrumbItems} />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

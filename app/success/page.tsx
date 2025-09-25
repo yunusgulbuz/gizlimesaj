@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { Heart, CheckCircle, Mail, Share2, Download, ArrowRight } from "lucide-react";
 import { generateMetadata } from "@/lib/seo";
 
@@ -38,6 +39,12 @@ const mockOrder = {
 };
 
 export default function SuccessPage() {
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: "Sepet", href: "/cart" },
+    { label: "Ödeme", href: "/checkout" },
+    { label: "Başarılı" }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
       {/* Header */}
@@ -59,6 +66,9 @@ export default function SuccessPage() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb items={breadcrumbItems} />
+        
         <div className="max-w-4xl mx-auto">
           {/* Success Header */}
           <div className="text-center mb-8">
