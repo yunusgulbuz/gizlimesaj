@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { emailService } from '@/lib/email';
-import { rateLimit, getClientIdentifier } from '@/lib/rate-limit';
+import { apiRateLimit } from '@/lib/rateLimit';
 
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting
-    const clientId = getClientIdentifier(request);
-    const rateLimitResult = await rateLimit(clientId, 'API_GENERAL');
-    if (!rateLimitResult.allowed) {
+    const rateLimitResult = apiRateLimit.check(request);
+    if (!rateLimitResult.success) {
       return NextResponse.json(
         { error: 'Çok fazla istek. Lütfen daha sonra tekrar deneyin.' },
         { status: 429 }

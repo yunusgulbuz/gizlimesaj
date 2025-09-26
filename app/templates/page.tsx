@@ -6,7 +6,6 @@ import { Heart, ArrowLeft, Filter } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateMetadata } from "@/lib/seo";
-import { CacheService, CACHE_KEYS, CACHE_TTL } from "@/lib/redis";
 
 export const metadata = generateMetadata({
   title: "Şablonlar - Gizli Mesaj",
@@ -31,12 +30,6 @@ const audienceLabels = {
 };
 
 async function getTemplates(): Promise<Template[]> {
-  // Try to get from cache first
-  const cached = await CacheService.get<Template[]>(CACHE_KEYS.TEMPLATES);
-  if (cached) {
-    return cached;
-  }
-
   const supabase = await createServerSupabaseClient();
   
   const { data: templates, error } = await supabase
@@ -50,12 +43,7 @@ async function getTemplates(): Promise<Template[]> {
     return [];
   }
 
-  const result = templates || [];
-  
-  // Cache the result
-  await CacheService.set(CACHE_KEYS.TEMPLATES, result, CACHE_TTL.TEMPLATES);
-  
-  return result;
+  return templates || [];
 }
 
 export default async function TemplatesPage() {
