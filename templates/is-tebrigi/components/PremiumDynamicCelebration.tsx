@@ -45,7 +45,7 @@ export default function PremiumDynamicCelebration({
   const headline = textFields?.headline || `Tebrikler ${name}!`;
   const subHeadline = textFields?.subHeadline || 'Yeni görevinde başarılar diliyoruz';
   const description = textFields?.mainMessage || message || 'Takımın ve tüm şirketin ilham kaynağı olmaya devam edeceğine inanıyoruz. Enerjin ve vizyonunla yeni döneme güçlü bir başlangıç yapıyorsun!';
-  const buttonText = textFields?.celebrationButtonLabel || 'Kutlamayı Paylaş';
+  const buttonText = textFields?.celebrationButtonLabel || 'Teşekkürler';
 
   const handleCelebrate = () => {
     setShowConfetti(true);

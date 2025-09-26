@@ -29,7 +29,7 @@ export default function MinimalistProfessionalCard({
   const title = textFields?.minimalTitle || 'Yeni Göreviniz Hayırlı Olsun';
   const note = textFields?.mainMessage || message || 'Profesyonel yolculuğunuzun bu yeni adımında başarılarınızın devamını diliyoruz.';
   const smallNote = textFields?.supplementMessage || 'Takım arkadaşlarınız sizinle gurur duyuyor.';
-  const buttonLabel = textFields?.messageButtonLabel || 'Mesaj Gönder';
+  const buttonLabel = textFields?.messageButtonLabel || 'Teşekkürler';
   const buttonUrl = textFields?.messageButtonUrl;
 
   const handleMessage = () => {

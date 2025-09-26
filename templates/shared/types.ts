@@ -235,7 +235,7 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         type: 'input',
         required: false,
         maxLength: 80,
-        defaultValue: 'LinkedIn’de Paylaş',
+        defaultValue: 'Teşekkürler',
       },
       {
         key: 'ctaUrl',
@@ -260,7 +260,7 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         type: 'input',
         required: false,
         maxLength: 80,
-        defaultValue: 'Tebrik Kartını İndir',
+        defaultValue: 'Teşekkür Ederim',
       },
       {
         key: 'certificateTitle',
@@ -314,7 +314,7 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         type: 'input',
         required: false,
         maxLength: 80,
-        defaultValue: 'Mesaj Gönder',
+        defaultValue: 'Teşekkür Ederim',
       },
       {
         key: 'messageButtonUrl',
@@ -340,7 +340,7 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         type: 'input',
         required: false,
         maxLength: 80,
-        defaultValue: 'Kutlamayı Paylaş',
+        defaultValue: 'Kutlama',
       },
       {
         key: 'headline',

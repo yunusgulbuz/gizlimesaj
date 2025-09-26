@@ -45,7 +45,7 @@ export default function ModernCorporateCongrats({
   const headline = `Tebrikler ${name}!`;
   const highlightMessage = textFields?.highlightMessage || 'Yeni görevinizde parlamaya hazırsınız.';
   const mainMessage = textFields?.mainMessage || message || 'Yeni pozisyonunda başarılarının katlanarak artmasını diliyoruz. Liderlik vizyonunla ekibini ileri taşıyacağına eminiz!';
-  const ctaLabel = textFields?.ctaLabel || 'LinkedIn’de Paylaş';
+  const ctaLabel = textFields?.ctaLabel || 'Teşekkürler';
   const ctaUrl = textFields?.ctaUrl;
 
   const handleShare = () => {
