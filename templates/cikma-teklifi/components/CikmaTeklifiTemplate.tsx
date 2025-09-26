@@ -62,6 +62,20 @@ export default function CikmaTeklifiTemplate({
   }
 }
 
+function createSeededRandom(seed: string) {
+  let h = 1779033703 ^ seed.length;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(h ^ seed.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return () => {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    const t = (h ^= h >>> 16) >>> 0;
+    return t / 4294967296;
+  };
+}
+
 function UltraModern3DScene({
   recipientName,
   proposalQuestion,
@@ -72,27 +86,35 @@ function UltraModern3DScene({
   const [showFinalScene, setShowFinalScene] = useState(false);
   const [laserSweep, setLaserSweep] = useState(0);
 
+  const seedBase = useMemo(
+    () => `${recipientName}|${proposalQuestion}|${mainMessage}`,
+    [recipientName, proposalQuestion, mainMessage]
+  );
+
   const hologramLetters = useMemo(() => proposalQuestion.split(''), [proposalQuestion]);
-  const confettiPieces = useMemo(
-    () => Array.from({ length: 120 }, (_, i) => ({
+
+  const confettiPieces = useMemo(() => {
+    const rand = createSeededRandom(`${seedBase}-confetti`);
+    const palette = ['#38bdf8', '#f43f5e', '#fde68a', '#a855f7'];
+    return Array.from({ length: 120 }, (_, i) => ({
       id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      rotation: Math.random() * 360,
-      delay: Math.random() * 1.2,
-      color: ['#38bdf8', '#f43f5e', '#fde68a', '#a855f7'][i % 4],
-    })),
-    []
-  );
-  const buildings = useMemo(
-    () => Array.from({ length: 16 }, (_, i) => ({
+      x: rand() * 100,
+      y: rand() * 100,
+      rotation: rand() * 360,
+      delay: rand() * 1.2,
+      color: palette[i % palette.length],
+    }));
+  }, [seedBase]);
+
+  const buildings = useMemo(() => {
+    const rand = createSeededRandom(`${seedBase}-buildings`);
+    return Array.from({ length: 16 }, (_, i) => ({
       id: i,
-      height: Math.random() * 50 + 20,
-      left: i * 6 + Math.random() * 4,
-      glow: Math.random() > 0.5,
-    })),
-    []
-  );
+      height: rand() * 50 + 20,
+      left: i * 6 + rand() * 4,
+      glow: rand() > 0.5,
+    }));
+  }, [seedBase]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
