@@ -1,16 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { createBrowserClient } from '@supabase/ssr';
 import { toast } from 'sonner';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+import type { Session } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase-client';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -18,6 +16,25 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
+
+  const syncServerSession = async (session: Session) => {
+    try {
+      const response = await fetch('/auth/callback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ event: 'SIGNED_IN', session }),
+      });
+
+      if (!response.ok) {
+        console.error('Session sync failed:', await response.text());
+      }
+    } catch (error) {
+      console.error('Session sync error:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +47,6 @@ export default function LoginForm() {
     setIsLoading(true);
 
     try {
-      const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -52,6 +67,10 @@ export default function LoginForm() {
 
       if (data.user) {
         toast.success('Başarıyla giriş yapıldı!');
+
+        if (data.session) {
+          await syncServerSession(data.session);
+        }
         
         // Check if user is admin
         const { data: adminData } = await supabase
@@ -65,6 +84,8 @@ export default function LoginForm() {
         } else {
           router.push('/');
         }
+
+        router.refresh();
       }
     } catch (error) {
       console.error('Unexpected error:', error);
@@ -81,8 +102,6 @@ export default function LoginForm() {
     }
 
     try {
-      const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
-      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });

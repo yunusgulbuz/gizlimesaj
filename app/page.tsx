@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Clock, Shield, Sparkles } from "lucide-react";
+import HeaderAuthButton from "@/components/auth/header-auth-button";
 
 export default function HomePage() {
   return (
@@ -20,11 +21,7 @@ export default function HomePage() {
             <Link href="/about" className="text-gray-600 hover:text-gray-900">
               Hakkında
             </Link>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/login">
-                Giriş Yap
-              </Link>
-            </Button>
+            <HeaderAuthButton />
           </div>
         </nav>
       </header>

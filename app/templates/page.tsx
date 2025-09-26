@@ -1,7 +1,5 @@
 import Link from "next/link";
-import {
-  Button,
-} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,11 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, ArrowLeft, Filter } from "lucide-react";
-import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { generateMetadata } from "@/lib/seo";
 import CustomTemplateRequest from "./_components/custom-template-request";
 import TemplateCardPreview from "./_components/template-card-preview-client";
+import HeaderAuthButton from "@/components/auth/header-auth-button";
 
 export const metadata = generateMetadata({
   title: "Şablonlar - Gizli Mesaj",
@@ -195,14 +193,8 @@ export default async function TemplatesPage({
           template.audience.includes(activeCategory),
         );
 
-  const breadcrumbItems: BreadcrumbItem[] = [{ label: "Şablonlar" }];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
-      <div className="container mx-auto px-4 pt-6">
-        <Breadcrumb items={breadcrumbItems} />
-      </div>
-
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -221,9 +213,7 @@ export default async function TemplatesPage({
             <Link href="/about" className="text-gray-600 hover:text-gray-900">
               Hakkında
             </Link>
-            <Button variant="outline" size="sm">
-              Giriş Yap
-            </Button>
+            <HeaderAuthButton />
           </div>
         </nav>
       </header>
