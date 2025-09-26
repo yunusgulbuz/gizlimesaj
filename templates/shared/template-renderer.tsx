@@ -34,7 +34,7 @@ interface TemplateRendererProps {
     id: string;
     slug: string;
     title: string;
-    audience: 'teen' | 'adult' | 'classic' | 'fun' | 'elegant';
+    audience: 'teen' | 'adult' | 'classic' | 'fun' | 'elegant' | string[];
     bg_audio_url: string | null;
   };
   recipientName: string;

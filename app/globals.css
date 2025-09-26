@@ -149,3 +149,39 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .preview-shell {
+    --preview-w: 520px;
+    --preview-scale: clamp(0.88, calc(var(--preview-w) / 760), 1.08);
+  }
+
+  .preview-card {
+    font-size: calc(1rem * var(--preview-scale));
+    line-height: calc(1.55rem * var(--preview-scale));
+    padding: calc(1.8rem * var(--preview-scale));
+    transition: background 200ms ease, box-shadow 200ms ease;
+  }
+
+  .preview-card h3 {
+    font-size: calc(1.85rem * var(--preview-scale));
+    line-height: calc(2.4rem * var(--preview-scale));
+  }
+
+  .preview-card p {
+    font-size: calc(1rem * var(--preview-scale));
+  }
+
+  .preview-scroll {
+    scrollbar-width: thin;
+  }
+
+  .preview-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .preview-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(244, 114, 182, 0.6), rgba(129, 140, 248, 0.6));
+    border-radius: 999px;
+  }
+}

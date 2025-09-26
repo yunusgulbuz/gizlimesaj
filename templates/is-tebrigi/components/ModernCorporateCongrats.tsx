@@ -122,7 +122,7 @@ export default function ModernCorporateCongrats({
           )}
 
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold text-slate-900 sm:text-5xl">
+            <h1 className="text-4xl font-bold text-white sm:text-5xl">
               {headline}
             </h1>
             <p className="text-lg font-medium text-cyan-700 sm:text-xl">
