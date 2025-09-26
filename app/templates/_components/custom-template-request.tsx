@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useMemo, useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -79,8 +79,21 @@ export default function CustomTemplateRequest() {
     }
   };
 
+  useEffect(() => {
+    const handleOpen = (event: Event) => {
+      if (!(event instanceof CustomEvent)) return;
+      if (event.detail?.triggerRequest) {
+        setIsDialogOpen(true);
+      }
+    };
+
+    window.addEventListener('open-custom-template', handleOpen);
+
+    return () => window.removeEventListener('open-custom-template', handleOpen);
+  }, []);
+
   return (
-    <section className="bg-white py-16 mt-16">
+    <section id="custom-template-request" className="bg-white py-16 mt-16">
       <div className="container mx-auto px-4">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center">
           <div className="space-y-4">

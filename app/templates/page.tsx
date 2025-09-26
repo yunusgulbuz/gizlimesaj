@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,17 +9,27 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, ArrowLeft, Filter } from "lucide-react";
+import {
+  Heart,
+  Sparkles,
+  Music2,
+  ShieldCheck,
+  Palette,
+  Filter,
+  Users,
+  Timer,
+} from "lucide-react";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { generateMetadata } from "@/lib/seo";
 import CustomTemplateRequest from "./_components/custom-template-request";
 import TemplateCardPreview from "./_components/template-card-preview-client";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
+import CustomTemplateRequestCta from "./_components/custom-template-request-cta";
 
 export const metadata = generateMetadata({
-  title: "Şablonlar - Gizli Mesaj",
+  title: "Heartnote Şablonları",
   description:
-    "Sevdiklerinize özel mesajlar için çeşitli şablonlarımızı keşfedin. Romantik, eğlenceli ve klasik temalar.",
+    "Heartnote ile dakikalar içinde romantik sürpriz sayfanızı tasarlayın. Temalar, müzikler ve sahne sahne akışlar tek yerde.",
 });
 
 interface Template {
@@ -28,6 +39,7 @@ interface Template {
   audience: string[];
   preview_url: string | null;
   bg_audio_url: string | null;
+  created_at?: string;
 }
 
 interface Duration {
@@ -48,11 +60,34 @@ interface TemplatePricing {
   }[];
 }
 
+interface HeroHighlight {
+  label: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+const heroHighlights: HeroHighlight[] = [
+  {
+    label: "Zengin Kütüphane",
+    description: "50&apos;den fazla tema ve sürekli güncellenen içerik",
+    icon: Palette,
+  },
+  {
+    label: "Duyguyu Yükselten Sahne",
+    description: "Animasyonlu geçişler ve fonda sizin seçtiğiniz müzik",
+    icon: Music2,
+  },
+  {
+    label: "Güvenli Paylaşım",
+    description: "Şifre koruması ve süreli erişim seçenekleri",
+    icon: ShieldCheck,
+  },
+];
+
 // Fetch categories from database
 async function getCategories(): Promise<string[]> {
   const supabase = await createServerSupabaseClient();
-  
-  // Get unique categories from templates
+
   const { data: templates, error } = await supabase
     .from("templates")
     .select("audience")
@@ -62,11 +97,11 @@ async function getCategories(): Promise<string[]> {
     console.error("Error fetching categories:", error);
     return [
       "İlişki",
-      "Kutlama/Tebrik", 
+      "Kutlama",
       "Arkadaşlık",
       "Aile",
       "Özel Gün",
-      "Hobi/İlgi Alanı",
+      "Hobi",
       "Kurumsal",
       "Sezonluk",
     ];
@@ -139,10 +174,10 @@ async function getTemplatePricing(): Promise<TemplatePricing[]> {
 
 function formatPrice(price: string | null | undefined): string | null {
   if (!price) return null;
-  
+
   const numPrice = parseFloat(price);
-  if (isNaN(numPrice)) return null;
-  
+  if (Number.isNaN(numPrice)) return null;
+
   return numPrice.toFixed(0);
 }
 
@@ -158,7 +193,6 @@ export default async function TemplatesPage({
     getTemplatePricing(),
   ]);
 
-  // Create pricing maps for different durations
   const pricingByTemplate = new Map<string, Map<number, string>>();
   allPricing.forEach((pricing) => {
     if (!pricingByTemplate.has(pricing.template_id)) {
@@ -167,25 +201,24 @@ export default async function TemplatesPage({
     pricingByTemplate.get(pricing.template_id)?.set(pricing.duration_id, pricing.price_try);
   });
 
-  // Get the shortest duration for display
-  const shortestDuration = durations.sort((a, b) => a.days - b.days)[0];
+  const sortedDurations = [...durations].sort((a, b) => a.days - b.days);
+  const shortestDuration = sortedDurations[0];
 
   const templatesWithMeta = templates.map((template) => {
     const templatePricing = pricingByTemplate.get(template.id);
-    const shortestPrice = shortestDuration && templatePricing 
-      ? templatePricing.get(shortestDuration.id) 
+    const shortestPrice = shortestDuration && templatePricing
+      ? templatePricing.get(shortestDuration.id)
       : null;
 
     return {
       ...template,
       shortestPrice: formatPrice(shortestPrice),
       shortestDuration,
-      allPricing: templatePricing || new Map(),
+      allPricing: templatePricing || new Map<number, string>(),
     };
   });
 
   const activeCategory = (searchParams?.category || "all") as string;
-
   const filteredTemplates =
     activeCategory === "all"
       ? templatesWithMeta
@@ -194,237 +227,254 @@ export default async function TemplatesPage({
         );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
-      <header className="container mx-auto px-4 py-6">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
+    <div className="relative min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-32 top-20 h-80 w-80 rounded-full bg-rose-200/60 blur-3xl" />
+        <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-purple-200/50 blur-3xl" />
+        <div className="absolute left-1/2 bottom-10 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-200/40 blur-3xl" />
+      </div>
+
+      <header className="relative z-10">
+        <div className="container mx-auto px-4 py-6">
+          <nav className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-purple-600">
+                <Heart className="h-5 w-5 text-white" />
+              </span>
+              <div className="flex flex-col">
+                <span className="text-xl font-semibold text-gray-900">Heartnote</span>
+                <span className="text-xs text-gray-500">Şablon kütüphanen</span>
+              </div>
+            </Link>
+            <div className="hidden items-center space-x-6 md:flex">
+              <Link href="/" className="text-gray-600 transition hover:text-gray-900">
                 Ana Sayfa
               </Link>
-            </Button>
-            <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-pink-500" />
-              <span className="text-2xl font-bold text-gray-900">Gizli Mesaj</span>
+              <Link href="/pricing" className="text-gray-600 transition hover:text-gray-900">
+                Planlar
+              </Link>
+              <Link href="/help" className="text-gray-600 transition hover:text-gray-900">
+                Yardım
+              </Link>
+              <HeaderAuthButton />
             </div>
-          </div>
-          <div className="hidden md:flex items-center space-x-6">
-            <Link href="/about" className="text-gray-600 hover:text-gray-900">
-              Hakkında
-            </Link>
-            <HeaderAuthButton />
-          </div>
-        </nav>
+          </nav>
+        </div>
       </header>
 
-      <section className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Mesaj Şablonları
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Sevdiklerinize uygun şablonu seçin ve kişiselleştirin. Her şablon özel olarak
-            tasarlandı ve farklı duygular için öne çıkıyor.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2 justify-center mb-8">
-          <Button
-            asChild
-            variant={activeCategory === "all" ? "default" : "outline"}
-            size="sm"
-            className="gap-2"
-          >
-            <Link href="/templates">
-              <Filter className="h-4 w-4" />
-              Tümü
-            </Link>
-          </Button>
-          {categories.map((category) => {
-            const isActive = activeCategory === category;
-            return (
-              <Button
-                key={category}
-                asChild
-                variant={isActive ? "default" : "ghost"}
-                size="sm"
-                className={`capitalize ${isActive ? "shadow-md" : ""}`}
-              >
-                <Link href={`/templates?category=${encodeURIComponent(category)}`}>
-                  {category}
-                </Link>
-              </Button>
-            );
-          })}
-        </div>
-
-        {filteredTemplates.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">
-              Henüz şablon bulunmuyor. Lütfen daha sonra tekrar kontrol edin.
-            </p>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            {filteredTemplates.map((template) => {
-              const previewData = {
-                id: template.id,
-                slug: template.slug,
-                title: template.title,
-                audience: template.audience,
-                bg_audio_url: template.bg_audio_url,
-              };
-
-              return (
-                <Card
-                  key={template.id}
-                  className="group hover:shadow-xl transition-all duration-300 border border-gray-100 shadow-md overflow-hidden"
-                >
-                <div className="aspect-[4/3] relative overflow-hidden rounded-b-sm bg-gradient-to-br from-slate-100 via-white to-slate-200">
-                  <TemplateCardPreview template={previewData} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
-                    {template.shortestPrice && template.shortestDuration && (
-                      <Badge variant="secondary" className="bg-white text-gray-900 font-semibold">
-                        {template.shortestDuration.days} Gün · ₺{template.shortestPrice}
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1">
-                    {template.audience.slice(0, 2).map((category) => (
-                      <Badge
-                        key={category}
-                        variant="secondary"
-                        className="bg-white/90 text-gray-800 backdrop-blur-sm text-xs"
-                      >
-                        {category}
-                      </Badge>
-                    ))}
-                    {template.audience.length > 2 && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-white/90 text-gray-600 backdrop-blur-sm text-xs"
-                      >
-                        +{template.audience.length - 2}
-                      </Badge>
-                    )}
-                  </div>
+      <main className="relative z-10">
+        <section className="container mx-auto px-4 pb-12 pt-10 sm:pb-14">
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <Badge className="w-fit bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-rose-500 shadow-sm">
+                Heartnote Şablon Pazarı
+              </Badge>
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
+                Duygularını sahneleyen Heartnote şablonlarını keşfet
+              </h1>
+              <p className="max-w-2xl text-lg text-gray-600">
+                Her özel ânı, kişiselleştirilebilir sahneler, fonda müzik ve duygu yüklü anlatımlarla destekleyen Heartnote şablonlarıyla sürprizini benzersiz kıl.
+              </p>
+              <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
+                {heroHighlights.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Card
+                      key={item.label}
+                      className="min-w-[220px] border-none bg-white/80 shadow-md backdrop-blur sm:min-w-0"
+                    >
+                      <CardContent className="flex gap-3 p-4">
+                        <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-500">
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{item.label}</p>
+                          <p className="text-xs text-gray-500">{item.description}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+              <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-white/60 bg-white/80 p-5 shadow-sm">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Users className="h-4 w-4 text-rose-500" />
+                  {templates.length} aktif şablon
                 </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Timer className="h-4 w-4 text-purple-500" />
+                  {sortedDurations.length} süre seçeneği
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Music2 className="h-4 w-4 text-indigo-500" />
+                  Müzik ve sahne kontrolü
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg group-hover:text-pink-600 transition-colors">
-                    {template.title}
-                  </CardTitle>
-                  <CardDescription>
-                    {template.audience.join(" · ")} kategorilerinde özel mesaj şablonu
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="pt-0">
-                  <div className="flex gap-2">
-                    <Button asChild className="flex-1 group-hover:bg-pink-600 transition-colors">
-                      <Link href={`/templates/${template.slug}`}>
-                        Seç
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" className="flex-1">
-                      <Link
-                        href={`/templates/${template.slug}/preview`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Önizleme
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+        <section className="container mx-auto px-4 pb-10">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <Filter className="h-4 w-4 text-rose-500" />
+              Kategoriler
+            </div>
+            <Button asChild size="sm" variant="ghost" className="text-rose-600 hover:text-rose-700">
+              <Link href="/pricing">Paketleri İncele</Link>
+            </Button>
+          </div>
+          <div className="mt-4 flex w-full gap-2 overflow-x-auto pb-2">
+            <Button
+              asChild
+              size="sm"
+              variant={activeCategory === "all" ? "default" : "outline"}
+              className="shrink-0 gap-2 rounded-full"
+            >
+              <Link href="/templates">
+                <span>Tümü</span>
+              </Link>
+            </Button>
+            {categories.map((category) => {
+              const isActive = activeCategory === category;
+              return (
+                <Button
+                  key={category}
+                  asChild
+                  size="sm"
+                  variant={isActive ? "default" : "outline"}
+                  className="shrink-0 rounded-full capitalize"
+                >
+                  <Link href={`/templates?category=${encodeURIComponent(category)}`}>
+                    {category}
+                  </Link>
+                </Button>
               );
             })}
           </div>
-        )}
-      </section>
+        </section>
 
-      <CustomTemplateRequest />
+        <section className="container mx-auto px-4 pb-12">
+          {filteredTemplates.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-rose-200 bg-white/70 p-12 text-center text-gray-600">
+              Seçtiğiniz kategoride şu an Heartnote şablonu bulunmuyor. Başka bir kategori deneyin ya da özel istekte bulunun.
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {filteredTemplates.map((template) => {
+                const previewData = {
+                  id: template.id,
+                  slug: template.slug,
+                  title: template.title,
+                  audience: template.audience,
+                  bg_audio_url: template.bg_audio_url,
+                };
 
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Heart className="h-6 w-6 text-pink-500" />
-                <span className="text-xl font-bold">Gizli Mesaj</span>
+                return (
+                  <Card
+                    key={template.id}
+                    className="group overflow-hidden border border-white/70 bg-white/80 shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <TemplateCardPreview template={previewData} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+                      <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+                        {template.audience.slice(0, 2).map((category) => (
+                          <Badge key={category} className="bg-white/90 text-xs text-gray-800">
+                            {category}
+                          </Badge>
+                        ))}
+                        {template.audience.length > 2 && (
+                          <Badge className="bg-white/90 text-xs text-gray-600">
+                            +{template.audience.length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                      {template.shortestPrice && template.shortestDuration && (
+                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-full bg-white/85 px-4 py-2 text-sm font-medium text-gray-800">
+                          <span>{template.shortestDuration.days} gün erişim</span>
+                          <span>₺{template.shortestPrice}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <CardHeader className="space-y-2">
+                      <CardTitle className="text-lg text-gray-900">
+                        {template.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm text-gray-600">
+                        {template.audience.join(" · ")} temasında Heartnote deneyimi
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Music2 className="h-4 w-4 text-rose-500" />
+                          {template.bg_audio_url ? "Hazır müzik" : "Müzik yüklenebilir"}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Sparkles className="h-4 w-4 text-purple-500" />
+                          Çok sahneli anlatım
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button asChild className="flex-1">
+                          <Link href={`/templates/${template.slug}`}>
+                            Şablonu Seç
+                          </Link>
+                        </Button>
+                        <Button asChild variant="outline" className="flex-1">
+                          <Link href={`/templates/${template.slug}/preview`} target="_blank" rel="noopener noreferrer">
+                            Önizleme
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <section className="container mx-auto px-4 pb-20">
+          <Card className="border-none bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500 text-white shadow-xl">
+            <CardContent className="flex flex-col gap-4 p-8 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-3">
+                <p className="text-sm uppercase tracking-[0.2em] text-white/75">Kişiye Özel Şablon</p>
+                <h2 className="text-2xl font-semibold md:text-3xl">
+                  Hayalindeki Heartnote şablonu yok mu?
+                </h2>
+                <p className="max-w-xl text-sm text-white/85">
+                  Tasarım ekibimize birkaç satırda fikrini anlat, sadece sana özel bir Heartnote sahnesi oluşturalım.
+                </p>
               </div>
-              <p className="text-gray-400">
-                Sevdiklerinize özel mesajlar oluşturun ve unutulmaz anlar yaratın.
-              </p>
-            </div>
+              <CustomTemplateRequestCta className="h-12 gap-2 px-6 text-base" />
+            </CardContent>
+          </Card>
+        </section>
 
-            <div>
-              <h3 className="font-semibold mb-4">Ürün</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/templates" className="hover:text-white">
-                    Şablonlar
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pricing" className="hover:text-white">
-                    Fiyatlar
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/examples" className="hover:text-white">
-                    Örnekler
-                  </Link>
-                </li>
-              </ul>
-            </div>
+        <CustomTemplateRequest />
 
-            <div>
-              <h3 className="font-semibold mb-4">Destek</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/help" className="hover:text-white">
-                    Yardım
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/faq" className="hover:text-white">
-                    SSS
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-4">Yasal</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/privacy" className="hover:text-white">
-                    Gizlilik
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms" className="hover:text-white">
-                    Kullanım Şartları
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/cookies" className="hover:text-white">
-                    Çerezler
-                  </Link>
-                </li>
-              </ul>
+        <section className="bg-white/80 py-16">
+          <div className="container mx-auto flex flex-col items-center gap-4 px-4 text-center">
+            <h2 className="text-3xl font-semibold text-gray-900 md:text-4xl">
+              İlk Heartnote&apos;un için hazır mısın?
+            </h2>
+            <p className="max-w-2xl text-base text-gray-600">
+              Ücretsiz kaydol, şablonu seç, dakikalar içinde duygularını anlatan dijital sürprizini yayına al.
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button size="lg" className="h-12 px-8 text-base" asChild>
+                <Link href="/register">Hemen Kaydol</Link>
+              </Button>
+              <Button size="lg" variant="outline" className="h-12 px-8 text-base" asChild>
+                <Link href="/pricing">Planları Gör</Link>
+              </Button>
             </div>
           </div>
-
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Gizli Mesaj. Tüm hakları saklıdır.</p>
-          </div>
-        </div>
-      </footer>
+        </section>
+      </main>
     </div>
   );
 }
