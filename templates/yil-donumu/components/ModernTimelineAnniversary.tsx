@@ -62,17 +62,19 @@ export default function ModernTimelineAnniversary({
     return () => clearInterval(timer);
   }, [events.length]);
 
-  const stars = useMemo(
-    () => Array.from({ length: 60 }, (_, index) => ({
+  const [stars, setStars] = useState(() => [] as Array<{ id: number; left: number; top: number; size: number; delay: number; duration: number }>);
+
+  useEffect(() => {
+    const generated = Array.from({ length: 60 }, (_, index) => ({
       id: index,
       left: Math.random() * 100,
       top: Math.random() * 100,
       size: Math.random() * 2 + 1,
       delay: Math.random() * 5,
-      duration: Math.random() * 8 + 8
-    })),
-    []
-  );
+      duration: Math.random() * 8 + 8,
+    }));
+    setStars(generated);
+  }, []);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950/90 to-slate-900 text-white">

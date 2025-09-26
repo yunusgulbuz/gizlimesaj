@@ -176,6 +176,15 @@ export default function TemplateFormPage({ template, durations, templatePricing,
   };
 
   // Create custom breadcrumb items for template pages
+  const audienceKey = Array.isArray(template.audience)
+    ? (template.audience[0] as keyof typeof audienceLabels | undefined)
+    : (template.audience as keyof typeof audienceLabels | undefined);
+
+  const audienceBadge = audienceLabels[audienceKey ?? 'adult'] ?? {
+    label: 'Özel',
+    color: 'bg-gray-100 text-gray-800',
+  };
+
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Şablonlar', href: '/templates' },
     { label: template.title }
@@ -195,10 +204,10 @@ export default function TemplateFormPage({ template, durations, templatePricing,
               Şablonlara Dön
             </Button>
           </Link>
-          <div className="flex items-center gap-2">
-            <Badge className={audienceLabels[template.audience].color}>
-              {audienceLabels[template.audience].label}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge className={audienceBadge.color}>
+                {audienceBadge.label}
+              </Badge>
             <Badge className={designStyles[selectedDesignStyle].color}>
               {designStyles[selectedDesignStyle].preview} {designStyles[selectedDesignStyle].label}
             </Badge>
@@ -328,7 +337,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                   {template.title}
                 </CardTitle>
                 <CardDescription>
-                  {template.description || `${audienceLabels[template.audience].label} kategorisinde özel mesaj şablonu`}
+                  {template.description || `${audienceBadge.label} kategorisinde özel mesaj şablonu`}
                 </CardDescription>
               </CardHeader>
             </Card>

@@ -7,7 +7,7 @@ interface Template {
   id: string;
   slug: string;
   title: string;
-  audience: 'teen' | 'adult' | 'classic' | 'fun' | 'elegant';
+  audience: 'teen' | 'adult' | 'classic' | 'fun' | 'elegant' | string[];
   preview_url: string | null;
   bg_audio_url: string | null;
   description: string | null;
@@ -98,9 +98,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
+  const audienceKey = Array.isArray(template.audience)
+    ? (template.audience.find((item): item is keyof typeof audienceLabels => item in audienceLabels) ?? 'adult')
+    : (template.audience as keyof typeof audienceLabels | undefined);
+
+  const audienceLabel = audienceLabels[audienceKey ?? 'adult']?.label ?? 'Özel';
+
   return generateTemplateMetadata(
     template.title,
-    audienceLabels[template.audience].label
+    audienceLabel
   );
 }
 
