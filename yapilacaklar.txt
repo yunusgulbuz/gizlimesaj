@@ -29,12 +29,14 @@ Sen GPT-5 tabanlı bir yazılım uzmanısın ve şu an `gizlimesaj/gizlimesaj` d
    - ✅ Buton tıklaması geldiğinde satın alan kişiye bilgilendirme e-postası gönder: `emailService` altında yeni bir metod (örn. `sendButtonClickNotificationEmail`) oluştur ve `app/api/personal-pages/[shortId]/analytics/route.ts` içinde `event_type==='button_click'` ve ilk defa "pozitif" buton ise tetikle. Order → buyer email eşlemesini Supabase'den getir. Aynı event için tekrar mail gitmesini engelle (ör. `page_analytics` insert sonrası check veya Supabase view ile).
    - ✅ `app/api/personal-pages/[shortId]/analytics/route.ts` başarısız olduğunda uygun HTTP kodları döndürsün; rate limit zaten var, re-use et.
 
-4. Paylaşım butonu ve görsel çıktılar
-   - `app/m/[shortId]/page.tsx` içinde mesaj kartını `ref` ile sarmalayın ve yeni bir “Paylaş” menüsü ekleyin. Bu menüde en az şu seçenekler olsun: `Instagram Kare (1080x1080)`, `Instagram Story (1080x1920)`, `WhatsApp (1080x1350)`.
-   - `npm install html-to-image file-saver` (veya benzeri) yap; paylaşım butonu seçilen çözünürlükle `html-to-image` kullanarak canvas/Blob üretip kullanıcıya indirmeyi ya da `navigator.share` destekliyse paylaşımı tetiklemeyi denesin. Bu işlevselliği ayrı bir hook ya da util’e ayır (`hooks/useImageExport.ts` gibi) ve yeniden kullanılabilir kıl.
-   - Paylaşım işlemi sırasında loading durumu, hata yakalama ve kullanıcıya geri bildirim (toast / alert) ekle. Mobilde share sheet’e, desktop’ta dosya indirmeye düşsün.
-   - OpenGraph/SEO: `generateTemplateMetadata` fonksiyonunu güncelleyerek OG görsel URL’sini oluşturulan paylaşım görseline yönlendirmeyi değerlendir (en azından slug’a özgü static OG). Gerekiyorsa `app/m/[shortId]/opengraph-image.tsx` ekleyerek dinamik OG üret.
-   - Paylaşım butonu UI’si buton tıklama analitiği ile çakışmasın; share buton tıklamaları da analytics’e `event_type='share_export'` olarak kaydedilsin.
+4. Paylaşım butonu ve görsel çıktılar ✅ TAMAMLANDI
+   - ✅ `components/ui/social-share.tsx` komponenti oluşturuldu: Instagram Kare (1080x1080), Instagram Story (1080x1920), WhatsApp (1200x630) formatları destekleniyor.
+   - ✅ `app/api/generate-share-image/route.ts` API endpoint'i oluşturuldu: Dinamik SVG görsel üretimi, kişiselleştirilmiş içerik, indirilebilir dosyalar.
+   - ✅ `app/success/[shortId]/page.tsx` güncellendi: Yeni SocialShare komponenti entegre edildi, eski paylaşım butonları kaldırıldı.
+   - ✅ Paylaşım işlemi sırasında loading durumu, hata yakalama ve kullanıcıya geri bildirim eklendi.
+   - ✅ Native Web Share API desteği eklendi: Mobilde share sheet, desktop'ta dosya indirme.
+   - ✅ Analytics entegrasyonu: Share buton tıklamaları `event_type='share_export'` olarak kaydediliyor.
+   - ✅ Kişisel sayfa API'si genişletildi: `template_slug`, `template_audience` alanları eklendi.
 
 5. Test ve kalite
    - Tüm değişiklikler TypeScript hatasız olmalı, `npm run lint` ve mümkünse `npm run test` çalıştırılabilmeli. Gerekirse jest/vitest ile en azından Paynkolay payload helper’ını ve analytics endpoint’ini test et.

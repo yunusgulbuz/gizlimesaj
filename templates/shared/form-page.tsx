@@ -66,7 +66,7 @@ const formatCategoryLabel = (value: string): string => {
     .join(' ');
 };
 
-const getCategoryBadgeClass = () => {
+const getCategoryBadgeClass = (category?: string, index?: number) => {
   return 'rounded-full border border-gray-200/80 bg-white/80 px-3 py-1 text-[0.7rem] font-medium text-gray-600 shadow-sm backdrop-blur-sm';
 };
 
@@ -130,6 +130,9 @@ export default function TemplateFormPage({ template, durations, templatePricing,
   const [selectedDesignStyle, setSelectedDesignStyle] = useState<keyof typeof designStyles>('modern');
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [creatorName, setCreatorName] = useState(isPreview ? 'Örnek Oluşturan' : '');
+  const [email, setEmail] = useState('');
+  const [specialDate, setSpecialDate] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { width: persistedPreviewWidth, commitWidth: commitPreviewWidth } = usePreviewWidth();
   const supabase = useMemo(() => createClient(), []);
   const [sessionUser, setSessionUser] = useState<User | null>(null);
@@ -237,11 +240,90 @@ export default function TemplateFormPage({ template, durations, templatePricing,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Form submission logic here
-    console.log('Form submitted with design style:', selectedDesignStyle);
-    console.log('Text fields:', textFields);
+    
+    if (isSubmitting) return;
+    
+    // Form validation
+    if (!selectedDuration) {
+      alert('Lütfen bir süre seçin');
+      return;
+    }
+    
+    if (!email) {
+      alert('Lütfen e-posta adresinizi girin');
+      return;
+    }
+    
+    if (!creatorName.trim()) {
+      alert('Lütfen adınızı girin');
+      return;
+    }
+
+    // Check required text fields
+    const requiredFields = visibleTextFieldConfig.filter(field => field.required);
+    for (const field of requiredFields) {
+      if (!textFields[field.key]?.trim()) {
+        alert(`Lütfen ${field.label} alanını doldurun`);
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Prepare payment data
+      const selectedDurationData = durations.find(d => d.id.toString() === selectedDuration);
+      const amount = selectedDurationData ? getPriceForDuration(selectedDurationData.id) : '0';
+      
+      const paymentData = {
+        templateId: template.id,
+        templateSlug: template.slug,
+        templateTitle: template.title,
+        amount: amount,
+        recipientName: textFields.recipientName || '',
+        message: textFields.mainMessage || '',
+        senderName: creatorName,
+        email: email,
+        designStyle: selectedDesignStyle,
+        duration: selectedDuration,
+        specialDate: specialDate,
+        textFields: textFields
+      };
+
+      // Call payment API
+      const response = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Ödeme formu oluşturulamadı');
+      }
+
+      const result = await response.text();
+      
+      // Create a temporary form and submit to Paynkolay
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = result;
+      document.body.appendChild(tempDiv);
+      
+      const form = tempDiv.querySelector('form');
+      if (form) {
+        form.submit();
+      } else {
+        throw new Error('Ödeme formu bulunamadı');
+      }
+      
+    } catch (error) {
+      console.error('Ödeme hatası:', error);
+      alert('Ödeme işlemi başlatılamadı. Lütfen tekrar deneyin.');
+      setIsSubmitting(false);
+    }
   };
 
   // Create custom breadcrumb items for template pages
@@ -399,18 +481,30 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                 </SelectContent>
               </Select>
             </div>
-
             {/* Special Date */}
             <div className="space-y-2">
               <Label htmlFor="special-date">Özel Tarih (Opsiyonel)</Label>
-              <Input id="special-date" type="date" placeholder="Özel bir tarih seçin" />
+              <Input 
+                id="special-date" 
+                type="date" 
+                placeholder="Özel bir tarih seçin"
+                value={specialDate}
+                onChange={(e) => setSpecialDate(e.target.value)}
+              />
               <p className="text-xs text-gray-500">Yıldönümü, doğum günü gibi özel tarihler</p>
             </div>
 
             {/* Email for Link */}
             <div className="space-y-2">
               <Label htmlFor="email">E-posta Adresiniz *</Label>
-              <Input id="email" type="email" placeholder="ornek@email.com" required />
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="ornek@email.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required 
+              />
               <p className="text-xs text-gray-500">Mesaj bağlantısı bu adrese gönderilecek</p>
             </div>
 

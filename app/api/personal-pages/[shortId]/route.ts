@@ -29,9 +29,31 @@ export async function GET(
 
     const supabase = await createServerSupabaseClient();
 
-    // Get personal page with template info using the stored function
+    // Get personal page with template info using direct query since we need additional fields
     const { data: personalPage, error } = await supabase
-      .rpc('get_page_by_short_id', { page_short_id: shortId });
+      .from('personal_pages')
+      .select(`
+        id,
+        short_id,
+        template_id,
+        recipient_name,
+        sender_name,
+        message,
+        start_at,
+        expires_at,
+        is_active,
+        special_date,
+        templates!inner (
+          title,
+          slug,
+          audience,
+          preview_url,
+          bg_audio_url
+        )
+      `)
+      .eq('short_id', shortId)
+      .eq('is_active', true)
+      .single();
 
     if (error) {
       console.error('Database error:', error);
@@ -41,14 +63,14 @@ export async function GET(
       );
     }
 
-    if (!personalPage || personalPage.length === 0) {
+    if (!personalPage) {
       return NextResponse.json(
         { error: 'Personal page not found' },
         { status: 404 }
       );
     }
 
-    const page = personalPage[0];
+    const page = personalPage;
 
     // Check if page is expired
     const now = new Date();
@@ -68,15 +90,18 @@ export async function GET(
     }
 
     // Return the personal page data
+    const template = page.templates[0]; // Get the first (and only) template from the array
     return NextResponse.json({
       id: page.id,
       short_id: page.short_id,
       recipient_name: page.recipient_name,
       sender_name: page.sender_name,
       message: page.message,
-      template_title: page.template_title,
-      template_preview_url: page.template_preview_url,
-      template_bg_audio_url: page.template_bg_audio_url,
+      template_title: template.title,
+      template_slug: template.slug,
+      template_audience: template.audience,
+      template_preview_url: template.preview_url,
+      template_bg_audio_url: template.bg_audio_url,
       expires_at: page.expires_at,
       special_date: page.special_date,
       is_active: page.is_active
