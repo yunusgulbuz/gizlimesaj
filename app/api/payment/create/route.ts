@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 
-// Paynkolay test ortamı bilgileri
+// Paynkolay configuration from environment variables
 const PAYNKOLAY_CONFIG = {
-  sx: "118591467|bScbGDYCtPf7SS1N6PQ6/+58rFhW1WpsWINqvkJFaJlu6bMH2tgPKDQtjeA5vClpzJP24uA0vx7OX53cP3SgUspa4EvYix+1C3aXe++8glUvu9Oyyj3v300p5NP7ro/9K57Zcw==",
-  merchantSecretKey: "_YckdxUbv4vrnMUZ6VQsr",
-  testUrl: "https://paynkolaytest.nkolayislem.com.tr/Vpos",
-  successUrl: process.env.NODE_ENV === 'production' 
-    ? "https://gizlimesaj.com/payment/success" 
-    : "http://localhost:3000/payment/success",
-  failUrl: process.env.NODE_ENV === 'production' 
-    ? "https://gizlimesaj.com/payment/fail" 
-    : "http://localhost:3000/payment/fail"
+  sx: process.env.PAYNKOLAY_SX!,
+  merchantSecretKey: process.env.PAYNKOLAY_SECRET_KEY!,
+  baseUrl: process.env.PAYNKOLAY_BASE_URL!,
+  successUrl: process.env.PAYNKOLAY_SUCCESS_URL!,
+  failUrl: process.env.PAYNKOLAY_FAIL_URL!
 };
 
 function getClientIp(req: NextRequest): string {
@@ -142,7 +138,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      paymentUrl: PAYNKOLAY_CONFIG.testUrl,
+      paymentUrl: PAYNKOLAY_CONFIG.baseUrl,
       paymentParams,
       clientRefCode
     });

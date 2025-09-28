@@ -4,7 +4,7 @@ export const dynamic = 'force-static';
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://heartnote.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://heartnote2.vercel.app/';
   
   // Static pages
   const staticPages = [
