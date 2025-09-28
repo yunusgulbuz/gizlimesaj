@@ -364,17 +364,6 @@ export default function TemplateRenderer({
 
   return (
     <div className="relative min-h-screen">
-      {/* Audio Control */}
-      {template.bg_audio_url && !isPreview && (
-        <Button
-          onClick={toggleAudio}
-          className="fixed top-4 right-4 z-50 rounded-full w-12 h-12 p-0"
-          variant="outline"
-        >
-          {isPlaying ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-        </Button>
-      )}
-      
       {getTemplateComponent()}
     </div>
   );

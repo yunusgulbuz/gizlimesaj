@@ -36,7 +36,7 @@ export async function GET(
 
     const supabase = await createServerSupabaseClient();
 
-    // Get personal page with template info using a proper join
+    // Get personal page with template info and order data using proper joins
     const { data: personalPage, error } = await supabase
       .from('personal_pages')
       .select(`
@@ -46,6 +46,11 @@ export async function GET(
           slug,
           audience,
           preview_url,
+          bg_audio_url
+        ),
+        orders!inner (
+          text_fields,
+          design_style,
           bg_audio_url
         )
       `)
@@ -89,6 +94,7 @@ export async function GET(
 
     // Return the personal page data
     const template = personalPage.templates;
+    const order = personalPage.orders;
     const templateSlug = template?.slug || 'default';
     
     return NextResponse.json({
@@ -101,9 +107,9 @@ export async function GET(
       template_slug: templateSlug,
       template_audience: template?.audience || [],
       template_preview_url: template?.preview_url || null,
-      template_bg_audio_url: personalPage.bg_audio_url || template?.bg_audio_url || null,
-      design_style: personalPage.design_style || pickDesignStyle(templateSlug),
-      text_fields: personalPage.text_fields || {},
+      template_bg_audio_url: order?.bg_audio_url || personalPage.bg_audio_url || template?.bg_audio_url || null,
+      design_style: order?.design_style || personalPage.design_style || pickDesignStyle(templateSlug),
+      text_fields: order?.text_fields || personalPage.text_fields || {},
       expires_at: personalPage.expires_at,
       special_date: personalPage.special_date,
       is_active: personalPage.is_active

@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate format
-    const validFormats = ['instagram-square', 'instagram-story', 'whatsapp'];
+    const validFormats = ['instagram-square', 'instagram-story', 'whatsapp', 'web-banner'];
     if (!validFormats.includes(format)) {
       return NextResponse.json(
         { error: 'Invalid format' },
@@ -52,19 +52,20 @@ export async function POST(request: NextRequest) {
     const dimensions = {
       'instagram-square': { width: 1080, height: 1080 },
       'instagram-story': { width: 1080, height: 1920 },
-      'whatsapp': { width: 1080, height: 1350 }
+      'whatsapp': { width: 800, height: 800 },
+      'web-banner': { width: 1920, height: 1080 }
     };
 
     const { width, height } = dimensions[format as keyof typeof dimensions];
     
     // Create SVG content for the share image
-    const template = personalPage.templates[0]; // Access first element since Supabase returns joined data as arrays
+    const template = personalPage.templates?.[0]; // Access first element since Supabase returns joined data as arrays
     const svgContent = generateShareImageSVG({
       width,
       height,
       recipientName: personalPage.recipient_name,
       senderName: personalPage.sender_name,
-      templateTitle: template.title,
+      templateTitle: template?.title || 'Gizli Mesaj',
       message: personalPage.message.substring(0, 150) + (personalPage.message.length > 150 ? '...' : ''),
       url: `${process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://gizlimesaj.com'}/m/${shortId}`,
       format
@@ -108,6 +109,8 @@ function generateShareImageSVG({
 }) {
   const isStory = format === 'instagram-story';
   const isSquare = format === 'instagram-square';
+  const isWebBanner = format === 'web-banner';
+  const isWhatsApp = format === 'whatsapp';
   
   // Color scheme
   const primaryColor = '#8B5CF6'; // Purple

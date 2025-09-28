@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { createAnalyticsTracker } from '@/lib/analytics';
 import TemplateRenderer from '@/templates/shared/template-renderer';
 import { getDefaultTextFields } from '@/templates/shared/types';
+import { ShareButton } from '@/components/share-button';
 
 interface PersonalPage {
   id: string;
@@ -24,6 +25,7 @@ interface PersonalPage {
   template_audience: string | string[];
   template_preview_url: string | null;
   template_bg_audio_url: string | null;
+  bg_audio_url: string | null;
   design_style: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
   text_fields: Record<string, string>;
   expires_at: string;
@@ -203,129 +205,84 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 relative overflow-hidden">
-      {/* Background Image */}
-      {personalPage.template_preview_url && (
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-          style={{ backgroundImage: `url(${personalPage.template_preview_url})` }}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Share Button */}
+      <div className="fixed top-4 left-4 z-50">
+        <ShareButton 
+          shortId={personalPage.short_id}
+          recipientName={personalPage.recipient_name}
+          className="bg-white/10 backdrop-blur-sm shadow-lg"
         />
-      )}
+      </div>
 
-      {/* Audio Controls */}
-      {personalPage.template_bg_audio_url && (
+      {/* Audio Player - YouTube or Regular Audio */}
+      {(personalPage.bg_audio_url || personalPage.text_fields?.musicUrl) && (
         <div className="fixed top-4 right-4 z-50">
-          <AudioPlayer 
-            src={personalPage.template_bg_audio_url}
-            autoPlay={false}
-            loop={true}
-          />
+          {(() => {
+            // Öncelik sırası: text_fields.musicUrl, sonra bg_audio_url
+            const audioUrl = personalPage.text_fields?.musicUrl || personalPage.bg_audio_url;
+            
+            if (audioUrl && (audioUrl.includes('youtube.com') || audioUrl.includes('youtu.be'))) {
+              return (
+                <YouTubePlayer
+                  videoId={extractVideoId(audioUrl) || undefined}
+                  autoPlay={true}
+                  loop={true}
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-2 shadow-lg"
+                />
+              );
+            } else if (audioUrl) {
+              return (
+                <AudioPlayer
+                  src={audioUrl}
+                  autoPlay={true}
+                  loop={true}
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-2 shadow-lg"
+                />
+              );
+            }
+            return null;
+          })()}
         </div>
       )}
 
-      {/* YouTube Music Player */}
-      {personalPage.text_fields?.musicUrl && (
-        <div className="fixed top-4 left-4 z-50">
-          <YouTubePlayer
-            videoId={extractVideoId(personalPage.text_fields.musicUrl) || undefined}
-            autoPlay={true}
-            loop={true}
-            className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg"
-          />
-        </div>
-      )}
-
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <div className="max-w-4xl mx-auto w-full">
-          {/* Template Renderer - Show the actual purchased template design */}
-          <div className="mb-8">
-            <TemplateRenderer
-              template={{
-                id: personalPage.id,
-                slug: personalPage.template_slug,
-                title: personalPage.template_title,
-                audience: Array.isArray(personalPage.template_audience) ? personalPage.template_audience : [personalPage.template_audience],
-                bg_audio_url: personalPage.template_bg_audio_url
-              }}
-              recipientName={personalPage.recipient_name}
-              message={personalPage.message}
-              designStyle={personalPage.design_style}
-              creatorName={personalPage.sender_name}
-              isPreview={true}
-              textFields={{
-                ...getDefaultTextFields(personalPage.template_slug),
-                ...personalPage.text_fields,
-                recipient_name: personalPage.recipient_name,
-                sender_name: personalPage.sender_name,
-                message: personalPage.message,
-                ...(personalPage.special_date && { special_date: personalPage.special_date })
-              }}
-            />
-          </div>
-
-          {/* Countdown Timer */}
-          <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0 mb-8">
-            <CardContent className="p-6 text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Bu mesaj şu kadar süre daha aktif:
-              </h3>
-              <Countdown 
-                targetDate={personalPage.expires_at}
-                onExpired={() => {
-                  // Handle expiration
-                  window.location.reload();
-                }}
-                className="justify-center"
-              />
-            </CardContent>
-          </Card>
-
-          {/* Call to Action */}
-          <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
-            <CardContent className="p-6 text-center">
-              <div className="space-y-4">
-                <p className="text-gray-600">
-                  Bu mesajı beğendin mi? Sen de sevdiklerine özel mesajlar gönderebilirsin!
-                </p>
-                <Button 
-                  asChild 
-                  size="lg" 
-                  className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
-                  onClick={async () => {
-                    await analytics.trackButtonClick('create_message_cta');
-                  }}
-                >
-                  <a href="https://gizlimesaj.com" target="_blank" rel="noopener noreferrer">
-                    Kendi Mesajını Oluştur ✨
-                  </a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Footer */}
-          <div className="text-center mt-8">
-            <p className="text-gray-500 text-sm">
-              Bu mesaj{" "}
-              <a 
-                href="https://gizlimesaj.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-pink-600 hover:underline font-medium"
-                onClick={async () => {
-                  await analytics.trackButtonClick('footer_link');
-                }}
-              >
-                Gizli Mesaj
-              </a>{" "}
-              ile oluşturuldu
-            </p>
-          </div>
-        </div>
+      {/* Full Screen Template Renderer */}
+      <div className="w-full h-screen">
+        <TemplateRenderer
+          template={{
+            id: personalPage.id,
+            slug: personalPage.template_slug,
+            title: personalPage.template_title,
+            audience: Array.isArray(personalPage.template_audience) ? personalPage.template_audience : [personalPage.template_audience],
+            bg_audio_url: personalPage.template_bg_audio_url
+          }}
+          recipientName={personalPage.recipient_name}
+          message={personalPage.message}
+          designStyle={personalPage.design_style}
+          creatorName={personalPage.sender_name}
+          isPreview={false}
+          textFields={{
+            ...getDefaultTextFields(personalPage.template_slug),
+            ...personalPage.text_fields,
+            recipient_name: personalPage.recipient_name,
+            sender_name: personalPage.sender_name,
+            message: personalPage.message,
+            ...(personalPage.special_date && { special_date: personalPage.special_date })
+          }}
+        />
       </div>
 
       {/* Floating Hearts Animation */}
       <FloatingHearts isActive={true} />
+
+      {/* Footer - HeartNote Branding */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+          <p className="text-xs text-white/80 font-medium">
+            ❤️ HeartNote ile yapılmıştır
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
