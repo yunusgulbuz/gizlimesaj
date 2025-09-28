@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import type { TemplateTextFields } from '../../shared/types';
 import { createAnalyticsTracker } from '@/lib/analytics';
@@ -17,6 +17,30 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
   const [noClickCount, setNoClickCount] = useState(0);
   const [showParty, setShowParty] = useState(false);
   const [confetti, setConfetti] = useState<Array<{id: number, x: number, y: number, color: string, size: number}>>([]);
+  const [animationElements, setAnimationElements] = useState<Array<{id: number, left: number, top: number, delay: number}>>([]);
+  const [funAnimationElements, setFunAnimationElements] = useState<Array<{id: number, left: number, top: number, delay: number, emoji: string}>>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  // Generate animation elements only on client-side to prevent hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+    const elements = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 3
+    }));
+    setAnimationElements(elements);
+
+    const funElements = Array.from({ length: 15 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 3,
+      emoji: ['💖', '⭐', '✨', '💫'][Math.floor(Math.random() * 4)]
+    }));
+    setFunAnimationElements(funElements);
+  }, []);
 
   // Initialize analytics tracker
   const analytics = shortId ? createAnalyticsTracker(shortId) : null;
@@ -74,14 +98,14 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
       }}>
         {/* Altın toz efekti */}
         <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
+          {isClient && animationElements.map((element) => (
             <div
-              key={i}
+              key={element.id}
               className="absolute animate-pulse"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`
+                left: `${element.left}%`,
+                top: `${element.top}%`,
+                animationDelay: `${element.delay}s`
               }}
             >
               <div className="w-1 h-1 bg-yellow-400 rounded-full opacity-70"></div>
@@ -308,7 +332,7 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
           background: 'linear-gradient(45deg, #ff69b4, #ffd700, #ff6b6b, #4ecdc4)'
         }}>
           {/* Konfeti */}
-          {confetti.map((piece) => (
+          {confetti.map((piece, index) => (
             <div
               key={piece.id}
               className="absolute animate-bounce"
@@ -320,7 +344,7 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
                 height: `${piece.size}px`,
                 borderRadius: '50%',
                 animationDuration: '2s',
-                animationDelay: `${Math.random() * 2}s`
+                animationDelay: `${(index * 0.1) % 2}s`
               }}
             />
           ))}
@@ -354,18 +378,18 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
       }}>
         {/* Animasyonlu arka plan desenleri */}
         <div className="absolute inset-0">
-          {[...Array(15)].map((_, i) => (
+          {isClient && funAnimationElements.map((element) => (
             <div
-              key={i}
+              key={element.id}
               className="absolute animate-pulse"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`
+                left: `${element.left}%`,
+                top: `${element.top}%`,
+                animationDelay: `${element.delay}s`
               }}
             >
               <span className="text-2xl opacity-30">
-                {['💖', '⭐', '✨', '💫'][Math.floor(Math.random() * 4)]}
+                {element.emoji}
               </span>
             </div>
           ))}

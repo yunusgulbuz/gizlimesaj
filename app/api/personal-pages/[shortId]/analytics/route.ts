@@ -73,21 +73,26 @@ export async function POST(
     }
 
     // Insert analytics record
+    const insertData = {
+      personal_page_id: personalPage.id,
+      event_type,
+      user_agent: user_agent || null,
+      ip_address: ip_address || null,
+      event_data: metadata || null,
+      created_at: new Date().toISOString()
+    };
+    
+    console.log('Inserting analytics data:', insertData);
+    
     const { error: analyticsError } = await supabase
       .from('page_analytics')
-      .insert({
-        personal_page_id: personalPage.id,
-        event_type,
-        user_agent: user_agent || null,
-        ip_address: ip_address || null,
-        metadata: metadata || null,
-        created_at: new Date().toISOString()
-      });
+      .insert(insertData);
 
     if (analyticsError) {
       console.error('Analytics insert error:', analyticsError);
+      console.error('Error details:', JSON.stringify(analyticsError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to record analytics' },
+        { error: 'Failed to record analytics', details: analyticsError.message },
         { status: 500 }
       );
     }

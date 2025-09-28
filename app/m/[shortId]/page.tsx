@@ -9,6 +9,8 @@ import { AudioPlayer } from '@/components/ui/audio-player';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { createAnalyticsTracker } from '@/lib/analytics';
+import TemplateRenderer from '@/templates/shared/template-renderer';
+import { getDefaultTextFields } from '@/templates/shared/types';
 
 interface PersonalPage {
   id: string;
@@ -17,8 +19,11 @@ interface PersonalPage {
   sender_name: string;
   message: string;
   template_title: string;
+  template_slug: string;
+  template_audience: string | string[];
   template_preview_url: string | null;
   template_bg_audio_url: string | null;
+  design_style: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
   expires_at: string;
   special_date: string | null;
   is_active: boolean;
@@ -68,9 +73,6 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
         }
         const data = await response.json();
         setPersonalPage(data);
-        
-        // Track page view using analytics tracker
-        await analytics.trackPageView();
       } catch (error) {
         console.error('Error fetching personal page:', error);
         notFound();
@@ -220,71 +222,52 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
       )}
 
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <div className="max-w-2xl mx-auto w-full">
-          {/* Main Message Card */}
-          <Card className="backdrop-blur-sm bg-white/90 shadow-2xl border-0 overflow-hidden">
-            <CardContent className="p-8 md:p-12 text-center">
-              {/* Header */}
-              <div className="mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Heart className="h-8 w-8 text-white" />
-                </div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                  Merhaba {personalPage.recipient_name}! 👋
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  {personalPage.sender_name} sana özel bir mesaj gönderdi
-                </p>
-              </div>
+        <div className="max-w-4xl mx-auto w-full">
+          {/* Template Renderer - Show the actual purchased template design */}
+          <div className="mb-8">
+            <TemplateRenderer
+              template={{
+                id: personalPage.id,
+                slug: personalPage.template_slug,
+                title: personalPage.template_title,
+                audience: Array.isArray(personalPage.template_audience) ? personalPage.template_audience : [personalPage.template_audience],
+                bg_audio_url: personalPage.template_bg_audio_url
+              }}
+              recipientName={personalPage.recipient_name}
+              message={personalPage.message}
+              designStyle={personalPage.design_style}
+              creatorName={personalPage.sender_name}
+              isPreview={true}
+              textFields={{
+                ...getDefaultTextFields(personalPage.template_slug),
+                recipient_name: personalPage.recipient_name,
+                sender_name: personalPage.sender_name,
+                message: personalPage.message,
+                ...(personalPage.special_date && { special_date: personalPage.special_date })
+              }}
+            />
+          </div>
 
-              {/* Message */}
-              <div className="mb-8 p-6 bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl">
-                <div className="text-2xl mb-4">💌</div>
-                <p className="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">
-                  {personalPage.message}
-                </p>
-                <div className="mt-4 text-right">
-                  <p className="text-gray-600 italic">
-                    - {personalPage.sender_name}
-                  </p>
-                </div>
-              </div>
+          {/* Countdown Timer */}
+          <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0 mb-8">
+            <CardContent className="p-6 text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Bu mesaj şu kadar süre daha aktif:
+              </h3>
+              <Countdown 
+                targetDate={personalPage.expires_at}
+                onExpired={() => {
+                  // Handle expiration
+                  window.location.reload();
+                }}
+                className="justify-center"
+              />
+            </CardContent>
+          </Card>
 
-              {/* Special Date */}
-              {personalPage.special_date && (
-                <div className="mb-8 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-                  <div className="flex items-center justify-center gap-2 text-yellow-800">
-                    <Calendar className="h-5 w-5" />
-                    <span className="font-medium">
-                      Özel Tarih: {new Date(personalPage.special_date).toLocaleDateString('tr-TR')}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Countdown Timer */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
-                  Bu mesaj şu kadar süre daha aktif:
-                </h3>
-                <Countdown 
-                  targetDate={personalPage.expires_at}
-                  onExpired={() => {
-                    // Handle expiration
-                    window.location.reload();
-                  }}
-                  className="justify-center"
-                />
-              </div>
-
-              {/* Template Info */}
-              <div className="mb-8 p-4 bg-gray-50 rounded-xl">
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium">Şablon:</span> {personalPage.template_title}
-                </p>
-              </div>
-
-              {/* Call to Action */}
+          {/* Call to Action */}
+          <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
+            <CardContent className="p-6 text-center">
               <div className="space-y-4">
                 <p className="text-gray-600">
                   Bu mesajı beğendin mi? Sen de sevdiklerine özel mesajlar gönderebilirsin!

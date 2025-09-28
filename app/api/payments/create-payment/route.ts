@@ -13,6 +13,7 @@ interface PaymentRequest {
   expires_in_hours?: number;
   buyer_email: string;
   order_id?: string; // For existing orders
+  duration_id?: number; // Add duration_id for proper pricing
 }
 
 export async function POST(request: NextRequest) {
@@ -37,7 +38,8 @@ export async function POST(request: NextRequest) {
       special_date,
       expires_in_hours = 24,
       buyer_email,
-      order_id
+      order_id,
+      duration_id
     } = requestBody;
 
     console.log('Extracted template_id:', template_id, 'Type:', typeof template_id);
@@ -113,13 +115,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate required fields for new orders
-    if (!template_id || !recipient_name || !sender_name || !message || !buyer_email) {
+    if (!template_id || !recipient_name || !sender_name || !message || !buyer_email || !duration_id) {
       console.log('Missing fields validation:', {
         template_id: !!template_id,
         recipient_name: !!recipient_name,
         sender_name: !!sender_name,
         message: !!message,
-        buyer_email: !!buyer_email
+        buyer_email: !!buyer_email,
+        duration_id: !!duration_id
       });
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -153,11 +156,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get template pricing
+    // Get template pricing based on template_id and duration_id
     const { data: templatePricing, error: pricingError } = await supabase
       .from('template_pricing')
       .select('price_try')
       .eq('template_id', template_id)
+      .eq('duration_id', duration_id)
       .eq('is_active', true)
       .single();
 
@@ -166,7 +170,7 @@ export async function POST(request: NextRequest) {
     if (pricingError || !templatePricing) {
       console.log('Template pricing not found error:', pricingError);
       return NextResponse.json(
-        { error: 'Template pricing not found' },
+        { error: 'Template pricing not found for selected duration' },
         { status: 404 }
       );
     }

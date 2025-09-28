@@ -3,6 +3,13 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { isValidShortId } from '@/lib/shortid';
 import { pageViewRateLimit } from '@/lib/rateLimit';
 
+function pickDesignStyle(slug: string): 'modern' | 'classic' | 'minimalist' | 'eglenceli' {
+  if (slug.includes('classic')) return 'classic';
+  if (slug.includes('minimal')) return 'minimalist';
+  if (slug.includes('fun') || slug.includes('teen') || slug.includes('eglenceli')) return 'eglenceli';
+  return 'modern';
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ shortId: string }> }
@@ -29,21 +36,12 @@ export async function GET(
 
     const supabase = await createServerSupabaseClient();
 
-    // Get personal page with template info using direct query since we need additional fields
+    // Get personal page with template info using a proper join
     const { data: personalPage, error } = await supabase
       .from('personal_pages')
       .select(`
-        id,
-        short_id,
-        template_id,
-        recipient_name,
-        sender_name,
-        message,
-        start_at,
-        expires_at,
-        is_active,
-        special_date,
-        templates!inner (
+        *,
+        templates (
           title,
           slug,
           audience,
@@ -74,7 +72,7 @@ export async function GET(
 
     // Check if page is expired
     const now = new Date();
-    const expiresAt = new Date(page.expires_at);
+    const expiresAt = new Date(personalPage.expires_at);
     
     if (now > expiresAt) {
       // Update page status to inactive if expired
@@ -90,21 +88,24 @@ export async function GET(
     }
 
     // Return the personal page data
-    const template = page.templates && page.templates.length > 0 ? page.templates[0] : null;
+    const template = personalPage.templates;
+    const templateSlug = template?.slug || 'default';
+    
     return NextResponse.json({
-      id: page.id,
-      short_id: page.short_id,
-      recipient_name: page.recipient_name,
-      sender_name: page.sender_name,
-      message: page.message,
+      id: personalPage.id,
+      short_id: personalPage.short_id,
+      recipient_name: personalPage.recipient_name,
+      sender_name: personalPage.sender_name,
+      message: personalPage.message,
       template_title: template?.title || 'Gizli Mesaj',
-      template_slug: template?.slug || 'default',
+      template_slug: templateSlug,
       template_audience: template?.audience || [],
       template_preview_url: template?.preview_url || null,
       template_bg_audio_url: template?.bg_audio_url || null,
-      expires_at: page.expires_at,
-      special_date: page.special_date,
-      is_active: page.is_active
+      design_style: pickDesignStyle(templateSlug),
+      expires_at: personalPage.expires_at,
+      special_date: personalPage.special_date,
+      is_active: personalPage.is_active
     });
 
   } catch (error) {

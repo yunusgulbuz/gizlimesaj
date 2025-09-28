@@ -284,7 +284,8 @@ export default function TemplateFormPage({ template, durations, templatePricing,
         message: textFields.mainMessage || '',
         buyer_email: email,
         special_date: specialDate,
-        expires_in_hours: 24 * parseInt(selectedDuration) // Convert duration to hours
+        expires_in_hours: selectedDurationData ? 24 * selectedDurationData.days : 24,
+        duration_id: selectedDurationData ? selectedDurationData.id : parseInt(selectedDuration)
       };
 
       // Call payment API
