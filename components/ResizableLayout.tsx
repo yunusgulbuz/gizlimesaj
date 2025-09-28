@@ -28,7 +28,7 @@ export default function ResizableLayout({ form, preview, previewWidth, commitPre
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>("form");
-  const [isDesktop, setIsDesktop] = useState<boolean>(() => typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)").matches : false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [currentWidth, setCurrentWidth] = useState<number>(previewWidth);
 
   const widthMotion = useMotionValue(previewWidth);
@@ -52,16 +52,22 @@ export default function ResizableLayout({ form, preview, previewWidth, commitPre
   }, [previewWidth, widthMotion, isDragging]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const media = window.matchMedia("(min-width: 1024px)");
-    const handle = (event: MediaQueryListEvent) => {
+    const handleChange = (event: MediaQueryListEvent) => {
       setIsDesktop(event.matches);
       if (!event.matches) {
         setActiveTab("form");
       }
     };
+
     setIsDesktop(media.matches);
-    media.addEventListener("change", handle);
-    return () => media.removeEventListener("change", handle);
+    if (!media.matches) {
+      setActiveTab("form");
+    }
+
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
   }, []);
 
   useEffect(() => {
@@ -86,12 +92,11 @@ export default function ResizableLayout({ form, preview, previewWidth, commitPre
       const clamped = clampPreviewWidth(prev, containerWidth);
       if (Math.abs(clamped - prev) > 0.5) {
         widthMotion.set(clamped);
-        commitPreviewWidth(clamped);
         return clamped;
       }
       return prev;
     });
-  }, [containerWidth, commitPreviewWidth, widthMotion]);
+  }, [containerWidth, widthMotion]);
 
   const applyWidthFromClientX = useCallback((clientX: number) => {
     const element = containerRef.current;

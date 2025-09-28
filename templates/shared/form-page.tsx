@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,12 +9,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Heart, ArrowLeft } from "lucide-react";
+import { Heart, ArrowLeft, MessageCircle, Star } from "lucide-react";
 import TemplateRenderer from "./template-renderer";
 import { getTemplateConfig, getDefaultTextFields, TemplateTextFields } from "./types";
 import { YouTubePlayer, extractVideoId } from "@/components/ui/youtube-player";
 import ResizableLayout from "@/components/ResizableLayout";
 import { usePreviewWidth } from "@/hooks/usePreviewWidth";
+import { TemplateComments } from "@/components/template-comments";
+import { StarRating } from "@/components/ui/star-rating";
+import { createClient } from "@/lib/supabase-client";
+import type { User } from "@supabase/supabase-js";
 
 interface Template {
   id: string;
@@ -49,14 +53,6 @@ const audienceLabels = {
 };
 
 
-const categoryPalette = [
-  'from-rose-500/30 via-rose-400/10 to-white text-rose-700',
-  'from-purple-500/25 via-purple-400/10 to-white text-purple-700',
-  'from-indigo-500/25 via-indigo-400/10 to-white text-indigo-700',
-  'from-emerald-500/25 via-emerald-400/10 to-white text-emerald-700',
-  'from-amber-500/25 via-amber-400/10 to-white text-amber-700',
-];
-
 const formatCategoryLabel = (value: string): string => {
   const normalized = value as keyof typeof audienceLabels;
   if (audienceLabels[normalized]) {
@@ -70,9 +66,8 @@ const formatCategoryLabel = (value: string): string => {
     .join(' ');
 };
 
-const getCategoryBadgeClass = (_value: string, index: number) => {
-  const palette = categoryPalette[index % categoryPalette.length];
-  return `border-none bg-gradient-to-r ${palette} px-3 py-1.5 text-[0.7rem] font-semibold shadow-sm ring-1 ring-white/60 backdrop-blur-sm`;
+const getCategoryBadgeClass = () => {
+  return 'rounded-full border border-gray-200/80 bg-white/80 px-3 py-1 text-[0.7rem] font-medium text-gray-600 shadow-sm backdrop-blur-sm';
 };
 
 const designStyles = {
@@ -136,6 +131,59 @@ export default function TemplateFormPage({ template, durations, templatePricing,
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [creatorName, setCreatorName] = useState(isPreview ? 'Örnek Oluşturan' : '');
   const { width: persistedPreviewWidth, commitWidth: commitPreviewWidth } = usePreviewWidth();
+  const supabase = useMemo(() => createClient(), []);
+  const [sessionUser, setSessionUser] = useState<User | null>(null);
+  const [ratingSummary, setRatingSummary] = useState<{ average: number | null; total: number }>({ average: null, total: 0 });
+  const [userRatingValue, setUserRatingValue] = useState<number | null>(null);
+  const [commentCount, setCommentCount] = useState<number | null>(null);
+  const commentsSectionRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadUser = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (isMounted) {
+          setSessionUser(data.user ?? null);
+        }
+      } catch (error) {
+        console.error('Kullanıcı bilgisi alınamadı:', error);
+      }
+    };
+
+    loadUser();
+
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (isMounted) {
+        setSessionUser(session?.user ?? null);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription?.subscription?.unsubscribe();
+    };
+  }, [supabase]);
+
+  const handleRatingSummaryUpdate = useCallback((stats: { averageRating: number; totalRatings: number }) => {
+    setRatingSummary({
+      average: Number.isFinite(stats.averageRating) ? stats.averageRating : 0,
+      total: stats.totalRatings ?? 0,
+    });
+  }, []);
+
+  const handleUserRatingChange = useCallback((rating: number | null) => {
+    setUserRatingValue(rating);
+  }, []);
+
+  const handleCommentCountUpdate = useCallback((count: number) => {
+    setCommentCount(count);
+  }, []);
+
+  const scrollToComments = useCallback(() => {
+    commentsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
   
   // Çoklu mesaj desteği için yeni state
   const templateConfig = getTemplateConfig(template.slug);
@@ -444,18 +492,17 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       </div>
 
       <div className="relative z-10">
-        <div className="container mx-auto px-4 py-8 lg:py-12">
-          <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-purple-600">
-                <Heart className="h-5 w-5 text-white" />
-              </span>
-              <div>
-                <p className="text-xl font-semibold text-gray-900">Heartnote</p>
-                <p className="text-xs text-gray-500">Özel şablon düzenleyici</p>
-              </div>
+        <div className="container mx-auto px-4 py-6 lg:py-10">
+          <header className="flex flex-col gap-3 rounded-3xl border border-white/60 bg-white/80 px-4 py-4 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <p className="text-[11px] uppercase tracking-[0.45em] text-gray-400">Heartnote Studio</p>
+              <p className="text-sm text-gray-600">Kişisel mesaj şablonlarınızı burada yapılandırın.</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 text-xs text-gray-500 sm:text-sm">
+              <span className="hidden items-center gap-1 sm:flex">
+                <Heart className="h-3.5 w-3.5 text-rose-400" />
+                {primaryCategoryLabel}
+              </span>
               {!isPreview && (
                 <Button variant="ghost" size="sm" asChild className="text-gray-600 hover:text-gray-900">
                   <Link href="/templates">
@@ -467,44 +514,44 @@ export default function TemplateFormPage({ template, durations, templatePricing,
             </div>
           </header>
 
-          <section className="mt-8 rounded-3xl border border-white/40 bg-white/80 p-6 shadow-xl backdrop-blur-lg">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  {templateCategories.map((category, index) => (
+          <section className="mt-6 rounded-2xl border border-white/50 bg-white/70 px-4 py-5 shadow-md backdrop-blur md:mt-8 md:px-6 md:py-6">
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
+                  <span className="rounded-full bg-rose-100/70 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-500">
+                    {primaryCategoryLabel}
+                  </span>
+                  {templateCategories.slice(1).map((category, index) => (
                     <Badge key={`${category.value}-${index}`} className={category.className}>
                       {category.label}
                     </Badge>
                   ))}
                 </div>
-                <h1 className="text-2xl font-semibold text-gray-900 md:text-3xl">
+                <h1 className="text-xl font-semibold text-gray-900 md:text-[26px]">
                   {template.title}
                 </h1>
                 <p className="max-w-2xl text-sm text-gray-600 md:text-base">
                   {template.description || `${primaryCategoryLabel} kategorisinde özel mesaj şablonu. Heartnote ile sahne sahne duygularınızı anlatın.`}
                 </p>
-              </div>
-              <div className="w-full max-w-sm rounded-3xl bg-white/55 p-5 shadow-inner ring-1 ring-white/70 backdrop-blur">
-                <div className="flex items-start gap-3">
-                  <span className="text-3xl leading-none">{designStyles[selectedDesignStyle].preview}</span>
-                  <div className="flex-1">
-                    <p className="text-xs uppercase tracking-wide text-gray-500">Seçili stil</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {designStyles[selectedDesignStyle].label}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-600">
-                      {designStyles[selectedDesignStyle].description}
-                    </p>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 md:text-sm">
+                  <div
+                    className="flex cursor-pointer items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 shadow-sm ring-1 ring-white/60 transition hover:bg-white"
+                    onClick={scrollToComments}
+                  >
+                    <Star className="h-4 w-4 text-amber-500" />
+                    <StarRating rating={ratingSummary.average ?? 0} readonly size="sm" />
+                    <span className="font-semibold text-gray-900">
+                      {ratingSummary.average !== null ? ratingSummary.average.toFixed(1) : '—'}
+                    </span>
+                    <span className="text-xs text-gray-500">/ 5 · {ratingSummary.total} değerlendirme</span>
                   </div>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-gray-600">
-                  <div className="rounded-2xl bg-white/70 p-3 shadow-sm ring-1 ring-white/70">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-400">Süre seçenekleri</span>
-                    <span className="mt-1 block text-sm font-semibold text-indigo-600">{durations.length}</span>
-                  </div>
-                  <div className="rounded-2xl bg-white/70 p-3 shadow-sm ring-1 ring-white/70">
-                    <span className="text-[11px] uppercase tracking-wider text-gray-400">Ödeme sonrası</span>
-                    <span className="mt-1 block text-sm font-semibold text-emerald-600">Anında yayın</span>
+                  <div
+                    className="flex cursor-pointer items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 shadow-sm ring-1 ring-white/60 transition hover:bg-white"
+                    onClick={scrollToComments}
+                  >
+                    <MessageCircle className="h-4 w-4 text-rose-400" />
+                    <span className="font-semibold text-gray-900">{commentCount ?? '—'}</span>
+                    <span className="text-xs text-gray-500">yorum</span>
                   </div>
                 </div>
               </div>
@@ -518,6 +565,24 @@ export default function TemplateFormPage({ template, durations, templatePricing,
             commitPreviewWidth={commitPreviewWidth}
             previewUrl={previewUrl}
           />
+
+          {/* Yorum & Puanlama */}
+          <section className="mt-6">
+            <div
+              ref={commentsSectionRef}
+              className="rounded-3xl border border-white/50 bg-white/80 p-5 shadow-md backdrop-blur"
+            >
+              <TemplateComments
+                templateId={template.id}
+                user={sessionUser ?? undefined}
+                userRating={userRatingValue}
+                ratingSummary={ratingSummary}
+                onRatingSummaryChange={handleRatingSummaryUpdate}
+                onUserRatingChange={handleUserRatingChange}
+                onCountChange={handleCommentCountUpdate}
+              />
+            </div>
+          </section>
         </div>
       </div>
     </div>

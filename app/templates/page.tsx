@@ -18,6 +18,8 @@ import {
   Filter,
   Users,
   Timer,
+  MessageCircle,
+  Star,
 } from "lucide-react";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { generateMetadata } from "@/lib/seo";
@@ -53,12 +55,27 @@ interface TemplatePricing {
   template_id: string;
   duration_id: number;
   price_try: string;
+  old_price: string | null;
   duration: {
     id: number;
     label: string;
     days: number;
   }[];
 }
+
+interface TemplateStatMapEntry {
+  averageRating: number;
+  totalRatings: number;
+  totalComments: number;
+}
+
+type TemplateWithMeta = Template & {
+  shortestPrice: string | null;
+  shortestOldPrice: string | null;
+  shortestDuration: Duration | undefined;
+  allPricing: Map<number, { price: string; oldPrice: string | null }>;
+  stats?: TemplateStatMapEntry;
+};
 
 interface HeroHighlight {
   label: string;
@@ -160,6 +177,7 @@ async function getTemplatePricing(): Promise<TemplatePricing[]> {
       template_id,
       duration_id,
       price_try,
+      old_price,
       duration:durations(id, label, days)
     `)
     .eq("is_active", true);
@@ -172,6 +190,30 @@ async function getTemplatePricing(): Promise<TemplatePricing[]> {
   return pricing || [];
 }
 
+async function getTemplateStats(): Promise<Record<string, TemplateStatMapEntry>> {
+  const supabase = await createServerSupabaseClient();
+
+  const { data: stats, error } = await supabase
+    .from("template_stats")
+    .select("id, average_rating, total_ratings, total_comments");
+
+  if (error) {
+    console.error("Error fetching template stats:", error);
+    return {};
+  }
+
+  const map: Record<string, TemplateStatMapEntry> = {};
+  (stats || []).forEach((item) => {
+    map[item.id] = {
+      averageRating: Number(item.average_rating) || 0,
+      totalRatings: Number(item.total_ratings) || 0,
+      totalComments: Number(item.total_comments) || 0,
+    };
+  });
+
+  return map;
+}
+
 function formatPrice(price: string | null | undefined): string | null {
   if (!price) return null;
 
@@ -179,6 +221,17 @@ function formatPrice(price: string | null | undefined): string | null {
   if (Number.isNaN(numPrice)) return null;
 
   return numPrice.toFixed(0);
+}
+
+function calculateDiscountPercentage(currentPrice: string | null, oldPrice: string | null): number | null {
+  if (!currentPrice || !oldPrice) return null;
+  
+  const current = parseFloat(currentPrice);
+  const old = parseFloat(oldPrice);
+  
+  if (Number.isNaN(current) || Number.isNaN(old) || old <= current) return null;
+  
+  return Math.round(((old - current) / old) * 100);
 }
 
 export default async function TemplatesPage({
@@ -192,29 +245,36 @@ export default async function TemplatesPage({
     getCategories(),
     getTemplatePricing(),
   ]);
+  const templateStats = await getTemplateStats();
 
-  const pricingByTemplate = new Map<string, Map<number, string>>();
+  const pricingByTemplate = new Map<string, Map<number, { price: string; oldPrice: string | null }>>();
   allPricing.forEach((pricing) => {
     if (!pricingByTemplate.has(pricing.template_id)) {
       pricingByTemplate.set(pricing.template_id, new Map());
     }
-    pricingByTemplate.get(pricing.template_id)?.set(pricing.duration_id, pricing.price_try);
+    pricingByTemplate.get(pricing.template_id)?.set(pricing.duration_id, {
+      price: pricing.price_try,
+      oldPrice: pricing.old_price
+    });
   });
 
   const sortedDurations = [...durations].sort((a, b) => a.days - b.days);
   const shortestDuration = sortedDurations[0];
 
-  const templatesWithMeta = templates.map((template) => {
+  const templatesWithMeta: TemplateWithMeta[] = templates.map((template) => {
     const templatePricing = pricingByTemplate.get(template.id);
-    const shortestPrice = shortestDuration && templatePricing
+    const shortestPricing = shortestDuration && templatePricing
       ? templatePricing.get(shortestDuration.id)
       : null;
+    const stats = templateStats[template.id];
 
     return {
       ...template,
-      shortestPrice: formatPrice(shortestPrice),
+      shortestPrice: formatPrice(shortestPricing?.price),
+      shortestOldPrice: formatPrice(shortestPricing?.oldPrice),
       shortestDuration,
-      allPricing: templatePricing || new Map<number, string>(),
+      allPricing: templatePricing || new Map<number, { price: string; oldPrice: string | null }>(),
+      stats,
     };
   });
 
@@ -391,9 +451,43 @@ export default async function TemplatesPage({
                         )}
                       </div>
                       {template.shortestPrice && template.shortestDuration && (
-                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-full bg-white/85 px-4 py-2 text-sm font-medium text-gray-800">
-                          <span>{template.shortestDuration.days} gün erişim</span>
-                          <span>₺{template.shortestPrice}</span>
+                        <div className="absolute bottom-3 left-3 right-3 space-y-2 text-xs font-medium text-gray-800">
+                          {template.stats && (
+                            <div className="flex items-center justify-between rounded-full bg-white/85 px-4 py-1.5 shadow-sm">
+                              <span className="flex items-center gap-1.5 text-gray-700">
+                                <Star className="h-4 w-4 text-amber-500" />
+                                <span className="font-semibold text-gray-900">
+                                  {template.stats.averageRating.toFixed(1)}
+                                </span>
+                                <span className="text-gray-500">({template.stats.totalRatings})</span>
+                              </span>
+                              <span className="flex items-center gap-1 text-gray-600">
+                                <MessageCircle className="h-4 w-4 text-rose-400" />
+                                {template.stats.totalComments} yorum
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between rounded-full bg-white/90 px-4 py-2 shadow-sm">
+                            <span className="text-gray-700">{template.shortestDuration.days} gün erişim</span>
+                            <div className="flex items-center gap-2">
+                              {(() => {
+                                if (!template.shortestOldPrice) return null;
+                                const discount = calculateDiscountPercentage(template.shortestPrice, template.shortestOldPrice);
+                                if (!discount) return null;
+                                return (
+                                  <span className="flex items-center gap-1 rounded-full bg-rose-500/90 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
+                                    %{discount}
+                                  </span>
+                                );
+                              })()}
+                              {template.shortestOldPrice && (
+                                <span className="text-xs text-gray-400 line-through">₺{template.shortestOldPrice}</span>
+                              )}
+                              <span className={template.shortestOldPrice ? "text-green-600 font-semibold" : "font-semibold"}>
+                                ₺{template.shortestPrice}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>

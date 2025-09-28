@@ -104,3 +104,13 @@ INSERT INTO public.templates (slug, title, audience, preview_url, bg_audio_url, 
 ('mutlu-yillar-fun', 'Mutlu Yıllar', 'fun', '/templates/fun-newyear.jpg', '/templates/celebration-music.mp3', true),
 ('romantik-mesaj-elegant', 'Romantik Mesaj', 'elegant', '/templates/elegant-romantic.jpg', '/templates/romantic-music.mp3', true)
 ON CONFLICT (slug) DO NOTHING;
+
+-- auth.users tablosu için RLS politikaları
+-- Kullanıcılar sadece kendi bilgilerini görebilir
+ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own profile" ON auth.users
+    FOR SELECT USING (auth.uid() = id);
+
+-- Authenticated kullanıcılara auth.users tablosuna select yetkisi ver
+GRANT SELECT ON auth.users TO authenticated;
