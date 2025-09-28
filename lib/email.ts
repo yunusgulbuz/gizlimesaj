@@ -16,8 +16,8 @@ export const EMAIL_TEMPLATES = {
 
 // Email configuration
 export const EMAIL_CONFIG = {
-  FROM: 'Gizli Mesaj <noreply@gizlimesaj.com>',
-  REPLY_TO: 'destek@gizlimesaj.com',
+  FROM: 'Gizli Mesaj <noreply@heartnote2.vercel.app>',
+  REPLY_TO: 'destek@heartnote2.vercel.app',
   DOMAIN: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
 } as const;
 
