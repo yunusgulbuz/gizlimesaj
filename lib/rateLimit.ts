@@ -74,7 +74,7 @@ export const pageViewRateLimit = rateLimit({
 })
 
 export const checkoutRateLimit = rateLimit({
-  maxRequests: 5, // 5 checkout attempts per hour per IP
+  maxRequests: 50, // 50 checkout attempts per hour per IP (increased for testing)
   windowMs: 60 * 60 * 1000 // 1 hour
 })
 

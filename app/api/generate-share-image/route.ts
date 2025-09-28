@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       senderName: personalPage.sender_name,
       templateTitle: template.title,
       message: personalPage.message.substring(0, 150) + (personalPage.message.length > 150 ? '...' : ''),
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://gizlimesaj.com'}/m/${shortId}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://gizlimesaj.com'}/m/${shortId}`,
       format
     });
 

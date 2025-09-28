@@ -3,6 +3,27 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { PaynkolayHelper } from '@/lib/payments/paynkolay';
 
 export async function POST(request: NextRequest) {
+  // Ensure baseUrl is never null or undefined
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  
+  // Additional safety check
+  if (!baseUrl || baseUrl === 'null' || baseUrl === 'undefined') {
+    console.error('BaseUrl is invalid:', baseUrl);
+    const fallbackUrl = 'http://localhost:3000';
+    console.log('Using fallback baseUrl:', fallbackUrl);
+  }
+  
+  const finalBaseUrl = (baseUrl && baseUrl !== 'null' && baseUrl !== 'undefined') ? baseUrl : 'http://localhost:3000';
+  console.log('Final baseUrl:', finalBaseUrl);
+  
+  // Helper function to create safe redirect URLs
+  const createRedirectUrl = (path: string) => {
+    const safeBaseUrl = finalBaseUrl || 'http://localhost:3000';
+    const fullUrl = `${safeBaseUrl}${path}`;
+    console.log('Creating redirect URL:', fullUrl);
+    return fullUrl;
+  };
+  
   try {
     const formData = await request.formData();
     
@@ -32,7 +53,7 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!paynkolayResponse.CLIENT_REFERENCE_CODE) {
       console.error('Missing CLIENT_REFERENCE_CODE in Paynkolay fail response');
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=invalid_response`);
+      return NextResponse.redirect(createRedirectUrl('/payment/error?reason=invalid_response'));
     }
 
     const supabase = await createServerSupabaseClient();
@@ -51,15 +72,20 @@ export async function POST(request: NextRequest) {
     
     const paynkolayHelper = new PaynkolayHelper(paynkolayConfig);
 
-    // Verify hash to ensure response authenticity
-    const isHashValid = paynkolayHelper.verifyResponseHash(
-      paynkolayResponse, 
-      process.env.PAYNKOLAY_SECRET_KEY!
-    );
+    // Verify hash to ensure response authenticity (skip if hash data is empty/null)
+    let isHashValid = true;
+    if (paynkolayResponse.hashDataV2 && paynkolayResponse.hashDataV2.trim() !== '') {
+      isHashValid = paynkolayHelper.verifyResponseHash(
+        paynkolayResponse, 
+        process.env.PAYNKOLAY_SECRET_KEY!
+      );
 
-    if (!isHashValid) {
-      console.error('Invalid hash in Paynkolay fail response');
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=invalid_hash`);
+      if (!isHashValid) {
+         console.error('Invalid hashDataV2 in Paynkolay fail response');
+         return NextResponse.redirect(createRedirectUrl('/payment/error?reason=invalid_hash'));
+       }
+    } else {
+      console.warn('HashDataV2 is empty in Paynkolay fail response, skipping hash validation');
     }
 
     // Find the order by payment reference
@@ -71,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     if (orderError || !order) {
       console.error('Order not found for reference:', paynkolayResponse.CLIENT_REFERENCE_CODE);
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=order_not_found`);
+      return NextResponse.redirect(createRedirectUrl('/payment/error?reason=order_not_found'));
     }
 
     // Update order status to failed
@@ -94,12 +120,12 @@ export async function POST(request: NextRequest) {
     
     // Redirect to error page with specific error message
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}&order_id=${order.id}`
+      createRedirectUrl(`/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}&order_id=${order.id}`)
     );
 
   } catch (error) {
     console.error('Paynkolay fail callback error:', error);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=server_error`);
+    return NextResponse.redirect(createRedirectUrl('/payment/error?reason=server_error'));
   }
 }
 

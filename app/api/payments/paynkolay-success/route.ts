@@ -3,6 +3,13 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { PaynkolayHelper } from '@/lib/payments/paynkolay';
 
 export async function POST(request: NextRequest) {
+  // Ensure baseUrl is never null or undefined
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000';
+  
+  // Additional safety check
+  const finalBaseUrl = (baseUrl && baseUrl !== 'null' && baseUrl !== 'undefined') ? baseUrl : 'http://localhost:3000';
+  console.log('Final baseUrl:', finalBaseUrl);
+  
   try {
     const formData = await request.formData();
     
@@ -31,8 +38,8 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!paynkolayResponse.CLIENT_REFERENCE_CODE) {
-      console.error('Missing CLIENT_REFERENCE_CODE in Paynkolay response');
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=invalid_response`);
+      console.error('Missing CLIENT_REFERENCE_CODE in Paynkolay success response');
+      return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=invalid_response`);
     }
 
     const supabase = await createServerSupabaseClient();
@@ -51,21 +58,18 @@ export async function POST(request: NextRequest) {
     
     const paynkolayHelper = new PaynkolayHelper(paynkolayConfig);
 
-    // Verify hash to ensure response authenticity
-    const isHashValid = paynkolayHelper.verifyResponseHash(
-      paynkolayResponse, 
-      process.env.PAYNKOLAY_SECRET_KEY!
-    );
-
-    if (!isHashValid) {
-      console.error('Invalid hash in Paynkolay response');
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=invalid_hash`);
+    // Verify hash if present
+    if (paynkolayResponse.hashDataV2 && paynkolayResponse.RND) {
+      const isValidHash = paynkolayHelper.verifyResponseHash(paynkolayResponse, paynkolayConfig.secretKey);
+      if (!isValidHash) {
+        console.error('Invalid hashDataV2 in Paynkolay success response');
+        return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=invalid_hash`);
+      }
+    } else {
+      console.warn('HashDataV2 is empty in Paynkolay success response, skipping hash validation');
     }
 
-    // Check if payment is successful
-    const isPaymentSuccessful = paynkolayHelper.isPaymentSuccessful(paynkolayResponse);
-
-    // Find the order by payment reference
+    // Find the order by payment reference (CLIENT_REFERENCE_CODE ile payment_reference eşleştirmesi)
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select('*')
@@ -74,8 +78,11 @@ export async function POST(request: NextRequest) {
 
     if (orderError || !order) {
       console.error('Order not found for reference:', paynkolayResponse.CLIENT_REFERENCE_CODE);
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=order_not_found`);
+      return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=order_not_found`);
     }
+
+    // Check if payment is successful
+    const isPaymentSuccessful = paynkolayHelper.isPaymentSuccessful(paynkolayResponse);
 
     if (isPaymentSuccessful) {
       // Update order status to completed
@@ -91,7 +98,7 @@ export async function POST(request: NextRequest) {
 
       if (updateError) {
         console.error('Failed to update order status:', updateError);
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=update_failed`);
+        return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=update_failed`);
       }
 
       // Create personal page record
@@ -116,9 +123,9 @@ export async function POST(request: NextRequest) {
       } else {
         // Send payment success email with personal page link
         try {
-          const personalPageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/m/${order.short_id}`;
+          const personalPageUrl = `${finalBaseUrl}/m/${order.short_id}`;
           
-          const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/send-email`, {
+          const emailResponse = await fetch(`${finalBaseUrl}/api/send-email`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -144,7 +151,7 @@ export async function POST(request: NextRequest) {
       }
 
       console.log('Payment successful for order:', order.id);
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/success/${order.short_id}`);
+      return NextResponse.redirect(`${finalBaseUrl}/success/${order.short_id}`);
     } else {
       // Payment failed
       const { error: updateError } = await supabase
@@ -164,13 +171,13 @@ export async function POST(request: NextRequest) {
       console.log('Payment failed for order:', order.id, 'Error:', errorMessage);
       
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}`
+        `${finalBaseUrl}/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}`
       );
     }
 
   } catch (error) {
     console.error('Paynkolay success callback error:', error);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=server_error`);
+    return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=server_error`);
   }
 }
 

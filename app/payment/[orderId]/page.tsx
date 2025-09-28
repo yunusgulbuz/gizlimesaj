@@ -18,7 +18,6 @@ async function getOrder(orderId: string) {
       *,
       templates (
         title,
-        price,
         preview_url
       )
     `)
@@ -26,6 +25,7 @@ async function getOrder(orderId: string) {
     .single();
 
   if (error || !order) {
+    console.error('Order lookup error:', error);
     return null;
   }
 

@@ -49,13 +49,16 @@ Enter MERCHANT_SECRET_KEY
 Hash Hesapla
 Success sayfanıza post ettiğimiz değişkenler ile …
 
-PHP
-.NET
-JavaScript
-Python
-example.js
+JavaScript:
 function calculateHash(merchantNo, referenceCode, authCode, responseCode, use3D, rnd, installment, authAmount, currencyCode, merchantSecretKey) {
   const raw = `${merchantNo}|${referenceCode}|${authCode}|${responseCode}|${use3D}|${rnd}|${installment}|${authAmount}|${currencyCode}|${merchantSecretKey}`;
   const hash = CryptoJS.SHA512(raw);
   return CryptoJS.enc.Base64.stringify(hash);
 }
+
+
+php:
+$hashstr = $MERCHANT_NO . "|" . $REFERENCE_CODE . "|" . $AUTH_CODE . "|" . $RESPONSE_CODE . "|" . $USE_3D . "|" . $RND . "|" . $INSTALLMENT . "|" . $AUTHORIZATION_AMOUNT . "|" . $CURRENCY_CODE . "|" . $MERCHANTSECRETKEY;
+$hash = mb_convert_encoding($hashstr, 'UTF-8');
+$hashedBytes = hash("sha512", $hash, true);
+$hashDataV2 = base64_encode($hashedBytes);

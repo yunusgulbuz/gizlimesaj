@@ -12,6 +12,7 @@ interface PaymentRequest {
   special_date?: string;
   expires_in_hours?: number;
   buyer_email: string;
+  order_id?: string; // For existing orders
 }
 
 export async function POST(request: NextRequest) {
@@ -25,7 +26,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body: PaymentRequest = await request.json();
+    const requestBody = await request.json() as PaymentRequest;
+    console.log('Payment request body:', JSON.stringify(requestBody, null, 2));
+
     const {
       template_id,
       recipient_name,
@@ -33,27 +36,110 @@ export async function POST(request: NextRequest) {
       message,
       special_date,
       expires_in_hours = 24,
-      buyer_email
-    } = await request.json() as PaymentRequest;
+      buyer_email,
+      order_id
+    } = requestBody;
 
-    // Validate required fields
+    console.log('Extracted template_id:', template_id, 'Type:', typeof template_id);
+
+    const supabase = await createServerSupabaseClient();
+
+    // Handle existing order payment
+    if (order_id) {
+      console.log('Processing payment for existing order:', order_id);
+      
+      // Get existing order
+      const { data: existingOrder, error: orderError } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', order_id)
+        .single();
+
+      if (orderError || !existingOrder) {
+        console.error('Existing order not found:', orderError);
+        return NextResponse.json(
+          { error: 'Order not found' },
+          { status: 404 }
+        );
+      }
+
+      if (existingOrder.status !== 'pending') {
+        return NextResponse.json(
+          { error: 'Order is not in pending status' },
+          { status: 400 }
+        );
+      }
+
+      // Initialize Paynkolay payment for existing order
+      try {
+        const paynkolayHelper = createPaynkolayHelper();
+        const clientRefCode = `ORDER_${existingOrder.id}_${Date.now()}`;
+        
+        const paymentFormData = paynkolayHelper.createPaymentFormData({
+          amount: parseFloat(existingOrder.total_try),
+          clientRefCode,
+          customerKey: existingOrder.id.toString(),
+          merchantCustomerNo: existingOrder.id.toString(),
+          cardHolderIP: request.headers.get('x-forwarded-for') || 
+                       request.headers.get('x-real-ip') || 
+                       '127.0.0.1'
+        });
+
+        // Update order with payment reference
+        await supabase
+          .from('orders')
+          .update({ 
+            payment_reference: clientRefCode,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingOrder.id);
+
+        return NextResponse.json({
+           success: true,
+           order_id: existingOrder.id,
+           payment_form_data: paymentFormData,
+           payment_url: process.env.PAYNKOLAY_BASE_URL!,
+           amount: parseFloat(existingOrder.total_try),
+           short_id: existingOrder.short_id
+         });
+
+      } catch (error) {
+        console.error('Paynkolay payment initialization error:', error);
+        return NextResponse.json(
+          { error: 'Payment initialization failed' },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Validate required fields for new orders
     if (!template_id || !recipient_name || !sender_name || !message || !buyer_email) {
+      console.log('Missing fields validation:', {
+        template_id: !!template_id,
+        recipient_name: !!recipient_name,
+        sender_name: !!sender_name,
+        message: !!message,
+        buyer_email: !!buyer_email
+      });
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    const supabase = await createServerSupabaseClient();
+    console.log('Looking for template with ID:', template_id);
 
-    // Get template details and pricing
+    // Get template details
     const { data: template, error: templateError } = await supabase
       .from('templates')
-      .select('id, title, price, is_active')
+      .select('id, title, is_active')
       .eq('id', template_id)
       .single();
 
+    console.log('Template query result:', { template, templateError });
+
     if (templateError || !template) {
+      console.log('Template not found error:', templateError);
       return NextResponse.json(
         { error: 'Template not found' },
         { status: 404 }
@@ -66,6 +152,26 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Get template pricing
+    const { data: templatePricing, error: pricingError } = await supabase
+      .from('template_pricing')
+      .select('price_try')
+      .eq('template_id', template_id)
+      .eq('is_active', true)
+      .single();
+
+    console.log('Template pricing result:', { templatePricing, pricingError });
+
+    if (pricingError || !templatePricing) {
+      console.log('Template pricing not found error:', pricingError);
+      return NextResponse.json(
+        { error: 'Template pricing not found' },
+        { status: 404 }
+      );
+    }
+
+    const templatePrice = parseFloat(templatePricing.price_try);
 
     // Generate unique short ID for the personal page
     const shortId = generateShortId();
@@ -85,9 +191,11 @@ export async function POST(request: NextRequest) {
         special_date: special_date || null,
         expires_at: expiresAt.toISOString(),
         short_id: shortId,
-        amount: template.price,
+        amount: templatePrice,
+        total_try: templatePrice, // Add required total_try field (price in Turkish Lira)
         buyer_email,
         status: 'pending',
+        payment_provider: 'paynkolay', // Add required payment_provider field
         created_at: new Date().toISOString()
       })
       .select()
@@ -107,7 +215,7 @@ export async function POST(request: NextRequest) {
       const clientRefCode = `ORDER_${order.id}_${Date.now()}`;
       
       const paymentFormData = paynkolayHelper.createPaymentFormData({
-        amount: template.price,
+        amount: templatePrice,
         clientRefCode,
         customerKey: order.id.toString(),
         merchantCustomerNo: order.id.toString(),
@@ -131,7 +239,7 @@ export async function POST(request: NextRequest) {
         order_id: order.id,
         payment_form_data: paymentFormData,
         payment_url: process.env.PAYNKOLAY_BASE_URL!,
-        amount: template.price,
+        amount: templatePrice,
         short_id: shortId
       });
 
@@ -139,13 +247,13 @@ export async function POST(request: NextRequest) {
       console.error('Paynkolay initialization error:', paynkolayError);
       
       // Fallback to demo payment URL if Paynkolay fails
-      const paymentUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/payment/${order.id}`;
+      const paymentUrl = `${process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000'}/payment/${order.id}`;
       
       return NextResponse.json({
         success: true,
         order_id: order.id,
         payment_url: paymentUrl,
-        amount: template.price,
+        amount: templatePrice,
         short_id: shortId,
         error: 'Payment provider temporarily unavailable, using demo mode'
       });

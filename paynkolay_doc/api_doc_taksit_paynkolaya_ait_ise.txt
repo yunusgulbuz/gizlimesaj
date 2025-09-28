@@ -13,9 +13,6 @@ image
 İşlem 3D değilse bu aşamada ödeme alınır. İşlem sonlanır. Response Dönüş Parametreleri
 Payment servisine POST edildiğinde, 3D true ise 3D formu gelecektir. Bu formu şu şekilde ekranda çalıştırabilirsiniz:
 
-PHP
-.NET C#
-Python
 Node.js
 example.js
 const axios = require('axios');
@@ -108,3 +105,98 @@ main();
 image
 
 Gelen 3D formu ekrana basıldığında ilgili bankanın 3D secure penceresi açılır ve burada 3D secure şifresi girilmesi beklenir.
+
+
+php:
+<?php
+
+// Step 1: Query Installments with PaymentInstallments API
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+    CURLOPT_URL => 'https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/PaymentInstallments',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => array(
+        'sx' => '118591467|bScbGDYCtPf7SS1N6PQ6/+58rFhW1WpsWINqvkJFaJlu6bMH2tgPKDQtjeA5vClpzJP24uA0vx7OX53cP3SgUspa4EvYix+1C3aXe++8glUvu9Oyyj3v300p5NP7ro/9K57Zcw==',
+        'amount' => '100.00',
+        'cardNumber' => '4546711234567894',
+        'hosturl' => 'https://yoursite.com',
+        'iscardvalid' => 'false' // Use false to query with BIN only
+    ),
+));
+
+$response = curl_exec($curl);
+$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+curl_close($curl);
+
+if ($httpCode == 200) {
+    $installmentData = json_decode($response, true);
+    $encodedValue = $installmentData['EncodedValue']; // This will be used in payment
+    echo "Installments retrieved successfully\n";
+    echo "EncodedValue: " . $encodedValue . "\n";
+} else {
+    echo "Error retrieving installments: " . $response . "\n";
+}
+
+// Step 2: Make Payment with EncodedValue from installments
+if (isset($encodedValue)) {
+    $paymentCurl = curl_init();
+
+    curl_setopt_array($paymentCurl, array(
+        CURLOPT_URL => 'https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/Payment',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => array(
+            'EncodedValue' => $encodedValue,
+            'installmentNo' => '2',
+            'amount' => '100.00',
+            'sx' => '118591467|bScbGDYCtPf7SS1N6PQ6/+58rFhW1WpsWINqvkJFaJlu6bMH2tgPKDQtjeA5vClpzJP24uA0vx7OX53cP3SgUspa4EvYix+1C3aXe++8glUvu9Oyyj3v300p5NP7ro/9K57Zcw==',
+            'clientRefCode' => '789456|AB76',
+            'successUrl' => 'https://yoursite.com/success',
+            'failUrl' => 'https://yoursite.com/fail',
+            'cardHolderName' => 'John Doe',
+            'month' => '12',
+            'year' => '2026',
+            'cvv' => '123',
+            'cardNumber' => '4546711234567894',
+            'use3D' => 'true',
+            'transactionType' => 'SALES',
+            'hosturl' => 'https://yoursite.com',
+            'rnd' => time(), // Random value for security
+            'hashData' => 'your_calculated_hash_here',
+            'environment' => 'TEST'
+        ),
+    ));
+
+    $paymentResponse = curl_exec($paymentCurl);
+    $paymentHttpCode = curl_getinfo($paymentCurl, CURLINFO_HTTP_CODE);
+    curl_close($paymentCurl);
+
+    if ($paymentHttpCode == 200) {
+        echo "Payment request sent successfully\n";
+        echo "Response: " . $paymentResponse . "\n";
+
+        // If use3D is true, the response will contain HTML form for 3D secure
+        // You need to display this form to the user
+        if (strpos($paymentResponse, '<form') !== false) {
+            echo "3D Secure form received. Display this form to user:\n";
+            // Save or display the HTML form
+            file_put_contents('3d_form.html', $paymentResponse);
+        }
+    } else {
+        echo "Error in payment: " . $paymentResponse . "\n";
+    }
+}
+
+?>

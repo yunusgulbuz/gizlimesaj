@@ -10,8 +10,8 @@ import { Mail, Lock, Eye, EyeOff, Loader2, User } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { toast } from 'sonner';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy-url-for-build.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-key-for-build';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -77,6 +77,12 @@ export default function RegisterForm() {
     setIsLoading(true);
 
     try {
+      // Runtime validation for Supabase configuration
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        toast.error('Supabase yapılandırması eksik. Lütfen daha sonra tekrar deneyin.');
+        return;
+      }
+
       const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
       
       const { data, error } = await supabase.auth.signUp({

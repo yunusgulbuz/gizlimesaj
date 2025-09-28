@@ -45,11 +45,7 @@ export default function PaymentForm({ order }: PaymentFormProps) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            template_id: 'existing',
-            recipient_name: 'existing',
-            sender_name: 'existing', 
-            message: 'existing',
-            expires_in_hours: 72
+            order_id: order.id
           }),
         });
 
@@ -132,7 +128,12 @@ export default function PaymentForm({ order }: PaymentFormProps) {
               <input type="hidden" name="rnd" value={paymentData.payment_form_data.rnd} />
               <input type="hidden" name="use3D" value={paymentData.payment_form_data.use3D} />
               <input type="hidden" name="transactionType" value={paymentData.payment_form_data.transactionType} />
-              <input type="hidden" name="hashData" value={paymentData.payment_form_data.hashData} />
+              {paymentData.payment_form_data.hashData && (
+                <input type="hidden" name="hashData" value={paymentData.payment_form_data.hashData} />
+              )}
+              {paymentData.payment_form_data.hashDataV2 && (
+                <input type="hidden" name="hashDataV2" value={paymentData.payment_form_data.hashDataV2} />
+              )}
               
               {paymentData.payment_form_data.language && (
                 <input type="hidden" name="language" value={paymentData.payment_form_data.language} />

@@ -109,9 +109,9 @@ export async function POST(
 
         if (!orderError && orderData?.orders && Array.isArray(orderData.orders) && orderData.orders.length > 0) {
           const order = orderData.orders[0];
-          const personalPageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/m/${shortId}`;
-          
-          const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/send-email`, {
+          const personalPageUrl = `${process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000'}/m/${shortId}`;
+    
+    const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000'}/api/send-email`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
