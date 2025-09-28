@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 const MERCHANT_SECRET_KEY = "_YckdxUbv4vrnMUZ6VQsr";
 
 interface PaymentParams {
@@ -88,7 +83,7 @@ function verifyHash(params: PaymentParams): boolean {
   }
 }
 
-async function generateShortId(): Promise<string> {
+async function generateShortId(supabase: any): Promise<string> {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < 8; i++) {
@@ -103,7 +98,7 @@ async function generateShortId(): Promise<string> {
     .single();
     
   if (existing) {
-    return generateShortId(); // Recursive call if exists
+    return generateShortId(supabase); // Recursive call if exists
   }
   
   return result;
@@ -111,6 +106,12 @@ async function generateShortId(): Promise<string> {
 
 export async function POST(req: NextRequest) {
   try {
+    // Initialize Supabase client with service role key for admin operations
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
     const formData = await req.formData();
     const params: Record<string, string> = {};
     
@@ -169,7 +170,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Kısa ID oluştur
-    const shortId = await generateShortId();
+    const shortId = await generateShortId(supabase);
 
     // Kişisel sayfa oluştur
     const expiresAt = new Date();
