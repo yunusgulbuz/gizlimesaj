@@ -47,14 +47,15 @@ export default function SuccessPage() {
       try {
         const response = await fetch(`/api/personal-pages/${shortId}`);
         if (!response.ok) {
-          if (response.status === 404 && currentRetryCount < maxRetries) {
-            // Page might not be created yet, retry after delay
+          // Retry for 404 (not found), 405 (method not allowed), 429 (rate limit), and 500 (server error)
+          if ((response.status === 404 || response.status === 405 || response.status === 429 || response.status >= 500) && currentRetryCount < maxRetries) {
+            // Page might not be created yet or server issues, retry after delay
             currentRetryCount++;
             setRetryCount(currentRetryCount);
             setTimeout(fetchPageData, retryDelay);
             return;
           }
-          throw new Error('Sayfa bulunamadı');
+          throw new Error(`Sayfa yüklenirken hata oluştu (${response.status})`);
         }
         const data = await response.json();
         setPageData(data);
@@ -95,13 +96,13 @@ export default function SuccessPage() {
               Ödeme işleminiz tamamlandı. Sayfanız oluşturuluyor.
             </p>
             {retryCount > 0 && (
-              <div className="flex items-center justify-center text-sm text-gray-500">
+              <div className="flex items-center justify-center text-sm text-gray-500 mb-2">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>Deneme {retryCount}/10</span>
               </div>
             )}
             <div className="mt-4 text-xs text-gray-400">
-              Bu işlem birkaç saniye sürebilir...
+              Bu işlem birkaç saniye sürebilir. Lütfen sayfayı kapatmayın.
             </div>
           </CardContent>
         </Card>
