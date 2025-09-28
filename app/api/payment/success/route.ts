@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const MERCHANT_SECRET_KEY = "_YckdxUbv4vrnMUZ6VQsr";
 
@@ -48,9 +48,7 @@ function verifyHash(params: PaymentParams): boolean {
       COMMISION,
       COMMISION_RATE,
       INSTALLMENT,
-      RND,
-      hashData,
-      hashDataV2
+      RND
     } = params;
 
     // Hash doğrulama için string oluştur
@@ -70,20 +68,21 @@ function verifyHash(params: PaymentParams): boolean {
       INSTALLMENT,
       RND,
       MERCHANT_SECRET_KEY
-    ].join("|");
+    ].join('');
 
+    // SHA-512 hash hesapla
     const hash = crypto.createHash('sha512');
     hash.update(hashString, 'utf-8');
     const calculatedHash = hash.digest('base64');
 
-    return calculatedHash === hashDataV2;
+    return calculatedHash === params.hashDataV2;
   } catch (error) {
     console.error('Hash verification error:', error);
     return false;
   }
 }
 
-async function generateShortId(supabase: any): Promise<string> {
+async function generateShortId(supabase: SupabaseClient): Promise<string> {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < 8; i++) {
@@ -135,7 +134,7 @@ export async function POST(req: NextRequest) {
     }
 
     // CLIENT_REFERENCE_CODE'dan sipariş bilgilerini al
-    const clientRefCode = params.CLIENT_REFERENCE_CODE;
+    // const clientRefCode = params.CLIENT_REFERENCE_CODE; // Removed unused variable
     
     // Detail parametresinden sipariş bilgilerini parse et (eğer varsa)
     let orderDetails: OrderDetails = {};
@@ -176,14 +175,13 @@ export async function POST(req: NextRequest) {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30); // 30 gün sonra sona erer
 
-    const { data: personalPage, error: pageError } = await supabase
+    const { error: pageError } = await supabase
       .from('personal_pages')
       .insert({
         short_id: shortId,
         template_id: orderDetails.templateId || 1,
         order_id: order.id,
         recipient_name: orderDetails.recipientName || 'Bilinmeyen',
-        sender_name: orderDetails.senderName || 'Bilinmeyen',
         message: orderDetails.message || 'Mesaj bulunamadı',
         expires_at: expiresAt.toISOString(),
         is_active: true
