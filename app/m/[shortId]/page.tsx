@@ -31,7 +31,7 @@ interface TimeLeft {
   seconds: number;
 }
 
-export default function PersonalMessagePage({ params }: { params: { shortId: string } }) {
+export default function PersonalMessagePage({ params }: { params: Promise<{ shortId: string }> }) {
   const [personalPage, setPersonalPage] = useState<PersonalPage | null>(null);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isExpired, setIsExpired] = useState(false);
@@ -39,15 +39,27 @@ export default function PersonalMessagePage({ params }: { params: { shortId: str
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [shortId, setShortId] = useState<string>('');
   
+  // Initialize params
+  useEffect(() => {
+    const initParams = async () => {
+      const resolvedParams = await params;
+      setShortId(resolvedParams.shortId);
+    };
+    initParams();
+  }, [params]);
+
   // Initialize analytics tracker
-  const analytics = createAnalyticsTracker(params.shortId);
+  const analytics = createAnalyticsTracker(shortId);
 
   // Fetch personal page data
   useEffect(() => {
+    if (!shortId) return;
+    
     const fetchPersonalPage = async () => {
       try {
-        const response = await fetch(`/api/personal-pages/${params.shortId}`);
+        const response = await fetch(`/api/personal-pages/${shortId}`);
         if (!response.ok) {
           if (response.status === 404) {
             notFound();
@@ -68,7 +80,7 @@ export default function PersonalMessagePage({ params }: { params: { shortId: str
     };
 
     fetchPersonalPage();
-  }, [params.shortId, analytics]);
+  }, [shortId, analytics]);
 
   // Initialize audio
   useEffect(() => {

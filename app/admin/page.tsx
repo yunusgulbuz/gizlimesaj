@@ -39,7 +39,7 @@ interface Order {
   created_at: string;
   template: {
     title: string;
-  } | null;
+  }[] | null;
 }
 
 async function getDashboardStats(): Promise<DashboardStats> {
@@ -91,7 +91,7 @@ async function getDashboardStats(): Promise<DashboardStats> {
     recentOrders: recentOrders?.map((order: Order) => ({
       id: order.id,
       recipient_name: order.recipient_name,
-      template_title: order.template?.title || 'Bilinmeyen Şablon',
+      template_title: order.template?.[0]?.title || 'Bilinmeyen Şablon',
       total_amount: order.total_amount,
       status: order.status,
       created_at: order.created_at

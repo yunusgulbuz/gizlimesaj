@@ -1,3 +1,4 @@
+import React from 'react';
 import type { TemplateFormPageProps } from './shared/form-page';
 import type { TemplatePreviewPageProps } from './shared/preview-page';
 
@@ -26,8 +27,8 @@ import YilDonumuPreview from './yil-donumu/preview';
 import IsTebrigiForm from './is-tebrigi/form';
 import IsTebrigiPreview from './is-tebrigi/preview';
 
-export type TemplateFormComponent = (props: TemplateFormPageProps) => JSX.Element;
-export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => JSX.Element;
+export type TemplateFormComponent = (props: TemplateFormPageProps) => React.ReactElement;
+export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => React.ReactElement;
 
 interface TemplateEntry {
   slug: string;

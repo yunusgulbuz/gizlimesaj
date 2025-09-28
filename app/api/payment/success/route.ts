@@ -9,7 +9,35 @@ const supabase = createClient(
 
 const MERCHANT_SECRET_KEY = "_YckdxUbv4vrnMUZ6VQsr";
 
-function verifyHash(params: any): boolean {
+interface PaymentParams {
+  RESPONSE_CODE: string;
+  RESPONSE_DATA: string;
+  REFERENCE_CODE: string;
+  USE_3D: string;
+  MERCHANT_NO: string;
+  AUTH_CODE: string;
+  CLIENT_REFERENCE_CODE: string;
+  TIMESTAMP: string;
+  TRANSACTION_AMOUNT: string;
+  AUTHORIZATION_AMOUNT: string;
+  COMMISION: string;
+  COMMISION_RATE: string;
+  INSTALLMENT: string;
+  RND: string;
+  hashData?: string;
+  hashDataV2?: string;
+  detail?: string;
+  [key: string]: string | undefined;
+}
+
+interface OrderDetails {
+  templateId?: string;
+  userId?: string;
+  amount?: number;
+  [key: string]: unknown;
+}
+
+function verifyHash(params: PaymentParams): boolean {
   try {
     const {
       RESPONSE_CODE,
@@ -84,7 +112,7 @@ async function generateShortId(): Promise<string> {
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const params: any = {};
+    const params: Record<string, string> = {};
     
     // Form data'yı object'e çevir
     for (const [key, value] of formData.entries()) {
@@ -94,7 +122,7 @@ export async function POST(req: NextRequest) {
     console.log('Payment success params:', params);
 
     // Hash doğrulama
-    if (!verifyHash(params)) {
+    if (!verifyHash(params as PaymentParams)) {
       console.error('Hash verification failed');
       return NextResponse.redirect(new URL('/payment/error?reason=invalid_hash', req.url));
     }
@@ -109,7 +137,7 @@ export async function POST(req: NextRequest) {
     const clientRefCode = params.CLIENT_REFERENCE_CODE;
     
     // Detail parametresinden sipariş bilgilerini parse et (eğer varsa)
-    let orderDetails: any = {};
+    let orderDetails: OrderDetails = {};
     if (params.detail) {
       try {
         orderDetails = JSON.parse(params.detail);

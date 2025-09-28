@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,10 +7,11 @@ import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { Heart, CheckCircle, Mail, Share2, Download, ArrowRight } from "lucide-react";
 import { generateMetadata } from "@/lib/seo";
 
-export const metadata = generateMetadata({
-  title: "Ödeme Başarılı - Gizli Mesaj",
-  description: "Ödemeniz başarıyla tamamlandı. Mesaj bağlantılarınız e-posta adresinize gönderildi."
-});
+// Remove metadata export since this is now a client component
+// export const metadata = generateMetadata({
+//   title: "Ödeme Başarılı - Gizli Mesaj",
+//   description: "Ödemeniz başarıyla tamamlandı. Mesaj bağlantılarınız e-posta adresinize gönderildi."
+// });
 
 // Mock order data - In real app, this would come from URL params or API
 const mockOrder = {

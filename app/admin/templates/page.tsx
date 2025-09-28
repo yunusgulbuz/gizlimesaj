@@ -166,10 +166,11 @@ function TemplatesGrid({ templates }: { templates: Template[] }) {
 export default async function AdminTemplatesPage({
   searchParams
 }: {
-  searchParams: { search?: string; audience?: string; status?: string; page?: string }
+  searchParams: Promise<{ search?: string; audience?: string; status?: string; page?: string }>
 }) {
-  const { templates, total } = await getTemplates(searchParams);
-  const currentPage = parseInt(searchParams.page || '1');
+  const params = await searchParams;
+  const { templates, total } = await getTemplates(params);
+  const currentPage = parseInt(params.page || '1');
   const totalPages = Math.ceil(total / 12);
 
   // Breadcrumb items for admin templates page
@@ -220,12 +221,12 @@ export default async function AdminTemplatesPage({
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Şablon adı ile ara..."
-                  defaultValue={searchParams.search}
+                  defaultValue={params.search}
                   className="pl-10"
                 />
               </div>
             </div>
-            <Select defaultValue={searchParams.audience || 'all'}>
+            <Select defaultValue={params.audience || 'all'}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Hedef kitle seçin" />
               </SelectTrigger>
@@ -238,7 +239,7 @@ export default async function AdminTemplatesPage({
                 <SelectItem value="elegant">Zarif</SelectItem>
               </SelectContent>
             </Select>
-            <Select defaultValue={searchParams.status || 'all'}>
+            <Select defaultValue={params.status || 'all'}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Durum seçin" />
               </SelectTrigger>

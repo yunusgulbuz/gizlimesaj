@@ -207,7 +207,7 @@ export class PaynkolayHelper {
    * Check if payment response is successful
    */
   isPaymentSuccessful(response: PaynkolayResponse): boolean {
-    return (
+    return !!(
       response.RESPONSE_CODE === '2' &&
       response.AUTH_CODE &&
       response.AUTH_CODE !== '0' &&

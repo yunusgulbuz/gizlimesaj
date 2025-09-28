@@ -5,7 +5,7 @@ import { apiRateLimit } from '@/lib/rateLimit';
 // POST - Yorumu beğen
 export async function POST(
   request: NextRequest,
-  { params }: { params: { templateId: string; commentId: string } }
+  { params }: { params: Promise<{ templateId: string; commentId: string }> }
 ) {
   try {
     const rateLimitResult = apiRateLimit.check(request);
@@ -16,7 +16,7 @@ export async function POST(
       );
     }
 
-    const { commentId } = params;
+    const { commentId } = await params;
     const supabase = await createServerSupabaseClient();
 
     // Kullanıcı authentication kontrolü
@@ -93,7 +93,7 @@ export async function POST(
 // DELETE - Yorumu beğenmekten vazgeç
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { templateId: string; commentId: string } }
+  { params }: { params: Promise<{ templateId: string; commentId: string }> }
 ) {
   try {
     const rateLimitResult = apiRateLimit.check(request);
@@ -104,7 +104,7 @@ export async function DELETE(
       );
     }
 
-    const { commentId } = params;
+    const { commentId } = await params;
     const supabase = await createServerSupabaseClient();
 
     // Kullanıcı authentication kontrolü

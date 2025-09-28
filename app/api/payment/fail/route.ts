@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const params: any = {};
+    const params: Record<string, string> = {};
     
     // Form data'yı object'e çevir
     for (const [key, value] of formData.entries()) {

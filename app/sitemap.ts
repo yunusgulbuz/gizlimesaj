@@ -1,8 +1,10 @@
 import { MetadataRoute } from 'next';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://gizlimesaj.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://heartnote.com';
   
   // Static pages
   const staticPages = [
@@ -44,27 +46,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Dynamic template pages
-  let templatePages: MetadataRoute.Sitemap = [];
-  
-  try {
-    const supabase = await createServerSupabaseClient();
-    const { data: templates } = await supabase
-      .from('templates')
-      .select('slug, updated_at')
-      .eq('is_active', true);
-
-    if (templates) {
-      templatePages = templates.map((template) => ({
-        url: `${baseUrl}/templates/${template.slug}`,
-        lastModified: new Date(template.updated_at),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      }));
-    }
-  } catch (error) {
-    console.error('Error fetching templates for sitemap:', error);
-  }
+  // Dynamic template pages - using static list for now to avoid dynamic server usage
+  const templatePages: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}/templates/affet-beni`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/templates/seni-seviyorum`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/templates/dogum-gunu-fun`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+  ];
 
   return [...staticPages, ...templatePages];
 }

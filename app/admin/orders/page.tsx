@@ -169,10 +169,11 @@ function OrdersTable({ orders }: { orders: Order[] }) {
 export default async function AdminOrdersPage({
   searchParams
 }: {
-  searchParams: { search?: string; status?: string; page?: string }
+  searchParams: Promise<{ search?: string; status?: string; page?: string }>
 }) {
-  const { orders, total } = await getOrders(searchParams);
-  const currentPage = parseInt(searchParams.page || '1');
+  const params = await searchParams;
+  const { orders, total } = await getOrders(params);
+  const currentPage = parseInt(params.page || '1');
   const totalPages = Math.ceil(total / 20);
 
   // Breadcrumb items for admin orders page
@@ -221,12 +222,12 @@ export default async function AdminOrdersPage({
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="İsim ile ara..."
-                  defaultValue={searchParams.search}
+                  defaultValue={params.search}
                   className="pl-10"
                 />
               </div>
             </div>
-            <Select defaultValue={searchParams.status || 'all'}>
+            <Select defaultValue={params.status || 'all'}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Durum seçin" />
               </SelectTrigger>

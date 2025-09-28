@@ -91,7 +91,7 @@ function DogumGunuStandardTemplate({ recipientName, message, designStyle, creato
   }
 
   // Modern, Classic, Minimalist styles
-  const styles = getDesignStyles(designStyle);
+  // const styles = getDesignStyles(designStyle);
   
   if (designStyle === 'modern') {
     return (

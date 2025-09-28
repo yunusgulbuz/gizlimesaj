@@ -237,8 +237,9 @@ function calculateDiscountPercentage(currentPrice: string | null, oldPrice: stri
 export default async function TemplatesPage({
   searchParams,
 }: {
-  searchParams?: { category?: string };
+  searchParams?: Promise<{ category?: string }>;
 }) {
+  const params = searchParams ? await searchParams : {};
   const [templates, durations, categories, allPricing] = await Promise.all([
     getTemplates(),
     getDurations(),
@@ -278,7 +279,7 @@ export default async function TemplatesPage({
     };
   });
 
-  const activeCategory = (searchParams?.category || "all") as string;
+  const activeCategory = (params?.category || "all") as string;
   const filteredTemplates =
     activeCategory === "all"
       ? templatesWithMeta

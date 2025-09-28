@@ -222,18 +222,19 @@ function PricingTable({ pricing }: { pricing: TemplatePricing[] }) {
 export default async function AdminPricingPage({
   searchParams
 }: {
-  searchParams: { 
+  searchParams: Promise<{ 
     search?: string; 
     template?: string; 
     duration?: string;
     status?: string;
     page?: string;
-  }
+  }>
 }) {
-  const { pricing, total } = await getTemplatePricing(searchParams);
+  const params = await searchParams;
+  const { pricing, total } = await getTemplatePricing(params);
   const templates = await getTemplates();
   const durations = await getDurations();
-  const currentPage = parseInt(searchParams.page || '1');
+  const currentPage = parseInt(params.page || '1');
   const totalPages = Math.ceil(total / 20);
 
   // Breadcrumb items for admin pricing page
@@ -283,11 +284,11 @@ export default async function AdminPricingPage({
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Şablon veya süre ara..."
-                defaultValue={searchParams.search}
+                defaultValue={params.search}
                 className="pl-10"
               />
             </div>
-            <Select defaultValue={searchParams.template || 'all'}>
+            <Select defaultValue={params.template || 'all'}>
               <SelectTrigger>
                 <SelectValue placeholder="Şablon seçin" />
               </SelectTrigger>
@@ -300,7 +301,7 @@ export default async function AdminPricingPage({
                 ))}
               </SelectContent>
             </Select>
-            <Select defaultValue={searchParams.duration || 'all'}>
+            <Select defaultValue={params.duration || 'all'}>
               <SelectTrigger>
                 <SelectValue placeholder="Süre seçin" />
               </SelectTrigger>
@@ -313,7 +314,7 @@ export default async function AdminPricingPage({
                 ))}
               </SelectContent>
             </Select>
-            <Select defaultValue={searchParams.status || 'all'}>
+            <Select defaultValue={params.status || 'all'}>
               <SelectTrigger>
                 <SelectValue placeholder="Durum seçin" />
               </SelectTrigger>
