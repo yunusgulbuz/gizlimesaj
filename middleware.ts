@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  // Minimal fix: redirect POST to GET for success page to avoid 405
+  if (request.method === 'POST' && request.nextUrl.pathname.startsWith('/success/')) {
+    const url = new URL(request.nextUrl.pathname, request.url);
+    return NextResponse.redirect(url, { status: 303 });
+  }
+
   const response = NextResponse.next();
 
   // Security Headers
