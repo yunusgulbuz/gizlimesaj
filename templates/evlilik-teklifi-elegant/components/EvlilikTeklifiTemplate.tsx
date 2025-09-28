@@ -3,24 +3,37 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { TemplateTextFields } from '../../shared/types';
+import { createAnalyticsTracker } from '@/lib/analytics';
 
-function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorName, textFields = {} }: {
+function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorName, textFields = {}, shortId }: {
   recipientName: string;
   message: string;
   designStyle: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
   creatorName?: string;
   textFields?: TemplateTextFields;
+  shortId?: string;
 }) {
   const [showQuestion, setShowQuestion] = useState(true);
   const [noClickCount, setNoClickCount] = useState(0);
   const [showParty, setShowParty] = useState(false);
   const [confetti, setConfetti] = useState<Array<{id: number, x: number, y: number, color: string, size: number}>>([]);
 
+  // Initialize analytics tracker
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
+
   const handleNoClick = () => {
     if (designStyle === 'eglenceli') {
       setNoClickCount(prev => prev + 1);
       // Buton kaçma efekti için state güncellemesi
     }
+    
+    // Track "Hayır" button click
+    analytics?.trackButtonClick('no_button', {
+      templateType: 'evlilik-teklifi',
+      designStyle: designStyle,
+      action: 'reject_proposal',
+      clickCount: noClickCount + 1
+    });
   };
 
   // Get text values from textFields or use defaults
@@ -42,6 +55,15 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
       }));
       setConfetti(newConfetti);
     }
+    
+    // Track "Evet" button click
+    analytics?.trackButtonClick('yes_button', {
+      templateType: 'evlilik-teklifi',
+      designStyle: designStyle,
+      action: 'accept_proposal',
+      noClickCount: noClickCount,
+      finalChoice: 'yes'
+    });
   };
 
   // Modern Stil

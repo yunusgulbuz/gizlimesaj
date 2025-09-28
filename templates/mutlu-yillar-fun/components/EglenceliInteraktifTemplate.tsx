@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { createAnalyticsTracker } from '@/lib/analytics';
 
 interface EglenceliInteraktifTemplateProps {
   recipientName: string;
@@ -9,6 +10,7 @@ interface EglenceliInteraktifTemplateProps {
   wishMessage?: string;
   footerMessage?: string;
   creatorName?: string;
+  shortId?: string;
 }
 
 interface Gift {
@@ -25,8 +27,10 @@ function EglenceliInteraktifTemplate({
   mainMessage, 
   wishMessage, 
   footerMessage, 
-  creatorName 
+  creatorName,
+  shortId
 }: EglenceliInteraktifTemplateProps) {
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
   const [gameStarted, setGameStarted] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
   const [score, setScore] = useState(0);
@@ -63,6 +67,11 @@ function EglenceliInteraktifTemplate({
   }, [timeLeft, gameStarted, gameCompleted]);
 
   const startGame = () => {
+    analytics?.trackButtonClick('start_game', {
+      templateType: 'EglenceliInteraktifTemplate',
+      designStyle: 'eglenceli',
+      action: 'game_start'
+    });
     setGameStarted(true);
     setScore(0);
     setTimeLeft(10);
@@ -85,6 +94,14 @@ function EglenceliInteraktifTemplate({
   const collectGift = (giftId: number) => {
     setGifts(prev => prev.map(gift => {
       if (gift.id === giftId && !gift.collected) {
+        analytics?.trackButtonClick('collect_gift', {
+          templateType: 'EglenceliInteraktifTemplate',
+          designStyle: 'eglenceli',
+          action: 'gift_collected',
+          giftEmoji: gift.emoji,
+          giftPoints: gift.points,
+          currentScore: score
+        });
         setScore(prevScore => prevScore + gift.points);
         return { ...gift, collected: true };
       }

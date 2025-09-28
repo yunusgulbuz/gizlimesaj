@@ -43,6 +43,7 @@ interface TemplateRendererProps {
   isPreview?: boolean;
   creatorName?: string;
   textFields?: TemplateTextFields;
+  shortId?: string;
 }
 
 export default function TemplateRenderer({ 
@@ -52,7 +53,8 @@ export default function TemplateRenderer({
   designStyle,
   isPreview = false,
   creatorName,
-  textFields
+  textFields,
+  shortId
 }: TemplateRendererProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
@@ -85,11 +87,12 @@ export default function TemplateRenderer({
     switch (template.slug) {
       case 'seni-seviyorum-teen':
         if (designStyle === 'eglenceli') {
-          return <EglenceliSeniSeviyorumTemplate 
-            recipientName={recipientName} 
-            message={message} 
-            creatorName={creatorName}
-          />;
+          return <EglenceliSeniSeviyorumTemplate
+          recipientName={recipientName}
+          message={message}
+          creatorName={creatorName}
+          shortId={shortId}
+        />;
         }
         return <SeniSeviyorumTemplate 
           recipientName={recipientName} 
@@ -114,6 +117,7 @@ export default function TemplateRenderer({
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist' | 'eglenceli'}
           creatorName={creatorName}
           textFields={textFields}
+          shortId={shortId}
         />;
       case 'dogum-gunu':
         return <DogumGunuStandardTemplate 
@@ -219,6 +223,7 @@ export default function TemplateRenderer({
               wishMessage={textFields?.wishMessage}
               footerMessage={textFields?.footerMessage}
               creatorName={creatorName}
+              shortId={shortId}
             />;
           default:
             return <PremiumModernTemplate 
@@ -247,6 +252,7 @@ export default function TemplateRenderer({
                 creatorName={creatorName}
                 textFields={textFields}
                 primaryMessage={textFields?.mainMessage || message}
+                shortId={shortId}
               />
             );
           case 'minimalist':
@@ -304,6 +310,7 @@ export default function TemplateRenderer({
                 message={message}
                 creatorName={creatorName}
                 textFields={textFields}
+                shortId={shortId}
               />
             );
           case 'eglenceli':
@@ -313,6 +320,7 @@ export default function TemplateRenderer({
                 message={message}
                 creatorName={creatorName}
                 textFields={textFields}
+                shortId={shortId}
               />
             );
           default:
@@ -333,6 +341,7 @@ export default function TemplateRenderer({
             designStyle={designStyle as 'modern' | 'classic' | 'minimalist' | 'eglenceli'}
             creatorName={creatorName}
             textFields={textFields}
+            shortId={shortId}
           />
         );
       case 'romantik-mesaj':

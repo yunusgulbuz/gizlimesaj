@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { createAnalyticsTracker } from '@/lib/analytics';
 import type { TemplateTextFields } from '../../shared/types';
 
 interface PremiumDynamicCelebrationProps {
@@ -9,6 +10,7 @@ interface PremiumDynamicCelebrationProps {
   message: string;
   creatorName?: string;
   textFields?: TemplateTextFields;
+  shortId?: string;
 }
 
 const CONFETTI_SHADES = ['#fb923c', '#f97316', '#38bdf8', '#0ea5e9', '#facc15'];
@@ -18,10 +20,14 @@ export default function PremiumDynamicCelebration({
   message,
   creatorName,
   textFields,
+  shortId,
 }: PremiumDynamicCelebrationProps) {
   const [sceneActive, setSceneActive] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [chartRise, setChartRise] = useState(false);
+
+  // Initialize analytics tracker if shortId is provided
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
 
   useEffect(() => {
     const timeout = setTimeout(() => setSceneActive(true), 200);
@@ -47,13 +53,21 @@ export default function PremiumDynamicCelebration({
   const description = textFields?.mainMessage || message || 'Takımın ve tüm şirketin ilham kaynağı olmaya devam edeceğine inanıyoruz. Enerjin ve vizyonunla yeni döneme güçlü bir başlangıç yapıyorsun!';
   const buttonText = textFields?.celebrationButtonLabel || 'Teşekkürler';
 
-  const handleCelebrate = () => {
+  const handleCelebrate = async () => {
     setShowConfetti(true);
     setChartRise(false);
     requestAnimationFrame(() => {
       setChartRise(true);
     });
     setTimeout(() => setShowConfetti(false), 2400);
+
+    // Track button click
+    if (analytics) {
+      await analytics.trackButtonClick('celebration_button', {
+        buttonText,
+        confettiTriggered: true,
+      });
+    }
   };
 
   return (

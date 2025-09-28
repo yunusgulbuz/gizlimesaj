@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { checkoutRateLimit } from '@/lib/rateLimit';
 import { generateShortId } from '@/lib/shortid';
+import { createPaynkolayHelper, formatPaynkolayAmount } from '@/lib/payments/paynkolay';
 
 interface PaymentRequest {
   template_id: string;
@@ -97,17 +98,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // In a real implementation, you would integrate with a payment provider here
-    // For now, we'll simulate a payment URL
-    const paymentUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/payment/${order.id}`;
+    // Initialize Paynkolay payment
+    try {
+      const paynkolayHelper = createPaynkolayHelper();
+      const clientRefCode = `ORDER_${order.id}_${Date.now()}`;
+      
+      const paymentFormData = paynkolayHelper.createPaymentFormData({
+        amount: template.price,
+        clientRefCode,
+        customerKey: order.id.toString(),
+        merchantCustomerNo: order.id.toString(),
+        cardHolderIP: request.headers.get('x-forwarded-for') || 
+                     request.headers.get('x-real-ip') || 
+                     '127.0.0.1'
+      });
 
-    return NextResponse.json({
-      success: true,
-      order_id: order.id,
-      payment_url: paymentUrl,
-      amount: template.price,
-      short_id: shortId
-    });
+      // Update order with payment reference
+      await supabase
+        .from('orders')
+        .update({ 
+          payment_reference: clientRefCode,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', order.id);
+
+      return NextResponse.json({
+        success: true,
+        order_id: order.id,
+        payment_form_data: paymentFormData,
+        payment_url: process.env.PAYNKOLAY_BASE_URL!,
+        amount: template.price,
+        short_id: shortId
+      });
+
+    } catch (paynkolayError) {
+      console.error('Paynkolay initialization error:', paynkolayError);
+      
+      // Fallback to demo payment URL if Paynkolay fails
+      const paymentUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/payment/${order.id}`;
+      
+      return NextResponse.json({
+        success: true,
+        order_id: order.id,
+        payment_url: paymentUrl,
+        amount: template.price,
+        short_id: shortId,
+        error: 'Payment provider temporarily unavailable, using demo mode'
+      });
+    }
 
   } catch (error) {
     console.error('Payment creation error:', error);

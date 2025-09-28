@@ -5,6 +5,7 @@ import PaymentForm from './payment-form';
 
 interface PaymentPageProps {
   params: Promise<{ orderId: string }>;
+  searchParams: Promise<{ status?: string; error?: string }>;
 }
 
 async function getOrder(orderId: string) {
@@ -47,12 +48,71 @@ export async function generateMetadata({ params }: PaymentPageProps) {
   });
 }
 
-export default async function PaymentPage({ params }: PaymentPageProps) {
+export default async function PaymentPage({ params, searchParams }: PaymentPageProps) {
   const { orderId } = await params;
+  const { status, error } = await searchParams;
   const order = await getOrder(orderId);
 
   if (!order) {
     notFound();
+  }
+
+  // Handle payment success status from URL
+  if (status === 'success' && order.status === 'completed') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 flex items-center justify-center p-4">
+        <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Ödeme Başarılı!</h1>
+          <p className="text-gray-600 mb-6">
+            Ödemeniz başarıyla tamamlandı. Gizli mesajınız hazırlanıyor...
+          </p>
+          <a
+            href={`/m/${order.short_id}`}
+            className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
+          >
+            Mesajı Görüntüle
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle payment failure status from URL
+  if (status === 'failed' || error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 flex items-center justify-center p-4">
+        <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Ödeme Başarısız</h1>
+          <p className="text-gray-600 mb-6">
+            {error ? `Ödeme hatası: ${decodeURIComponent(error)}` : 'Ödeme işlemi başarısız oldu. Lütfen tekrar deneyin.'}
+          </p>
+          <div className="space-y-3">
+            <a
+              href={`/payment/${orderId}`}
+              className="block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
+            >
+              Tekrar Dene
+            </a>
+            <a
+              href="/templates"
+              className="block text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              Şablonlara Dön
+            </a>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Check if order is already completed

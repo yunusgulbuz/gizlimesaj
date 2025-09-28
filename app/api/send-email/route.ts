@@ -66,6 +66,16 @@ export async function POST(request: NextRequest) {
         result = await emailService.sendMessageNotificationEmail(to, data);
         break;
 
+      case 'button-click-notification':
+        if (!data?.recipientName || !data?.senderName || !data?.buttonType || !data?.templateTitle || !data?.personalPageUrl || !data?.clickedAt) {
+          return NextResponse.json(
+            { error: 'Buton tıklama detayları eksik.' },
+            { status: 400 }
+          );
+        }
+        result = await emailService.sendButtonClickNotificationEmail(to, data);
+        break;
+
       default:
         return NextResponse.json(
           { error: 'Geçersiz email tipi.' },

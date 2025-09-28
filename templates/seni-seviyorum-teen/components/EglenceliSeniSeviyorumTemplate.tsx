@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { createAnalyticsTracker } from '@/lib/analytics';
 
-function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName }: {
+function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, shortId }: {
   recipientName: string;
   message: string;
   creatorName?: string;
+  shortId?: string;
 }) {
   const [showQuestion, setShowQuestion] = useState(true);
   const [noClickCount, setNoClickCount] = useState(0);
@@ -14,13 +16,29 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName }:
   const [confetti, setConfetti] = useState<Array<{id: number, x: number, y: number, color: string, size: number}>>([]);
   const [fireworks, setFireworks] = useState<Array<{id: number, x: number, y: number}>>([]);
 
+  // Initialize analytics tracker
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
+
   const handleNoClick = () => {
     setNoClickCount(prev => prev + 1);
+    
+    // Track "Hayır" button click
+    analytics?.trackButtonClick('hayir_button', {
+      clickCount: noClickCount + 1,
+      templateType: 'seni-seviyorum-teen'
+    });
   };
 
   const handleYesClick = () => {
     setShowQuestion(false);
     setShowParty(true);
+    
+    // Track "EVET" button click
+    analytics?.trackButtonClick('evet_button', {
+      templateType: 'seni-seviyorum-teen',
+      noClickCount: noClickCount,
+      finalChoice: 'yes'
+    });
     
     // Create enhanced confetti effect
     const newConfetti = Array.from({ length: 100 }, (_, i) => ({

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Wand2, Heart, Music2, Crown } from 'lucide-react';
 import type { TemplateTextFields } from '../../shared/types';
+import { createAnalyticsTracker } from '@/lib/analytics';
 
 type DesignStyle = 'modern' | 'classic' | 'minimalist' | 'eglenceli';
 
@@ -13,6 +14,7 @@ interface CikmaTeklifiTemplateProps {
   designStyle: DesignStyle;
   creatorName?: string;
   textFields?: TemplateTextFields;
+  shortId?: string;
 }
 
 interface BaseTemplateProps {
@@ -22,6 +24,7 @@ interface BaseTemplateProps {
   secondaryMessage?: string;
   creatorName?: string;
   musicUrl?: string;
+  shortId?: string;
 }
 
 export default function CikmaTeklifiTemplate({
@@ -29,7 +32,8 @@ export default function CikmaTeklifiTemplate({
   message,
   designStyle,
   creatorName,
-  textFields
+  textFields,
+  shortId
 }: CikmaTeklifiTemplateProps) {
   const fields = textFields || {};
 
@@ -46,6 +50,7 @@ export default function CikmaTeklifiTemplate({
     secondaryMessage,
     creatorName,
     musicUrl,
+    shortId,
   };
 
   switch (designStyle) {
@@ -82,9 +87,13 @@ function UltraModern3DScene({
   mainMessage,
   secondaryMessage,
   creatorName,
+  shortId,
 }: BaseTemplateProps) {
   const [showFinalScene, setShowFinalScene] = useState(false);
   const [laserSweep, setLaserSweep] = useState(0);
+
+  // Initialize analytics tracker
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
 
   const seedBase = useMemo(
     () => `${recipientName}|${proposalQuestion}|${mainMessage}`,
@@ -128,6 +137,13 @@ function UltraModern3DScene({
 
   const handleAccept = () => {
     setShowFinalScene(true);
+    
+    // Track "Evet" button click
+    analytics?.trackButtonClick('evet_button', {
+      templateType: 'cikma-teklifi',
+      designStyle: 'modern',
+      finalChoice: 'yes'
+    });
   };
 
   return (
@@ -311,8 +327,12 @@ function MasalsiBroadwayScene({
   mainMessage,
   secondaryMessage,
   creatorName,
+  shortId,
 }: BaseTemplateProps) {
   const [showMagic, setShowMagic] = useState(false);
+  
+  // Initialize analytics tracker
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
   const sparkles = useMemo(
     () => Array.from({ length: 80 }, (_, i) => ({
       id: i,
@@ -391,7 +411,15 @@ function MasalsiBroadwayScene({
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
             <Button
-              onClick={() => setShowMagic(true)}
+              onClick={() => {
+                setShowMagic(true);
+                // Track "Sihri Göster" button click
+                analytics?.trackButtonClick('sihri_goster_button', {
+                  templateType: 'cikma-teklifi',
+                  designStyle: 'classic',
+                  action: 'show_magic'
+                });
+              }}
               className="group rounded-full border border-amber-300 bg-gradient-to-r from-amber-200 via-rose-200 to-amber-100 px-10 py-5 text-lg font-semibold text-rose-700 shadow-[0_10px_30px_rgba(251,191,36,0.35)] transition-transform duration-300 hover:scale-105"
             >
               <span className="flex items-center gap-3">
@@ -453,10 +481,14 @@ function MinimalistPuzzleScene({
   mainMessage,
   secondaryMessage,
   creatorName,
+  shortId,
 }: BaseTemplateProps) {
   const [started, setStarted] = useState(false);
   const [pieces, setPieces] = useState<PuzzlePiece[]>([]);
   const [isCelebrating, setIsCelebrating] = useState(false);
+
+  // Initialize analytics tracker
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
 
   useEffect(() => {
     const words = proposalQuestion.trim().split(/\s+/);
@@ -495,10 +527,25 @@ function MinimalistPuzzleScene({
 
   const handlePieceClick = (id: number) => {
     setPieces((prev) => prev.map((piece) => (piece.id === id ? { ...piece, placed: true } : piece)));
+    
+    // Track puzzle piece click
+    analytics?.trackButtonClick('puzzle_piece_click', {
+      templateType: 'cikma-teklifi',
+      designStyle: 'minimalist',
+      action: 'place_piece',
+      pieceId: id
+    });
   };
 
   const handleStart = () => {
     setStarted(true);
+    
+    // Track puzzle start
+    analytics?.trackButtonClick('puzzle_start_button', {
+      templateType: 'cikma-teklifi',
+      designStyle: 'minimalist',
+      action: 'start_puzzle'
+    });
   };
 
   return (
@@ -634,11 +681,15 @@ function GamifiedHeartsScene({
   secondaryMessage,
   creatorName,
   musicUrl,
+  shortId,
 }: BaseTemplateProps) {
   const [score, setScore] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [noButtonSize, setNoButtonSize] = useState(1);
-  const [noButtonPosition, setNoButtonPosition] = useState({ x: 65, y: 70 });
+  const [noButtonPosition, setNoButtonPosition] = useState({ x: 0, y: 0 });
+
+  // Initialize analytics tracker
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const hearts = useMemo(
@@ -669,10 +720,26 @@ function GamifiedHeartsScene({
       x: Math.random() * 60 + 20,
       y: Math.random() * 40 + 50,
     });
+    
+    // Track "Hayır" button dodge
+    analytics?.trackButtonClick('no_button_dodge', {
+      templateType: 'cikma-teklifi',
+      designStyle: 'eglenceli',
+      action: 'dodge_no_button',
+      buttonSize: noButtonSize
+    });
   };
 
   const handleHeartCatch = () => {
     setScore((prev) => Math.min(prev + 1, 99));
+    
+    // Track heart catch
+    analytics?.trackButtonClick('heart_catch', {
+      templateType: 'cikma-teklifi',
+      designStyle: 'eglenceli',
+      action: 'catch_heart',
+      currentScore: score
+    });
   };
 
   const handleAccept = () => {
@@ -682,6 +749,14 @@ function GamifiedHeartsScene({
     } catch {
       /* ignore autoplay issues */
     }
+    
+    // Track accept button click
+    analytics?.trackButtonClick('accept_button', {
+      templateType: 'cikma-teklifi',
+      designStyle: 'eglenceli',
+      action: 'accept_proposal',
+      finalScore: score
+    });
   };
 
   return (

@@ -8,6 +8,7 @@ import { FloatingHearts } from '@/components/ui/floating-hearts';
 import { AudioPlayer } from '@/components/ui/audio-player';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { createAnalyticsTracker } from '@/lib/analytics';
 
 interface PersonalPage {
   id: string;
@@ -38,6 +39,9 @@ export default function PersonalMessagePage({ params }: { params: { shortId: str
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  
+  // Initialize analytics tracker
+  const analytics = createAnalyticsTracker(params.shortId);
 
   // Fetch personal page data
   useEffect(() => {
@@ -53,15 +57,8 @@ export default function PersonalMessagePage({ params }: { params: { shortId: str
         const data = await response.json();
         setPersonalPage(data);
         
-        // Track page view
-        await fetch(`/api/personal-pages/${params.shortId}/view`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_agent: navigator.userAgent,
-            referrer: document.referrer
-          })
-        });
+        // Track page view using analytics tracker
+        await analytics.trackPageView();
       } catch (error) {
         console.error('Error fetching personal page:', error);
         notFound();
@@ -280,7 +277,14 @@ export default function PersonalMessagePage({ params }: { params: { shortId: str
                 <p className="text-gray-600">
                   Bu mesajı beğendin mi? Sen de sevdiklerine özel mesajlar gönderebilirsin!
                 </p>
-                <Button asChild size="lg" className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700">
+                <Button 
+                  asChild 
+                  size="lg" 
+                  className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
+                  onClick={async () => {
+                    await analytics.trackButtonClick('create_message_cta');
+                  }}
+                >
                   <a href="https://gizlimesaj.com" target="_blank" rel="noopener noreferrer">
                     Kendi Mesajını Oluştur ✨
                   </a>
@@ -298,6 +302,9 @@ export default function PersonalMessagePage({ params }: { params: { shortId: str
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-pink-600 hover:underline font-medium"
+                onClick={async () => {
+                  await analytics.trackButtonClick('footer_link');
+                }}
               >
                 Gizli Mesaj
               </a>{" "}

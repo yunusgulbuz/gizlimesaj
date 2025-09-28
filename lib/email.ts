@@ -10,6 +10,7 @@ export const EMAIL_TEMPLATES = {
   PAYMENT_SUCCESS: 'payment-success',
   PAYMENT_FAILED: 'payment-failed',
   MESSAGE_NOTIFICATION: 'message-notification',
+  BUTTON_CLICK_NOTIFICATION: 'button-click-notification',
   PASSWORD_RESET: 'password-reset',
 } as const;
 
@@ -140,6 +141,38 @@ export class EmailService {
       return { success: true, data };
     } catch (error) {
       console.error('Message notification email error:', error);
+      return { success: false, error };
+    }
+  }
+
+  // Send button click notification email
+  async sendButtonClickNotificationEmail(
+    to: string,
+    clickDetails: {
+      recipientName: string;
+      senderName: string;
+      buttonType: string;
+      templateTitle: string;
+      personalPageUrl: string;
+      clickedAt: string;
+    }
+  ) {
+    try {
+      const { data, error } = await resend.emails.send({
+        from: EMAIL_CONFIG.FROM,
+        to: [to],
+        subject: `${clickDetails.recipientName} Gizli Mesajınızla Etkileşime Geçti! 🎉`,
+        html: this.getButtonClickNotificationTemplate(clickDetails),
+      });
+
+      if (error) {
+        console.error('Button click notification email error:', error);
+        return { success: false, error };
+      }
+
+      return { success: true, data };
+    } catch (error) {
+      console.error('Button click notification email error:', error);
       return { success: false, error };
     }
   }
@@ -306,6 +339,56 @@ export class EmailService {
             
             <p style="color: #666; font-size: 14px; text-align: center;">
               Bu mesaj <a href="https://gizlimesaj.com" style="color: #f59e0b;">Gizli Mesaj</a> ile gönderilmiştir.
+            </p>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  private getButtonClickNotificationTemplate(clickDetails: any): string {
+    const buttonTypeText = clickDetails.buttonType === 'like' ? 'Beğeni' : 
+                          clickDetails.buttonType === 'love' ? 'Kalp' :
+                          clickDetails.buttonType === 'share' ? 'Paylaşım' :
+                          clickDetails.buttonType === 'download' ? 'İndirme' :
+                          'Buton';
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Mesajınızla Etkileşim</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">Harika Haber! 🎉</h1>
+          </div>
+          
+          <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <p style="font-size: 18px; margin-bottom: 20px;">
+              <strong>${clickDetails.recipientName}</strong> gizli mesajınızla etkileşime geçti!
+            </p>
+            
+            <div style="background: #d1fae5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>Şablon:</strong> ${clickDetails.templateTitle}</p>
+              <p><strong>Etkileşim Türü:</strong> <span style="color: #059669; font-weight: bold;">${buttonTypeText}</span></p>
+              <p><strong>Tarih:</strong> ${new Date(clickDetails.clickedAt).toLocaleString('tr-TR')}</p>
+            </div>
+            
+            <p>Bu, mesajınızın başarıyla ulaştığının ve beğenildiğinin göstergesi! 🎊</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${clickDetails.personalPageUrl}" style="background: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Mesajı Tekrar Görüntüle</a>
+            </div>
+            
+            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+              <p style="margin: 0; color: #92400e;"><strong>💡 İpucu:</strong> Daha fazla kişiyle gizli mesajlarınızı paylaşmak için yeni şablonlar oluşturabilirsiniz!</p>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 30px;">
+              Teşekkürler! <a href="mailto:${EMAIL_CONFIG.REPLY_TO}" style="color: #10b981;">destek@gizlimesaj.com</a>
             </p>
           </div>
         </body>

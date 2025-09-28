@@ -2,12 +2,14 @@
 
 import { useMemo, useState } from 'react';
 import type { TemplateTextFields } from '../../shared/types';
+import { createAnalyticsTracker } from '@/lib/analytics';
 
 interface ClassicMemoryBoxTemplateProps {
   recipientName: string;
   creatorName?: string;
   textFields?: TemplateTextFields;
   primaryMessage?: string;
+  shortId?: string;
 }
 
 interface MemoryItem {
@@ -25,8 +27,10 @@ export default function ClassicMemoryBoxTemplate({
   recipientName,
   creatorName,
   textFields,
-  primaryMessage
+  primaryMessage,
+  shortId
 }: ClassicMemoryBoxTemplateProps) {
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
   const letter = textFields?.hatiraLetter || textFields?.mainMessage || primaryMessage || 'Sevgili aşkım, her hatıranın bir köşesinde senin ışığın var. Bu kutunun içindeki her küçük detay, paylaştığımız büyük anıların bir yansıması. Birlikte attığımız her adım için minnettarım.';
   const buttonLabel = textFields?.hatiraButtonLabel || 'Hatıraları Gör';
   const headerTitle = textFields?.hatiraHeadline || 'Klasik Hatıra Kutusu';
@@ -67,6 +71,11 @@ export default function ClassicMemoryBoxTemplate({
   );
 
   const handleToggleMemories = () => {
+    analytics?.trackButtonClick('toggle_memories', {
+      templateType: 'ClassicMemoryBoxTemplate',
+      designStyle: 'classic',
+      buttonLabel: buttonLabel
+    });
     setShowPetals(true);
     setTimeout(() => setShowPetals(false), 6000);
   };
@@ -164,13 +173,29 @@ export default function ClassicMemoryBoxTemplate({
 
               <div className="flex items-center justify-between gap-3 text-sm text-rose-400">
                 <button
-                  onClick={() => setActiveIndex(prev => (prev - 1 + memories.length) % memories.length)}
+                  onClick={() => {
+                    analytics?.trackButtonClick('memory_navigation', {
+                      templateType: 'ClassicMemoryBoxTemplate',
+                      designStyle: 'classic',
+                      direction: 'previous',
+                      currentIndex: activeIndex
+                    });
+                    setActiveIndex(prev => (prev - 1 + memories.length) % memories.length);
+                  }}
                   className="rounded-full border border-rose-200 bg-white/70 px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:bg-rose-100"
                 >
                   Önceki
                 </button>
                 <button
-                  onClick={() => setActiveIndex(prev => (prev + 1) % memories.length)}
+                  onClick={() => {
+                    analytics?.trackButtonClick('memory_navigation', {
+                      templateType: 'ClassicMemoryBoxTemplate',
+                      designStyle: 'classic',
+                      direction: 'next',
+                      currentIndex: activeIndex
+                    });
+                    setActiveIndex(prev => (prev + 1) % memories.length);
+                  }}
                   className="rounded-full border border-rose-200 bg-white/70 px-4 py-2 text-xs uppercase tracking-[0.3em] transition hover:bg-rose-100"
                 >
                   Sonraki

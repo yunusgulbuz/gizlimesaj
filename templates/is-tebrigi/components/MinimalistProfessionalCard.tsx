@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { createAnalyticsTracker } from '@/lib/analytics';
 import type { TemplateTextFields } from '../../shared/types';
 
 interface MinimalistProfessionalCardProps {
@@ -9,6 +10,7 @@ interface MinimalistProfessionalCardProps {
   message: string;
   creatorName?: string;
   textFields?: TemplateTextFields;
+  shortId?: string;
 }
 
 export default function MinimalistProfessionalCard({
@@ -16,9 +18,13 @@ export default function MinimalistProfessionalCard({
   message,
   creatorName,
   textFields,
+  shortId,
 }: MinimalistProfessionalCardProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
+
+  // Initialize analytics tracker if shortId is provided
+  const analytics = shortId ? createAnalyticsTracker(shortId) : null;
 
   useEffect(() => {
     const timeout = setTimeout(() => setIsVisible(true), 150);
@@ -32,9 +38,17 @@ export default function MinimalistProfessionalCard({
   const buttonLabel = textFields?.messageButtonLabel || 'Teşekkürler';
   const buttonUrl = textFields?.messageButtonUrl;
 
-  const handleMessage = () => {
+  const handleMessage = async () => {
     setShowCheck(true);
     setTimeout(() => setShowCheck(false), 2000);
+
+    // Track button click
+    if (analytics) {
+      await analytics.trackButtonClick('professional_thanks', {
+        buttonLabel,
+        hasUrl: !!buttonUrl,
+      });
+    }
 
     if (buttonUrl) {
       window.open(buttonUrl, '_blank');

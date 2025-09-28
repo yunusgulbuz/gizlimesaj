@@ -1,11 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { CreditCard, Lock, AlertCircle } from 'lucide-react';
+import { CreditCard, Lock, AlertCircle, Loader2 } from 'lucide-react';
 
 interface PaymentFormProps {
   order: {
@@ -18,113 +15,84 @@ interface PaymentFormProps {
   };
 }
 
+interface PaynkolayFormData {
+  sx: string;
+  successUrl: string;
+  failUrl: string;
+  amount: string;
+  clientRefCode: string;
+  use3D: string;
+  rnd: string;
+  agentCode: string;
+  transactionType: string;
+  cardHolderIP: string;
+  hashDataV2: string;
+}
+
 export default function PaymentForm({ order }: PaymentFormProps) {
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardHolder: '',
-    email: ''
-  });
+  const [paymentData, setPaymentData] = useState<PaynkolayFormData | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  useEffect(() => {
+    const initializePayment = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
-    const parts = [];
+        // Call our API to create payment and get Paynkolay form data
+        const response = await fetch('/api/payments/create-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId: order.id,
+            templateId: 'existing', // Since order already exists
+            recipientName: 'existing',
+            senderName: 'existing',
+            message: 'existing',
+            specialDate: null,
+            duration: 30
+          }),
+        });
 
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
+        if (!response.ok) {
+          throw new Error('Ödeme başlatılamadı');
+        }
 
-    if (parts.length) {
-      return parts.join(' ');
-    } else {
-      return v;
-    }
-  };
+        const result = await response.json();
+        
+        if (result.success && result.paymentData) {
+          setPaymentData(result.paymentData);
+          // Auto-submit form after a short delay to show loading state
+          setTimeout(() => {
+            if (formRef.current) {
+              formRef.current.submit();
+            }
+          }, 1500);
+        } else {
+          throw new Error(result.error || 'Ödeme verileri alınamadı');
+        }
 
-  const formatExpiryDate = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4);
-    }
-    return v;
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value);
-    setFormData(prev => ({
-      ...prev,
-      cardNumber: formatted
-    }));
-  };
-
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatExpiryDate(e.target.value);
-    setFormData(prev => ({
-      ...prev,
-      expiryDate: formatted
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    setError(null);
-
-    try {
-      // Simulate payment processing
-      // In a real implementation, you would integrate with a payment provider
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Simulate webhook call to complete the order
-      const webhookResponse = await fetch('/api/payments/webhook', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          order_id: order.id,
-          status: 'success',
-          payment_id: `pay_${Date.now()}`,
-          amount: order.templates.price,
-          currency: 'TRY',
-          provider: 'stripe'
-        }),
-      });
-
-      if (webhookResponse.ok) {
-        // Redirect to success page
-        window.location.href = `/m/${order.short_id}`;
-      } else {
-        throw new Error('Payment processing failed');
+      } catch (error) {
+        console.error('Payment initialization error:', error);
+        setError(error instanceof Error ? error.message : 'Ödeme başlatılamadı');
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-    } catch (error) {
-      console.error('Payment error:', error);
-      setError('Ödeme işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+    initializePayment();
+  }, [order.id]);
 
   return (
     <Card className="bg-white shadow-xl">
       <CardContent className="p-6">
         <div className="flex items-center gap-2 mb-6">
           <CreditCard className="h-5 w-5 text-purple-600" />
-          <h2 className="text-xl font-semibold text-gray-900">Ödeme Bilgileri</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Ödeme İşlemi</h2>
         </div>
 
         {error && (
@@ -134,103 +102,63 @@ export default function PaymentForm({ order }: PaymentFormProps) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="email">E-posta Adresi</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="ornek@email.com"
-              required
-            />
+        {isLoading && (
+          <div className="text-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-purple-600" />
+            <p className="text-gray-600">Ödeme sayfası hazırlanıyor...</p>
           </div>
+        )}
 
-          <div>
-            <Label htmlFor="cardHolder">Kart Sahibinin Adı</Label>
-            <Input
-              id="cardHolder"
-              name="cardHolder"
-              value={formData.cardHolder}
-              onChange={handleInputChange}
-              placeholder="Ad Soyad"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="cardNumber">Kart Numarası</Label>
-            <Input
-              id="cardNumber"
-              name="cardNumber"
-              value={formData.cardNumber}
-              onChange={handleCardNumberChange}
-              placeholder="1234 5678 9012 3456"
-              maxLength={19}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="expiryDate">Son Kullanma Tarihi</Label>
-              <Input
-                id="expiryDate"
-                name="expiryDate"
-                value={formData.expiryDate}
-                onChange={handleExpiryChange}
-                placeholder="MM/YY"
-                maxLength={5}
-                required
-              />
+        {paymentData && (
+          <>
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                <span className="text-blue-800 font-medium">Paynkolay'a yönlendiriliyor...</span>
+              </div>
+              <p className="text-blue-700 text-sm">
+                Güvenli ödeme sayfasına otomatik olarak yönlendirileceksiniz.
+              </p>
             </div>
-            <div>
-              <Label htmlFor="cvv">CVV</Label>
-              <Input
-                id="cvv"
-                name="cvv"
-                value={formData.cvv}
-                onChange={handleInputChange}
-                placeholder="123"
-                maxLength={4}
-                required
-              />
-            </div>
-          </div>
 
-          <div className="pt-4">
-            <Button
-              type="submit"
-              disabled={isProcessing}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 text-lg font-semibold"
+            {/* Hidden Paynkolay Form */}
+            <form
+              ref={formRef}
+              method="post"
+              action={process.env.NODE_ENV === 'production' 
+                ? 'https://paynkolay.nkolayislem.com.tr/Vpos'
+                : 'https://paynkolaytest.nkolayislem.com.tr/Vpos'
+              }
+              style={{ display: 'none' }}
             >
-              {isProcessing ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  İşleniyor...
-                </div>
-              ) : (
-                `₺${order.templates.price} Öde`
-              )}
-            </Button>
-          </div>
+              <input type="hidden" name="sx" value={paymentData.sx} />
+              <input type="hidden" name="successUrl" value={paymentData.successUrl} />
+              <input type="hidden" name="failUrl" value={paymentData.failUrl} />
+              <input type="hidden" name="amount" value={paymentData.amount} />
+              <input type="hidden" name="clientRefCode" value={paymentData.clientRefCode} />
+              <input type="hidden" name="use3D" value={paymentData.use3D} />
+              <input type="hidden" name="rnd" value={paymentData.rnd} />
+              <input type="hidden" name="agentCode" value={paymentData.agentCode} />
+              <input type="hidden" name="transactionType" value={paymentData.transactionType} />
+              <input type="hidden" name="cardHolderIP" value={paymentData.cardHolderIP} />
+              <input type="hidden" name="hashDataV2" value={paymentData.hashDataV2} />
+            </form>
+          </>
+        )}
 
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-500 pt-2">
-            <Lock className="h-4 w-4" />
-            <span>Ödemeniz SSL ile güvence altındadır</span>
-          </div>
-        </form>
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-500 pt-4">
+          <Lock className="h-4 w-4" />
+          <span>Ödemeniz SSL ile güvence altındadır</span>
+        </div>
 
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h3 className="font-medium text-blue-900 mb-2">Test Kartı Bilgileri:</h3>
-          <div className="text-sm text-blue-700 space-y-1">
+        <div className="mt-6 p-4 bg-green-50 rounded-lg">
+          <h3 className="font-medium text-green-900 mb-2">Test Kartı Bilgileri:</h3>
+          <div className="text-sm text-green-700 space-y-1">
             <p><strong>Kart No:</strong> 4242 4242 4242 4242</p>
             <p><strong>Son Kullanma:</strong> 12/25</p>
             <p><strong>CVV:</strong> 123</p>
-            <p className="text-xs mt-2 text-blue-600">
-              * Bu demo amaçlı test kartıdır. Gerçek ödeme yapılmaz.
+            <p className="text-xs mt-2 text-green-600">
+              * Test ortamında bu kart bilgilerini kullanabilirsiniz.
             </p>
           </div>
         </div>

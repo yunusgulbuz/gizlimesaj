@@ -28,7 +28,7 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { event_type, user_agent, ip_address } = body;
+    const { event_type, user_agent, ip_address, metadata } = body;
 
     // Validate required fields
     if (!event_type) {
@@ -80,6 +80,7 @@ export async function POST(
         event_type,
         user_agent: user_agent || null,
         ip_address: ip_address || null,
+        metadata: metadata || null,
         created_at: new Date().toISOString()
       });
 
@@ -89,6 +90,55 @@ export async function POST(
         { error: 'Failed to record analytics' },
         { status: 500 }
       );
+    }
+
+    // If this is a button click event, send notification email to the buyer
+    if (event_type === 'button_click' && metadata?.buttonType) {
+      try {
+        // Get order and buyer information
+        const { data: orderData, error: orderError } = await supabase
+          .from('personal_pages')
+          .select(`
+            order_id,
+            recipient_name,
+            sender_name,
+            orders!inner(buyer_email, templates(title))
+          `)
+          .eq('id', personalPage.id)
+          .single();
+
+        if (!orderError && orderData?.orders && Array.isArray(orderData.orders) && orderData.orders.length > 0) {
+          const order = orderData.orders[0];
+          const personalPageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/m/${shortId}`;
+          
+          const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/send-email`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: order.buyer_email,
+              type: 'button-click-notification',
+              data: {
+                recipientName: orderData.recipient_name,
+                senderName: orderData.sender_name,
+                buttonType: metadata.buttonType,
+                templateTitle: (order.templates && Array.isArray(order.templates) && order.templates.length > 0) 
+                  ? order.templates[0].title 
+                  : 'Gizli Mesaj',
+                personalPageUrl: personalPageUrl,
+                clickedAt: new Date().toISOString()
+              }
+            })
+          });
+
+          if (!emailResponse.ok) {
+            console.error('Failed to send button click notification email');
+          }
+        }
+      } catch (emailError) {
+        console.error('Error sending button click notification:', emailError);
+      }
     }
 
     return NextResponse.json({ success: true });
