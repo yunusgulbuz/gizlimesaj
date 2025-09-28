@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { checkoutRateLimit } from '@/lib/rateLimit';
 import { generateShortId } from '@/lib/shortid';
 import { createPaynkolayHelper } from '@/lib/payments/paynkolay';
+import type { TemplateTextFields } from '@/templates/shared/types';
 
 interface PaymentRequest {
   template_id: string;
@@ -14,7 +15,7 @@ interface PaymentRequest {
   buyer_email: string;
   order_id?: string; // For existing orders
   duration_id?: number; // Add duration_id for proper pricing
-  text_fields?: any; // Form data fields
+  text_fields?: TemplateTextFields; // Form data fields
   design_style?: string; // Selected design style
   bg_audio_url?: string; // Background audio URL
 }
