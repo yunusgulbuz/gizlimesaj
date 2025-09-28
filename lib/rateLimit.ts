@@ -69,7 +69,7 @@ function getClientIdentifier(request: NextRequest): string {
 
 // Pre-configured rate limiters
 export const pageViewRateLimit = rateLimit({
-  maxRequests: 10, // 10 views per minute per IP
+  maxRequests: 100, // 100 views per minute per IP (increased for production)
   windowMs: 60 * 1000 // 1 minute
 })
 
