@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Play, Pause, Volume2, VolumeX, Music } from 'lucide-react';
 import { Button } from './button';
 
@@ -10,8 +10,31 @@ interface YouTubePlayerProps {
   loop?: boolean;
   className?: string;
   onReady?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
   theme?: 'light' | 'dark' | 'auto';
+}
+
+interface YouTubePlayerInstance {
+  destroy: () => void;
+  pauseVideo: () => void;
+  playVideo: () => void;
+  unMute: () => void;
+  mute: () => void;
+  setVolume: (volume: number) => void;
+}
+
+interface YouTubePlayerState {
+  UNSTARTED: number;
+  ENDED: number;
+  PLAYING: number;
+  PAUSED: number;
+  BUFFERING: number;
+  CUED: number;
+}
+
+interface YouTubeAPI {
+  Player: new (element: HTMLElement, config: unknown) => YouTubePlayerInstance;
+  PlayerState: YouTubePlayerState;
 }
 
 // YouTube URL'den video ID'sini çıkaran fonksiyon
@@ -68,48 +91,21 @@ export function YouTubePlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(50);
-  const [player, setPlayer] = useState<any>(null);
+  const [player, setPlayer] = useState<YouTubePlayerInstance | null>(null);
   const [isReady, setIsReady] = useState(false);
   const playerRef = useRef<HTMLDivElement>(null);
 
-  // YouTube API'yi yükle
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    // YouTube API zaten yüklüyse
-    if ((window as any).YT && (window as any).YT.Player) {
-      initializePlayer();
-      return;
-    }
-
-    // YouTube API'yi yükle
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
-    // API yüklendiğinde çağrılacak global fonksiyon
-    (window as any).onYouTubeIframeAPIReady = () => {
-      initializePlayer();
-    };
-
-    return () => {
-      // Cleanup
-      if (player) {
-        player.destroy();
-      }
-    };
-  }, [videoId]);
-
-  const initializePlayer = () => {
+  const initializePlayer = useCallback(() => {
     if (!videoId || !playerRef.current) {
       console.log('YouTube Player: videoId or playerRef not available', { videoId, playerRef: !!playerRef.current });
       return;
     }
 
     console.log('YouTube Player: Initializing with videoId:', videoId);
+    
+    const windowWithYT = window as Window & { YT?: YouTubeAPI };
 
-    const newPlayer = new (window as any).YT.Player(playerRef.current, {
+    new windowWithYT.YT!.Player(playerRef.current, {
       height: '0',
       width: '0',
       videoId: videoId,
@@ -128,7 +124,7 @@ export function YouTubePlayer({
         playlist: loop ? videoId : undefined
       },
       events: {
-        onReady: (event: any) => {
+        onReady: (event: { target: YouTubePlayerInstance }) => {
           console.log('YouTube Player: onReady event triggered');
           setIsReady(true);
           setPlayer(event.target);
@@ -138,22 +134,53 @@ export function YouTubePlayer({
           }
           onReady?.();
         },
-        onStateChange: (event: any) => {
+        onStateChange: (event: { data: number }) => {
           const state = event.data;
-          if (state === (window as any).YT.PlayerState.PLAYING) {
+          const windowWithYT = window as Window & { YT?: YouTubeAPI };
+          if (state === windowWithYT.YT?.PlayerState.PLAYING) {
             setIsPlaying(true);
-          } else if (state === (window as any).YT.PlayerState.PAUSED || 
-                     state === (window as any).YT.PlayerState.ENDED) {
+          } else if (state === windowWithYT.YT?.PlayerState.PAUSED || 
+                     state === windowWithYT.YT?.PlayerState.ENDED) {
             setIsPlaying(false);
           }
         },
-        onError: (event: any) => {
+        onError: (event: { data: number }) => {
           console.error('YouTube Player Error:', event.data);
-          onError?.(event.data);
+          onError?.(new Error(`YouTube Player Error: ${event.data}`));
         }
       }
     });
-  };
+  }, [videoId, autoPlay, loop, onReady, onError]);
+
+  // YouTube API'yi yükle
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // YouTube API zaten yüklüyse
+    const windowWithYT = window as Window & { YT?: YouTubeAPI };
+    if (windowWithYT.YT?.Player) {
+      initializePlayer();
+      return;
+    }
+
+    // YouTube API'yi yükle
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+    // API yüklendiğinde çağrılacak global fonksiyon
+    (window as Window & { onYouTubeIframeAPIReady?: () => void }).onYouTubeIframeAPIReady = () => {
+      initializePlayer();
+    };
+
+    return () => {
+      // Cleanup
+      if (player) {
+        player.destroy();
+      }
+    };
+  }, [videoId, initializePlayer, player]);
 
   const togglePlay = () => {
     if (!player || !isReady) return;
@@ -207,7 +234,7 @@ export function YouTubePlayer({
         {/* Müzik İkonu */}
         <div className="flex items-center space-x-1">
           <Music className="w-4 h-4 text-gray-400" />
-          <span className="text-xs text-gray-500 hidden sm:inline">Geçersiz YouTube URL'si</span>
+          <span className="text-xs text-gray-500 hidden sm:inline">Geçersiz YouTube URL&apos;si</span>
         </div>
         
         {/* Devre Dışı Play Butonu */}

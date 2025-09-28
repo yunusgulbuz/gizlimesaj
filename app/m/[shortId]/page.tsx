@@ -68,7 +68,7 @@ export default function PersonalMessagePage({ params }: { params: { shortId: str
     };
 
     fetchPersonalPage();
-  }, [params.shortId]);
+  }, [params.shortId, analytics]);
 
   // Initialize audio
   useEffect(() => {

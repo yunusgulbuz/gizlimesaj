@@ -220,7 +220,12 @@ export class EmailService {
     `;
   }
 
-  private getOrderConfirmationTemplate(orderDetails: any): string {
+  private getOrderConfirmationTemplate(orderDetails: {
+    orderId: string;
+    templateTitle: string;
+    amount: number;
+    recipientName: string;
+  }): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -269,7 +274,12 @@ export class EmailService {
     `;
   }
 
-  private getPaymentSuccessTemplate(paymentDetails: any): string {
+  private getPaymentSuccessTemplate(paymentDetails: {
+    orderId: string;
+    templateTitle: string;
+    amount: number;
+    personalPageUrl: string;
+  }): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -310,7 +320,11 @@ export class EmailService {
     `;
   }
 
-  private getMessageNotificationTemplate(messageDetails: any): string {
+  private getMessageNotificationTemplate(messageDetails: {
+    senderName: string;
+    recipientName: string;
+    messageUrl: string;
+  }): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -346,7 +360,14 @@ export class EmailService {
     `;
   }
 
-  private getButtonClickNotificationTemplate(clickDetails: any): string {
+  private getButtonClickNotificationTemplate(clickDetails: {
+    recipientName: string;
+    senderName: string;
+    buttonType: string;
+    templateTitle: string;
+    personalPageUrl: string;
+    clickedAt: string;
+  }): string {
     const buttonTypeText = clickDetails.buttonType === 'like' ? 'Beğeni' : 
                           clickDetails.buttonType === 'love' ? 'Kalp' :
                           clickDetails.buttonType === 'share' ? 'Paylaşım' :

@@ -4,7 +4,7 @@ interface LogEntry {
   timestamp: string;
   level: LogLevel;
   message: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   error?: Error;
 }
 
@@ -40,7 +40,7 @@ class Logger {
     return log;
   }
 
-  private log(level: LogLevel, message: string, context?: Record<string, any>, error?: Error) {
+  private log(level: LogLevel, message: string, context?: Record<string, unknown>, error?: Error) {
     if (!this.shouldLog(level)) return;
 
     const entry: LogEntry = {
@@ -71,11 +71,11 @@ class Logger {
 
     // In production, you might want to send logs to external services
     if (!this.isDevelopment) {
-      this.sendToExternalService(entry);
+      this.sendToExternalService();
     }
   }
 
-  private async sendToExternalService(entry: LogEntry) {
+  private async sendToExternalService(): Promise<void> {
     // Implement external logging service integration here
     // Examples: Sentry, LogRocket, DataDog, etc.
     
@@ -92,19 +92,19 @@ class Logger {
     }
   }
 
-  debug(message: string, context?: Record<string, any>) {
+  debug(message: string, context?: Record<string, unknown>) {
     this.log('debug', message, context);
   }
 
-  info(message: string, context?: Record<string, any>) {
+  info(message: string, context?: Record<string, unknown>) {
     this.log('info', message, context);
   }
 
-  warn(message: string, context?: Record<string, any>) {
+  warn(message: string, context?: Record<string, unknown>) {
     this.log('warn', message, context);
   }
 
-  error(message: string, error?: Error, context?: Record<string, any>) {
+  error(message: string, error?: Error, context?: Record<string, unknown>) {
     this.log('error', message, context, error);
   }
 
@@ -135,7 +135,7 @@ class Logger {
     });
   }
 
-  securityEvent(event: string, ip?: string, userAgent?: string, details?: Record<string, any>) {
+  securityEvent(event: string, ip?: string, userAgent?: string, details?: Record<string, unknown>) {
     this.warn(`Security Event: ${event}`, {
       event,
       ip,
@@ -157,7 +157,7 @@ class Logger {
 export const logger = new Logger();
 
 // Performance monitoring helper
-export function withPerformanceLogging<T extends (...args: any[]) => any>(
+export function withPerformanceLogging<T extends (...args: unknown[]) => unknown>(
   fn: T,
   name: string
 ): T {

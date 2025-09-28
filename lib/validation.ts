@@ -129,7 +129,7 @@ export function validateAndSanitize<T>(
     return { success: true, data: result };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.issues.map((err: any) => err.message);
+      const errors = error.issues.map((err: z.ZodIssue) => err.message);
       return { success: false, errors };
     }
     return { success: false, errors: ['Geçersiz veri formatı'] };

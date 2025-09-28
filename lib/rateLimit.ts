@@ -14,7 +14,6 @@ export function rateLimit(options: RateLimitOptions) {
     check: (request: NextRequest, identifier?: string) => {
       const key = identifier || getClientIdentifier(request)
       const now = Date.now()
-      const windowStart = now - options.windowMs
 
       // Clean up old entries
       for (const [k, v] of rateLimitMap.entries()) {

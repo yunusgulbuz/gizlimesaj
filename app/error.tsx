@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
@@ -36,10 +37,10 @@ export default function Error({
               Tekrar Dene
             </Button>
             <Button variant="outline" asChild className="w-full">
-              <a href="/">
+              <Link href="/">
                 <Home className="h-4 w-4 mr-2" />
                 Ana Sayfaya Dön
-              </a>
+              </Link>
             </Button>
           </div>
           

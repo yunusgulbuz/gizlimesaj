@@ -85,7 +85,7 @@ export function useBreadcrumbs(pathname: string, customItems?: BreadcrumbItem[])
     
     // Generate label based on segment
     let label = segment;
-    let href = currentPath;
+    const href = currentPath;
     
     // Custom labels for known routes
     switch (segment) {

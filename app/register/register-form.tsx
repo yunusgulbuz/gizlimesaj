@@ -241,7 +241,7 @@ export default function RegisterForm() {
           <span className="text-pink-600 hover:text-pink-500 cursor-pointer">
             Gizlilik Politikası
           </span>
-          'nı okudum ve kabul ediyorum.
+          &apos;nı okudum ve kabul ediyorum.
         </Label>
       </div>
 

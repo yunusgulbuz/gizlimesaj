@@ -11,7 +11,8 @@ import {
   TrendingUp,
   Settings,
   Plus,
-  Eye
+  Eye,
+  LucideIcon
 } from 'lucide-react';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
@@ -30,6 +31,17 @@ interface DashboardStats {
   }>;
 }
 
+interface Order {
+  id: string;
+  recipient_name: string;
+  total_amount: number;
+  status: string;
+  created_at: string;
+  template: {
+    title: string;
+  } | null;
+}
+
 async function getDashboardStats(): Promise<DashboardStats> {
   const supabase = await createServerSupabaseClient();
 
@@ -44,7 +56,7 @@ async function getDashboardStats(): Promise<DashboardStats> {
     .select('total_amount')
     .eq('status', 'paid');
 
-  const totalRevenue = revenueData?.reduce((sum: number, order: any) => sum + order.total_amount, 0) || 0;
+  const totalRevenue = revenueData?.reduce((sum: number, order: { total_amount: number }) => sum + order.total_amount, 0) || 0;
 
   // Get active pages
   const { count: activePages } = await supabase
@@ -76,7 +88,7 @@ async function getDashboardStats(): Promise<DashboardStats> {
     totalRevenue,
     activePages: activePages || 0,
     totalTemplates: totalTemplates || 0,
-    recentOrders: recentOrders?.map((order: any) => ({
+    recentOrders: recentOrders?.map((order: Order) => ({
       id: order.id,
       recipient_name: order.recipient_name,
       template_title: order.template?.title || 'Bilinmeyen Şablon',
@@ -91,7 +103,7 @@ function StatsCard({ title, value, description, icon: Icon, trend }: {
   title: string;
   value: string | number;
   description: string;
-  icon: any;
+  icon: LucideIcon;
   trend?: string;
 }) {
   return (

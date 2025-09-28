@@ -8,12 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { 
   ArrowLeft,
   Save,
-  DollarSign
+  Loader2
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { toast } from 'sonner';
@@ -33,9 +32,9 @@ interface Duration {
 
 export default function NewPricingPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [templates, setTemplates] = useState([]);
-  const [durations, setDurations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [durations, setDurations] = useState<Duration[]>([]);
 
   // Breadcrumb items for new pricing page
   const breadcrumbItems: BreadcrumbItem[] = [
@@ -48,6 +47,7 @@ export default function NewPricingPage() {
     template_id: '',
     duration_id: '',
     price_try: '',
+    price_usd: '',
     is_active: true
   });
 
@@ -162,9 +162,9 @@ export default function NewPricingPage() {
             <p className="text-muted-foreground">Şablon için yeni fiyatlandırma oluşturun</p>
           </div>
         </div>
-        <Button onClick={handleSubmit} disabled={isLoading}>
+        <Button onClick={handleSubmit} disabled={loading}>
           <Save className="h-4 w-4 mr-2" />
-          {isLoading ? 'Kaydediliyor...' : 'Kaydet'}
+          {loading ? 'Kaydediliyor...' : 'Kaydet'}
         </Button>
       </div>
 

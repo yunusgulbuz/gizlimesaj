@@ -95,7 +95,7 @@ export default async function LoginPage() {
             <Link href="/privacy" className="underline hover:text-gray-700">
               Gizlilik Politikası
             </Link>
-            'nı kabul etmiş olursunuz.
+            &apos;nı kabul etmiş olursunuz.
           </p>
         </div>
       </div>

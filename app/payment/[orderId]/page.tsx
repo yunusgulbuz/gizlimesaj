@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import PaymentForm from './payment-form';
@@ -97,18 +98,18 @@ export default async function PaymentPage({ params, searchParams }: PaymentPageP
             {error ? `Ödeme hatası: ${decodeURIComponent(error)}` : 'Ödeme işlemi başarısız oldu. Lütfen tekrar deneyin.'}
           </p>
           <div className="space-y-3">
-            <a
+            <Link
               href={`/payment/${orderId}`}
               className="block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
             >
               Tekrar Dene
-            </a>
-            <a
+            </Link>
+            <Link
               href="/templates"
               className="block text-gray-600 hover:text-gray-800 transition-colors"
             >
               Şablonlara Dön
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -159,12 +160,12 @@ export default async function PaymentPage({ params, searchParams }: PaymentPageP
               : 'Ödeme işlemi iptal edildi.'
             }
           </p>
-          <a
+          <Link
             href="/templates"
             className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all"
           >
             Şablonlara Dön
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -233,7 +234,7 @@ export default async function PaymentPage({ params, searchParams }: PaymentPageP
               <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-medium text-gray-900 mb-2">Mesaj Önizleme:</h3>
                 <p className="text-gray-700 text-sm italic">
-                  "{order.message.length > 100 ? order.message.substring(0, 100) + '...' : order.message}"
+                  &quot;{order.message.length > 100 ? order.message.substring(0, 100) + '...' : order.message}&quot;
                 </p>
               </div>
             </div>

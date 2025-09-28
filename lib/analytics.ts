@@ -1,7 +1,7 @@
 // Analytics helper for tracking events on personal pages
 export interface AnalyticsEvent {
   event_type: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   user_agent?: string;
   ip_address?: string;
 }
@@ -42,7 +42,7 @@ export class AnalyticsTracker {
     });
   }
 
-  async trackButtonClick(buttonType: string, additionalData?: Record<string, any>): Promise<boolean> {
+  async trackButtonClick(buttonType: string, additionalData?: Record<string, unknown>): Promise<boolean> {
     return this.trackEvent({
       event_type: 'button_click',
       metadata: {

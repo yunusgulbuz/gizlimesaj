@@ -163,7 +163,7 @@ export default function NewTemplatePage() {
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  URL'de görünecek kısım. Otomatik oluşturulur.
+                  URL&apos;de görünecek kısım. Otomatik oluşturulur.
                 </p>
               </div>
 
@@ -171,7 +171,7 @@ export default function NewTemplatePage() {
                 <Label htmlFor="audience">Hedef Kitle *</Label>
                 <Select
                   value={formData.audience}
-                  onValueChange={(value: any) => setFormData(prev => ({ ...prev, audience: value }))}
+                  onValueChange={(value: string) => setFormData(prev => ({ ...prev, audience: value as TemplateFormData['audience'] }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Hedef kitle seçin" />
@@ -207,7 +207,7 @@ export default function NewTemplatePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="preview_url">Önizleme URL'si</Label>
+                <Label htmlFor="preview_url">Önizleme URL&apos;si</Label>
                 <Input
                   id="preview_url"
                   type="url"
@@ -216,12 +216,12 @@ export default function NewTemplatePage() {
                   placeholder="https://example.com/preview"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Şablonun önizlemesi için iframe URL'si
+                  Şablonun önizlemesi için iframe URL&apos;si
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="bg_audio_url">Arka Plan Ses URL'si</Label>
+                <Label htmlFor="bg_audio_url">Arka Plan Ses URL&apos;si</Label>
                 <Input
                   id="bg_audio_url"
                   type="url"
