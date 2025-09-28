@@ -114,7 +114,10 @@ export async function POST(request: NextRequest) {
           special_date: order.special_date,
           expires_at: order.expires_at,
           is_active: true,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          text_fields: order.text_fields || {},
+          design_style: order.design_style || 'modern',
+          bg_audio_url: order.bg_audio_url || null
         });
 
       if (pageError) {

@@ -14,6 +14,9 @@ interface PaymentRequest {
   buyer_email: string;
   order_id?: string; // For existing orders
   duration_id?: number; // Add duration_id for proper pricing
+  text_fields?: any; // Form data fields
+  design_style?: string; // Selected design style
+  bg_audio_url?: string; // Background audio URL
 }
 
 export async function POST(request: NextRequest) {
@@ -39,7 +42,10 @@ export async function POST(request: NextRequest) {
       expires_in_hours = 24,
       buyer_email,
       order_id,
-      duration_id
+      duration_id,
+      text_fields,
+      design_style,
+      bg_audio_url
     } = requestBody;
 
     console.log('Extracted template_id:', template_id, 'Type:', typeof template_id);
@@ -200,7 +206,10 @@ export async function POST(request: NextRequest) {
         buyer_email,
         status: 'pending',
         payment_provider: 'paynkolay', // Add required payment_provider field
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        text_fields: text_fields || {},
+        design_style: design_style || 'modern',
+        bg_audio_url: bg_audio_url || null
       })
       .select()
       .single();

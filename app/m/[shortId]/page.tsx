@@ -6,6 +6,7 @@ import { Heart, Clock, Calendar, User, Music, Share2, Download } from "lucide-re
 import { Countdown } from '@/components/ui/countdown';
 import { FloatingHearts } from '@/components/ui/floating-hearts';
 import { AudioPlayer } from '@/components/ui/audio-player';
+import { YouTubePlayer, extractVideoId } from '@/components/ui/youtube-player';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { createAnalyticsTracker } from '@/lib/analytics';
@@ -24,6 +25,7 @@ interface PersonalPage {
   template_preview_url: string | null;
   template_bg_audio_url: string | null;
   design_style: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
+  text_fields: Record<string, string>;
   expires_at: string;
   special_date: string | null;
   is_active: boolean;
@@ -82,7 +84,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
     };
 
     fetchPersonalPage();
-  }, [shortId, analytics]);
+  }, [shortId]);
 
   // Initialize audio
   useEffect(() => {
@@ -221,6 +223,18 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
         </div>
       )}
 
+      {/* YouTube Music Player */}
+      {personalPage.text_fields?.musicUrl && (
+        <div className="fixed top-4 left-4 z-50">
+          <YouTubePlayer
+            videoId={extractVideoId(personalPage.text_fields.musicUrl) || undefined}
+            autoPlay={true}
+            loop={true}
+            className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg"
+          />
+        </div>
+      )}
+
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
         <div className="max-w-4xl mx-auto w-full">
           {/* Template Renderer - Show the actual purchased template design */}
@@ -240,6 +254,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
               isPreview={true}
               textFields={{
                 ...getDefaultTextFields(personalPage.template_slug),
+                ...personalPage.text_fields,
                 recipient_name: personalPage.recipient_name,
                 sender_name: personalPage.sender_name,
                 message: personalPage.message,

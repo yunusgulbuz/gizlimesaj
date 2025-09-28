@@ -285,7 +285,10 @@ export default function TemplateFormPage({ template, durations, templatePricing,
         buyer_email: email,
         special_date: specialDate,
         expires_in_hours: selectedDurationData ? 24 * selectedDurationData.days : 24,
-        duration_id: selectedDurationData ? selectedDurationData.id : parseInt(selectedDuration)
+        duration_id: selectedDurationData ? selectedDurationData.id : parseInt(selectedDuration),
+        text_fields: textFields,
+        design_style: selectedDesignStyle,
+        bg_audio_url: template.bg_audio_url
       };
 
       // Call payment API

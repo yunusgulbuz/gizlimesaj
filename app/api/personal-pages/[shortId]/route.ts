@@ -101,8 +101,9 @@ export async function GET(
       template_slug: templateSlug,
       template_audience: template?.audience || [],
       template_preview_url: template?.preview_url || null,
-      template_bg_audio_url: template?.bg_audio_url || null,
-      design_style: pickDesignStyle(templateSlug),
+      template_bg_audio_url: personalPage.bg_audio_url || template?.bg_audio_url || null,
+      design_style: personalPage.design_style || pickDesignStyle(templateSlug),
+      text_fields: personalPage.text_fields || {},
       expires_at: personalPage.expires_at,
       special_date: personalPage.special_date,
       is_active: personalPage.is_active
