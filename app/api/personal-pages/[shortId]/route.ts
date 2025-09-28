@@ -90,18 +90,18 @@ export async function GET(
     }
 
     // Return the personal page data
-    const template = page.templates[0]; // Get the first (and only) template from the array
+    const template = page.templates && page.templates.length > 0 ? page.templates[0] : null;
     return NextResponse.json({
       id: page.id,
       short_id: page.short_id,
       recipient_name: page.recipient_name,
       sender_name: page.sender_name,
       message: page.message,
-      template_title: template.title,
-      template_slug: template.slug,
-      template_audience: template.audience,
-      template_preview_url: template.preview_url,
-      template_bg_audio_url: template.bg_audio_url,
+      template_title: template?.title || 'Gizli Mesaj',
+      template_slug: template?.slug || 'default',
+      template_audience: template?.audience || [],
+      template_preview_url: template?.preview_url || null,
+      template_bg_audio_url: template?.bg_audio_url || null,
       expires_at: page.expires_at,
       special_date: page.special_date,
       is_active: page.is_active
