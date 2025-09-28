@@ -27,22 +27,48 @@ export default function SuccessPage() {
   const [pageData, setPageData] = useState<PersonalPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
-  const personalPageUrl = `${window.location.origin}/m/${shortId}`;
+  // Get personal page URL safely (only on client side)
+  const [personalPageUrl, setPersonalPageUrl] = useState<string>('');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setPersonalPageUrl(`${window.location.origin}/m/${shortId}`);
+    }
+  }, [shortId]);
+
+  useEffect(() => {
+    let currentRetryCount = 0;
+    const maxRetries = 10; // Maximum 10 attempts
+    const retryDelay = 2000; // 2 seconds between retries
+
     const fetchPageData = async () => {
       try {
         const response = await fetch(`/api/personal-pages/${shortId}`);
         if (!response.ok) {
+          if (response.status === 404 && currentRetryCount < maxRetries) {
+            // Page might not be created yet, retry after delay
+            currentRetryCount++;
+            setRetryCount(currentRetryCount);
+            setTimeout(fetchPageData, retryDelay);
+            return;
+          }
           throw new Error('Sayfa bulunamadı');
         }
         const data = await response.json();
         setPageData(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Bir hata oluştu');
-      } finally {
         setLoading(false);
+      } catch (err) {
+        if (currentRetryCount < maxRetries) {
+          // Retry on error (network issues, etc.)
+          currentRetryCount++;
+          setRetryCount(currentRetryCount);
+          setTimeout(fetchPageData, retryDelay);
+        } else {
+          setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+          setLoading(false);
+        }
       }
     };
 
@@ -59,10 +85,26 @@ export default function SuccessPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Sayfa bilgileri yükleniyor...</p>
-        </div>
+        <Card className="max-w-md mx-auto">
+          <CardContent className="text-center pt-6">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Gizli mesajınız hazırlanıyor...
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Ödeme işleminiz tamamlandı. Sayfanız oluşturuluyor.
+            </p>
+            {retryCount > 0 && (
+              <div className="flex items-center justify-center text-sm text-gray-500">
+                <Clock className="w-4 h-4 mr-1" />
+                <span>Deneme {retryCount}/10</span>
+              </div>
+            )}
+            <div className="mt-4 text-xs text-gray-400">
+              Bu işlem birkaç saniye sürebilir...
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
