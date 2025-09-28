@@ -1,0 +1,60 @@
+İşlem Doğrulama Servisi
+Bu servis ile işlemin doğruluğunu, paranın çekilip çekilmediğini kontrol edebilirsiniz. İşlemlerinizi listelemek için Panel N Kolay’ı kullanınız.
+
+Kontrol sx ( listeleme sx değeriniz ), startDate, endDate, clientRefCode ( işlemde kullandığınız kendi referans kodunuz ), hashData değerlerini Body’de form-data olarak https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/PaymentList linkine POST ediniz.
+
+clientRefCode boş gönderilirse ilgili tarih aralığındaki tüm işlemler gösterilir.
+
+Postman Collection’ını indirmek için tıklayınız. Postman Code Snippet’inde kendi kullandığınız dilin kodlarını görebilirsiniz.
+
+En fazla bir aylık data çekebilirsiniz.
+
+TRANSACTION_TYPE sonucunun alabileceği değerler:
+
+cancel ( iptal işlemi )
+refund ( iade işlemi )
+sales ( satış işlemi )
+refundp ( parçalı iade işlemi )
+STATUS sonucunun alabileceği değerler:
+
+SUCCESS
+ERROR
+NEW ( başlatılan ama bitirilmeyen, ödemesi alınmamış, complete payment methodu çağırılmamış, henüz yarıda kalmış işlem )
+Hash datayı hesaplamak için tıklayınız.
+
+image
+
+{
+  "id": "",
+  "result": {
+    "RESPONSE_CODE": "2",
+    "CORE_TRX_ID_RESERVED": "E74D",
+    "RESPONSE_DATA": "İşlem başarılı",
+    "sessionId": "50-bf-4b-e",
+    "LIST": [
+      {
+        "REFERENCE_CODE": "IKSIRPF419781",
+        "AUTH_CODE": "",
+        "COMMISION": "0.0100",
+        "CARD_BANK_CODE": "010",
+        "USER_EMAIL": "hayalevi",
+        "AUTHORIZATION_AMOUNT": "1.00",
+        "OID": "0769CE1-31C607C",
+        "POS_TYPE": "Sanal POS",
+        "TRANSACTION_TYPE": "SALES",
+        "IS_3D": true,
+        "MERCHANT_COMMISSION_AMOUNT": "0.00",
+        "TRANSACTION_AMOUNT": "1.00",
+        "CARD_HOLDER_NAME": "test",
+        "VALOR_DATE": "20241225",
+        "CLIENT_REFERENCE_CODE": "114488219|5553901555",
+        "STATUS": "ERROR",
+        "TRX_DATE": "24.12.2024 16:09:21",
+        "DESCRIPTION": "",
+        "TERMINAL_NAME": "ZIRAATBANK",
+        "CARD_BANK_NAME": "T.C.ZİRAAT BANKASI",
+        "INSTALLMENT_COUNT": "1"
+      }
+    ]
+  }
+}

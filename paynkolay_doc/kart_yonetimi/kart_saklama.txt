@@ -1,0 +1,28 @@
+Kart Saklama
+Kart bilgilerini saklayıp, saklı kart ile işlem yapabilirsiniz.
+Üye işyerinin kart saklayabilmesi için kart saklama yetkisi alması gerekmektedir. Kartı 3D secure bir işlem sonrasında kayıt edebileceğiniz gibi, aynı gün 3D secure ile bir işlemi varsa kart sonradan da kayıt edebilirsiniz. POSTMAN collection içinde ilgili servisler verilmiştir.
+
+Postman collection’ını indirmek için tıklayınız. Örnek kodları Postman Code sinppet’inde görebilirsiniz.
+
+Hash methodu için tıklayınız.
+
+Kartı Kayıt Etme
+Kart kayıt etmek için ödeme servisi çağırılırken “csCustomerKey”, (TC kimlik no, Cep telefon numarası, Passaport numarasını), ve csAutoSave parametresini “true” gönderilmesi ile başarı işlem sonununca kart saklama yapılmaktadır. ( İşlem 3D secure olmalıdır )
+
+image
+
+Kayıtlı Kartları Listeleme
+Bu API’nin kullanımında, ilgili parametreler “https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/CardStorageCardList” adresine Body’de form-data olarak POST edilir. Hash oluşturmak için Request Hash yapısı kullanılmalıdır.
+
+image
+
+Kayıtlı Kartı Silme
+Silmek istediğiniz kartı, kartın token’ı ile kartı silebilirsiniz. Bunun için önce kart listeleme servisinden ilgili kartın token bilgisini çekmelisiniz. Bu API’nin kullanımında, ilgili parametreler “https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/CardStorageCardDelete” adresine Body’de form-data olarak POST edilir. Hash oluşturmak için Request Hash yapısı kullanılmalıdır.
+
+image
+
+Kayıtlı Karttan Ödeme Alma
+Saklı kartın token bilgisi ya da tranid’si ile ödeme alabilirsiniz. Ödeme almak için ilgili parametreler “https://paynkolaytest.nkolayislem.com.tr/Vpos/v1/Payment” adresine Body’de form-data olarak POST edilir. Hash oluşturmak için Request Hash yapısı kullanılmalıdır.
+
+image
+

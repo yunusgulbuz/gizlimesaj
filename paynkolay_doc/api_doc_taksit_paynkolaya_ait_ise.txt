@@ -1,0 +1,110 @@
+API Dokümanı - Taksit Bilgisi Pay N Kolay'a Ait
+Bu API’nin kullanımında önce taksitler çağırılır. Taksitleri çağırmak için sx, amount, cardNumber, hosturl, iscardvalid değişkenleri “https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/PaymentInstallments” adresine Body’de form-data olarak POST edilir.
+
+Sadece BIN numarası ile (kartın ilk 8 hanesi ile) taksit sorgulamak için iscardvalid parametresi “false” olarak gönderilmeli, ya da hiç gönderilmemelidir.
+
+image
+
+PaymentInstallments servisinden gelen EncodedValue tutar bilgisi AUTHORIZATION_AMOUNT ve taksit bilgisi INSTALLMENT diğer değişkenlerle birlikte Payment Servis’ine Body’de form-data olarak POST edilir. (EncodedValue, installmentNo, amount, sx, clientRefCode, successUrl, failUrl, amount, installmentNo, cardHolderName, month, year, cvv, cardNumber, EncodedValue, use3D, transactionType, hosturl, rnd, hashData, environment).
+
+Payment Servis linki: “https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/Payment” İlgili tüm değişkenleri Postman collection’ından görebilirsiniz.
+image
+
+İşlem 3D değilse bu aşamada ödeme alınır. İşlem sonlanır. Response Dönüş Parametreleri
+Payment servisine POST edildiğinde, 3D true ise 3D formu gelecektir. Bu formu şu şekilde ekranda çalıştırabilirsiniz:
+
+PHP
+.NET C#
+Python
+Node.js
+example.js
+const axios = require('axios');
+const qs = require('querystring');
+const fs = require('fs');
+
+async function main() {
+    try {
+        // Step 1: Query Installments
+        const installmentUrl = 'https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/PaymentInstallments';
+
+        const installmentData = {
+            'sx': '118591467|bScbGDYCtPf7SS1N6PQ6/+58rFhW1WpsWINqvkJFaJlu6bMH2tgPKDQtjeA5vClpzJP24uA0vx7OX53cP3SgUspa4EvYix+1C3aXe++8glUvu9Oyyj3v300p5NP7ro/9K57Zcw==',
+            'amount': '100.00',
+            'cardNumber': '4546711234567894',
+            'hosturl': 'https://yoursite.com',
+            'iscardvalid': 'false' // Use false to query with BIN only
+        };
+
+        const installmentResponse = await axios.post(installmentUrl, qs.stringify(installmentData), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+
+        if (installmentResponse.status === 200) {
+            const installmentResult = installmentResponse.data;
+            const encodedValue = installmentResult.EncodedValue;
+            console.log('Installments retrieved successfully');
+            console.log(`EncodedValue: ${encodedValue}`);
+
+            // Step 2: Make Payment with EncodedValue
+            const paymentUrl = 'https://paynkolaytest.nkolayislem.com.tr/Vpos/Payment/Payment';
+
+            const paymentData = {
+                'EncodedValue': encodedValue,
+                'installmentNo': '2',
+                'amount': '100.00',
+                'sx': '118591467|bScbGDYCtPf7SS1N6PQ6/+58rFhW1WpsWINqvkJFaJlu6bMH2tgPKDQtjeA5vClpzJP24uA0vx7OX53cP3SgUspa4EvYix+1C3aXe++8glUvu9Oyyj3v300p5NP7ro/9K57Zcw==',
+                'clientRefCode': '789456|AB76',
+                'successUrl': 'https://yoursite.com/success',
+                'failUrl': 'https://yoursite.com/fail',
+                'cardHolderName': 'John Doe',
+                'month': '12',
+                'year': '2026',
+                'cvv': '123',
+                'cardNumber': '4546711234567894',
+                'use3D': 'true',
+                'transactionType': 'SALES',
+                'hosturl': 'https://yoursite.com',
+                'rnd': Math.floor(Date.now() / 1000).toString(), // Random value for security
+                'hashData': 'your_calculated_hash_here',
+                'environment': 'TEST'
+            };
+
+            const paymentResponse = await axios.post(paymentUrl, qs.stringify(paymentData), {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+
+            if (paymentResponse.status === 200) {
+                console.log('Payment request sent successfully');
+                console.log(`Response: ${paymentResponse.data}`);
+
+                // If use3D is true, the response will contain HTML form for 3D secure
+                if (paymentResponse.data.includes('<form')) {
+                    console.log('3D Secure form received. Display this form to user:');
+                    fs.writeFileSync('3d_form.html', paymentResponse.data);
+                }
+            } else {
+                console.log(`Error in payment: ${paymentResponse.data}`);
+            }
+
+        } else {
+            console.log(`Error retrieving installments: ${installmentResponse.data}`);
+        }
+
+    } catch (error) {
+        if (error.response) {
+            console.log(`HTTP Error ${error.response.status}: ${error.response.data}`);
+        } else {
+            console.log(`Exception: ${error.message}`);
+        }
+    }
+}
+
+main();
+
+image
+
+Gelen 3D formu ekrana basıldığında ilgili bankanın 3D secure penceresi açılır ve burada 3D secure şifresi girilmesi beklenir.

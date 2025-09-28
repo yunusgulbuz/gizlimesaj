@@ -1,0 +1,49 @@
+Ödeme Sonucu
+3D olmayan işlemlerin dönüş parametreleri (AutoComplete)
+İşlem sonucunda size gönderilen Response Hash’i (hashDataV2) mutlaka kontrol ediniz. Şayet sizin oluşturduğunuz hash ile size gönderilen hash farklıysa bu işlem paynkolaydan gelmiyor demektir, işlemi kesmeniz gerekir.
+Ödeme alındı bilgisi için RESPONSE_CODE = 2 olmalı ve AUTH_CODE mutlaka geçerli bir değer (boş veya 0 olmayan) içermelidir.
+İşlem sonucunun successURL sayfasına dönmesi işlemin başarılı olduğu anlamına gelmemektedir. Bu nedenle, her zaman yukarıdaki kontrolleri yapmalısınız.
+RESPONSE_CODE: 2
+RESPONSE_DATA: İşlem Başarılı
+USE_3D: false
+RND: 1630051651137
+MERCHANT_NO: 400000001
+AUTH_CODE: S00586
+REFERENCE_CODE: IKSIRPF102168
+CLIENT_REFERENCE_CODE: 42794212
+TIMESTAMP: 2021-08-27
+TRANSACTION_AMOUNT: 1.00
+AUTHORIZATION_AMOUNT: 1.00
+COMMISION: 0.00000000
+COMMISION_RATE: null
+INSTALLMENT: 1
+hashData: bjb49lGdnE2D/D5Jze2/sn7Xfk0=
+hashDataV2 : lunnRyNfDu6pdpNjjlFrlATE4PjUluM89iqAobpWkxEmzlDe9lNkP76Ua19WvYeb++yKufjhUa6ZRorBNfEzHA==
+
+3D İşlem Onay (AutoComplete)
+Başarılı işlem successUrl olarak girdiğiniz linke post edilir. İşlem başarısız olursa failUrl olarak girdiğiniz linke dönüş yapılacaktır.
+İşlemin successUrl sayfasına dönmesi işlemin başarılı olduğu anlamına gelmemektedir.
+AUTHORIZATION_AMOUNT karttan çekilen tutarı gösterir. İşlem sonrasında dönülen AUTHORIZATION_AMOUNT ile sizin ödeme sayfasına POST ettiğiniz amount (tutar) değerini karşılaştırmanız gerekir. AUTHORIZATION_AMOUNT sizin gönderdiğiniz tutara eşit veya büyük olmalıdır.
+İşlem sonunda size gönderilen Response Hash’i (hashData) mutlaka kontrol ediniz. Şayet sizin oluşturduğunuz hash ile size gönderilen hash farklıysa bu işlem paynkolaydan gelmiyor demektir.
+İşlem sonucu olarak RESPONSE_CODE = 2 olmalı ve AUTH_CODE mutlaka geçerli bir değer (boş veya 0 olmayan) içermelidir.
+3D İşlem Onay (AutoComplete) Dönüş Parametreleri
+RESPONSE_CODE : 2
+RESPONSE_DATA : İşlem Başarılı.
+REFERENCE_CODE : IKSIRPF142277040
+USE_3D : true
+MERCHANT_NO : 400000002
+AUTH_CODE : 345344
+CLIENT_REFERENCE_CODE : 24809740|988922
+TIMESTAMP : 2022-02-24 13:58:36.353
+TRANSACTION_AMOUNT : 1.00
+AUTHORIZATION_AMOUNT : 1.00
+COMMISION : 0.00
+COMMISION_RATE : 0.0000
+INSTALLMENT : 1
+RND : 1645700316156
+hashData : +wDy2xeI1hOCnwaatSqylWhtj9E=
+hashDataV2 : lunnRyNfDu6pdpNjjlFrlATE4PjUluM89iqAobpWkxEmzlDe9lNkP76Ua19WvYeb++yKufjhUa6ZRorBNfEzHA==
+BANK_RESULT: Response : IKSIRPF142277040 ...
+
+Başarılı işlem sonucu olarak RESPONSE_CODE = 2 olmalı ve AUTH_CODE mutlaka geçerli bir değer (boş veya 0 olmayan) değer içermelidir.
+İşlem başarılı değil yani hatalı ise RESPONSE_CODE = 0 döner, RESPONSE_DATA içinde hata mesajı iletilir ve hatalı işlemde AUTH_CODE boştur.

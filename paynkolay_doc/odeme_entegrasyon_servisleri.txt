@@ -1,0 +1,65 @@
+Ödeme Entegrasyon Servisleri
+1. Ortak Ödeme Sayfası
+İstenen değerler post edilerek işlemler Nkolay Ortak Ödeme sayfasına yönlendirilir. Kart bilgileri doğrudan Nkolay sunucularına gider, güvenlik Nkolay tarafından sağlanır. Site içinde iframe ile entegrasyon yapılabilir.
+
+Ortak Ödeme Sayfası ile Ödeme Alma ( form göndererek )
+Ortak Ödeme Sayfası ile Ödeme Alma ( link oluşturup )
+2. Linkli Ödeme
+Ödeme linki kart kullanıcısına SMS veya e-posta ile gönderilir. Kullanıcı linke tıklayarak Nkolay Ortak Ödeme sayfasına yönlendirilir, işlemler burada gerçekleşir.
+
+Link ile Ödeme Alma
+3. API - Kart Bilgilerinin Üye İşyeri Tarafından Alındığı Yapı
+Üye işyeri kendi sayfasında kart bilgilerini alır, Nkolay API ile işlem yapar. Bu yapıda kart bilgileri üye işyeri tarafından alındığı için PCI DSS gereklilikleri üye işyerine aittir.
+
+API ile Ödeme Alma
+Test ortam bilgileri
+
+   sx ( Token ): 118591467|bScbGDYCtPf7SS1N6PQ6/+58rFhW1WpsWINqvkJFaJlu6bMH2tgPKDQtjeA5vClpzJP24uA0vx7OX53cP3SgUspa4EvYix+1C3aXe++8glUvu9Oyyj3v300p5NP7ro/9K57Zcw==
+   sx list : 118591467|bScbGDYCtPf7SS1N6PQ6/+58rFhW1WpsWINqvkJFaJlu6bMH2tgPKDQtjeA5vClpzJP24uA0vx7OX53cP3SgUspa4EvYix+1C3aXe++8glUvu9Oyyj3v300p5NP7ro/9K57Zcw==|3hJpHVF2cqvcCZ4q6F7rcA==
+   sx iptal : 118591467|bScbGDYCtPf7SS1N6PQ6/+58rFhW1WpsWINqvkJFaJlu6bMH2tgPKDQtjeA5vClpzJP24uA0vx7OX53cP3SgUspa4EvYix+1C3aXe++8glUvu9Oyyj3v300p5NP7ro/9K57Zcw==|yDUZaCk6rsoHZJWI3d471A/+TJA7C81X
+   Merchant Secret Key : _YckdxUbv4vrnMUZ6VQsr
+   URL: https://paynkolaytest.nkolayislem.com.tr/Vpos
+
+Form Göndererek Ortak Ödeme Sayfası Kullanımı
+Ödeme alabilmeniz için sizlere özel verilen değerleri HTTP POST metodu ile Test ortam URL : https://paynkolaytest.nkolayislem.com.tr/Vpos adresine post edilerek gönderilir.
+
+Prod ortam URL’i : https://paynkolay.nkolayislem.com.tr/Vpos ‘dir.
+
+Örnek Form Kullanımı
+Form Değişkenlerine ait bilgiler
+Servise POST edebileceğiniz parametreler aşağıdaki gibidir. Tüm parametreler, isteğin gövdesinde (body) standart HTML Form Post metoduyla gönderilmelidir.
+
+Uygulama akışı:
+
+Formda gönderdiğiniz bilgilerin geçerlilik kontrolü yapılır, eksik veya hatalı bilgi varsa hata mesajı dönülür ve akış sonlanır.
+Formda gönderdiğiniz bilgiler kontrol edilir. Doğru değil ise hata mesajı ile akış sonlanır.
+Formda gönderdiğiniz bilgiler doğru ise, kredi kartı bilgilerinin girileceği form gösterilir.
+Formda kredi kartı kart bilgisi girildikten sonra bu kutucuktan ayrılırken taksit seçenekleri görüntülenir. Tek çekim varsayılan olarak seçili gelir.
+Kredi kartı bilgilerinin tamamı girilip uygun taksit seçeneği işaretlendikten sonra “Ödemeyi Gerçekleştir” tuşuna basılarak ödeme işlemi gerçekleştirilir.
+Ödeme işlemi 3D olacak ise akış 3D sayfasına yönlendirilir, 3D değilse direk sonuçlanır.
+Ödeme işlemi başarılı sonuçlanmış ise “successUrl” sayfasına başarılı sonuç değerleri post edilerek yönlendirilir.
+İşlem başarısız olursa başarısız işlem bilgileri “failURL” sayfasına post edilir.
+İsim	Tipi	Açıklama	Zorunlu	Örnek Değer
+sx	string	Web Servis için gerekli olan giriş kodudur. Kod’un içinde gerekli parametreler şifrelenmiş bir şekilde mevcuttur. Bu alan size Ödeme kuruluşu tarafından verilecektir. ( Token değeri ismi ile de geçmektedir )	Zorunlu	114488219
+amount	decimal	Ödeme tutarıdır. Kuruş ayracı olarak . (nokta) kullanılmalıdır.	Zorunlu	1280.10 ( kuruş ayracı olarak nokta kullanılmalıdır. )
+clientRefCode	string	Kendi referans numaranızdır. (Türkçe karaketer içermemeli. En fazla 1024 karaktere kadar olabilir.)	Zorunlu	Örn: 5231As-FE2A36
+successUrl	string	Bu sayfaya başarılı işlemlerin sonucunu post ediyoruz.	Zorunlu	https://domaininiz.com.tr/success
+failUrl	string	Bu sayfaya başarılı olmayan işlemlerin sonucunu post ediyoruz.	Zorunlu	https://domaininiz.com.tr/fail
+second	string	Sepetinde kalan süreyi ( session time out süreniz ) Sanal POS’ta göstermek isterseniz kalan saniyeyi post edebilirsiniz. Sayfamızda sepetiniz için kalan saniyeyi geri sayım olarak gösteriyoruz. Süre bitince ödeme butonunu disable ediyoruz.	İsteğe Bağlı	600
+cardcampaign	string	Dilerseniz Visa, Master Kartlara kampanya yapabilirsiniz. Visa kartlar için 4, MasterCard için 5 parametresini göndermeniz gerekmektedir. Şayet müşterinin kredi kartı numarası ilgili rakam değilse, müşteriye uyarı verilmekte ve sadece istediğiniz kart numarası ile başlayan kartlara ödeme için izin verilmektedir.	İsteğe Bağlı	4 ( Visa ) ya da 5 ( Master Card )
+bin	string	Dilerseniz sadece belirli kart bin’lerinden işlem alabilirsiniz. ( Kartın ilk 6 hanesidir. ) Dilerseniz tek kart bini, dilerseniz birden fazla bini aralarında pipe	işareti ile ayırarak gönderebilirsiniz.	İsteğe Bağlı
+language	string	Dil seçeneği olarak İngilizce için “en”, Rusça için “ru” girilmelidir. Bir parametre gönderilmez ise dil Türkçe demektir.	İsteğe Bağlı	en
+detail	string	Ortak ödeme sayfasına “true” olarak gönderilirse sanal pos ortak ödeme sayfasında müşterinizden alabileceğiniz ( Ad Soyad (inputNamesurname), TC Kimlik No (inputTckn), Cep Telefonu (inputPhone), Email Adresi (inputEmail), Açıklama ( inputDescription ) ve Adres (inputAddress) ) input alanları ortak ödeme sayfasında gözükecektir. Bu input alanlarını diğer değişkenlerle bize POST ederseniz, Açıklama alanınlarını otomatik dolduruyoruz. Bu bilgileri API ile gönderirseniz parametre isimleri şu şekilde olmalıdır. (tckn,email,adress,phone,namesurname,description) Bu alanların dolu gönderilmesi zorunlu değildir. API ile gönderilen bilgilere panelinizden erişebilirsiniz.	İsteğe Bağlı	true
+agentCode	string	Alt bayilik üzerinden işlem yapılıyorsa bu değer ile alt bayinizin kodunu gönderebilirsiniz.	İsteğe Bağlı	7683323
+use3D	string	“true” gönderilirse 3D secure limitinden bağımsız bir şekilde işlemi 3D secure yaptırır. Boş gönderilirse mevcut 3D işlem limiti uygulanır.	Zorunlu	true
+transactionType	string	“sales” yani satış ya da “presales” provisyon olarak işlem yapabilirsiniz.	Zorunlu	sales
+rnd	string	DateTime.Now fonksiyonu ile işlem tarihini bize göndermeniz gerekmektedir. ( Bu değer işlem sonucunda size geri post edilecektir. )	Zorunlu	09-08-2021 15:24:22
+instalments	string	Kaç taksit girilirse ödeme işlemi o taksit sayısı ile yapılacaktır. Örneğin: 2 girilmesi, 2 taksittir. 1 girilirse ödeme işlemleri tek çekim yapılacaktır ( taksit yapılmayacaktır ) Boş geçilmesi durumunda default ödeme alma ayarlarına göre taksitleri gelecektir.	İsteğe Bağlı	
+hashData	string	PHP ile : $hashstr = $sx . $clientRefCode . $amount . $successUrl . $failUrl . $rnd . $merchantSecretKey; $hashData = base64_encode(pack(‘H*‘,sha1($hashstr))); .net hesaplaması soldaki menüde Hash Request ve Response sayfalarında verilmiştir.	Zorunlu	BH51O7coM4dtd/WoRMNg4o8H2XPI=
+hashDataV2	string	PHP ile : $hashstr = $sx . "	" . $clientRefCode . "	" . $amount . "
+MerchantCustomerNo	string	MerchantCustomerNo ile sanal pos’a bayi veya alt üye işteri numaranızı gönderebilirsiniz. Pay N Kolay panelinden işlemlerinizi Müşteri Numarası başlığı altında bu numara ile aratabilirsiniz. (clientRefCode’un uzun ve karmaşık olduğu durumlarda kullanmakta fayda vardır.)	İsteğe Bağlı	93423410
+customerKey	string	Ortak ödeme sayfası ile kart saklama yapılabilmesi için bu değerin gönderilmesi gerekmektedir. Kart sahibi “Öde ve Kartı Kaydet” ile işlemini yapması durumunda, kart kaydedilerek tranId değeri servis cevabında verilmektedir.	İsteğe Bağlı	13813813813
+ECOMM_PLATFORM	string	B2B olarak yazılım geliştiriyorsanız kendi platformunuzun ismini yazabilirsiniz.	İsteğe Bağlı	Cetvel Yazılım
+pIsCommissionPaidByCustomer	string	0 gönderilirse banka komisyonu müşteriye yansıyor, 1 gönderilirse üye işyerine yansıtıyor.	İsteğe Bağlı	1
+currencyCode	string	Bu değer gönderilmezse, işlem varsayılan olarak Türk Lirası (TL) üzerinden gerçekleştirilir. Dövizle ödeme almak istiyorsanız, USD için ‘840’, EUR için ‘978’ değerlerini gönderebilirsiniz. Varsayılan para birimi kodu TL için ‘949’dur. Dövizle işlem yapabilmek için Aktif Bank nezdinde döviz hesabınızın bulunması gerekmektedir.	İsteğe Bağlı	1
+cardHolderIP	string	İşlemi yapan kart sahibinin IP adresi.

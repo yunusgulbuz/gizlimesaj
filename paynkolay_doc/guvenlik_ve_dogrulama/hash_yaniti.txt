@@ -1,0 +1,61 @@
+Hash Response (hashDataV2)
+Her ödeme işlemi sonunda size dönen hashDataV2 bilgisini mutlaka kontrol etmelisiniz…
+
+HashDataV2, ödeme işlemi sonunda kontrol etmeniz gereken hash bilgisidir.
+
+Size dönüş yaptığımız parametreler aşağıdaki gibidir. Sizin bu aşamada hash’inizi buradaki method ile oluşturup, bizden gelen hash ile karşılaştırmanız, sizin güvenliğiniz açısından önemlidir. Şayet hash’ler birbiri ile aynı değilse, işlemi sonlandırabilirsiniz.
+
+Burada gönderilen rnd değeri sizin request hash’te gönderdiğiniz değerden farklıdır. Bu değer bizim tarafımızdan random olarak oluşturulmaktadır.
+
+RESPONSE_CODE : 2
+RESPONSE_DATA : İşlem Başarılı.
+REFERENCE_CODE : IKSIRPF3938836128
+USE_3D : true
+MERCHANT_NO : 400000002
+AUTH_CODE : S32533320
+CLIENT_REFERENCE_CODE : 24809740
+TIMESTAMP : 2022-02-24 13:58:36.353
+TRANSACTION_AMOUNT : 1.00
+AUTHORIZATION_AMOUNT : 1.00
+COMMISION : 0.00
+COMMISION_RATE : 0.0000
+INSTALLMENT : 1
+RND : 1645700316156
+CURRENCY_CODE : TRY
+hashData : NL5R04M8C4sjDNgBUnEZ/RCocEo=
+hashDataV2 : Y4GMhUse2gPGV8UlDg6p96SZ7cDYR5mgUIp0p0cp0qbrvd14P4MS30KLlpC6oDbDaHceZ20XIJJdcvxHnOHJNg==
+
+Response Hash Testi
+MERCHANT_NO
+Enter MERCHANT_NO
+REFERENCE_CODE
+Enter REFERENCE_CODE
+AUTH_CODE
+Enter AUTH_CODE
+RESPONSE_CODE
+Enter RESPONSE_CODE
+USE_3D
+Enter USE_3D
+RND
+Enter RND
+INSTALLMENT
+Enter INSTALLMENT
+AUTHORIZATION_AMOUNT
+Enter AUTHORIZATION_AMOUNT
+CURRENCY_CODE
+Enter CURRENCY_CODE
+MERCHANT_SECRET_KEY
+Enter MERCHANT_SECRET_KEY
+Hash Hesapla
+Success sayfanıza post ettiğimiz değişkenler ile …
+
+PHP
+.NET
+JavaScript
+Python
+example.js
+function calculateHash(merchantNo, referenceCode, authCode, responseCode, use3D, rnd, installment, authAmount, currencyCode, merchantSecretKey) {
+  const raw = `${merchantNo}|${referenceCode}|${authCode}|${responseCode}|${use3D}|${rnd}|${installment}|${authAmount}|${currencyCode}|${merchantSecretKey}`;
+  const hash = CryptoJS.SHA512(raw);
+  return CryptoJS.enc.Base64.stringify(hash);
+}
