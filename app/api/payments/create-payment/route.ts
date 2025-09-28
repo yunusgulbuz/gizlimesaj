@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { checkoutRateLimit } from '@/lib/rateLimit';
 import { generateShortId } from '@/lib/shortid';
-import { createPaynkolayHelper, formatPaynkolayAmount } from '@/lib/payments/paynkolay';
+import { createPaynkolayHelper } from '@/lib/payments/paynkolay';
 
 interface PaymentRequest {
   template_id: string;
@@ -11,6 +11,7 @@ interface PaymentRequest {
   message: string;
   special_date?: string;
   expires_in_hours?: number;
+  buyer_email: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -31,11 +32,12 @@ export async function POST(request: NextRequest) {
       sender_name,
       message,
       special_date,
-      expires_in_hours = 72
-    } = body;
+      expires_in_hours = 24,
+      buyer_email
+    } = await request.json() as PaymentRequest;
 
     // Validate required fields
-    if (!template_id || !recipient_name || !sender_name || !message) {
+    if (!template_id || !recipient_name || !sender_name || !message || !buyer_email) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -84,6 +86,7 @@ export async function POST(request: NextRequest) {
         expires_at: expiresAt.toISOString(),
         short_id: shortId,
         amount: template.price,
+        buyer_email,
         status: 'pending',
         created_at: new Date().toISOString()
       })
@@ -113,11 +116,12 @@ export async function POST(request: NextRequest) {
                      '127.0.0.1'
       });
 
-      // Update order with payment reference
+      // Update order with payment reference and provider
       await supabase
         .from('orders')
         .update({ 
           payment_reference: clientRefCode,
+          payment_provider: 'paynkolay',
           updated_at: new Date().toISOString()
         })
         .eq('id', order.id);

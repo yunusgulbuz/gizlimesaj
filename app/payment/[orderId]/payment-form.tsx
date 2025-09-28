@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CreditCard, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { PaynkolayFormData } from '@/lib/payments/paynkolay';
 
 interface PaymentFormProps {
   order: {
@@ -15,24 +16,20 @@ interface PaymentFormProps {
   };
 }
 
-interface PaynkolayFormData {
-  sx: string;
-  successUrl: string;
-  failUrl: string;
-  amount: string;
-  clientRefCode: string;
-  use3D: string;
-  rnd: string;
-  agentCode: string;
-  transactionType: string;
-  cardHolderIP: string;
-  hashDataV2: string;
+interface PaymentResponse {
+  success: boolean;
+  order_id: string;
+  payment_form_data?: PaynkolayFormData;
+  payment_url?: string;
+  amount: number;
+  short_id: string;
+  error?: string;
 }
 
 export default function PaymentForm({ order }: PaymentFormProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [paymentData, setPaymentData] = useState<PaynkolayFormData | null>(null);
+  const [paymentData, setPaymentData] = useState<PaymentResponse | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -41,20 +38,18 @@ export default function PaymentForm({ order }: PaymentFormProps) {
         setIsLoading(true);
         setError(null);
 
-        // Call our API to create payment and get Paynkolay form data
+        // Call our API to get payment form data for existing order
         const response = await fetch('/api/payments/create-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            orderId: order.id,
-            templateId: 'existing', // Since order already exists
-            recipientName: 'existing',
-            senderName: 'existing',
+            template_id: 'existing',
+            recipient_name: 'existing',
+            sender_name: 'existing', 
             message: 'existing',
-            specialDate: null,
-            duration: 30
+            expires_in_hours: 72
           }),
         });
 
@@ -62,16 +57,19 @@ export default function PaymentForm({ order }: PaymentFormProps) {
           throw new Error('Ödeme başlatılamadı');
         }
 
-        const result = await response.json();
+        const result: PaymentResponse = await response.json();
         
-        if (result.success && result.paymentData) {
-          setPaymentData(result.paymentData);
-          // Auto-submit form after a short delay to show loading state
-          setTimeout(() => {
-            if (formRef.current) {
-              formRef.current.submit();
-            }
-          }, 1500);
+        if (result.success) {
+          setPaymentData(result);
+          
+          // If we have payment form data, auto-submit after showing loading
+          if (result.payment_form_data && result.payment_url) {
+            setTimeout(() => {
+              if (formRef.current) {
+                formRef.current.submit();
+              }
+            }, 1500);
+          }
         } else {
           throw new Error(result.error || 'Ödeme verileri alınamadı');
         }
@@ -109,58 +107,87 @@ export default function PaymentForm({ order }: PaymentFormProps) {
           </div>
         )}
 
-        {paymentData && (
-          <>
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                <span className="text-blue-800 font-medium">Paynkolay'a yönlendiriliyor...</span>
-              </div>
-              <p className="text-blue-700 text-sm">
-                Güvenli ödeme sayfasına otomatik olarak yönlendirileceksiniz.
-              </p>
-            </div>
-
-            {/* Hidden Paynkolay Form */}
+        {!isLoading && paymentData && paymentData.payment_form_data && paymentData.payment_url && (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Güvenli Ödeme Sayfasına Yönlendiriliyorsunuz
+            </h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Paynkolay güvenli ödeme sayfasına yönlendirileceksiniz...
+            </p>
+            
+            {/* Hidden form for Paynkolay */}
             <form
               ref={formRef}
-              method="post"
-              action={process.env.NODE_ENV === 'production' 
-                ? 'https://paynkolay.nkolayislem.com.tr/Vpos'
-                : 'https://paynkolaytest.nkolayislem.com.tr/Vpos'
-              }
-              style={{ display: 'none' }}
+              method="POST"
+              action={paymentData.payment_url}
+              className="hidden"
             >
-              <input type="hidden" name="sx" value={paymentData.sx} />
-              <input type="hidden" name="successUrl" value={paymentData.successUrl} />
-              <input type="hidden" name="failUrl" value={paymentData.failUrl} />
-              <input type="hidden" name="amount" value={paymentData.amount} />
-              <input type="hidden" name="clientRefCode" value={paymentData.clientRefCode} />
-              <input type="hidden" name="use3D" value={paymentData.use3D} />
-              <input type="hidden" name="rnd" value={paymentData.rnd} />
-              <input type="hidden" name="agentCode" value={paymentData.agentCode} />
-              <input type="hidden" name="transactionType" value={paymentData.transactionType} />
-              <input type="hidden" name="cardHolderIP" value={paymentData.cardHolderIP} />
-              <input type="hidden" name="hashDataV2" value={paymentData.hashDataV2} />
+              <input type="hidden" name="sx" value={paymentData.payment_form_data.sx} />
+              <input type="hidden" name="amount" value={paymentData.payment_form_data.amount} />
+              <input type="hidden" name="clientRefCode" value={paymentData.payment_form_data.clientRefCode} />
+              <input type="hidden" name="successUrl" value={paymentData.payment_form_data.successUrl} />
+              <input type="hidden" name="failUrl" value={paymentData.payment_form_data.failUrl} />
+              <input type="hidden" name="rnd" value={paymentData.payment_form_data.rnd} />
+              <input type="hidden" name="use3D" value={paymentData.payment_form_data.use3D} />
+              <input type="hidden" name="transactionType" value={paymentData.payment_form_data.transactionType} />
+              <input type="hidden" name="hashData" value={paymentData.payment_form_data.hashData} />
+              
+              {paymentData.payment_form_data.language && (
+                <input type="hidden" name="language" value={paymentData.payment_form_data.language} />
+              )}
+              {paymentData.payment_form_data.customerKey && (
+                <input type="hidden" name="customerKey" value={paymentData.payment_form_data.customerKey} />
+              )}
+              {paymentData.payment_form_data.MerchantCustomerNo && (
+                <input type="hidden" name="MerchantCustomerNo" value={paymentData.payment_form_data.MerchantCustomerNo} />
+              )}
+              {paymentData.payment_form_data.cardHolderIP && (
+                <input type="hidden" name="cardHolderIP" value={paymentData.payment_form_data.cardHolderIP} />
+              )}
             </form>
-          </>
+
+            <button
+              type="button"
+              onClick={() => formRef.current?.submit()}
+              className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+            >
+              Ödeme Sayfasına Git
+            </button>
+          </div>
         )}
 
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-500 pt-4">
-          <Lock className="h-4 w-4" />
-          <span>Ödemeniz SSL ile güvence altındadır</span>
-        </div>
-
-        <div className="mt-6 p-4 bg-green-50 rounded-lg">
-          <h3 className="font-medium text-green-900 mb-2">Test Kartı Bilgileri:</h3>
-          <div className="text-sm text-green-700 space-y-1">
-            <p><strong>Kart No:</strong> 4242 4242 4242 4242</p>
-            <p><strong>Son Kullanma:</strong> 12/25</p>
-            <p><strong>CVV:</strong> 123</p>
-            <p className="text-xs mt-2 text-green-600">
-              * Test ortamında bu kart bilgilerini kullanabilirsiniz.
+        {!isLoading && paymentData && paymentData.error && (
+          <div className="text-center py-8">
+            <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Ödeme Sistemi Geçici Olarak Kullanılamıyor
+            </h3>
+            <p className="text-gray-600 text-sm mb-4">
+              {paymentData.error}
+            </p>
+            <p className="text-xs text-gray-500">
+              Sipariş ID: {paymentData.order_id}
             </p>
           </div>
+        )}
+
+        {!isLoading && !paymentData && !error && (
+          <div className="text-center py-8">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Ödeme Başlatılamadı
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.
+            </p>
+          </div>
+        )}
+
+        <div className="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500">
+          <Lock className="h-3 w-3" />
+          <span>256-bit SSL ile güvenli ödeme</span>
         </div>
       </CardContent>
     </Card>

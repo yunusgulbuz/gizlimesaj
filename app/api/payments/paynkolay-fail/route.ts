@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { createPaynkolayHelper } from '@/lib/payments/paynkolay';
+import { PaynkolayHelper } from '@/lib/payments/paynkolay';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,7 +36,20 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createServerSupabaseClient();
-    const paynkolayHelper = createPaynkolayHelper();
+    
+    // Get Paynkolay configuration
+    const paynkolayConfig = {
+      sx: process.env.PAYNKOLAY_SX!,
+      secretKey: process.env.PAYNKOLAY_SECRET_KEY!,
+      baseUrl: process.env.PAYNKOLAY_BASE_URL!,
+      successUrl: process.env.PAYNKOLAY_SUCCESS_URL!,
+      failUrl: process.env.PAYNKOLAY_FAIL_URL!,
+      use3D: process.env.PAYNKOLAY_USE_3D === 'true',
+      transactionType: process.env.PAYNKOLAY_TRANSACTION_TYPE as 'sales' | 'presales',
+      language: process.env.PAYNKOLAY_LANGUAGE || 'tr'
+    };
+    
+    const paynkolayHelper = new PaynkolayHelper(paynkolayConfig);
 
     // Verify hash to ensure response authenticity
     const isHashValid = paynkolayHelper.verifyResponseHash(

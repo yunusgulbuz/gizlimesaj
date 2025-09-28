@@ -278,22 +278,17 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       const amount = selectedDurationData ? getPriceForDuration(selectedDurationData.id) : '0';
       
       const paymentData = {
-        templateId: template.id,
-        templateSlug: template.slug,
-        templateTitle: template.title,
-        amount: amount,
-        recipientName: textFields.recipientName || '',
+        template_id: template.id,
+        recipient_name: textFields.recipientName || '',
+        sender_name: creatorName,
         message: textFields.mainMessage || '',
-        senderName: creatorName,
-        email: email,
-        designStyle: selectedDesignStyle,
-        duration: selectedDuration,
-        specialDate: specialDate,
-        textFields: textFields
+        buyer_email: email,
+        special_date: specialDate,
+        expires_in_hours: 24 * parseInt(selectedDuration) // Convert duration to hours
       };
 
       // Call payment API
-      const response = await fetch('/api/payment/create', {
+      const response = await fetch('/api/payments/create-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -305,19 +300,14 @@ export default function TemplateFormPage({ template, durations, templatePricing,
         throw new Error('Ödeme formu oluşturulamadı');
       }
 
-      const result = await response.text();
+      const result = await response.json();
       
-      // Create a temporary form and submit to Paynkolay
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = result;
-      document.body.appendChild(tempDiv);
-      
-      const form = tempDiv.querySelector('form');
-      if (form) {
-        form.submit();
-      } else {
-        throw new Error('Ödeme formu bulunamadı');
+      if (!result.success) {
+        throw new Error(result.error || 'Ödeme başlatılamadı');
       }
+
+      // Redirect to payment page
+      window.location.href = `/payment/${result.order_id}`;
       
     } catch (error) {
       console.error('Ödeme hatası:', error);
