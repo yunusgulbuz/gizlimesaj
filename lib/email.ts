@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend client with fallback for build time
+const resend = new Resend(process.env.RESEND_API_KEY || 'dummy-key-for-build');
 
 // Email templates
 export const EMAIL_TEMPLATES = {
@@ -37,6 +37,12 @@ export class EmailService {
   // Send welcome email
   async sendWelcomeEmail(to: string, name: string) {
     try {
+      // Check if API key is properly configured
+      if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'dummy-key-for-build') {
+        console.warn('RESEND_API_KEY not configured, skipping email send');
+        return { success: false, error: 'Email service not configured' };
+      }
+
       const { data, error } = await resend.emails.send({
         from: EMAIL_CONFIG.FROM,
         to: [to],
@@ -67,6 +73,12 @@ export class EmailService {
     }
   ) {
     try {
+      // Check if API key is properly configured
+      if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'dummy-key-for-build') {
+        console.warn('RESEND_API_KEY not configured, skipping email send');
+        return { success: false, error: 'Email service not configured' };
+      }
+
       const { data, error } = await resend.emails.send({
         from: EMAIL_CONFIG.FROM,
         to: [to],
@@ -97,10 +109,16 @@ export class EmailService {
     }
   ) {
     try {
+      // Check if API key is properly configured
+      if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'dummy-key-for-build') {
+        console.warn('RESEND_API_KEY not configured, skipping email send');
+        return { success: false, error: 'Email service not configured' };
+      }
+
       const { data, error } = await resend.emails.send({
         from: EMAIL_CONFIG.FROM,
         to: [to],
-        subject: `Ödemeniz Başarılı - Gizli Mesajınız Hazır! 🎉`,
+        subject: `Ödemeniz Başarılı - #${paymentDetails.orderId}`,
         html: this.getPaymentSuccessTemplate(paymentDetails),
       });
 
@@ -126,10 +144,16 @@ export class EmailService {
     }
   ) {
     try {
+      // Check if API key is properly configured
+      if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'dummy-key-for-build') {
+        console.warn('RESEND_API_KEY not configured, skipping email send');
+        return { success: false, error: 'Email service not configured' };
+      }
+
       const { data, error } = await resend.emails.send({
         from: EMAIL_CONFIG.FROM,
         to: [to],
-        subject: `${messageDetails.senderName} Size Özel Bir Mesaj Gönderdi! 💌`,
+        subject: `${messageDetails.senderName} size özel bir mesaj gönderdi! 💌`,
         html: this.getMessageNotificationTemplate(messageDetails),
       });
 
@@ -158,10 +182,16 @@ export class EmailService {
     }
   ) {
     try {
+      // Check if API key is properly configured
+      if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'dummy-key-for-build') {
+        console.warn('RESEND_API_KEY not configured, skipping email send');
+        return { success: false, error: 'Email service not configured' };
+      }
+
       const { data, error } = await resend.emails.send({
         from: EMAIL_CONFIG.FROM,
         to: [to],
-        subject: `${clickDetails.recipientName} Gizli Mesajınızla Etkileşime Geçti! 🎉`,
+        subject: `${clickDetails.recipientName} mesajınızla etkileşime geçti! 🎉`,
         html: this.getButtonClickNotificationTemplate(clickDetails),
       });
 
