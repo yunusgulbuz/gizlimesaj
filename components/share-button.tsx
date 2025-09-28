@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Share2, Download, Instagram, MessageCircle } from 'lucide-react';
+import { Share2, Copy, Link, MessageCircle, Twitter, Facebook } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
 
 interface ShareButtonProps {
   shortId: string;
@@ -19,7 +18,6 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({ shortId, recipientName, className }: ShareButtonProps) {
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isDarkBackground, setIsDarkBackground] = useState(false);
 
   // Detect background color to adjust button visibility
@@ -55,120 +53,75 @@ export function ShareButton({ shortId, recipientName, className }: ShareButtonPr
     return () => observer.disconnect();
   }, []);
 
-  const generateAndDownloadImage = async (format: string) => {
-    setIsGenerating(true);
+  const shareUrl = `${window.location.origin}/m/${shortId}`;
+
+  const copyToClipboard = async () => {
     try {
-      // First, temporarily replace any oklab colors in the DOM
-      const allElements = document.querySelectorAll('*');
-      const originalStyles: { element: HTMLElement; cssText: string }[] = [];
-      
-      allElements.forEach((el) => {
-        const element = el as HTMLElement;
-        const style = element.style;
-        const computedStyle = window.getComputedStyle(element);
-        
-        // Check both inline styles and computed styles for oklab
-        const hasOklabInline = style.cssText.includes('oklab') || style.cssText.includes('oklch');
-        const hasOklabComputed = computedStyle.color?.includes('oklab') || 
-                                computedStyle.color?.includes('oklch') ||
-                                computedStyle.backgroundColor?.includes('oklab') ||
-                                computedStyle.backgroundColor?.includes('oklch') ||
-                                computedStyle.borderColor?.includes('oklab') ||
-                                computedStyle.borderColor?.includes('oklch');
-        
-        if (hasOklabInline || hasOklabComputed) {
-          // Store original styles for restoration
-          originalStyles.push({ element, cssText: style.cssText });
-          
-          // Replace oklab colors with fallback colors in inline styles
-          if (hasOklabInline) {
-            const rules = style.cssText.split(';');
-            const filteredRules = rules.filter(rule => !rule.includes('oklab') && !rule.includes('oklch'));
-            style.cssText = filteredRules.join(';');
-          }
-          
-          // Override computed styles with safe fallbacks
-          if (hasOklabComputed) {
-            if (computedStyle.color?.includes('oklab') || computedStyle.color?.includes('oklch')) {
-              element.style.color = '#000000';
-            }
-            if (computedStyle.backgroundColor?.includes('oklab') || computedStyle.backgroundColor?.includes('oklch')) {
-              element.style.backgroundColor = 'transparent';
-            }
-            if (computedStyle.borderColor?.includes('oklab') || computedStyle.borderColor?.includes('oklch')) {
-              element.style.borderColor = '#cccccc';
-            }
-          }
-        }
-      });
-
-      // Capture the current page design using html2canvas
-      const element = document.body;
-      const canvas = await html2canvas(element, {
-        useCORS: true,
-        allowTaint: true,
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-
-      // Restore original styles
-      originalStyles.forEach(({ element, cssText }) => {
-        element.style.cssText = cssText;
-      });
-
-      // Convert canvas to blob
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `gizli-mesaj-${format}-${shortId}.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          
-          toast.success('Görsel başarıyla indirildi!');
-        }
-      }, 'image/png');
-
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('Link panoya kopyalandı!');
     } catch (error) {
-      console.error('Görsel oluşturma hatası:', error);
-      toast.error('Görsel oluşturulamadı. Lütfen tekrar deneyin.');
-    } finally {
-      setIsGenerating(false);
+      console.error('Kopyalama hatası:', error);
+      toast.error('Link kopyalanamadı. Lütfen tekrar deneyin.');
     }
   };
 
-  const getFormatName = (format: string) => {
-    const names = {
-      'instagram-square': 'Instagram Kare',
-      'instagram-story': 'Instagram Story',
-      'whatsapp': 'WhatsApp',
-      'web-banner': 'Web Banner'
-    };
-    return names[format as keyof typeof names] || format;
+  const shareToWhatsApp = () => {
+    const message = `${recipientName} için özel bir mesajım var! 💕 ${shareUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const shareToTwitter = () => {
+    const message = `${recipientName} için özel bir mesajım var! 💕`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(shareUrl)}`;
+    window.open(twitterUrl, '_blank');
+  };
+
+  const shareToFacebook = () => {
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+    window.open(facebookUrl, '_blank');
+  };
+
+  const shareViaWebAPI = async () => {
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: `${recipientName} için özel mesaj`,
+          text: `${recipientName} için özel bir mesajım var! 💕`,
+          url: shareUrl,
+        });
+      } catch (error) {
+        console.error('Web Share API hatası:', error);
+        copyToClipboard(); // Fallback to copy
+      }
+    } else {
+      copyToClipboard(); // Fallback to copy
+    }
   };
 
   const getFormatIcon = (format: string) => {
     switch (format) {
-      case 'instagram-square':
-      case 'instagram-story':
-        return <Instagram className="w-4 h-4" />;
+      case 'copy':
+        return <Copy className="w-4 h-4" />;
       case 'whatsapp':
         return <MessageCircle className="w-4 h-4" />;
-      case 'web-banner':
-        return <Download className="w-4 h-4" />;
-      default:
+      case 'twitter':
+        return <Twitter className="w-4 h-4" />;
+      case 'facebook':
+        return <Facebook className="w-4 h-4" />;
+      case 'native':
         return <Share2 className="w-4 h-4" />;
+      default:
+        return <Link className="w-4 h-4" />;
     }
   };
 
-  const formats = [
-    { key: 'instagram-square', name: 'Instagram Kare (1080×1080)' },
-    { key: 'instagram-story', name: 'Instagram Story (1080×1920)' },
-    { key: 'whatsapp', name: 'WhatsApp (800×800)' },
-    { key: 'web-banner', name: 'Web Banner (1920×1080)' }
+  const shareOptions = [
+    { key: 'copy', name: 'Linki Kopyala', action: copyToClipboard },
+    { key: 'whatsapp', name: 'WhatsApp\'ta Paylaş', action: shareToWhatsApp },
+    { key: 'twitter', name: 'Twitter\'da Paylaş', action: shareToTwitter },
+    { key: 'facebook', name: 'Facebook\'ta Paylaş', action: shareToFacebook },
+    ...(typeof navigator !== 'undefined' && 'share' in navigator ? [{ key: 'native', name: 'Diğer Uygulamalar', action: shareViaWebAPI }] : [])
   ];
 
   return (
@@ -181,22 +134,20 @@ export function ShareButton({ shortId, recipientName, className }: ShareButtonPr
               ? 'bg-white/90 text-gray-800 hover:bg-white hover:text-gray-900' 
               : 'bg-gray-900/90 text-white hover:bg-gray-900 hover:text-white border-gray-700/50'
           } ${className}`}
-          disabled={isGenerating}
         >
           <Share2 className="w-4 h-4" />
-          {isGenerating ? 'Oluşturuluyor...' : 'Paylaş'}
+          Paylaş
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        {formats.map((format) => (
+        {shareOptions.map((option) => (
           <DropdownMenuItem
-            key={format.key}
-            onClick={() => generateAndDownloadImage(format.key)}
+            key={option.key}
+            onClick={option.action}
             className="gap-2 cursor-pointer"
-            disabled={isGenerating}
           >
-            {getFormatIcon(format.key)}
-            <span>{format.name}</span>
+            {getFormatIcon(option.key)}
+            <span>{option.name}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
