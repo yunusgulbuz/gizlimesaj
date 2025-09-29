@@ -1,54 +1,29 @@
-Sen GPT-5 tabanlı bir yazılım uzmanısın ve şu an `gizlimesaj/gizlimesaj` dizinindeki Next.js 14 (App Router) + TypeScript + Supabase projesinde çalışıyorsun. Repo hâlihazırda demo ödeme ve kişisel sayfa akışını içeriyor fakat gerçek ödeme, içerik üretimi ve etkileşim takibi tamamlanmış değil. Aşağıdaki işleri eksiksiz uygula. Paynkolay belgeleri `paynkolay_doc/` klasöründe; özellikle `odeme_entegrasyon_servisleri.txt`, `iframe_kullanimi.txt`, `odeme_sonucu.txt` ve test kartları dokümanlarına bak.
-
-1. ✅ Paynkolay form entegrasyonu - TAMAMLANDI
-   - ✅ Ortam değişkenleri: `.env.example` ve kodda `PAYNKOLAY_SX`, `PAYNKOLAY_SECRET_KEY`, `PAYNKOLAY_BASE_URL`, `PAYNKOLAY_SUCCESS_URL`, `PAYNKOLAY_FAIL_URL` ve gerekliyse `PAYNKOLAY_USE_3D`, `PAYNKOLAY_TRANSACTION_TYPE`, `PAYNKOLAY_LANGUAGE`. Test anahtarlarını dokümandan al.
-   - ✅ `app/api/payments/create-payment/route.ts` dosyasını yeniden düzenle: Supabase'de `orders` kaydını oluştururken `payment_provider='paynkolay'`, `client_ref_code` (order ID veya short id tabanlı benzersiz kod), seçilen `duration_id`, `buyer_email`, `design_style`, `form_payload` (JSON) ve `template_slug` gibi alanları kaydet. Hash'te kullanılacak `rnd` ve `hashData` değerlerini server tarafında üret.
-   - ✅ `lib/payments/paynkolay.ts` gibi yeni bir yardımcı modül yaz; Paynkolay form parametrelerini üretip `hashData` hesaplasın.
-   - ✅ `app/payment/[orderId]/payment-form.tsx` yerine Paynkolay'ın "form göndererek ortak ödeme" entegrasyonunu kullan: Order detaylarını çeken sayfa, gizli input'larla Paynkolay'a post edecek bir `<form>` render etsin ve otomatik submit etsin (veya `iframe_kullanimi.txt`'ye göre iframe). Kullanıcıya yönlendirme/iframe yüklenme spinner'ı göster.
-   - ✅ Paynkolay'ın başarılı/başarısız dönüşlerini karşılamak için `app/api/payments/paynkolay-success/route.ts` ve `app/api/payments/paynkolay-fail/route.ts` (veya benzer) oluştur. POST edilen alanları al, `hashData` doğrula, `clientRefCode` üzerinden siparişi bul, ödeme bilgilerini (`payment_id`, `paid_amount`, `installment`, vb.) Supabase'e yaz. Başarıda order `status='completed'`, başarısızda `status='failed'`/`'cancelled'`.
-   - ✅ Başarı/başarısız dönüşlerinden sonra kullanıcıyı uygun Next.js sayfalarına yönlendir (örn. `/payment/[orderId]?status=success`), `app/payment/[orderId]/page.tsx` içinde yeni durumları ele al. Paynkolay tarafının beklediği HTTP 200 cevabını döndürmeyi unutma.
-
-2. ✅ Ödeme sonrası kişisel sayfa üretimi ve e‑posta - TAMAMLANDI
-   - ✅ Form tarafında (özellikle `templates/shared/form-page.tsx` ve ilgili komponentler) submit akışını gerçek sunucu çağrısına bağla. Form verilerini (creatorName, recipientName, designStyle, textFields, specialDate, selectedDuration, buyer email) `POST /api/payments/create-payment`'e JSON olarak gönder. Gerekliyse bu endpoint'te yup/zod doğrulaması ekle.
-   - ✅ Supabase şemasını güncelle:
-     * ✅ `orders` tablosuna `buyer_email text not null`, `duration_id int`, `form_payload jsonb`, `creator_name text`, `design_style text`, `short_id text unique`, `client_ref_code text unique`, `expires_at timestamptz`, `message text`, `recipient_name text`, `sender_name text` vb. Alanlar yoksa migration ekle.
-     * ✅ `personal_pages` tablosunda `design_style text`, `text_fields jsonb`, `creator_name text`, `template_slug text`, `bg_audio_url text`, `button_tracking jsonb` gibi alanları sakla. Eksikse migration ekle.
-     * ✅ `page_analytics` (yoksa oluştur) tablosu: `id bigserial`, `personal_page_id uuid`, `event_type text`, `metadata jsonb`, `created_at timestamptz default now()`.
-   - ✅ Paynkolay "success" handler'ında:
-     * ✅ İlgili order'ın `expires_at` değerini duration'a göre hesapla.
-     * ✅ `personal_pages` kaydı oluştur (short_id order'dan gelsin) ve form payload'dan gelen text alanlarını kaydet. Oluşan `short_id` üzerinden kişisel sayfa URL'ini `orders` tablosuna yaz.
-     * ✅ `emailService.sendPaymentSuccessEmail` ile alıcıya (buyer_email) ödeme başarılı maili gönder, linki (`${NEXT_PUBLIC_SITE_URL}/m/${short_id}`) ve süresi belirt.
-     * ✅ (İsteğe bağlı) `emailService.sendMessageNotificationEmail` ile alıcıya kişisel sayfa hazır bilgisini ver.
-   - ✅ `app/api/personal-pages/[shortId]/route.ts` JSON çıktısını yeni alanlarla genişlet (template_slug, design_style, text_fields, creator_name, buttonTracking vb.) ve `app/m/[shortId]/page.tsx`'te bu veriyi kullanacak şekilde state yönetimini güncelle. `TemplateRenderer`'a `shortId`, `designStyle`, `textFields`, `creatorName` prop'ları eklendiğinden emin ol.
-
-3. Buton tıklama takibi ve bildirim ✅ TAMAMLANDI
-   - ✅ Migration ile `page_analytics` tablosunda `metadata jsonb` alanını oluştur (yoksa) ve RLS/policy ekle.
-   - ✅ `app/api/personal-pages/[shortId]/analytics/route.ts` endpoint'ini `metadata` alanını da alacak şekilde genişlet; `event_type==='button_click'` olduğunda `metadata` içinde en azından `{ templateSlug, buttonId, buttonLabel }` bekle.
-   - ✅ `app/m/[shortId]/page.tsx` kişisel sayfa componentleri `TemplateRenderer`'a `onTrackEvent`/`shortId` prop'u göndersin. Yeni bir yardımcı (`lib/analytics.ts` gibi) yazarak `POST /api/personal-pages/${shortId}/analytics` çağrısını yap.
-   - ✅ İnteraktif buton içeren şablonlarda (örn. `templates/seni-seviyorum-teen/components/EglenceliSeniSeviyorumTemplate.tsx` ve benzerlerine) buton handler'larına `trackEvent({ eventType: 'button_click', metadata: { buttonLabel: 'EVET', templateSlug, extra... }})` ekle.
-   - ✅ Buton tıklaması geldiğinde satın alan kişiye bilgilendirme e-postası gönder: `emailService` altında yeni bir metod (örn. `sendButtonClickNotificationEmail`) oluştur ve `app/api/personal-pages/[shortId]/analytics/route.ts` içinde `event_type==='button_click'` ve ilk defa "pozitif" buton ise tetikle. Order → buyer email eşlemesini Supabase'den getir. Aynı event için tekrar mail gitmesini engelle (ör. `page_analytics` insert sonrası check veya Supabase view ile).
-   - ✅ `app/api/personal-pages/[shortId]/analytics/route.ts` başarısız olduğunda uygun HTTP kodları döndürsün; rate limit zaten var, re-use et.
-
-4. Paylaşım butonu ve görsel çıktılar ✅ TAMAMLANDI
-   - ✅ `components/ui/social-share.tsx` komponenti oluşturuldu: Instagram Kare (1080x1080), Instagram Story (1080x1920), WhatsApp (1200x630) formatları destekleniyor.
-   - ✅ `app/api/generate-share-image/route.ts` API endpoint'i oluşturuldu: Dinamik SVG görsel üretimi, kişiselleştirilmiş içerik, indirilebilir dosyalar.
-   - ✅ `app/success/[shortId]/page.tsx` güncellendi: Yeni SocialShare komponenti entegre edildi, eski paylaşım butonları kaldırıldı.
-   - ✅ Paylaşım işlemi sırasında loading durumu, hata yakalama ve kullanıcıya geri bildirim eklendi.
-   - ✅ Native Web Share API desteği eklendi: Mobilde share sheet, desktop'ta dosya indirme.
-   - ✅ Analytics entegrasyonu: Share buton tıklamaları `event_type='share_export'` olarak kaydediliyor.
-   - ✅ Kişisel sayfa API'si genişletildi: `template_slug`, `template_audience` alanları eklendi.
-
-5. ✅ Test ve kalite - TAMAMLANDI
-   - ✅ Tüm değişiklikler TypeScript hatasız olmalı, `npm run lint` ve mümkünse `npm run test` çalıştırılabilmeli. Gerekirse jest/vitest ile en azından Paynkolay payload helper'ını ve analytics endpoint'ini test et.
-   - ✅ Manuel test rehberi oluştur: yeni template formundan sipariş oluştur, Paynkolay test kartı ile ödeme tamamla (dokümandaki 4242 vb. test kartları), success/fail akışlarını, mail gönderimini (Resend test API key ile) ve buton tıklama mailini doğrula. Bu adımları `PAYNKOLAY_INTEGRATION_TEST_GUIDE.md` dosyasında özetlendi.
-   - ✅ `PAYNKOLAY_INTEGRATION_SUMMARY.md` dosyasında Paynkolay kurulum notları ve yeni env değişkenleri eklendi.
-   - ✅ Kod içinde karmaşık bloklara klasik yorumlar eklendi; gereksiz yorum yazılmadı.
-
-✅ Teslim - TAMAMLANDI:
-- ✅ Tüm migration'lar `supabase/migrations` altında; seed veya schema dosyaları güncellendi.
-- ✅ Yeni paketler `package.json` ve `package-lock.json`'da mevcut.
-- ✅ Lint/test komutlarıyla doğrulandı ve sonuçlar PR özetinde aktarıldı.
-- ✅ Gerekli yerlerde dosya yolları açıkça belirtildi (`app/m/[shortId]/page.tsx` gibi).```
-
-
-not: supabase online veritabanını kullanıyoruz. yapacağın değişim veya eklemeler varsa kodları bana ver ben yapıştırırım supabase'e
+1- Anasayfaya en çok tercih edilen 3 ürünün(şablonun) konulması, tıklayıp satın alınabilecek vaziyette olması
+2- Hesabım var butonunun yazısının renginin düzeltilmesi(anasayfada)
+3- Anasayfadaki yorumların daha gerçekçi hale getirilmesi
+4- Hikayeni yazmaya başla butonunu Giriş yap olarak değiştirilmesi (anasayfa)
+5- Pricing sayfasının oluşturuması ve pricing için planların oluşturulması (Aylık 10 hediye, Aylık 20 hediye, Aylık 30 hediye ve ekstra için görüşme)
+6- Hakkımızda sayfasının oluşturulması
+7- Anasayfanın daha anlaşılır hale getirilmesi
+8- Templates sayfası daha sade ve e ticaret sitesi misali haline getirilmesi
+9- templates sayfasında şablonu seç butonuna tıklandığında değil ürünün herhangi bir yerine tıklandığında detay sayfasının açılması
+10- şablon talep formunda telefon no da istenmeli
+11- iletişim sayfasının yapılması
+12- preview sayfasındaki stil butonları mobil cihazlara uygun olması
+13- detay sayfasındaki buton sepete ekle değil "satın al" şeklinde değiştirelim. ve şablon başlığının yanına da satın alma butonu ekleyelim
+14- "satın al" butonuna tıklayınca tekrar tıklanamamalı, loading olmalı
+15- "satın al" butonuna tıklayınca ödeme ekranından önce çıkan loading ekranının daha profesyonel ve modern hale getirilmesi
+16- Ödeme başarılı ekranının düzeltilmesi
+17- oluşturulan şablon ekranındaki paylaş butonunun ve heartnote ile yapıldı yazısının renkleri düzeltilmesi (arkaplan renginden dolayı yazı görünmüyor)
+18- paylaş butonuna instagram da eklenmeli
+19- detay ekranında bütün şablonlara youtube linki eklenebilmeli
+20- bütün şablonlar mobil cihazlara uygun olarak tasarlanmalı
+21- gizlilik sözleşmesi ve kullanım şartları hazırlanmalı
+22- templates ekranına sıralama eklenmesi
+23- wp üzerinden şablon oluşturabilme (daha sonra yapılacak)
+24- wp danışma hattı oluşturma (daha sonra yapılacak)
+25- wp üzerinden paylaşım yapıldığında küçük resim ve açıklamanın hediyeye uygun olması
+26- anasayfa ve templates ekranındaki &apos; yazılarının düzeltilmesi
+27- kayıt ol sayfasındaki anasayfa > kayıt ol yazısının kaldırılması
+28- kayıt sayfasındaki github'ın kaldırılması
+29- ödeme başarısız ekranı çalışmıyor. düzeltilmesi
