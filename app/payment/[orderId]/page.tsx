@@ -34,43 +34,24 @@ async function getOrder(orderId: string) {
 
 export async function generateMetadata({ params }: PaymentPageProps) {
   const { orderId } = await params;
-  
-  // Eğer orderId "fail" veya "success" ise, metadata oluşturmayı atla
-  if (orderId === 'fail' || orderId === 'success') {
-    return generateSEOMetadata({
-      title: 'Ödeme İşlemi',
-      description: 'Ödeme işlemi sonucu',
-    });
-  }
-
   const order = await getOrder(orderId);
   
   if (!order) {
     return generateSEOMetadata({
-      title: 'Sipariş Bulunamadı',
-      description: 'Aradığınız sipariş bulunamadı.',
+      title: 'Ödeme Bulunamadı',
+      description: 'Aradığınız ödeme sayfası bulunamadı.'
     });
   }
 
   return generateSEOMetadata({
-    title: `Ödeme - ${order.templates?.title || 'Gizli Mesaj'}`,
-    description: `${order.templates?.title || 'Gizli Mesaj'} için ödeme sayfası`,
+    title: `Ödeme - ${order.templates.title}`,
+    description: `${order.recipient_name} için ${order.templates.title} şablonu ile gizli mesaj ödeme sayfası.`
   });
 }
 
 export default async function PaymentPage({ params, searchParams }: PaymentPageProps) {
   const { orderId } = await params;
   const { status, error } = await searchParams;
-
-  // Eğer orderId "fail" ise, fail sayfasına yönlendir
-  if (orderId === 'fail') {
-    return notFound(); // Bu durumda /payment/fail/page.tsx devreye girer
-  }
-
-  // Eğer orderId "success" ise, success sayfasına yönlendir  
-  if (orderId === 'success') {
-    return notFound(); // Bu durumda /payment/success/page.tsx devreye girer
-  }
   const order = await getOrder(orderId);
 
   if (!order) {

@@ -18,12 +18,12 @@ export async function POST(req: NextRequest) {
 
     // Başarısız ödeme sayfasına yönlendir
     return NextResponse.redirect(
-      new URL(`/payment/fail?message=${encodeURIComponent(errorMessage)}&code=${responseCode}`, req.url)
+      new URL(`/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}`, req.url)
     );
 
   } catch (error) {
     console.error('Payment fail handler error:', error);
-    return NextResponse.redirect(new URL('/payment/fail?message=Ödeme işlemi sırasında bir hata oluştu&code=SYSTEM_ERROR', req.url));
+    return NextResponse.redirect(new URL('/payment/error?reason=server_error', req.url));
   }
 }
 
@@ -33,6 +33,6 @@ export async function GET(req: NextRequest) {
   const message = url.searchParams.get('message') || 'Ödeme işlemi başarısız oldu';
   
   return NextResponse.redirect(
-    new URL(`/payment/fail?message=${encodeURIComponent(message)}`, req.url)
+    new URL(`/payment/error?reason=payment_failed&message=${encodeURIComponent(message)}`, req.url)
   );
 }
