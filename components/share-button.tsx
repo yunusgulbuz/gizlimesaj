@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Share2, Copy, Link, MessageCircle, Twitter, Facebook } from 'lucide-react';
+import { Share2, Copy, Link, MessageCircle, Twitter, Facebook, Instagram } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,6 +82,18 @@ export function ShareButton({ shortId, recipientName, className }: ShareButtonPr
     window.open(facebookUrl, '_blank');
   };
 
+  const shareToInstagram = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('Link kopyalandı! Instagram\'da paylaşabilirsiniz.');
+      // Instagram web'de doğrudan URL paylaşımı desteklenmediği için Instagram'ı açıyoruz
+      window.open('https://www.instagram.com/', '_blank');
+    } catch (error) {
+      console.error('Instagram paylaşım hatası:', error);
+      toast.error('Link kopyalanamadı. Lütfen tekrar deneyin.');
+    }
+  };
+
   const shareViaWebAPI = async () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
@@ -109,6 +121,8 @@ export function ShareButton({ shortId, recipientName, className }: ShareButtonPr
         return <Twitter className="w-4 h-4" />;
       case 'facebook':
         return <Facebook className="w-4 h-4" />;
+      case 'instagram':
+        return <Instagram className="w-4 h-4" />;
       case 'native':
         return <Share2 className="w-4 h-4" />;
       default:
@@ -119,6 +133,7 @@ export function ShareButton({ shortId, recipientName, className }: ShareButtonPr
   const shareOptions = [
     { key: 'copy', name: 'Linki Kopyala', action: copyToClipboard },
     { key: 'whatsapp', name: 'WhatsApp\'ta Paylaş', action: shareToWhatsApp },
+    { key: 'instagram', name: 'Instagram\'da Paylaş', action: shareToInstagram },
     { key: 'twitter', name: 'Twitter\'da Paylaş', action: shareToTwitter },
     { key: 'facebook', name: 'Facebook\'ta Paylaş', action: shareToFacebook },
     ...(typeof navigator !== 'undefined' && 'share' in navigator ? [{ key: 'native', name: 'Diğer Uygulamalar', action: shareViaWebAPI }] : [])

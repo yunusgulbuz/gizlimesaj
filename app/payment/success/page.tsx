@@ -26,6 +26,14 @@ export default function PaymentSuccessPage() {
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
 
+  const shareInstagram = () => {
+    // Instagram doesn't support direct URL sharing like WhatsApp/Twitter
+    // We'll copy the URL and open Instagram, user can paste it in their story/post
+    copyToClipboard();
+    // Open Instagram web (mobile will redirect to app)
+    window.open('https://www.instagram.com/', '_blank');
+  };
+
   const shareTwitter = () => {
     const message = `Sana özel bir mesajım var!`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(personalPageUrl)}`, '_blank');
@@ -95,20 +103,27 @@ export default function PaymentSuccessPage() {
             </Link>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             <button
               onClick={shareWhatsApp}
-              className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2"
+              className="bg-green-500 text-white py-2 px-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-1"
             >
               <Share2 className="w-4 h-4" />
-              <span>WhatsApp</span>
+              <span className="text-xs">WhatsApp</span>
+            </button>
+            <button
+              onClick={shareInstagram}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-3 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center justify-center space-x-1"
+            >
+              <Share2 className="w-4 h-4" />
+              <span className="text-xs">Instagram</span>
             </button>
             <button
               onClick={shareTwitter}
-              className="bg-blue-400 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition-colors flex items-center justify-center space-x-2"
+              className="bg-blue-400 text-white py-2 px-3 rounded-lg hover:bg-blue-500 transition-colors flex items-center justify-center space-x-1"
             >
               <Share2 className="w-4 h-4" />
-              <span>Twitter</span>
+              <span className="text-xs">Twitter</span>
             </button>
           </div>
         </div>

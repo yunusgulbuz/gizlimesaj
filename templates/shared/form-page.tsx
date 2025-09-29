@@ -525,8 +525,13 @@ export default function TemplateFormPage({ template, durations, templatePricing,
             </div>
 
             {/* Submit Button */}
-            <Button type="submit" className="w-full bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-lg shadow-rose-200" size="lg">
-              Sepete Ekle
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-lg shadow-rose-200" 
+              size="lg"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'İşleniyor...' : 'Sepete Ekle'}
             </Button>
           </form>
         </CardContent>

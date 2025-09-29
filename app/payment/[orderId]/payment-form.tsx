@@ -105,13 +105,33 @@ export default function PaymentForm({ order }: PaymentFormProps) {
 
         {!isLoading && paymentData && paymentData.payment_form_data && paymentData.payment_url && (
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Güvenli Ödeme Sayfasına Yönlendiriliyorsunuz
-            </h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Paynkolay güvenli ödeme sayfasına yönlendirileceksiniz...
-            </p>
+            <div className="relative mb-6">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full opacity-20 animate-pulse"></div>
+            </div>
+            
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                🔒 Güvenli Ödeme Sayfasına Yönlendiriliyorsunuz
+              </h3>
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
+                <p className="text-gray-700 text-sm font-medium mb-2">
+                  ✨ Paynkolay güvenli ödeme sistemine bağlanıyor...
+                </p>
+                <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span>256-bit SSL şifreleme aktif</span>
+                </div>
+              </div>
+              
+              <div className="text-xs text-gray-400 space-y-1">
+                <p>• Kart bilgileriniz güvenle korunur</p>
+                <p>• 3D Secure doğrulama desteklenir</p>
+                <p>• Anında ödeme onayı</p>
+              </div>
+            </div>
             
             {/* Hidden form for Paynkolay */}
             <form
