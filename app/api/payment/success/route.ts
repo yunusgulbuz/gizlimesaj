@@ -191,14 +191,14 @@ export async function POST(req: NextRequest) {
 
     if (pageError) {
       console.error('Personal page creation error:', pageError);
-      return NextResponse.redirect(new URL('/payment/error?reason=page_creation_failed', req.url));
+      return NextResponse.redirect(new URL('/payment/error?reason=page_creation_failed', req.url), 303);
     }
 
     // Başarılı ödeme sayfasına yönlendir
-    return NextResponse.redirect(new URL(`/payment/success?shortId=${shortId}&orderId=${order.id}`, req.url));
+    return NextResponse.redirect(new URL(`/payment/success?shortId=${shortId}&orderId=${order.id}`, req.url), 303);
 
   } catch (error) {
     console.error('Payment success handler error:', error);
-    return NextResponse.redirect(new URL('/payment/error?reason=server_error', req.url));
+    return NextResponse.redirect(new URL('/payment/error?reason=server_error', req.url), 303);
   }
 }

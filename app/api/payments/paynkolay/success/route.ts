@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       const isValidHash = paynkolayHelper.verifyResponseHash(paynkolayResponse, paynkolayConfig.secretKey);
       if (!isValidHash) {
         console.error('Invalid hashDataV2 in Paynkolay success response');
-        return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=invalid_hash`);
+        return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=invalid_hash`, 303);
       }
     } else {
       console.warn('HashDataV2 is empty in Paynkolay success response, skipping hash validation');
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     if (orderError || !order) {
       console.error('Order not found for reference:', paynkolayResponse.CLIENT_REFERENCE_CODE);
-      return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=order_not_found`);
+      return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=order_not_found`, 303);
     }
 
     // Check if payment is successful
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 
       if (updateError) {
         console.error('Failed to update order status:', updateError);
-        return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=update_failed`);
+        return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=update_failed`, 303);
       }
 
       // Create personal page record
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
       }
 
       console.log('Payment successful for order:', order.id);
-      return NextResponse.redirect(`${finalBaseUrl}/success/${order.short_id}`);
+      return NextResponse.redirect(`${finalBaseUrl}/success/${order.short_id}`, 303);
     } else {
       // Payment failed
       const { error: updateError } = await supabase
@@ -171,13 +171,14 @@ export async function POST(request: NextRequest) {
       console.log('Payment failed for order:', order.id, 'Error:', errorMessage);
       
       return NextResponse.redirect(
-        `${finalBaseUrl}/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}`
+        `${finalBaseUrl}/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}`,
+        303
       );
     }
 
   } catch (error) {
     console.error('Paynkolay success callback error:', error);
-    return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=server_error`);
+    return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=server_error`, 303);
   }
 }
 
