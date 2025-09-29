@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
       if (!isHashValid) {
          console.error('Invalid hashDataV2 in Paynkolay fail response');
-         return NextResponse.redirect(createRedirectUrl('/payment/error?reason=invalid_hash'), 303);
+         return NextResponse.redirect(createRedirectUrl('/payment/error?reason=invalid_hash'));
        }
     } else {
       console.warn('HashDataV2 is empty in Paynkolay fail response, skipping hash validation');
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     if (orderError || !order) {
       console.error('Order not found for reference:', paynkolayResponse.CLIENT_REFERENCE_CODE);
-      return NextResponse.redirect(createRedirectUrl('/payment/error?reason=order_not_found'), 303);
+      return NextResponse.redirect(createRedirectUrl('/payment/error?reason=order_not_found'));
     }
 
     // Update order status to failed
@@ -120,13 +120,12 @@ export async function POST(request: NextRequest) {
     
     // Redirect to error page with specific error message
     return NextResponse.redirect(
-      createRedirectUrl(`/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}&order_id=${order.id}`),
-      303
+      createRedirectUrl(`/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}&order_id=${order.id}`)
     );
 
   } catch (error) {
     console.error('Paynkolay fail callback error:', error);
-    return NextResponse.redirect(createRedirectUrl('/payment/error?reason=server_error'), 303);
+    return NextResponse.redirect(createRedirectUrl('/payment/error?reason=server_error'));
   }
 }
 

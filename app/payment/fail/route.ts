@@ -17,9 +17,9 @@ export async function POST(req: NextRequest) {
       req.url
     );
 
-    return NextResponse.redirect(redirectUrl, 303);
+    return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error("Fail route POST handler error:", error);
-    return NextResponse.redirect(new URL("/payment/error?reason=server_error", req.url), 303);
+    return NextResponse.redirect(new URL("/payment/error?reason=server_error", req.url));
   }
 }
