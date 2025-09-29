@@ -1,49 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  
+// Handle Paynkolay POST callback hitting the page path instead of API
+export async function POST(req: NextRequest) {
   try {
-    const formData = await request.formData();
-    
-    // Extract error information from form data
-    const message = formData.get('message') as string || 'Ödeme işlemi başarısız oldu';
-    const code = formData.get('code') as string || '0';
-    
-    // Redirect to the fail page with query parameters
-    const redirectUrl = new URL('/payment/fail', baseUrl);
-    redirectUrl.searchParams.set('message', message);
-    if (code !== '0') {
-      redirectUrl.searchParams.set('code', code);
-    }
-    
-    return NextResponse.redirect(redirectUrl.toString());
-    
-  } catch (error) {
-    console.error('Payment fail POST handler error:', error);
-    
-    // Fallback redirect to generic fail page
-    const redirectUrl = new URL('/payment/fail', baseUrl);
-    redirectUrl.searchParams.set('message', 'Ödeme işlemi başarısız oldu');
-    
-    return NextResponse.redirect(redirectUrl.toString());
-  }
-}
+    const formData = await req.formData();
 
-// Handle GET requests by redirecting to the page
-export async function GET(request: NextRequest) {
-  const url = new URL(request.url);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  
-  // Extract query parameters and preserve them
-  const message = url.searchParams.get('message') || 'Ödeme işlemi başarısız oldu';
-  const code = url.searchParams.get('code') || '0';
-  
-  const redirectUrl = new URL('/payment/fail', baseUrl);
-  redirectUrl.searchParams.set('message', message);
-  if (code !== '0') {
-    redirectUrl.searchParams.set('code', code);
+    const responseCode = (formData.get("RESPONSE_CODE") as string) || "";
+    const responseData = (formData.get("RESPONSE_DATA") as string) || "";
+
+    // Build a minimal, consistent redirect to the unified error page
+    const reason = "payment_failed";
+    const message = responseData || (responseCode === "0" ? "Ödeme işlemi başarısız oldu." : "Bilinmeyen hata oluştu.");
+
+    const redirectUrl = new URL(
+      `/payment/error?reason=${encodeURIComponent(reason)}&message=${encodeURIComponent(message)}`,
+      req.url
+    );
+
+    return NextResponse.redirect(redirectUrl);
+  } catch (error) {
+    console.error("Fail route POST handler error:", error);
+    return NextResponse.redirect(new URL("/payment/error?reason=server_error", req.url));
   }
-  
-  return NextResponse.redirect(redirectUrl.toString());
 }
