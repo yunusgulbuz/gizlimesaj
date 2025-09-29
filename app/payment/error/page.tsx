@@ -1,12 +1,13 @@
+'use client';
+
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 
-interface PaymentErrorPageProps {
-  searchParams: Promise<{ reason?: string; message?: string }>;
-}
-
-export default async function PaymentErrorPage({ searchParams }: PaymentErrorPageProps) {
-  const { reason = 'unknown_error', message = '' } = await searchParams;
+export default function PaymentErrorPage() {
+  const searchParams = useSearchParams();
+  const reason = searchParams.get('reason') || 'unknown_error';
+  const message = searchParams.get('message') || '';
 
   const getErrorInfo = (reason: string) => {
     switch (reason) {
@@ -85,13 +86,13 @@ export default async function PaymentErrorPage({ searchParams }: PaymentErrorPag
 
         {/* Action Buttons */}
         <div className="space-y-3 mb-6">
-          <Link
-            href="javascript:history.back()"
+          <button
+            onClick={() => window.history.back()}
             className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Tekrar Dene</span>
-          </Link>
+          </button>
 
           <Link
             href="/"
