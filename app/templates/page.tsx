@@ -20,13 +20,27 @@ import {
   Timer,
   MessageCircle,
   Star,
+  Eye,
+  ArrowRight,
+  Search,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { generateMetadata } from "@/lib/seo";
 import CustomTemplateRequest from "./_components/custom-template-request";
 import TemplateCardPreview from "./_components/template-card-preview-client";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
 import CustomTemplateRequestCta from "./_components/custom-template-request-cta";
+import SearchForm from "./_components/search-form";
 
 export const metadata = generateMetadata({
   title: "Heartnote Şablonları",
@@ -135,83 +149,103 @@ async function getCategories(): Promise<string[]> {
 }
 
 async function getTemplates(): Promise<Template[]> {
-  const supabase = await createServerSupabaseClient();
+  try {
+    const supabase = await createServerSupabaseClient();
 
-  const { data: templates, error } = await supabase
-    .from("templates")
-    .select("*")
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
+    const { data: templates, error } = await supabase
+      .from("templates")
+      .select("id, slug, title, audience, preview_url, bg_audio_url, created_at")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching templates:", error);
+    if (error) {
+      console.error("Error fetching templates:", JSON.stringify(error, null, 2));
+      return [];
+    }
+
+    return templates || [];
+  } catch (err) {
+    console.error("Exception in getTemplates:", err);
     return [];
   }
-
-  return templates || [];
 }
 
 async function getDurations(): Promise<Duration[]> {
-  const supabase = await createServerSupabaseClient();
+  try {
+    const supabase = await createServerSupabaseClient();
 
-  const { data: durations, error } = await supabase
-    .from("durations")
-    .select("*")
-    .eq("is_active", true)
-    .order("days", { ascending: true });
+    const { data: durations, error } = await supabase
+      .from("durations")
+      .select("id, label, days, is_active")
+      .eq("is_active", true)
+      .order("days", { ascending: true });
 
-  if (error) {
-    console.error("Error fetching durations:", error);
+    if (error) {
+      console.error("Error fetching durations:", JSON.stringify(error, null, 2));
+      return [];
+    }
+
+    return durations || [];
+  } catch (err) {
+    console.error("Exception in getDurations:", err);
     return [];
   }
-
-  return durations || [];
 }
 
 async function getTemplatePricing(): Promise<TemplatePricing[]> {
-  const supabase = await createServerSupabaseClient();
+  try {
+    const supabase = await createServerSupabaseClient();
 
-  const { data: pricing, error } = await supabase
-    .from("template_pricing")
-    .select(`
-      template_id,
-      duration_id,
-      price_try,
-      old_price,
-      duration:durations(id, label, days)
-    `)
-    .eq("is_active", true);
+    const { data: pricing, error } = await supabase
+      .from("template_pricing")
+      .select(`
+        template_id,
+        duration_id,
+        price_try,
+        old_price,
+        duration:durations(id, label, days)
+      `)
+      .eq("is_active", true);
 
-  if (error) {
-    console.error("Error fetching template pricing:", error);
+    if (error) {
+      console.error("Error fetching template pricing:", JSON.stringify(error, null, 2));
+      return [];
+    }
+
+    return pricing || [];
+  } catch (err) {
+    console.error("Exception in getTemplatePricing:", err);
     return [];
   }
-
-  return pricing || [];
 }
 
 async function getTemplateStats(): Promise<Record<string, TemplateStatMapEntry>> {
-  const supabase = await createServerSupabaseClient();
+  try {
+    const supabase = await createServerSupabaseClient();
 
-  const { data: stats, error } = await supabase
-    .from("template_stats")
-    .select("id, average_rating, total_ratings, total_comments");
+    const { data: stats, error } = await supabase
+      .from("template_stats")
+      .select("id, average_rating, total_ratings, total_comments");
 
-  if (error) {
-    console.error("Error fetching template stats:", error);
+    if (error) {
+      console.error("Error fetching template stats:", JSON.stringify(error, null, 2));
+      return {};
+    }
+
+    const map: Record<string, TemplateStatMapEntry> = {};
+    (stats || []).forEach((item) => {
+      map[item.id] = {
+        averageRating: Number(item.average_rating) || 0,
+        totalRatings: Number(item.total_ratings) || 0,
+        totalComments: Number(item.total_comments) || 0,
+      };
+    });
+
+    return map;
+  } catch (err) {
+    console.error("Exception in getTemplateStats:", err);
     return {};
   }
-
-  const map: Record<string, TemplateStatMapEntry> = {};
-  (stats || []).forEach((item) => {
-    map[item.id] = {
-      averageRating: Number(item.average_rating) || 0,
-      totalRatings: Number(item.total_ratings) || 0,
-      totalComments: Number(item.total_comments) || 0,
-    };
-  });
-
-  return map;
 }
 
 function formatPrice(price: string | null | undefined): string | null {
@@ -237,7 +271,7 @@ function calculateDiscountPercentage(currentPrice: string | null, oldPrice: stri
 export default async function TemplatesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ category?: string; sort?: string }>;
+  searchParams?: Promise<{ category?: string; sort?: string; search?: string; page?: string }>;
 }) {
   const params = searchParams ? await searchParams : {};
   const [templates, durations, categories, allPricing] = await Promise.all([
@@ -281,6 +315,9 @@ export default async function TemplatesPage({
 
   const activeCategory = (params?.category || "all") as string;
   const sortBy = (params?.sort || "newest") as string;
+  const searchQuery = (params?.search || "").toLowerCase().trim();
+  const currentPage = parseInt(params?.page || "1", 10);
+  const itemsPerPage = 12;
 
   let filteredTemplates =
     activeCategory === "all"
@@ -288,6 +325,14 @@ export default async function TemplatesPage({
       : templatesWithMeta.filter((template) =>
           template.audience.includes(activeCategory),
         );
+
+  // Apply search filter
+  if (searchQuery) {
+    filteredTemplates = filteredTemplates.filter((template) =>
+      template.title.toLowerCase().includes(searchQuery) ||
+      template.audience.some((cat) => cat.toLowerCase().includes(searchQuery))
+    );
+  }
 
   // Apply sorting
   filteredTemplates = [...filteredTemplates].sort((a, b) => {
@@ -309,6 +354,13 @@ export default async function TemplatesPage({
         return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     }
   });
+
+  // Pagination
+  const totalItems = filteredTemplates.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTemplates = filteredTemplates.slice(startIndex, endIndex);
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50">
@@ -347,110 +399,45 @@ export default async function TemplatesPage({
       </header>
 
       <main className="relative z-10">
-        <section className="container mx-auto px-4 pb-12 pt-10 sm:pb-14">
-          <div className="space-y-8">
-            <div className="space-y-6">
-              <Badge className="w-fit bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-rose-500 shadow-sm">
-                Heartnote Şablon Pazarı
-              </Badge>
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
-                Duygularını sahneleyen Heartnote şablonlarını keşfet
-              </h1>
-              <p className="max-w-2xl text-lg text-gray-600">
-                Her özel ânı, kişiselleştirilebilir sahneler, fonda müzik ve duygu yüklü anlatımlarla destekleyen Heartnote şablonlarıyla sürprizini benzersiz kıl.
-              </p>
-              <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
-                {heroHighlights.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Card
-                      key={item.label}
-                      className="min-w-[220px] border-none bg-white/80 shadow-md backdrop-blur sm:min-w-0"
-                    >
-                      <CardContent className="flex gap-3 p-4">
-                        <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-500">
-                          <Icon className="h-5 w-5" />
-                        </span>
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900">{item.label}</p>
-                          <p className="text-xs text-gray-500">{item.description}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-              <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-white/60 bg-white/80 p-5 shadow-sm">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Users className="h-4 w-4 text-rose-500" />
-                  {templates.length} aktif şablon
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Timer className="h-4 w-4 text-purple-500" />
-                  {sortedDurations.length} süre seçeneği
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Music2 className="h-4 w-4 text-indigo-500" />
-                  Müzik ve sahne kontrolü
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Filters Section */}
+        <section className="container mx-auto px-4 py-6">
+          <div className="space-y-4">
+            {/* Search and Sort */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              {/* Search Input */}
+              <SearchForm />
 
-        <section className="container mx-auto px-4 pb-10">
-          <div className="space-y-6">
-            {/* Filter and Sort Header */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <Filter className="h-4 w-4 text-rose-500" />
-                Kategoriler ve Sıralama
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600">Sırala:</span>
-                <div className="flex gap-2">
-                  <Button
-                    asChild
-                    size="sm"
-                    variant={sortBy === "newest" ? "default" : "outline"}
-                    className="shrink-0 rounded-full text-xs"
-                  >
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}sort=newest`}>
+              {/* Sort Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    Sırala: {sortBy === "newest" ? "En Yeni" : sortBy === "popular" ? "Popüler" : sortBy === "price-low" ? "Fiyat ↑" : "Fiyat ↓"}
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=newest`}>
                       En Yeni
                     </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    size="sm"
-                    variant={sortBy === "popular" ? "default" : "outline"}
-                    className="shrink-0 rounded-full text-xs"
-                  >
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}sort=popular`}>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=popular`}>
                       Popüler
                     </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    size="sm"
-                    variant={sortBy === "price-low" ? "default" : "outline"}
-                    className="shrink-0 rounded-full text-xs"
-                  >
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}sort=price-low`}>
-                      Fiyat ↑
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-low`}>
+                      Fiyat (Düşük → Yüksek)
                     </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    size="sm"
-                    variant={sortBy === "price-high" ? "default" : "outline"}
-                    className="shrink-0 rounded-full text-xs"
-                  >
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}sort=price-high`}>
-                      Fiyat ↓
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-high`}>
+                      Fiyat (Yüksek → Düşük)
                     </Link>
-                  </Button>
-                </div>
-              </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Category Filters */}
@@ -461,8 +448,8 @@ export default async function TemplatesPage({
                 variant={activeCategory === "all" ? "default" : "outline"}
                 className="shrink-0 gap-2 rounded-full"
               >
-                <Link href={`/templates?${sortBy !== "newest" ? `sort=${sortBy}` : ""}`}>
-                  <span>Tümü</span>
+                <Link href={`/templates?${sortBy !== "newest" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}` : ""}`}>
+                  Tümü
                 </Link>
               </Button>
               {categories.map((category) => {
@@ -475,7 +462,7 @@ export default async function TemplatesPage({
                     variant={isActive ? "default" : "outline"}
                     className="shrink-0 rounded-full capitalize"
                   >
-                    <Link href={`/templates?category=${encodeURIComponent(category)}${sortBy !== "newest" ? `&sort=${sortBy}` : ""}`}>
+                    <Link href={`/templates?category=${encodeURIComponent(category)}${sortBy !== "newest" ? `&sort=${sortBy}` : ""}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ""}`}>
                       {category}
                     </Link>
                   </Button>
@@ -486,13 +473,21 @@ export default async function TemplatesPage({
         </section>
 
         <section className="container mx-auto px-4 pb-12">
-          {filteredTemplates.length === 0 ? (
+          {/* Results Info */}
+          {totalItems > 0 && (
+            <div className="mb-4 text-sm text-gray-600">
+              {totalItems} şablon bulundu {searchQuery && `"${searchQuery}" için`}
+            </div>
+          )}
+
+          {paginatedTemplates.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-rose-200 bg-white/70 p-12 text-center text-gray-600">
-              Seçtiğiniz kategoride şu an Heartnote şablonu bulunmuyor. Başka bir kategori deneyin ya da özel istekte bulunun.
+              {searchQuery ? `"${searchQuery}" için sonuç bulunamadı.` : "Seçtiğiniz kategoride şu an Heartnote şablonu bulunmuyor. Başka bir kategori deneyin ya da özel istekte bulunun."}
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {filteredTemplates.map((template) => {
+            <>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {paginatedTemplates.map((template) => {
                 const previewData = {
                   id: template.id,
                   slug: template.slug,
@@ -501,91 +496,179 @@ export default async function TemplatesPage({
                   bg_audio_url: template.bg_audio_url,
                 };
 
+                const discount = calculateDiscountPercentage(template.shortestPrice, template.shortestOldPrice);
+
                 return (
-                  <Link key={template.id} href={`/templates/${template.slug}`}>
-                    <Card className="group h-full overflow-hidden border border-white/70 bg-white/80 shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-                      <div className="relative aspect-[4/3] overflow-hidden">
-                        <TemplateCardPreview template={previewData} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
-                        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-                          {template.audience.slice(0, 2).map((category) => (
-                            <Badge key={category} className="bg-white/90 text-xs text-gray-800">
-                              {category}
-                            </Badge>
-                          ))}
-                          {template.audience.length > 2 && (
-                            <Badge className="bg-white/90 text-xs text-gray-600">
-                              +{template.audience.length - 2}
-                            </Badge>
-                          )}
-                        </div>
-                        {template.shortestPrice && template.shortestDuration && (
-                          <div className="absolute bottom-3 left-3 right-3 space-y-2 text-xs font-medium text-gray-800">
-                            {template.stats && (
-                              <div className="flex items-center justify-between rounded-full bg-white/85 px-4 py-1.5 shadow-sm">
-                                <span className="flex items-center gap-1.5 text-gray-700">
-                                  <Star className="h-4 w-4 text-amber-500" />
-                                  <span className="font-semibold text-gray-900">
-                                    {template.stats.averageRating.toFixed(1)}
-                                  </span>
-                                  <span className="text-gray-500">({template.stats.totalRatings})</span>
-                                </span>
-                                <span className="flex items-center gap-1 text-gray-600">
-                                  <MessageCircle className="h-4 w-4 text-rose-400" />
-                                  {template.stats.totalComments} yorum
-                                </span>
-                              </div>
+                  <div key={template.id}>
+                    <Card className="group relative h-full overflow-hidden rounded-2xl border-0 bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-xl hover:ring-gray-200">
+                      {/* Preview Container */}
+                      <Link href={`/templates/${template.slug}`}>
+                        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                          <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
+                            <TemplateCardPreview template={previewData} />
+                          </div>
+
+                          {/* Badges */}
+                          <div className="absolute left-4 top-4 flex gap-2">
+                            {discount && discount > 0 && (
+                              <Badge className="bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                                -{discount}%
+                              </Badge>
                             )}
-                            <div className="flex items-center justify-between rounded-full bg-white/90 px-4 py-2 shadow-sm">
-                              <span className="text-gray-700">{template.shortestDuration.days} gün erişim</span>
-                              <div className="flex items-center gap-2">
-                                {(() => {
-                                  if (!template.shortestOldPrice) return null;
-                                  const discount = calculateDiscountPercentage(template.shortestPrice, template.shortestOldPrice);
-                                  if (!discount) return null;
-                                  return (
-                                    <span className="flex items-center gap-1 rounded-full bg-rose-500/90 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
-                                      %{discount}
-                                    </span>
-                                  );
-                                })()}
-                                {template.shortestOldPrice && (
-                                  <span className="text-xs text-gray-400 line-through">₺{template.shortestOldPrice}</span>
-                                )}
-                                <span className={template.shortestOldPrice ? "text-green-600 font-semibold" : "font-semibold"}>
-                                  ₺{template.shortestPrice}
-                                </span>
-                              </div>
+                            {template.stats && template.stats.totalRatings > 5 && (
+                              <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                                Popüler
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Overlay Gradient */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        </div>
+                      </Link>
+
+                      {/* Content */}
+                      <CardContent className="p-4">
+                        {/* Title */}
+                        <Link href={`/templates/${template.slug}`}>
+                          <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-rose-600 transition-colors duration-200 mb-3">
+                            {template.title}
+                          </h3>
+                        </Link>
+
+                        {/* Rating */}
+                        {template.stats && template.stats.totalRatings > 0 && (
+                          <div className="flex items-center gap-1 mb-2">
+                            <div className="flex items-center gap-0.5">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-3.5 w-3.5 ${
+                                    i < Math.floor(template.stats?.averageRating || 0)
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "text-gray-300"
+                                  }`}
+                                />
+                              ))}
                             </div>
+                            <span className="text-xs font-medium text-gray-600">
+                              {template.stats.averageRating.toFixed(1)}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              ({template.stats.totalRatings})
+                            </span>
                           </div>
                         )}
-                      </div>
 
-                      <CardHeader className="space-y-2">
-                        <CardTitle className="text-lg text-gray-900 group-hover:text-rose-600">
-                          {template.title}
-                        </CardTitle>
-                        <CardDescription className="text-sm text-gray-600">
-                          {template.audience.join(" · ")} temasında Heartnote deneyimi
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <Music2 className="h-4 w-4 text-rose-500" />
-                            {template.bg_audio_url ? "Hazır müzik" : "Müzik yüklenebilir"}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Sparkles className="h-4 w-4 text-purple-500" />
-                            Çok sahneli anlatım
-                          </span>
+                        {/* Pricing */}
+                        <div className="flex items-baseline gap-2 mb-4">
+                          {template.shortestPrice && (
+                            <>
+                              <span className="text-2xl font-black text-gray-900">
+                                {String(template.shortestPrice).includes('.') ? (
+                                  <>
+                                    ₺{String(template.shortestPrice).split('.')[0]}
+                                    <span className="text-lg font-bold">.{String(template.shortestPrice).split('.')[1]}</span>
+                                  </>
+                                ) : (
+                                  `₺${template.shortestPrice}`
+                                )}
+                              </span>
+                              {template.shortestOldPrice && (
+                                <span className="text-sm text-gray-400 line-through font-medium">
+                                  ₺{template.shortestOldPrice}
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
+                          <Link
+                            href={`/templates/${template.slug}/preview`}
+                            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Önizleme
+                          </Link>
+                          <div className="h-4 w-px bg-gray-200" />
+                          <Link
+                            href={`/templates/${template.slug}`}
+                            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors group/link"
+                          >
+                            Hediyeyi İncele
+                            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/link:translate-x-0.5" />
+                          </Link>
                         </div>
                       </CardContent>
                     </Card>
-                  </Link>
+                  </div>
                 );
               })}
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-2">
+                {/* Previous Button */}
+                {currentPage > 1 ? (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "newest" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${currentPage - 1}`}>
+                      <ChevronLeft className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="sm" disabled>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                )}
+
+                {/* Page Numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <Button
+                        key={page}
+                        variant={page === currentPage ? "default" : "outline"}
+                        size="sm"
+                        asChild={page !== currentPage}
+                        disabled={page === currentPage}
+                      >
+                        {page === currentPage ? (
+                          <span>{page}</span>
+                        ) : (
+                          <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "newest" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${page}`}>
+                            {page}
+                          </Link>
+                        )}
+                      </Button>
+                    );
+                  } else if (page === currentPage - 2 || page === currentPage + 2) {
+                    return <span key={page} className="px-2 text-gray-400">...</span>;
+                  }
+                  return null;
+                })}
+
+                {/* Next Button */}
+                {currentPage < totalPages ? (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "newest" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${currentPage + 1}`}>
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="sm" disabled>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            )}
+          </>
           )}
         </section>
 
