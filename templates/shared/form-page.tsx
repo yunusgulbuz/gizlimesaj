@@ -19,6 +19,7 @@ import { TemplateComments } from "@/components/template-comments";
 import { StarRating } from "@/components/ui/star-rating";
 import { createClient } from "@/lib/supabase-client";
 import type { User } from "@supabase/supabase-js";
+import { ScrollToFormButton } from "./scroll-to-form-button";
 
 interface Template {
   id: string;
@@ -525,13 +526,13 @@ export default function TemplateFormPage({ template, durations, templatePricing,
             </div>
 
             {/* Submit Button */}
-            <Button 
-              type="submit" 
-              className="w-full bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-lg shadow-rose-200" 
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-lg shadow-rose-200"
               size="lg"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'İşleniyor...' : 'Sepete Ekle'}
+              {isSubmitting ? 'İşleniyor...' : 'Satın Al'}
             </Button>
           </form>
         </CardContent>
@@ -620,12 +621,19 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                     </Badge>
                   ))}
                 </div>
-                <h1 className="text-xl font-semibold text-gray-900 md:text-[26px]">
-                  {template.title}
-                </h1>
-                <p className="max-w-2xl text-sm text-gray-600 md:text-base">
-                  {template.description || `${primaryCategoryLabel} kategorisinde özel mesaj şablonu. Heartnote ile sahne sahne duygularınızı anlatın.`}
-                </p>
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div className="flex-1 space-y-3">
+                    <h1 className="text-xl font-semibold text-gray-900 md:text-[26px]">
+                      {template.title}
+                    </h1>
+                    <p className="max-w-2xl text-sm text-gray-600 md:text-base">
+                      {template.description || `${primaryCategoryLabel} kategorisinde özel mesaj şablonu. Heartnote ile sahne sahne duygularınızı anlatın.`}
+                    </p>
+                  </div>
+                  {!isPreview && (
+                    <ScrollToFormButton className="shrink-0 bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-lg shadow-rose-200" />
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 md:text-sm">
                   <div
                     className="flex cursor-pointer items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 shadow-sm ring-1 ring-white/60 transition hover:bg-white"

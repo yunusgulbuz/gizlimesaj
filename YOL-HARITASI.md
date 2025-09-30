@@ -6,7 +6,7 @@ Bu doküman, gizlimesaj/Heartnote projesinde yapılması gereken işleri modern,
 
 ## Önceliklendirme
 - P0 – Kritik: ~~14~~, ~~15~~, ~~16~~, ~~18~~, ~~21~~, ~~29~~ ✅ **TAMAMLANDI**
-- P1 – Yüksek: 1, 2, 4, 8, 9, 12, 13, 17, 19, 22, 25, 26, 27, 28
+- P1 – Yüksek: ~~1~~, ~~2~~, ~~4~~, ~~9~~, ~~13~~, ~~22~~, ~~26~~, ~~27~~, ~~28~~ ✅ **TAMAMLANDI** | 8, 12, 17, 19, 25
 - P2 – Orta: 3, 5, 6, 7, 10, 11, 20, 23, 24
 
 ## Detaylı Görevler

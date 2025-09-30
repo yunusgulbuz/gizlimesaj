@@ -86,7 +86,7 @@ interface HeroHighlight {
 const heroHighlights: HeroHighlight[] = [
   {
     label: "Zengin Kütüphane",
-    description: "50&apos;den fazla tema ve sürekli güncellenen içerik",
+    description: "50'den fazla tema ve sürekli güncellenen içerik",
     icon: Palette,
   },
   {
@@ -237,7 +237,7 @@ function calculateDiscountPercentage(currentPrice: string | null, oldPrice: stri
 export default async function TemplatesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ category?: string }>;
+  searchParams?: Promise<{ category?: string; sort?: string }>;
 }) {
   const params = searchParams ? await searchParams : {};
   const [templates, durations, categories, allPricing] = await Promise.all([
@@ -280,12 +280,35 @@ export default async function TemplatesPage({
   });
 
   const activeCategory = (params?.category || "all") as string;
-  const filteredTemplates =
+  const sortBy = (params?.sort || "newest") as string;
+
+  let filteredTemplates =
     activeCategory === "all"
       ? templatesWithMeta
       : templatesWithMeta.filter((template) =>
           template.audience.includes(activeCategory),
         );
+
+  // Apply sorting
+  filteredTemplates = [...filteredTemplates].sort((a, b) => {
+    switch (sortBy) {
+      case "popular":
+        const aOrders = a.stats?.totalRatings || 0;
+        const bOrders = b.stats?.totalRatings || 0;
+        return bOrders - aOrders;
+      case "price-low":
+        const aPrice = parseFloat(a.shortestPrice || "0");
+        const bPrice = parseFloat(b.shortestPrice || "0");
+        return aPrice - bPrice;
+      case "price-high":
+        const aPriceHigh = parseFloat(a.shortestPrice || "0");
+        const bPriceHigh = parseFloat(b.shortestPrice || "0");
+        return bPriceHigh - aPriceHigh;
+      case "newest":
+      default:
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    }
+  });
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50">
@@ -376,42 +399,89 @@ export default async function TemplatesPage({
         </section>
 
         <section className="container mx-auto px-4 pb-10">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Filter className="h-4 w-4 text-rose-500" />
-              Kategoriler
+          <div className="space-y-6">
+            {/* Filter and Sort Header */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Filter className="h-4 w-4 text-rose-500" />
+                Kategoriler ve Sıralama
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-600">Sırala:</span>
+                <div className="flex gap-2">
+                  <Button
+                    asChild
+                    size="sm"
+                    variant={sortBy === "newest" ? "default" : "outline"}
+                    className="shrink-0 rounded-full text-xs"
+                  >
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}sort=newest`}>
+                      En Yeni
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="sm"
+                    variant={sortBy === "popular" ? "default" : "outline"}
+                    className="shrink-0 rounded-full text-xs"
+                  >
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}sort=popular`}>
+                      Popüler
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="sm"
+                    variant={sortBy === "price-low" ? "default" : "outline"}
+                    className="shrink-0 rounded-full text-xs"
+                  >
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}sort=price-low`}>
+                      Fiyat ↑
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="sm"
+                    variant={sortBy === "price-high" ? "default" : "outline"}
+                    className="shrink-0 rounded-full text-xs"
+                  >
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}sort=price-high`}>
+                      Fiyat ↓
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
-            <Button asChild size="sm" variant="ghost" className="text-rose-600 hover:text-rose-700">
-              <Link href="/pricing">Paketleri İncele</Link>
-            </Button>
-          </div>
-          <div className="mt-4 flex w-full gap-2 overflow-x-auto pb-2">
-            <Button
-              asChild
-              size="sm"
-              variant={activeCategory === "all" ? "default" : "outline"}
-              className="shrink-0 gap-2 rounded-full"
-            >
-              <Link href="/templates">
-                <span>Tümü</span>
-              </Link>
-            </Button>
-            {categories.map((category) => {
-              const isActive = activeCategory === category;
-              return (
-                <Button
-                  key={category}
-                  asChild
-                  size="sm"
-                  variant={isActive ? "default" : "outline"}
-                  className="shrink-0 rounded-full capitalize"
-                >
-                  <Link href={`/templates?category=${encodeURIComponent(category)}`}>
-                    {category}
-                  </Link>
-                </Button>
-              );
-            })}
+
+            {/* Category Filters */}
+            <div className="flex w-full gap-2 overflow-x-auto pb-2">
+              <Button
+                asChild
+                size="sm"
+                variant={activeCategory === "all" ? "default" : "outline"}
+                className="shrink-0 gap-2 rounded-full"
+              >
+                <Link href={`/templates?${sortBy !== "newest" ? `sort=${sortBy}` : ""}`}>
+                  <span>Tümü</span>
+                </Link>
+              </Button>
+              {categories.map((category) => {
+                const isActive = activeCategory === category;
+                return (
+                  <Button
+                    key={category}
+                    asChild
+                    size="sm"
+                    variant={isActive ? "default" : "outline"}
+                    className="shrink-0 rounded-full capitalize"
+                  >
+                    <Link href={`/templates?category=${encodeURIComponent(category)}${sortBy !== "newest" ? `&sort=${sortBy}` : ""}`}>
+                      {category}
+                    </Link>
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -432,100 +502,87 @@ export default async function TemplatesPage({
                 };
 
                 return (
-                  <Card
-                    key={template.id}
-                    className="group overflow-hidden border border-white/70 bg-white/80 shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-                  >
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <TemplateCardPreview template={previewData} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
-                      <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-                        {template.audience.slice(0, 2).map((category) => (
-                          <Badge key={category} className="bg-white/90 text-xs text-gray-800">
-                            {category}
-                          </Badge>
-                        ))}
-                        {template.audience.length > 2 && (
-                          <Badge className="bg-white/90 text-xs text-gray-600">
-                            +{template.audience.length - 2}
-                          </Badge>
-                        )}
-                      </div>
-                      {template.shortestPrice && template.shortestDuration && (
-                        <div className="absolute bottom-3 left-3 right-3 space-y-2 text-xs font-medium text-gray-800">
-                          {template.stats && (
-                            <div className="flex items-center justify-between rounded-full bg-white/85 px-4 py-1.5 shadow-sm">
-                              <span className="flex items-center gap-1.5 text-gray-700">
-                                <Star className="h-4 w-4 text-amber-500" />
-                                <span className="font-semibold text-gray-900">
-                                  {template.stats.averageRating.toFixed(1)}
-                                </span>
-                                <span className="text-gray-500">({template.stats.totalRatings})</span>
-                              </span>
-                              <span className="flex items-center gap-1 text-gray-600">
-                                <MessageCircle className="h-4 w-4 text-rose-400" />
-                                {template.stats.totalComments} yorum
-                              </span>
-                            </div>
+                  <Link key={template.id} href={`/templates/${template.slug}`}>
+                    <Card className="group h-full overflow-hidden border border-white/70 bg-white/80 shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        <TemplateCardPreview template={previewData} />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+                        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+                          {template.audience.slice(0, 2).map((category) => (
+                            <Badge key={category} className="bg-white/90 text-xs text-gray-800">
+                              {category}
+                            </Badge>
+                          ))}
+                          {template.audience.length > 2 && (
+                            <Badge className="bg-white/90 text-xs text-gray-600">
+                              +{template.audience.length - 2}
+                            </Badge>
                           )}
-                          <div className="flex items-center justify-between rounded-full bg-white/90 px-4 py-2 shadow-sm">
-                            <span className="text-gray-700">{template.shortestDuration.days} gün erişim</span>
-                            <div className="flex items-center gap-2">
-                              {(() => {
-                                if (!template.shortestOldPrice) return null;
-                                const discount = calculateDiscountPercentage(template.shortestPrice, template.shortestOldPrice);
-                                if (!discount) return null;
-                                return (
-                                  <span className="flex items-center gap-1 rounded-full bg-rose-500/90 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
-                                    %{discount}
+                        </div>
+                        {template.shortestPrice && template.shortestDuration && (
+                          <div className="absolute bottom-3 left-3 right-3 space-y-2 text-xs font-medium text-gray-800">
+                            {template.stats && (
+                              <div className="flex items-center justify-between rounded-full bg-white/85 px-4 py-1.5 shadow-sm">
+                                <span className="flex items-center gap-1.5 text-gray-700">
+                                  <Star className="h-4 w-4 text-amber-500" />
+                                  <span className="font-semibold text-gray-900">
+                                    {template.stats.averageRating.toFixed(1)}
                                   </span>
-                                );
-                              })()}
-                              {template.shortestOldPrice && (
-                                <span className="text-xs text-gray-400 line-through">₺{template.shortestOldPrice}</span>
-                              )}
-                              <span className={template.shortestOldPrice ? "text-green-600 font-semibold" : "font-semibold"}>
-                                ₺{template.shortestPrice}
-                              </span>
+                                  <span className="text-gray-500">({template.stats.totalRatings})</span>
+                                </span>
+                                <span className="flex items-center gap-1 text-gray-600">
+                                  <MessageCircle className="h-4 w-4 text-rose-400" />
+                                  {template.stats.totalComments} yorum
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex items-center justify-between rounded-full bg-white/90 px-4 py-2 shadow-sm">
+                              <span className="text-gray-700">{template.shortestDuration.days} gün erişim</span>
+                              <div className="flex items-center gap-2">
+                                {(() => {
+                                  if (!template.shortestOldPrice) return null;
+                                  const discount = calculateDiscountPercentage(template.shortestPrice, template.shortestOldPrice);
+                                  if (!discount) return null;
+                                  return (
+                                    <span className="flex items-center gap-1 rounded-full bg-rose-500/90 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
+                                      %{discount}
+                                    </span>
+                                  );
+                                })()}
+                                {template.shortestOldPrice && (
+                                  <span className="text-xs text-gray-400 line-through">₺{template.shortestOldPrice}</span>
+                                )}
+                                <span className={template.shortestOldPrice ? "text-green-600 font-semibold" : "font-semibold"}>
+                                  ₺{template.shortestPrice}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
 
-                    <CardHeader className="space-y-2">
-                      <CardTitle className="text-lg text-gray-900">
-                        {template.title}
-                      </CardTitle>
-                      <CardDescription className="text-sm text-gray-600">
-                        {template.audience.join(" · ")} temasında Heartnote deneyimi
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Music2 className="h-4 w-4 text-rose-500" />
-                          {template.bg_audio_url ? "Hazır müzik" : "Müzik yüklenebilir"}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Sparkles className="h-4 w-4 text-purple-500" />
-                          Çok sahneli anlatım
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button asChild className="flex-1">
-                          <Link href={`/templates/${template.slug}`}>
-                            Şablonu Seç
-                          </Link>
-                        </Button>
-                        <Button asChild variant="outline" className="flex-1">
-                          <Link href={`/templates/${template.slug}/preview`} target="_blank" rel="noopener noreferrer">
-                            Önizleme
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      <CardHeader className="space-y-2">
+                        <CardTitle className="text-lg text-gray-900 group-hover:text-rose-600">
+                          {template.title}
+                        </CardTitle>
+                        <CardDescription className="text-sm text-gray-600">
+                          {template.audience.join(" · ")} temasında Heartnote deneyimi
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Music2 className="h-4 w-4 text-rose-500" />
+                            {template.bg_audio_url ? "Hazır müzik" : "Müzik yüklenebilir"}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Sparkles className="h-4 w-4 text-purple-500" />
+                            Çok sahneli anlatım
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 );
               })}
             </div>
@@ -554,7 +611,7 @@ export default async function TemplatesPage({
         <section className="bg-white/80 py-16">
           <div className="container mx-auto flex flex-col items-center gap-4 px-4 text-center">
             <h2 className="text-3xl font-semibold text-gray-900 md:text-4xl">
-              İlk Heartnote&apos;un için hazır mısın?
+              İlk Heartnote'un için hazır mısın?
             </h2>
             <p className="max-w-2xl text-base text-gray-600">
               Ücretsiz kaydol, şablonu seç, dakikalar içinde duygularını anlatan dijital sürprizini yayına al.

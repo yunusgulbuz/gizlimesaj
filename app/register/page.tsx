@@ -2,16 +2,11 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Breadcrumb, BreadcrumbItem } from '@/components/ui/breadcrumb';
-import { Heart, ArrowLeft, Github } from 'lucide-react';
+import { Heart, ArrowLeft } from 'lucide-react';
 import RegisterForm from './register-form';
 import GoogleAuthButton from '@/components/auth/google-auth-button';
 
 export default function RegisterPage() {
-  const breadcrumbItems: BreadcrumbItem[] = [
-    { label: "Kayıt Ol" }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex items-center justify-center p-4">
       {/* Background decoration */}
@@ -22,11 +17,6 @@ export default function RegisterPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Breadcrumb Navigation */}
-        <div className="mb-4">
-          <Breadcrumb items={breadcrumbItems} />
-        </div>
-        
         {/* Back to home button */}
         <div className="mb-6">
           <Button variant="ghost" size="sm" asChild>
@@ -66,12 +56,8 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div>
               <GoogleAuthButton className="w-full" label="Google ile Kaydol" />
-              <Button variant="outline" className="w-full">
-                <Github className="mr-2 h-4 w-4" />
-                GitHub
-              </Button>
             </div>
 
             <div className="text-center text-sm text-gray-600">

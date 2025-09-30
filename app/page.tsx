@@ -10,7 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import TemplateCardPreview from "@/app/templates/_components/template-card-preview-client";
 import {
   Heart,
   Sparkles,
@@ -106,7 +109,7 @@ const stats: StatHighlight[] = [
   {
     label: "Dakikada Yayında",
     value: "5",
-    description: "Kayıt olduktan sonra ilk Heartnote&apos;unuzu dakikalar içinde oluşturun",
+    description: "Kayıt olduktan sonra ilk Heartnote'unuzu dakikalar içinde oluşturun",
   },
   {
     label: "Mutlu Kullanıcı",
@@ -120,7 +123,7 @@ const testimonials: Testimonial[] = [
     quote:
       "Heartnote sayesinde eşime hazırladığım yıldönümü sürprizi kelimenin tam anlamıyla büyüledi. Her detay o kadar kişisel ki!",
     name: "Elif K.",
-    title: "Yıldönümü Heartnote&apos;u",
+    title: "Yıldönümü Heartnote'u",
   },
   {
     quote:
@@ -130,7 +133,100 @@ const testimonials: Testimonial[] = [
   },
 ];
 
-export default function HomePage() {
+interface FeaturedTemplate {
+  id: string;
+  slug: string;
+  title: string;
+  audience: string[];
+  preview_url: string | null;
+  price: string | null;
+  oldPrice: string | null;
+  totalOrders: number;
+}
+
+async function getFeaturedTemplates(): Promise<FeaturedTemplate[]> {
+  const supabase = await createServerSupabaseClient();
+
+  // Get top 3 most purchased templates from stats
+  const { data: topTemplates, error: statsError } = await supabase
+    .from("template_stats")
+    .select("id, total_orders")
+    .order("total_orders", { ascending: false })
+    .limit(3);
+
+  let templateIds: string[] = [];
+  let statsMap = new Map<string, number>();
+
+  // If stats exist and have data, use them
+  if (!statsError && topTemplates && topTemplates.length > 0) {
+    templateIds = topTemplates.map((t) => t.id);
+    statsMap = new Map(topTemplates.map((t) => [t.id, t.total_orders]));
+  } else {
+    // Fallback: get 3 newest templates
+    const { data: newestTemplates } = await supabase
+      .from("templates")
+      .select("id")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(3);
+
+    if (!newestTemplates || newestTemplates.length === 0) {
+      return [];
+    }
+    templateIds = newestTemplates.map((t) => t.id);
+  }
+
+  // Get template details
+  const { data: templates, error: templatesError } = await supabase
+    .from("templates")
+    .select("id, slug, title, audience, preview_url")
+    .in("id", templateIds)
+    .eq("is_active", true);
+
+  if (templatesError || !templates || templates.length === 0) {
+    return [];
+  }
+
+  // Get pricing for shortest duration
+  const { data: durations } = await supabase
+    .from("durations")
+    .select("id")
+    .eq("is_active", true)
+    .order("days", { ascending: true })
+    .limit(1);
+
+  const shortestDurationId = durations?.[0]?.id;
+
+  if (!shortestDurationId) {
+    return [];
+  }
+
+  const { data: pricing } = await supabase
+    .from("template_pricing")
+    .select("template_id, price_try, old_price")
+    .in("template_id", templateIds)
+    .eq("duration_id", shortestDurationId)
+    .eq("is_active", true);
+
+  const pricingMap = new Map(
+    pricing?.map((p) => [p.template_id, { price: p.price_try, oldPrice: p.old_price }]) || []
+  );
+
+  return templates
+    .map((template) => {
+      const templatePricing = pricingMap.get(template.id);
+      return {
+        ...template,
+        price: templatePricing?.price || null,
+        oldPrice: templatePricing?.oldPrice || null,
+        totalOrders: statsMap.get(template.id) || 0,
+      };
+    })
+    .sort((a, b) => b.totalOrders - a.totalOrders);
+}
+
+export default async function HomePage() {
+  const featuredTemplates = await getFeaturedTemplates();
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -189,7 +285,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="h-12 px-8 text-base" asChild>
-                  <Link href="/register">Hikayeni Yazmaya Başla</Link>
+                  <Link href="/login">Giriş Yap</Link>
                 </Button>
               </div>
               <div className="flex flex-col gap-4 text-sm text-gray-500 md:flex-row md:items-center">
@@ -208,45 +304,87 @@ export default function HomePage() {
               </div>
             </div>
 
-            <Card className="border-none bg-white/70 shadow-xl backdrop-blur">
-              <CardContent className="space-y-6 p-6">
-                <div className="rounded-2xl bg-gradient-to-br from-rose-500/90 to-purple-600/90 p-6 text-white shadow-lg">
-                  <p className="text-sm uppercase tracking-[0.2em] text-white/80">Öne Çıkan Heartnote</p>
-                  <h3 className="mt-3 text-2xl font-semibold">Yıldönümü Işıltısı</h3>
-                  <p className="mt-2 text-sm text-white/80">
-                    Sürpriziniz için romantik geçişler, fotoğraf galerisi ve özel müzik eşliğinde hazırlanan dinamik bir sayfa.
-                  </p>
-                  <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-                    <div className="rounded-lg bg-white/15 p-3">
-                      <p className="text-xs text-white/70">Müzik</p>
-                      <p className="font-medium">Lo-fi Love</p>
+            <div className="space-y-6">
+              {featuredTemplates.length > 0 && (
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-2xl font-semibold text-gray-900">Öne Çıkan Şablonlar</h2>
+                      <p className="mt-1 text-sm text-gray-500">En çok tercih edilen şablonlarımız</p>
                     </div>
-                    <div className="rounded-lg bg-white/15 p-3">
-                      <p className="text-xs text-white/70">Süre</p>
-                      <p className="font-medium">3 gün erişim</p>
-                    </div>
-                    <div className="rounded-lg bg-white/15 p-3">
-                      <p className="text-xs text-white/70">Bölümler</p>
-                      <p className="font-medium">5 etkileşimli sahne</p>
-                    </div>
-                    <div className="rounded-lg bg-white/15 p-3">
-                      <p className="text-xs text-white/70">Paylaşım</p>
-                      <p className="font-medium">Tek bağlantı</p>
-                    </div>
+                    <Button variant="outline" size="sm" asChild className="border-rose-200 text-rose-600 hover:bg-rose-50">
+                      <Link href="/templates">
+                        Tümünü Gör
+                      </Link>
+                    </Button>
+                  </div>
+                  <div className="grid gap-5 sm:grid-cols-3">
+                    {featuredTemplates.map((template) => {
+                      const previewData = {
+                        id: template.id,
+                        slug: template.slug,
+                        title: template.title,
+                        audience: template.audience,
+                        bg_audio_url: null,
+                      };
+
+                      return (
+                        <Link key={template.id} href={`/templates/${template.slug}`}>
+                          <Card className="group h-full overflow-hidden border border-white/70 bg-white/90 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-rose-200">
+                            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
+                              <TemplateCardPreview template={previewData} />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                              <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
+                                {template.audience.slice(0, 2).map((cat) => (
+                                  <Badge key={cat} variant="secondary" className="bg-white/95 text-[10px] font-medium text-gray-700 shadow-sm backdrop-blur-sm">
+                                    {cat}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                            <CardContent className="space-y-2.5 p-4">
+                              <div className="space-y-1">
+                                <h3 className="font-semibold text-gray-900 transition-colors group-hover:text-rose-600">
+                                  {template.title}
+                                </h3>
+                                <p className="text-xs text-gray-500">
+                                  {template.totalOrders > 0 ? `${template.totalOrders} kişi satın aldı` : 'Yeni eklendi'}
+                                </p>
+                              </div>
+                              {template.price && (
+                                <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
+                                  <span className="text-xs font-medium text-gray-600">Başlangıç</span>
+                                  <div className="flex items-center gap-1.5">
+                                    {template.oldPrice && (
+                                      <span className="text-[11px] text-gray-400 line-through">
+                                        ₺{parseFloat(template.oldPrice).toFixed(0)}
+                                      </span>
+                                    )}
+                                    <span className="text-sm font-bold text-rose-600">
+                                      ₺{parseFloat(template.price).toFixed(0)}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
+              )}
 
-                <div className="grid gap-4 sm:grid-cols-3">
-                  {stats.map((item) => (
-                    <div key={item.label} className="rounded-xl border border-rose-100 bg-white/80 p-4 text-center shadow-sm">
-                      <p className="text-2xl font-semibold text-gray-900">{item.value}</p>
-                      <p className="text-sm font-medium text-rose-500">{item.label}</p>
-                      <p className="mt-2 text-xs text-gray-500">{item.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {stats.map((item) => (
+                  <div key={item.label} className="rounded-xl border border-rose-100 bg-white/80 p-4 text-center shadow-sm">
+                    <p className="text-2xl font-semibold text-gray-900">{item.value}</p>
+                    <p className="text-sm font-medium text-rose-500">{item.label}</p>
+                    <p className="mt-2 text-xs text-gray-500">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -295,7 +433,7 @@ export default function HomePage() {
                 Kalp atışı kadar kolay bir süreç
               </h2>
               <p className="mt-4 max-w-xl text-base text-gray-600">
-                Heartnote&apos;un sezgisel editörü ile sürükle-bırak kolaylığında içerik ekleyin, seçtiğiniz müziği yükleyin, animasyonlu sahneler arasında geçiş yapın.
+                Heartnote'un sezgisel editörü ile sürükle-bırak kolaylığında içerik ekleyin, seçtiğiniz müziği yükleyin, animasyonlu sahneler arasında geçiş yapın.
               </p>
 
               <div className="mt-10 space-y-6">
@@ -327,7 +465,7 @@ export default function HomePage() {
                 <div>
                   <h3 className="text-2xl font-semibold">Kişiye Özel Yayın Ayarları</h3>
                   <p className="mt-2 text-sm text-white/80">
-                    Heartnote&apos;un gelişmiş araçlarıyla yayınınızı zamanlayın, şifre koruması ekleyin ve dilediğiniz an düzenleyin.
+                    Heartnote'un gelişmiş araçlarıyla yayınınızı zamanlayın, şifre koruması ekleyin ve dilediğiniz an düzenleyin.
                   </p>
                 </div>
                 <ul className="space-y-3 text-sm text-white/85">
@@ -390,7 +528,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500" />
           <div className="container relative mx-auto px-4">
             <div className="flex flex-col items-center gap-6 text-center text-white">
-              <h2 className="text-3xl font-semibold md:text-4xl">Hazırsan ilk Heartnote&apos;unu birlikte oluşturalım</h2>
+              <h2 className="text-3xl font-semibold md:text-4xl">Hazırsan ilk Heartnote'unu birlikte oluşturalım</h2>
               <p className="max-w-2xl text-base text-white/85">
                 Ücretsiz kaydol, beğendiğin şablonu seç, dakikalar içinde duygularını şık bir dijital deneyime dönüştür. Heartnote ile her özel gün benzersiz.
               </p>

@@ -11,7 +11,7 @@ export default async function HeaderAuthButton() {
 
   if (!session) {
     return (
-      <Button variant="outline" size="sm" asChild>
+      <Button variant="default" size="sm" asChild>
         <Link href="/login">Giriş Yap</Link>
       </Button>
     );
