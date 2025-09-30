@@ -14,6 +14,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Eye,
+  Star,
 } from "lucide-react";
 
 interface FeaturedTemplate {
@@ -25,6 +26,8 @@ interface FeaturedTemplate {
   price: string | null;
   oldPrice: string | null;
   totalOrders: number;
+  avgRating: number | null;
+  ratingCount: number;
 }
 
 async function getCategories(): Promise<string[]> {
@@ -74,42 +77,19 @@ const steps = [
 async function getFeaturedTemplates(): Promise<FeaturedTemplate[]> {
   const supabase = await createServerSupabaseClient();
 
-  const { data: topTemplates, error: statsError } = await supabase
-    .from("template_stats")
-    .select("id, total_orders")
-    .order("total_orders", { ascending: false })
-    .limit(8);
-
-  let templateIds: string[] = [];
-  let statsMap = new Map<string, number>();
-
-  if (!statsError && topTemplates && topTemplates.length > 0) {
-    templateIds = topTemplates.map((t) => t.id);
-    statsMap = new Map(topTemplates.map((t) => [t.id, t.total_orders]));
-  } else {
-    const { data: newestTemplates } = await supabase
-      .from("templates")
-      .select("id")
-      .eq("is_active", true)
-      .order("created_at", { ascending: false })
-      .limit(8);
-
-    if (!newestTemplates || newestTemplates.length === 0) {
-      return [];
-    }
-    templateIds = newestTemplates.map((t) => t.id);
-  }
-
-  const { data: templates } = await supabase
+  // Get all active templates first
+  const { data: allTemplates } = await supabase
     .from("templates")
     .select("id, slug, title, audience, preview_url")
-    .in("id", templateIds)
     .eq("is_active", true);
 
-  if (!templates || templates.length === 0) {
+  if (!allTemplates || allTemplates.length === 0) {
     return [];
   }
 
+  const allTemplateIds = allTemplates.map((t) => t.id);
+
+  // Get shortest duration for pricing
   const { data: durations } = await supabase
     .from("durations")
     .select("id")
@@ -119,33 +99,112 @@ async function getFeaturedTemplates(): Promise<FeaturedTemplate[]> {
     .single();
 
   const shortestDurationId = durations?.id;
-
   if (!shortestDurationId) {
     return [];
   }
 
-  const { data: pricing } = await supabase
+  // Get pricing for all templates
+  const { data: allPricing } = await supabase
     .from("template_pricing")
     .select("template_id, price_try, old_price")
-    .in("template_id", templateIds)
+    .in("template_id", allTemplateIds)
     .eq("duration_id", shortestDurationId)
     .eq("is_active", true);
 
   const pricingMap = new Map(
-    pricing?.map((p) => [p.template_id, { price: p.price_try, oldPrice: p.old_price }]) || []
+    allPricing?.map((p) => [p.template_id, { price: p.price_try, oldPrice: p.old_price }]) || []
   );
 
-  return templates
-    .map((template) => {
-      const templatePricing = pricingMap.get(template.id);
-      return {
-        ...template,
-        price: templatePricing?.price || null,
-        oldPrice: templatePricing?.oldPrice || null,
-        totalOrders: statsMap.get(template.id) || 0,
-      };
-    })
-    .sort((a, b) => b.totalOrders - a.totalOrders);
+  // Get templates with most ratings
+  const { data: allRatings } = await supabase
+    .from("template_ratings")
+    .select("template_id, rating")
+    .in("template_id", allTemplateIds);
+
+  // Count ratings per template
+  const ratingCounts: Record<string, number> = {};
+  if (allRatings && allRatings.length > 0) {
+    allRatings.forEach((r) => {
+      ratingCounts[r.template_id] = (ratingCounts[r.template_id] || 0) + 1;
+    });
+  }
+
+  // Sort templates: first by rating count (desc), then fill remaining with discounted items
+  const templatesWithRatingCount = allTemplates.map((template) => ({
+    ...template,
+    ratingCount: ratingCounts[template.id] || 0,
+    hasDiscount: !!pricingMap.get(template.id)?.oldPrice,
+  }));
+
+  // Get top rated templates (with at least 1 rating)
+  const topRated = templatesWithRatingCount
+    .filter((t) => t.ratingCount > 0)
+    .sort((a, b) => b.ratingCount - a.ratingCount);
+
+  // Get discounted templates that are not in top rated
+  const topRatedIds = new Set(topRated.map((t) => t.id));
+  const discounted = templatesWithRatingCount
+    .filter((t) => t.hasDiscount && !topRatedIds.has(t.id))
+    .sort((a, b) => b.ratingCount - a.ratingCount); // Secondary sort by rating count
+
+  // Combine: top rated first, then discounted
+  const combined = [...topRated, ...discounted].slice(0, 8);
+  const templateIds = combined.map((t) => t.id);
+
+  // Get order stats
+  const { data: stats } = await supabase
+    .from("template_stats")
+    .select("id, total_orders")
+    .in("id", templateIds);
+
+  const statsMap = new Map(stats?.map((s) => [s.id, s.total_orders]) || []);
+
+  const templates = allTemplates.filter((t) => templateIds.includes(t.id));
+
+  if (!templates || templates.length === 0) {
+    return [];
+  }
+
+  // Calculate average ratings and counts from already fetched ratings
+  const ratingsMap = new Map<string, { avgRating: number; ratingCount: number }>();
+  if (allRatings && allRatings.length > 0) {
+    const grouped = allRatings.reduce((acc, r) => {
+      if (templateIds.includes(r.template_id)) {
+        if (!acc[r.template_id]) {
+          acc[r.template_id] = [];
+        }
+        acc[r.template_id].push(r.rating);
+      }
+      return acc;
+    }, {} as Record<string, number[]>);
+
+    Object.entries(grouped).forEach(([templateId, ratingsList]) => {
+      const avg = ratingsList.reduce((sum, r) => sum + r, 0) / ratingsList.length;
+      ratingsMap.set(templateId, {
+        avgRating: Math.round(avg * 10) / 10, // Round to 1 decimal
+        ratingCount: ratingsList.length,
+      });
+    });
+  }
+
+  // Map templates and maintain the order (top rated first, then discounted)
+  const result = combined.map((combinedTemplate) => {
+    const template = templates.find((t) => t.id === combinedTemplate.id);
+    if (!template) return null;
+
+    const templatePricing = pricingMap.get(template.id);
+    const templateRating = ratingsMap.get(template.id);
+    return {
+      ...template,
+      price: templatePricing?.price || null,
+      oldPrice: templatePricing?.oldPrice || null,
+      totalOrders: statsMap.get(template.id) || 0,
+      avgRating: templateRating?.avgRating || null,
+      ratingCount: templateRating?.ratingCount || 0,
+    };
+  }).filter((t): t is FeaturedTemplate => t !== null);
+
+  return result;
 }
 
 export default async function HomePage() {
@@ -200,20 +259,9 @@ export default async function HomePage() {
                 <br className="hidden md:block" />
                 Dakikalar içinde hazır, sonsuza kadar unutulmaz.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Button size="lg" className="bg-rose-600 hover:bg-rose-700" asChild>
-                  <Link href="/templates">
-                    Şablonları Keşfet
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/register">Ücretsiz Başla</Link>
-                </Button>
-              </div>
 
               {/* Quick Steps */}
-              <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-4">
                 {steps.map((step, index) => (
                   <div key={step.number} className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100 text-sm font-semibold text-rose-700">
@@ -221,7 +269,7 @@ export default async function HomePage() {
                     </div>
                     <span className="text-sm font-medium text-gray-700">{step.text}</span>
                     {index < steps.length - 1 && (
-                      <ArrowRight className="ml-2 h-4 w-4 text-gray-400" />
+                      <ArrowRight className="w-4 text-gray-400" />
                     )}
                   </div>
                 ))}
@@ -230,28 +278,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Categories */}
-        <section className="border-b border-gray-100 bg-white py-6">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-              <Link href="/templates">
-                <Badge className="whitespace-nowrap bg-gray-100 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200 md:px-4 md:text-sm">
-                  ✨ Tümü
-                </Badge>
-              </Link>
-              {categories.slice(0, 8).map((category) => (
-                <Link key={category} href={`/templates?category=${encodeURIComponent(category)}`}>
-                  <Badge className="whitespace-nowrap bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 hover:bg-rose-100 md:px-4 md:text-sm">
-                    {category}
-                  </Badge>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Featured Products */}
-        <section className="py-16">
+        <section className="py-6">
           <div className="container mx-auto px-4">
             <div className="mb-10 flex items-end justify-between">
               <div>
@@ -318,6 +346,30 @@ export default async function HomePage() {
                           </h3>
                         </Link>
 
+                        {/* Rating */}
+                        {template.avgRating && template.ratingCount > 0 && (
+                          <div className="flex items-center gap-1 mb-2">
+                            <div className="flex items-center gap-0.5">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-3.5 w-3.5 ${
+                                    i < Math.floor(template.avgRating || 0)
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "text-gray-300"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs font-medium text-gray-600">
+                              {template.avgRating.toFixed(1)}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              ({template.ratingCount})
+                            </span>
+                          </div>
+                        )}
+
                         {/* Pricing */}
                         <div className="flex items-baseline gap-2 mb-4">
                           {template.price && (
@@ -365,6 +417,38 @@ export default async function HomePage() {
                 );
               })}
             </div>
+          </div>
+        </section>
+
+        {/* CTA Buttons */}
+        <div className="ml-2 mr-2 mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <Button size="lg" className="bg-rose-600 hover:bg-rose-700" asChild>
+                <Link href="/templates">
+                  Tümünü Keşfet
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+            
+        {/* Categories */}
+        <section className="border-b border-gray-100 bg-white py-6">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+              <Link href="/templates">
+                <Badge className="whitespace-nowrap bg-gray-100 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200 md:px-4 md:text-sm">
+                  ✨ Tümü
+                </Badge>
+              </Link>
+              {categories.slice(0, 8).map((category) => (
+                <Link key={category} href={`/templates?category=${encodeURIComponent(category)}`}>
+                  <Badge className="whitespace-nowrap bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 hover:bg-rose-100 md:px-4 md:text-sm">
+                    {category}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+
+            
           </div>
         </section>
 
