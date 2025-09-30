@@ -2,27 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { PaynkolayHelper } from '@/lib/payments/paynkolay';
 
+// Handle POST requests from Paynkolay
+// This is a fallback in case the FAIL_URL environment variable points here instead of /api/payments/paynkolay/fail
 export async function POST(request: NextRequest) {
-  // Ensure baseUrl is never null or undefined
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  
-  // Additional safety check
-  if (!baseUrl || baseUrl === 'null' || baseUrl === 'undefined') {
-    console.error('BaseUrl is invalid:', baseUrl);
-    const fallbackUrl = 'http://localhost:3000';
-    console.log('Using fallback baseUrl:', fallbackUrl);
-  }
-  
   const finalBaseUrl = (baseUrl && baseUrl !== 'null' && baseUrl !== 'undefined') ? baseUrl : 'http://localhost:3000';
-  console.log('Final baseUrl:', finalBaseUrl);
-  
-  // Helper function to create safe redirect URLs
-  const createRedirectUrl = (path: string) => {
-    const safeBaseUrl = finalBaseUrl || 'http://localhost:3000';
-    const fullUrl = `${safeBaseUrl}${path}`;
-    console.log('Creating redirect URL:', fullUrl);
-    return fullUrl;
-  };
   
   try {
     const formData = await request.formData();
@@ -48,12 +32,12 @@ export async function POST(request: NextRequest) {
       BANK_RESULT: formData.get('BANK_RESULT') as string || undefined,
     };
 
-    console.log('Paynkolay fail callback received:', paynkolayResponse);
+    console.log('Paynkolay fail callback received at /payment/error:', paynkolayResponse);
 
     // Validate required fields
     if (!paynkolayResponse.CLIENT_REFERENCE_CODE) {
       console.error('Missing CLIENT_REFERENCE_CODE in Paynkolay fail response');
-      return NextResponse.redirect(createRedirectUrl('/payment/error?reason=invalid_response'), 303);
+      return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=invalid_response`, 303);
     }
 
     const supabase = await createServerSupabaseClient();
@@ -82,7 +66,7 @@ export async function POST(request: NextRequest) {
 
       if (!isHashValid) {
          console.error('Invalid hashDataV2 in Paynkolay fail response');
-         return NextResponse.redirect(createRedirectUrl('/payment/error?reason=invalid_hash'), 303);
+         return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=invalid_hash`, 303);
        }
     } else {
       console.warn('HashDataV2 is empty in Paynkolay fail response, skipping hash validation');
@@ -97,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     if (orderError || !order) {
       console.error('Order not found for reference:', paynkolayResponse.CLIENT_REFERENCE_CODE);
-      return NextResponse.redirect(createRedirectUrl('/payment/error?reason=order_not_found'), 303);
+      return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=order_not_found`, 303);
     }
 
     // Update order status to failed
@@ -118,35 +102,14 @@ export async function POST(request: NextRequest) {
     const errorMessage = paynkolayHelper.getErrorMessage(paynkolayResponse);
     console.log('Payment failed for order:', order.id, 'Error:', errorMessage);
     
-    // Redirect to error page with specific error message
+    // Redirect to error page with specific error message (use 303 to convert POST to GET)
     return NextResponse.redirect(
-      createRedirectUrl(`/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}&order_id=${order.id}`),
+      `${finalBaseUrl}/payment/error?reason=payment_failed&message=${encodeURIComponent(errorMessage)}&order_id=${order.id}`,
       303
     );
 
   } catch (error) {
-    console.error('Paynkolay fail callback error:', error);
-    return NextResponse.redirect(createRedirectUrl('/payment/error?reason=server_error'), 303);
+    console.error('Paynkolay fail callback error at /payment/error:', error);
+    return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=server_error`, 303);
   }
-}
-
-// Handle GET requests (in case Paynkolay sends GET instead of POST)
-export async function GET(request: NextRequest) {
-  const url = new URL(request.url);
-  const searchParams = url.searchParams;
-  
-  // Convert URL parameters to FormData format for consistency
-  const formData = new FormData();
-  searchParams.forEach((value, key) => {
-    formData.append(key, value);
-  });
-
-  // Create a new request with FormData
-  const newRequest = new NextRequest(request.url, {
-    method: 'POST',
-    body: formData,
-    headers: request.headers,
-  });
-
-  return POST(newRequest);
 }

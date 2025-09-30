@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { PaynkolayHelper } from '@/lib/payments/paynkolay';
 
-export async function POST(request: NextRequest) {
-  // Ensure baseUrl is never null or undefined
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000';
-  
-  // Additional safety check
+// Handle POST requests from Paynkolay
+// This is a fallback in case the SUCCESS_URL environment variable points here instead of /api/payments/paynkolay/success
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { shortId: string } }
+) {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const finalBaseUrl = (baseUrl && baseUrl !== 'null' && baseUrl !== 'undefined') ? baseUrl : 'http://localhost:3000';
-  console.log('Final baseUrl:', finalBaseUrl);
   
   try {
     const formData = await request.formData();
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
       BANK_RESULT: formData.get('BANK_RESULT') as string || undefined,
     };
 
-    console.log('Paynkolay success callback received:', paynkolayResponse);
+    console.log('Paynkolay success callback received at /success/[shortId]:', paynkolayResponse);
 
     // Validate required fields
     if (!paynkolayResponse.CLIENT_REFERENCE_CODE) {
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
       console.warn('HashDataV2 is empty in Paynkolay success response, skipping hash validation');
     }
 
-    // Find the order by payment reference (CLIENT_REFERENCE_CODE ile payment_reference eşleştirmesi)
+    // Find the order by payment reference
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select('*')
@@ -177,28 +178,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Paynkolay success callback error:', error);
+    console.error('Paynkolay success callback error at /success/[shortId]:', error);
     return NextResponse.redirect(`${finalBaseUrl}/payment/error?reason=server_error`, 303);
   }
-}
-
-// Handle GET requests (in case Paynkolay sends GET instead of POST)
-export async function GET(request: NextRequest) {
-  const url = new URL(request.url);
-  const searchParams = url.searchParams;
-  
-  // Convert URL parameters to FormData format for consistency
-  const formData = new FormData();
-  searchParams.forEach((value, key) => {
-    formData.append(key, value);
-  });
-
-  // Create a new request with FormData
-  const newRequest = new NextRequest(request.url, {
-    method: 'POST',
-    body: formData,
-    headers: request.headers,
-  });
-
-  return POST(newRequest);
 }
