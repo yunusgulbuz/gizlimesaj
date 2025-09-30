@@ -87,35 +87,39 @@ export default function TemplatePreviewPage({ template }: TemplatePreviewPagePro
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:h-16 sm:py-0">
             <div className="flex items-center space-x-4">
               <Link href={`/templates/${template.slug}`}>
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Geri Dön
+                  Geri
                 </Button>
               </Link>
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">
-                  {template.title} - Tam Ekran Önizleme
+              <div className="flex-1 min-w-0">
+                <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
+                  {template.title}
                 </h1>
               </div>
             </div>
-            
-            {/* Design Style Selector */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Tasarım:</span>
-              {Object.entries(designStyles).map(([key, style]) => (
-                <Button
-                  key={key}
-                  size="sm"
-                  variant={selectedDesignStyle === key ? "default" : "outline"}
-                  onClick={() => setSelectedDesignStyle(key as 'modern' | 'classic' | 'minimalist' | 'eglenceli')}
-                  className="text-xs"
-                >
-                  {style.preview} {style.label}
-                </Button>
-              ))}
+
+            {/* Design Style Selector - Mobile Friendly */}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <span className="text-xs sm:text-sm font-medium text-gray-600">Tasarım Stili:</span>
+              <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
+                {Object.entries(designStyles).map(([key, style]) => (
+                  <Button
+                    key={key}
+                    size="sm"
+                    variant={selectedDesignStyle === key ? "default" : "outline"}
+                    onClick={() => setSelectedDesignStyle(key as 'modern' | 'classic' | 'minimalist' | 'eglenceli')}
+                    className="shrink-0 text-xs whitespace-nowrap"
+                    aria-label={`${style.label} tasarımı`}
+                  >
+                    <span className="mr-1">{style.preview}</span>
+                    <span className="hidden sm:inline">{style.label}</span>
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

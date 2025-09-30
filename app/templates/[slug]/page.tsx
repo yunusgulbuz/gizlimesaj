@@ -106,7 +106,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return generateTemplateMetadata(
     template.title,
-    audienceLabel
+    audienceLabel,
+    template.preview_url || undefined
   );
 }
 

@@ -309,7 +309,7 @@ export default async function HomePage() {
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-2xl font-semibold text-gray-900">Öne Çıkan Şablonlar</h2>
+                      <h2 className="text-2xl font-semibold text-gray-900">Öne Çıkan Sürprizler</h2>
                       <p className="mt-1 text-sm text-gray-500">En çok tercih edilen şablonlarımız</p>
                     </div>
                     <Button variant="outline" size="sm" asChild className="border-rose-200 text-rose-600 hover:bg-rose-50">
@@ -536,7 +536,7 @@ export default async function HomePage() {
                 <Button size="lg" variant="secondary" className="h-12 px-8 text-base" asChild>
                   <Link href="/register">Ücretsiz Kaydol</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="h-12 px-8 text-base text-white" asChild>
+                <Button size="lg" variant="secondary" className="h-12 px-8 text-base" asChild>
                   <Link href="/login">Hesabım Var</Link>
                 </Button>
               </div>

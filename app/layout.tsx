@@ -14,8 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gizli Mesaj - Sevdiklerinize Özel Mesajlar",
-  description: "Sevdiklerinize özel, zamanlı mesajlar gönderin. Romantik, eğlenceli ve unutulmaz anlar yaratın.",
+  title: "Gizli Mesaj - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
+  description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun. Romantik, eğlenceli ve unutulmaz anlar için zamanlı mesaj deneyimi.",
+  openGraph: {
+    title: "Gizli Mesaj - Özel Dijital Hediyeler",
+    description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun. Romantik, eğlenceli ve unutulmaz anlar için zamanlı mesaj deneyimi.",
+    locale: "tr_TR",
+    type: "website",
+    siteName: "Gizli Mesaj - Özel Dijital Hediyeler",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Gizli Mesaj - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
+    description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun.",
+  },
 };
 
 export default function RootLayout({

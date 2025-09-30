@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { Heart, Clock, Calendar, User, Music, Share2, Download } from "lucide-react";
@@ -39,6 +37,10 @@ interface TimeLeft {
   minutes: number;
   seconds: number;
 }
+
+// This needs to be a Client Component to use useEffect and state
+// So we cannot add generateMetadata here
+// Meta tags will be handled via API route or default metadata
 
 export default function PersonalMessagePage({ params }: { params: Promise<{ shortId: string }> }) {
   const [personalPage, setPersonalPage] = useState<PersonalPage | null>(null);

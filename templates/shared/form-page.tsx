@@ -413,10 +413,10 @@ export default function TemplateFormPage({ template, durations, templatePricing,
               </div>
             ))}
 
-            {/* Design Style Selection */}
+            {/* Design Style Selection - Mobile Optimized */}
             <div className="space-y-3">
               <Label>Tasarım Stili *</Label>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {Object.entries(designStyles).map(([key, style]) => (
                   <div key={key} className="relative">
                     <input
@@ -430,20 +430,20 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                     />
                     <label
                       htmlFor={`style-${key}`}
-                      className={`block rounded-lg border-2 p-4 transition-all hover:border-pink-300 ${
+                      className={`block cursor-pointer rounded-lg border-2 p-3 sm:p-4 transition-all hover:border-pink-300 ${
                         selectedDesignStyle === key ? 'border-pink-500 bg-pink-50' : 'border-gray-200 hover:bg-gray-50'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="text-2xl">{style.preview}</div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{style.label}</span>
-                            <Badge className={style.color} variant="secondary">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="text-xl sm:text-2xl shrink-0">{style.preview}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                            <span className="font-medium text-sm sm:text-base">{style.label}</span>
+                            <Badge className={`${style.color} text-[10px] sm:text-xs w-fit`} variant="secondary">
                               {style.label}
                             </Badge>
                           </div>
-                          <p className="mt-1 text-sm text-gray-600">
+                          <p className="mt-1 text-xs sm:text-sm text-gray-600 line-clamp-2">
                             {style.description}
                           </p>
                         </div>

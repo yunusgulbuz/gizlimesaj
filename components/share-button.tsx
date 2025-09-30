@@ -142,16 +142,16 @@ export function ShareButton({ shortId, recipientName, className }: ShareButtonPr
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          className={`gap-2 backdrop-blur-sm border-white/20 transition-all duration-200 ${
-            isDarkBackground 
-              ? 'bg-white/90 text-gray-800 hover:bg-white hover:text-gray-900' 
-              : 'bg-gray-900/90 text-white hover:bg-gray-900 hover:text-white border-gray-700/50'
+        <Button
+          variant="outline"
+          className={`gap-2 backdrop-blur-md transition-all duration-200 shadow-lg ${
+            isDarkBackground
+              ? 'bg-white/95 text-gray-900 hover:bg-white hover:text-gray-900 border-white/30 hover:border-white/50 shadow-black/20'
+              : 'bg-gray-900/95 text-white hover:bg-gray-900 hover:text-white border-gray-700/50 hover:border-gray-600 shadow-gray-900/30'
           } ${className}`}
         >
           <Share2 className="w-4 h-4" />
-          Paylaş
+          <span className="font-medium">Paylaş</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

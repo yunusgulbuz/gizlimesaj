@@ -9,8 +9,8 @@ export interface SEOProps {
 }
 
 export function generateMetadata({
-  title = 'Gizli Mesaj - Kişiselleştirilmiş Mesaj Sayfaları',
-  description = 'Sevdiklerinize özel mesajlar oluşturun. Romantik, eğlenceli ve unutulmaz anlar için kişiselleştirilmiş sayfa deneyimi.',
+  title = 'Gizli Mesaj - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler',
+  description = 'Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun. Romantik, eğlenceli ve unutulmaz anlar için zamanlı mesaj deneyimi.',
   image = '/og-image.jpg',
   url,
   type = 'website'
@@ -26,7 +26,7 @@ export function generateMetadata({
       title,
       description,
       url: fullUrl,
-      siteName: 'Gizli Mesaj',
+      siteName: 'Gizli Mesaj - Özel Dijital Hediyeler',
       images: [
         {
           url: fullImageUrl,
@@ -64,27 +64,31 @@ export function generateMetadata({
 export function generatePersonalPageMetadata(
   recipientName: string,
   days: number,
-  templateTitle: string
+  templateTitle: string,
+  image?: string
 ): Metadata {
-  const title = `${recipientName} için özel mesaj`
-  const description = `${days} gün boyunca erişilebilir özel mesaj sayfası. ${templateTitle} temasıyla hazırlandı.`
-  
+  const title = `${recipientName} için özel hediye mesajı 💝`
+  const description = `${recipientName} senin için özel bir dijital hediye hazırladı! ${templateTitle} temasıyla ${days} gün boyunca açabilirsin. ❤️`
+
   return generateMetadata({
     title,
     description,
-    type: 'article'
+    type: 'article',
+    image
   })
 }
 
 export function generateTemplateMetadata(
   templateTitle: string,
-  audience: string
+  audience: string,
+  image?: string
 ): Metadata {
-  const title = `${templateTitle} - Gizli Mesaj Şablonu`
-  const description = `${templateTitle} temasıyla sevdiklerinize özel mesaj oluşturun. ${audience} kategorisinde romantik ve kişiselleştirilmiş deneyim.`
-  
+  const title = `${templateTitle} - Özel Hediye Şablonu 🎁`
+  const description = `${templateTitle} temasıyla sevdiklerinize unutulmaz bir dijital hediye hazırlayın. ${audience} kategorisinde romantik, eğlenceli ve kişiselleştirilmiş mesaj deneyimi.`
+
   return generateMetadata({
     title,
-    description
+    description,
+    image
   })
 }

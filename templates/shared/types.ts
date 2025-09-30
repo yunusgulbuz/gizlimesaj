@@ -376,6 +376,14 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         maxLength: 320,
         defaultValue: 'Yeni takım ruhu: İnovasyon, işbirliği ve yüksek enerji!',
       },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
     ],
   },
   'affet-beni-classic': {
