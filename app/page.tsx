@@ -1,15 +1,6 @@
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
-import {
-  Button,
-} from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
@@ -18,120 +9,11 @@ import {
   Heart,
   Sparkles,
   Wand2,
-  Music2,
   Share2,
   ShieldCheck,
-  Clock3,
-  Pen,
-  Send,
-  Users,
-  Star,
+  ArrowRight,
+  CheckCircle2,
 } from "lucide-react";
-
-interface FeatureHighlight {
-  title: string;
-  description: string;
-  icon: LucideIcon;
-}
-
-interface WorkflowStep {
-  title: string;
-  description: string;
-  icon: LucideIcon;
-}
-
-interface StatHighlight {
-  label: string;
-  value: string;
-  description: string;
-}
-
-interface Testimonial {
-  quote: string;
-  name: string;
-  title: string;
-}
-
-const featureHighlights: FeatureHighlight[] = [
-  {
-    title: "Anında Kişiselleştirme",
-    description:
-      "Şablonu seçtikten sonra isimlerden renklere, müzikten giriş metnine kadar her detayı dakikalar içinde düzenleyin.",
-    icon: Wand2,
-  },
-  {
-    title: "Duyguyu Güçlendiren Deneyim",
-    description:
-      "Kalp atışı animasyonları, fonda çalan müzik ve etkileşimli bölümlerle dijital sürprizleriniz unutulmaz hale gelir.",
-    icon: Music2,
-  },
-  {
-    title: "Kolay Paylaşım",
-    description:
-      "Heartnote, hazırladığınız sayfayı tek bir bağlantıyla paylaşmanızı sağlar. İsterseniz süreli erişim de tanımlayabilirsiniz.",
-    icon: Share2,
-  },
-  {
-    title: "Güvenli & Gizli",
-    description:
-      "Mesajlarınız size özel kalır. Parola koruması ve süreli yayın özellikleriyle yalnızca seçtiğiniz kişi erişebilir.",
-    icon: ShieldCheck,
-  },
-];
-
-const workflowSteps: WorkflowStep[] = [
-  {
-    title: "Şablonu Seç",
-    description:
-      "Özel gününüze uygun yüzlerce romantik, eğlenceli veya minimalist tasarım arasından seçim yapın.",
-    icon: Sparkles,
-  },
-  {
-    title: "Hikayeni Anlat",
-    description:
-      "Alıcı adını, ilişkinizi anlatan metinleri, fotoğraf ve videoları sürükle-bırak kolaylığıyla yerleştirin.",
-    icon: Pen,
-  },
-  {
-    title: "Bağlantıyı Paylaş",
-    description:
-      "Heartnote bağlantısını ileterek sevdiklerinize saniyeler içinde dijital sürprizinizin kapısını aralayın.",
-    icon: Send,
-  },
-];
-
-const stats: StatHighlight[] = [
-  {
-    label: "Hazır Şablon",
-    value: "50+",
-    description: "Doğum günü, yıldönümü, kutlama ve daha fazlası",
-  },
-  {
-    label: "Dakikada Yayında",
-    value: "5",
-    description: "Kayıt olduktan sonra ilk Heartnote'unuzu dakikalar içinde oluşturun",
-  },
-  {
-    label: "Mutlu Kullanıcı",
-    value: "10K",
-    description: "Heartnote ile duygularını paylaşan topluluğa katılın",
-  },
-];
-
-const testimonials: Testimonial[] = [
-  {
-    quote:
-      "Heartnote sayesinde eşime hazırladığım yıldönümü sürprizi kelimenin tam anlamıyla büyüledi. Her detay o kadar kişisel ki!",
-    name: "Elif K.",
-    title: "Yıldönümü Heartnote'u",
-  },
-  {
-    quote:
-      "Uzaktaki sevgilime sadece birkaç tıkla müthiş bir deneyim gönderdim. Müzik ve animasyonlar duyguyu katladı.",
-    name: "Mert A.",
-    title: "Uzun Mesafe Hikâyesi",
-  },
-];
 
 interface FeaturedTemplate {
   id: string;
@@ -144,31 +26,72 @@ interface FeaturedTemplate {
   totalOrders: number;
 }
 
+async function getCategories(): Promise<string[]> {
+  const supabase = await createServerSupabaseClient();
+
+  const { data: templates } = await supabase
+    .from("templates")
+    .select("audience")
+    .eq("is_active", true);
+
+  if (!templates) return [];
+
+  const allCategories = new Set<string>();
+  templates?.forEach((template) => {
+    if (Array.isArray(template.audience)) {
+      template.audience.forEach((cat: string) => allCategories.add(cat));
+    }
+  });
+
+  return Array.from(allCategories).sort();
+}
+
+const features = [
+  {
+    icon: Wand2,
+    title: "Kolay Kişiselleştirme",
+    description: "Şablonu seçin, mesajınızı yazın, müzik ekleyin",
+  },
+  {
+    icon: Share2,
+    title: "Anında Paylaşım",
+    description: "Link ile hemen paylaşın, WhatsApp/Instagram uyumlu",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Güvenli ve Özel",
+    description: "Süreli erişim, sadece seçtiğiniz kişi görebilir",
+  },
+];
+
+const steps = [
+  { number: "1", text: "Şablon Seç" },
+  { number: "2", text: "Kişiselleştir" },
+  { number: "3", text: "Paylaş" },
+];
+
 async function getFeaturedTemplates(): Promise<FeaturedTemplate[]> {
   const supabase = await createServerSupabaseClient();
 
-  // Get top 3 most purchased templates from stats
   const { data: topTemplates, error: statsError } = await supabase
     .from("template_stats")
     .select("id, total_orders")
     .order("total_orders", { ascending: false })
-    .limit(3);
+    .limit(8);
 
   let templateIds: string[] = [];
   let statsMap = new Map<string, number>();
 
-  // If stats exist and have data, use them
   if (!statsError && topTemplates && topTemplates.length > 0) {
     templateIds = topTemplates.map((t) => t.id);
     statsMap = new Map(topTemplates.map((t) => [t.id, t.total_orders]));
   } else {
-    // Fallback: get 3 newest templates
     const { data: newestTemplates } = await supabase
       .from("templates")
       .select("id")
       .eq("is_active", true)
       .order("created_at", { ascending: false })
-      .limit(3);
+      .limit(8);
 
     if (!newestTemplates || newestTemplates.length === 0) {
       return [];
@@ -176,26 +99,25 @@ async function getFeaturedTemplates(): Promise<FeaturedTemplate[]> {
     templateIds = newestTemplates.map((t) => t.id);
   }
 
-  // Get template details
-  const { data: templates, error: templatesError } = await supabase
+  const { data: templates } = await supabase
     .from("templates")
     .select("id, slug, title, audience, preview_url")
     .in("id", templateIds)
     .eq("is_active", true);
 
-  if (templatesError || !templates || templates.length === 0) {
+  if (!templates || templates.length === 0) {
     return [];
   }
 
-  // Get pricing for shortest duration
   const { data: durations } = await supabase
     .from("durations")
     .select("id")
     .eq("is_active", true)
     .order("days", { ascending: true })
-    .limit(1);
+    .limit(1)
+    .single();
 
-  const shortestDurationId = durations?.[0]?.id;
+  const shortestDurationId = durations?.id;
 
   if (!shortestDurationId) {
     return [];
@@ -226,36 +148,29 @@ async function getFeaturedTemplates(): Promise<FeaturedTemplate[]> {
 }
 
 export default async function HomePage() {
-  const featuredTemplates = await getFeaturedTemplates();
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-rose-200/60 blur-3xl" />
-        <div className="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-purple-200/50 blur-3xl" />
-        <div className="absolute left-1/2 top-1/3 h-56 w-56 -translate-x-1/3 rounded-full bg-indigo-200/40 blur-3xl" />
-      </div>
+  const [featuredTemplates, categories] = await Promise.all([
+    getFeaturedTemplates(),
+    getCategories(),
+  ]);
 
-      <header className="relative z-10">
-        <div className="container mx-auto px-4 py-6">
-          <nav className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-purple-600">
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
+        <div className="container mx-auto px-4">
+          <nav className="flex h-16 items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
                 <Heart className="h-5 w-5 text-white" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-semibold text-gray-900">Heartnote</span>
-                <span className="text-xs text-gray-500">Hissettiklerini dijital sürprize dönüştür</span>
-              </div>
-            </div>
-            <div className="hidden items-center space-x-6 md:flex">
-              <Link href="/templates" className="text-gray-600 transition hover:text-gray-900">
+              <span className="text-lg font-bold text-gray-900">Heartnote</span>
+            </Link>
+            <div className="flex items-center gap-6">
+              <Link href="/templates" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
                 Şablonlar
               </Link>
-              <Link href="/pricing" className="text-gray-600 transition hover:text-gray-900">
-                Planlar
-              </Link>
-              <Link href="/about" className="text-gray-600 transition hover:text-gray-900">
-                Hakkımızda
+              <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                Fiyatlar
               </Link>
               <HeaderAuthButton />
             </div>
@@ -263,124 +178,50 @@ export default async function HomePage() {
         </div>
       </header>
 
-      <main className="relative z-10">
-        <section className="container mx-auto px-4 pb-24 pt-12">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-rose-600 shadow-sm backdrop-blur">
-                <Sparkles className="h-4 w-4" />
-                Sürprizlerin kalp atışını yükseltin
-              </div>
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
-                Heartnote ile duygularını <span className="bg-gradient-to-r from-rose-500 to-purple-600 bg-clip-text text-transparent">dijital anılara</span> dönüştür
+      <main>
+        {/* Hero Section */}
+        <section className="border-b border-gray-100 bg-gradient-to-b from-rose-50/50 to-white py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-3xl text-center">
+              <Badge className="mb-6 bg-rose-100 text-rose-700 hover:bg-rose-100">
+                <Sparkles className="mr-1 h-3 w-3" />
+                Özel günleriniz için dijital hediyeler
+              </Badge>
+              <h1 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
+                Sevdiklerinize Unutulmaz
+                <br />
+                <span className="bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent">
+                  Dijital Sürprizler
+                </span>
               </h1>
-              <p className="max-w-xl text-lg text-gray-600">
-                Kişiselleştirilebilir sayfalar, zarif animasyonlar ve fon müziği ile sevdiğiniz kişiye unutulmaz bir deneyim armağan edin. Heartnote, romantik sürprizlerin yeni adresi.
+              <p className="mb-8 text-lg text-gray-600 md:text-xl">
+                Kişiselleştirilmiş mesaj sayfaları, müzik ve animasyonlarla duygularınızı paylaşın.
+                <br className="hidden md:block" />
+                Dakikalar içinde hazır, sonsuza kadar unutulmaz.
               </p>
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <Button size="lg" className="h-12 px-8 text-base" asChild>
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <Button size="lg" className="bg-rose-600 hover:bg-rose-700" asChild>
                   <Link href="/templates">
-                    <Sparkles className="mr-2 h-5 w-5" />
                     Şablonları Keşfet
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="h-12 px-8 text-base" asChild>
-                  <Link href="/login">Giriş Yap</Link>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/register">Ücretsiz Başla</Link>
                 </Button>
               </div>
-              <div className="flex flex-col gap-4 text-sm text-gray-500 md:flex-row md:items-center">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                  Güvenli paylaşım ve süreli erişim
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock3 className="h-4 w-4 text-indigo-500" />
-                  5 dakikada yayında
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-rose-500" />
-                  10.000+ mutlu çift
-                </div>
-              </div>
-            </div>
 
-            <div className="space-y-6">
-              {featuredTemplates.length > 0 && (
-                <div className="space-y-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-2xl font-semibold text-gray-900">Öne Çıkan Sürprizler</h2>
-                      <p className="mt-1 text-sm text-gray-500">En çok tercih edilen şablonlarımız</p>
+              {/* Quick Steps */}
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+                {steps.map((step, index) => (
+                  <div key={step.number} className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100 text-sm font-semibold text-rose-700">
+                      {step.number}
                     </div>
-                    <Button variant="outline" size="sm" asChild className="border-rose-200 text-rose-600 hover:bg-rose-50">
-                      <Link href="/templates">
-                        Tümünü Gör
-                      </Link>
-                    </Button>
-                  </div>
-                  <div className="grid gap-5 sm:grid-cols-3">
-                    {featuredTemplates.map((template) => {
-                      const previewData = {
-                        id: template.id,
-                        slug: template.slug,
-                        title: template.title,
-                        audience: template.audience,
-                        bg_audio_url: null,
-                      };
-
-                      return (
-                        <Link key={template.id} href={`/templates/${template.slug}`}>
-                          <Card className="group h-full overflow-hidden border border-white/70 bg-white/90 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-rose-200">
-                            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
-                              <TemplateCardPreview template={previewData} />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                              <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
-                                {template.audience.slice(0, 2).map((cat) => (
-                                  <Badge key={cat} variant="secondary" className="bg-white/95 text-[10px] font-medium text-gray-700 shadow-sm backdrop-blur-sm">
-                                    {cat}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                            <CardContent className="space-y-2.5 p-4">
-                              <div className="space-y-1">
-                                <h3 className="font-semibold text-gray-900 transition-colors group-hover:text-rose-600">
-                                  {template.title}
-                                </h3>
-                                <p className="text-xs text-gray-500">
-                                  {template.totalOrders > 0 ? `${template.totalOrders} kişi satın aldı` : 'Yeni eklendi'}
-                                </p>
-                              </div>
-                              {template.price && (
-                                <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
-                                  <span className="text-xs font-medium text-gray-600">Başlangıç</span>
-                                  <div className="flex items-center gap-1.5">
-                                    {template.oldPrice && (
-                                      <span className="text-[11px] text-gray-400 line-through">
-                                        ₺{parseFloat(template.oldPrice).toFixed(0)}
-                                      </span>
-                                    )}
-                                    <span className="text-sm font-bold text-rose-600">
-                                      ₺{parseFloat(template.price).toFixed(0)}
-                                    </span>
-                                  </div>
-                                </div>
-                              )}
-                            </CardContent>
-                          </Card>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              <div className="grid gap-4 sm:grid-cols-3">
-                {stats.map((item) => (
-                  <div key={item.label} className="rounded-xl border border-rose-100 bg-white/80 p-4 text-center shadow-sm">
-                    <p className="text-2xl font-semibold text-gray-900">{item.value}</p>
-                    <p className="text-sm font-medium text-rose-500">{item.label}</p>
-                    <p className="mt-2 text-xs text-gray-500">{item.description}</p>
+                    <span className="text-sm font-medium text-gray-700">{step.text}</span>
+                    {index < steps.length - 1 && (
+                      <ArrowRight className="ml-2 h-4 w-4 text-gray-400" />
+                    )}
                   </div>
                 ))}
               </div>
@@ -388,179 +229,214 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="bg-white/70 py-20 backdrop-blur">
+        {/* Categories */}
+        <section className="border-b border-gray-100 bg-white py-6">
           <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-2xl text-center">
-              <span className="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-rose-600">
-                Heartnote sözünüz
-              </span>
-              <h2 className="mt-4 text-3xl font-semibold text-gray-900 md:text-4xl">
-                Sevdikleriniz için etkileyici dijital deneyimler
-              </h2>
-              <p className="mt-4 text-base text-gray-600">
-                Hayalinizdeki sürprizi hazırlarken yaratıcı sürece odaklanın. Geri kalan her şeyi Heartnote halleder.
-              </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+              <Link href="/templates">
+                <Badge className="whitespace-nowrap bg-gray-100 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200 md:px-4 md:text-sm">
+                  ✨ Tümü
+                </Badge>
+              </Link>
+              {categories.slice(0, 8).map((category) => (
+                <Link key={category} href={`/templates?category=${encodeURIComponent(category)}`}>
+                  <Badge className="whitespace-nowrap bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 hover:bg-rose-100 md:px-4 md:text-sm">
+                    {category}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Products */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="mb-10 flex items-end justify-between">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">Popüler Hediyeler</h2>
+                <p className="mt-2 text-gray-600">En çok tercih edilen dijital hediyeler</p>
+              </div>
+              <Button variant="ghost" className="text-rose-600 hover:text-rose-700" asChild>
+                <Link href="/templates">
+                  Tümünü Gör
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
 
-            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {featureHighlights.map((feature) => {
-                const Icon = feature.icon;
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {featuredTemplates.map((template) => {
+                const previewData = {
+                  id: template.id,
+                  slug: template.slug,
+                  title: template.title,
+                  audience: template.audience,
+                  bg_audio_url: null,
+                };
+
+                const discount = template.oldPrice && template.price
+                  ? Math.round((1 - parseFloat(template.price) / parseFloat(template.oldPrice)) * 100)
+                  : null;
+
                 return (
-                  <Card
-                    key={feature.title}
-                    className="border-none bg-gradient-to-br from-white to-rose-50/80 shadow-lg"
-                  >
-                    <CardHeader>
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
-                        <Icon className="h-6 w-6 text-rose-500" />
+                  <Link key={template.id} href={`/templates/${template.slug}`}>
+                    <Card className="group relative h-full overflow-hidden rounded-2xl border-0 bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-xl hover:ring-gray-200">
+                      {/* Preview Container */}
+                      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                        <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
+                          <TemplateCardPreview template={previewData} />
+                        </div>
+                        
+                        {/* Badges */}
+                        <div className="absolute left-4 top-4 flex gap-2">
+                          {discount && discount > 0 && (
+                            <Badge className="bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                              -{discount}%
+                            </Badge>
+                          )}
+                          {template.totalOrders > 0 && (
+                            <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                              Popüler
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Overlay Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                       </div>
-                      <CardTitle className="text-lg text-gray-900">{feature.title}</CardTitle>
-                      <CardDescription className="text-sm text-gray-600">
-                        {feature.description}
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
+
+                      {/* Content */}
+                      <CardContent className="p-5 space-y-3">
+                        {/* Title */}
+                        <h3 className="text-base font-semibold text-gray-900 line-clamp-2 leading-tight group-hover:text-rose-600 transition-colors duration-200">
+                          {template.title}
+                        </h3>
+
+                        {/* Pricing */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-baseline gap-2">
+                            {template.price && (
+                              <>
+                                <span className="text-2xl font-bold text-gray-900">
+                                  ₺{template.price}
+                                </span>
+                                {template.oldPrice && (
+                                  <span className="text-sm text-gray-400 line-through">
+                                    ₺{template.oldPrice}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                          
+                          {discount && discount > 0 && (
+                            <div className="rounded-full bg-emerald-50 px-3 py-1">
+                              <span className="text-xs font-semibold text-emerald-700">
+                                %{discount} tasarruf
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Action Indicator */}
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            Şablonu İncele
+                          </span>
+                          <ArrowRight className="h-4 w-4 text-gray-400 transition-all duration-200 group-hover:text-rose-500 group-hover:translate-x-1" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 );
               })}
             </div>
           </div>
         </section>
 
-        <section className="container mx-auto px-4 py-20">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
-            <div>
-              <h2 className="text-3xl font-semibold text-gray-900 md:text-4xl">
-                Kalp atışı kadar kolay bir süreç
-              </h2>
-              <p className="mt-4 max-w-xl text-base text-gray-600">
-                Heartnote'un sezgisel editörü ile sürükle-bırak kolaylığında içerik ekleyin, seçtiğiniz müziği yükleyin, animasyonlu sahneler arasında geçiş yapın.
-              </p>
-
-              <div className="mt-10 space-y-6">
-                {workflowSteps.map((step, index) => {
-                  const Icon = step.icon;
-                  return (
-                    <div
-                      key={step.title}
-                      className="flex flex-col gap-4 rounded-2xl border border-rose-100 bg-white/80 p-6 shadow-sm sm:flex-row sm:items-center"
-                    >
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10 text-rose-600">
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold uppercase tracking-wide text-gray-400">
-                          {String(index + 1).padStart(2, "0")}
-                        </p>
-                        <h3 className="text-lg font-medium text-gray-900">{step.title}</h3>
-                        <p className="mt-1 text-sm text-gray-600">{step.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <Card className="border-none bg-gradient-to-br from-purple-600 to-rose-500 text-white shadow-xl">
-              <CardContent className="space-y-6 p-8">
-                <div>
-                  <h3 className="text-2xl font-semibold">Kişiye Özel Yayın Ayarları</h3>
-                  <p className="mt-2 text-sm text-white/80">
-                    Heartnote'un gelişmiş araçlarıyla yayınınızı zamanlayın, şifre koruması ekleyin ve dilediğiniz an düzenleyin.
-                  </p>
-                </div>
-                <ul className="space-y-3 text-sm text-white/85">
-                  <li className="flex items-start gap-2">
-                    <ShieldCheck className="mt-0.5 h-4 w-4" />
-                    Şifre koruması ve süreli erişim seçenekleri
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Music2 className="mt-0.5 h-4 w-4" />
-                    Arkaplan müziği ve sesli not ekleme
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Sparkles className="mt-0.5 h-4 w-4" />
-                    Animasyonlu sahneler ve mikro etkileşimler
-                  </li>
-                </ul>
-                <Button variant="secondary" className="w-full text-base" asChild>
-                  <Link href="/templates">İlham Al</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        <section className="bg-white/80 py-20 backdrop-blur">
+        {/* Features */}
+        <section className="border-y border-gray-100 bg-gray-50 py-16">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-center">
-              <div>
-                <h2 className="text-3xl font-semibold text-gray-900 md:text-4xl">Kullanıcılarımız ne diyor?</h2>
-                <p className="mt-4 max-w-xl text-base text-gray-600">
-                  Heartnote, romantik sürprizler hazırlayan çiftler ve özel günlerini kutlayan aileler tarafından seviliyor.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-rose-500">
-                <Star className="h-5 w-5" />
-                <p className="text-sm font-medium">4.9 / 5 memnuniyet puanı</p>
-              </div>
-            </div>
-
-            <div className="mt-12 grid gap-6 md:grid-cols-2">
-              {testimonials.map((testimonial) => (
-                <Card key={testimonial.name} className="border-none bg-white shadow-lg">
-                  <CardContent className="space-y-4 p-6">
-                    <p className="text-lg font-medium text-gray-900">“{testimonial.quote}”</p>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                        <p className="text-sm text-gray-500">{testimonial.title}</p>
-                      </div>
-                      <Users className="h-5 w-5 text-rose-500" />
+            <div className="grid gap-8 md:grid-cols-3">
+              {features.map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={feature.title} className="flex gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-rose-100">
+                      <Icon className="h-6 w-6 text-rose-600" />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <div>
+                      <h3 className="mb-1 font-semibold text-gray-900">{feature.title}</h3>
+                      <p className="text-sm text-gray-600">{feature.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section className="relative overflow-hidden py-20">
-          <div className="absolute inset-0 bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500" />
-          <div className="container relative mx-auto px-4">
-            <div className="flex flex-col items-center gap-6 text-center text-white">
-              <h2 className="text-3xl font-semibold md:text-4xl">Hazırsan ilk Heartnote'unu birlikte oluşturalım</h2>
-              <p className="max-w-2xl text-base text-white/85">
-                Ücretsiz kaydol, beğendiğin şablonu seç, dakikalar içinde duygularını şık bir dijital deneyime dönüştür. Heartnote ile her özel gün benzersiz.
-              </p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button size="lg" variant="secondary" className="h-12 px-8 text-base" asChild>
-                  <Link href="/register">Ücretsiz Kaydol</Link>
-                </Button>
-                <Button size="lg" variant="secondary" className="h-12 px-8 text-base" asChild>
-                  <Link href="/login">Hesabım Var</Link>
-                </Button>
-              </div>
+        {/* CTA */}
+        <section className="bg-gradient-to-r from-rose-600 to-purple-600 py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+              İlk Dijital Hediyenizi Oluşturun
+            </h2>
+            <p className="mb-8 text-lg text-white/90">
+              50+ hazır şablon, sınırsız kişiselleştirme seçeneği
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <Button size="lg" className="bg-white text-rose-600 hover:bg-gray-100" asChild>
+                <Link href="/templates">Hemen Başla</Link>
+              </Button>
+              <Button size="lg" variant="outline" className="bg-white text-rose-600 hover:bg-gray-100" asChild>
+                <Link href="/pricing">Paketleri Gör</Link>
+              </Button>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="relative z-10 border-t border-white/40 bg-white/70 py-8 backdrop-blur">
-        <div className="container mx-auto flex flex-col items-center gap-4 px-4 text-center text-sm text-gray-500 md:flex-row md:justify-between md:text-left">
-          <div>
-            <p className="font-medium text-gray-700">Heartnote</p>
-            <p className="text-xs">© {new Date().getFullYear()} Heartnote. Tüm hakları saklıdır.</p>
+      {/* Footer */}
+      <footer className="border-t border-gray-200 bg-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid gap-8 md:grid-cols-4">
+            <div>
+              <div className="mb-4 flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
+                  <Heart className="h-4 w-4 text-white" />
+                </div>
+                <span className="font-bold text-gray-900">Heartnote</span>
+              </div>
+              <p className="text-sm text-gray-600">
+                Sevdiklerinize özel dijital mesajlar ve hediyeler oluşturun.
+              </p>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold text-gray-900">Ürün</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li><Link href="/templates" className="hover:text-rose-600">Şablonlar</Link></li>
+                <li><Link href="/pricing" className="hover:text-rose-600">Fiyatlandırma</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold text-gray-900">Şirket</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li><Link href="/about" className="hover:text-rose-600">Hakkımızda</Link></li>
+                <li><Link href="/contact" className="hover:text-rose-600">İletişim</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold text-gray-900">Yasal</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li><Link href="/privacy" className="hover:text-rose-600">Gizlilik Politikası</Link></li>
+                <li><Link href="/terms" className="hover:text-rose-600">Kullanım Şartları</Link></li>
+              </ul>
+            </div>
           </div>
-          <div className="flex items-center gap-4 text-xs">
-            <Link href="/privacy" className="hover:text-gray-700">
-              Gizlilik
-            </Link>
-            <Link href="/terms" className="hover:text-gray-700">
-              Kullanım Şartları
-            </Link>
-            <Link href="/contact" className="hover:text-gray-700">
-              İletişim
-            </Link>
+          <div className="mt-8 border-t border-gray-200 pt-8 text-center text-sm text-gray-600">
+            © {new Date().getFullYear()} Heartnote. Tüm hakları saklıdır.
           </div>
         </div>
       </footer>

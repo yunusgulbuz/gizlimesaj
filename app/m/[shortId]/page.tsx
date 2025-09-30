@@ -212,10 +212,10 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
     <div className="min-h-screen relative overflow-hidden">
       {/* Share Button */}
       <div className="fixed top-4 left-4 z-50">
-        <ShareButton 
+        <ShareButton
           shortId={personalPage.short_id}
           recipientName={personalPage.recipient_name}
-          className="bg-white/10 backdrop-blur-sm shadow-lg"
+          className="bg-gray-900/95 text-white border-gray-700/50 hover:bg-gray-900 shadow-lg"
         />
       </div>
 
@@ -281,8 +281,8 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
 
       {/* Footer - HeartNote Branding */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
-          <p className="text-xs text-white/80 font-medium">
+        <div className="bg-gray-900/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+          <p className="text-xs text-white font-medium">
             ❤️ HeartNote ile yapılmıştır
           </p>
         </div>
