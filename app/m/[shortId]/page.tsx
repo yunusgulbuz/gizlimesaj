@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { Heart, Clock, Calendar, User, Music, Share2, Download } from "lucide-react";
