@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   ArrowRight,
   CheckCircle2,
+  Eye,
 } from "lucide-react";
 
 interface FeaturedTemplate {
@@ -280,75 +281,87 @@ export default async function HomePage() {
                   : null;
 
                 return (
-                  <Link key={template.id} href={`/templates/${template.slug}`}>
+                  <div key={template.id}>
                     <Card className="group relative h-full overflow-hidden rounded-2xl border-0 bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-xl hover:ring-gray-200">
                       {/* Preview Container */}
-                      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-                        <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
-                          <TemplateCardPreview template={previewData} />
-                        </div>
-                        
-                        {/* Badges */}
-                        <div className="absolute left-4 top-4 flex gap-2">
-                          {discount && discount > 0 && (
-                            <Badge className="bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
-                              -{discount}%
-                            </Badge>
-                          )}
-                          {template.totalOrders > 0 && (
-                            <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
-                              Popüler
-                            </Badge>
-                          )}
-                        </div>
+                      <Link href={`/templates/${template.slug}`}>
+                        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                          <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
+                            <TemplateCardPreview template={previewData} />
+                          </div>
 
-                        {/* Overlay Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                      </div>
-
-                      {/* Content */}
-                      <CardContent className="p-5 space-y-3">
-                        {/* Title */}
-                        <h3 className="text-base font-semibold text-gray-900 line-clamp-2 leading-tight group-hover:text-rose-600 transition-colors duration-200">
-                          {template.title}
-                        </h3>
-
-                        {/* Pricing */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-baseline gap-2">
-                            {template.price && (
-                              <>
-                                <span className="text-2xl font-bold text-gray-900">
-                                  ₺{template.price}
-                                </span>
-                                {template.oldPrice && (
-                                  <span className="text-sm text-gray-400 line-through">
-                                    ₺{template.oldPrice}
-                                  </span>
-                                )}
-                              </>
+                          {/* Badges */}
+                          <div className="absolute left-4 top-4 flex gap-2">
+                            {discount && discount > 0 && (
+                              <Badge className="bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                                -{discount}%
+                              </Badge>
+                            )}
+                            {template.totalOrders > 0 && (
+                              <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                                Popüler
+                              </Badge>
                             )}
                           </div>
-                          
-                          {discount && discount > 0 && (
-                            <div className="rounded-full bg-emerald-50 px-3 py-1">
-                              <span className="text-xs font-semibold text-emerald-700">
-                                %{discount} tasarruf
+
+                          {/* Overlay Gradient */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        </div>
+                      </Link>
+
+                      {/* Content */}
+                      <CardContent className="p-4">
+                        {/* Title */}
+                        <Link href={`/templates/${template.slug}`}>
+                          <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-rose-600 transition-colors duration-200 mb-3">
+                            {template.title}
+                          </h3>
+                        </Link>
+
+                        {/* Pricing */}
+                        <div className="flex items-baseline gap-2 mb-4">
+                          {template.price && (
+                            <>
+                              <span className="text-2xl font-black text-gray-900">
+                                {String(template.price).includes('.') ? (
+                                  <>
+                                    ₺{String(template.price).split('.')[0]}
+                                    <span className="text-lg font-bold">.{String(template.price).split('.')[1]}</span>
+                                  </>
+                                ) : (
+                                  `₺${template.price}`
+                                )}
                               </span>
-                            </div>
+                              {template.oldPrice && (
+                                <span className="text-sm text-gray-400 line-through font-medium">
+                                  ₺{template.oldPrice}
+                                </span>
+                              )}
+                            </>
                           )}
                         </div>
 
-                        {/* Action Indicator */}
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-50">
-                          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                            Şablonu İncele
-                          </span>
-                          <ArrowRight className="h-4 w-4 text-gray-400 transition-all duration-200 group-hover:text-rose-500 group-hover:translate-x-1" />
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
+                          <Link
+                            href={`/templates/${template.slug}/preview`}
+                            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Önizleme
+                          </Link>
+                          <div className="h-4 w-px bg-gray-200" />
+                          <Link
+                            href={`/templates/${template.slug}`}
+                            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors group/link"
+                          >
+                            Hediyeyi İncele
+                            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/link:translate-x-0.5" />
+                          </Link>
                         </div>
                       </CardContent>
                     </Card>
-                  </Link>
+                  </div>
                 );
               })}
             </div>
