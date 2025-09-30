@@ -261,15 +261,15 @@ export default async function HomePage() {
               </p>
 
               {/* Quick Steps */}
-              <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-0">
                 {steps.map((step, index) => (
-                  <div key={step.number} className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100 text-sm font-semibold text-rose-700">
+                  <div key={step.number} className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-rose-100 text-xs sm:text-sm font-semibold text-rose-700">
                       {step.number}
                     </div>
-                    <span className="text-sm font-medium text-gray-700">{step.text}</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">{step.text}</span>
                     {index < steps.length - 1 && (
-                      <ArrowRight className="w-4 text-gray-400" />
+                      <ArrowRight className="w-3 sm:w-4 text-gray-400 shrink-0" />
                     )}
                   </div>
                 ))}
