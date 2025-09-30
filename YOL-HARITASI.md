@@ -6,7 +6,7 @@ Bu doküman, gizlimesaj/Heartnote projesinde yapılması gereken işleri modern,
 
 ## Önceliklendirme
 - P0 – Kritik: ~~14~~, ~~15~~, ~~16~~, ~~18~~, ~~21~~, ~~29~~ ✅ **TAMAMLANDI**
-- P1 – Yüksek: ~~1~~, ~~2~~, ~~4~~, ~~9~~, ~~13~~, ~~22~~, ~~26~~, ~~27~~, ~~28~~ ✅ **TAMAMLANDI** | 8, 12, 17, 19, 25
+- P1 – Yüksek: ~~1~~, ~~2~~, ~~4~~, ~~9~~, ~~13~~, ~~22~~, ~~26~~, ~~27~~, ~~28~~, ~~12~~, ~~17~~, ~~19~~, ~~25~~ ✅ **TAMAMLANDI** | 8, 30
 - P2 – Orta: 3, 5, 6, 7, 10, 11, 20, 23, 24
 
 ## Detaylı Görevler
@@ -66,10 +66,10 @@ Bu doküman, gizlimesaj/Heartnote projesinde yapılması gereken işleri modern,
 - İlgili Dosyalar: `app/contact/page.tsx` (yeni)
 - Kabul Kriterleri: Form gönderimi (dummy veya gerçek), doğrulama.
 
-### 12) Preview sayfasındaki stil butonları mobil uyumlu
-- Önerilen Çözüm: Stil anahtarlarını yatay scroll veya `segmented control` yapısıyla responsive hale getir.
-- İlgili Dosyalar: `templates/shared/preview-page.tsx`, `components/ResizableLayout.tsx`, `components/PreviewPane.tsx`
-- Kabul Kriterleri: 320–768px aralığında taşmadan kullanılır; erişilebilirlik (tab/enter).
+### ✅ 12) Preview sayfasındaki stil butonları mobil uyumlu **[TAMAMLANDI]**
+- ✅ **Çözüm Uygulandı**: Preview sayfasında stil butonları yatay scroll ile responsive hale getirildi. Mobilde sadece emoji, masaüstünde emoji + label gösteriliyor.
+- ✅ **Değişiklik Yapılan Dosyalar**: `templates/shared/preview-page.tsx`, `templates/shared/form-page.tsx`
+- ✅ **Kabul Kriterleri**: 320–768px aralığında taşmadan kullanılır; mobil uyumlu tasarım sağlandı.
 
 ### ✅ 13) Detay sayfasında buton "Satın Al" ve başlığın yanına buton **[TAMAMLANDI]**
 - ✅ **Çözüm Uygulandı**: Form butonu metni "Sepete Ekle"den "Satın Al"a değiştirildi. Başlık bölümüne scroll-to-form butonu eklendi (Client Component).
@@ -91,20 +91,20 @@ Bu doküman, gizlimesaj/Heartnote projesinde yapılması gereken işleri modern,
 - ✅ **Değişiklik Yapılan Dosyalar**: `app/payment/success/page.tsx`
 - ✅ **Kabul Kriterleri**: WhatsApp/Twitter/Instagram (yönerge) seçenekleri; link kopyalama geri bildirimi sağlandı.
 
-### 17) Kişisel sayfadaki paylaş butonu ve “heartnote ile yapıldı” görünürlüğü
-- Önerilen Çözüm: Paylaş butonunun kontrastını arkaplana göre ayarlayan mevcut mantık korunmalı; üst/alt sabit konumda metinler beyaz gölgeli.
-- İlgili Dosyalar: `app/m/[shortId]/page.tsx`, `components/share-button.tsx`
-- Kabul Kriterleri: Koyu/açık arkaplanda net görünür; mobilde taşma yok.
+### ✅ 17) Kişisel sayfadaki paylaş butonu ve "heartnote ile yapıldı" görünürlüğü **[TAMAMLANDI]**
+- ✅ **Çözüm Uygulandı**: Paylaş butonu ve "HeartNote ile yapılmıştır" yazısı sabit siyah arkaplan (bg-gray-900/95) ve beyaz metin ile her zaman görünür hale getirildi.
+- ✅ **Değişiklik Yapılan Dosyalar**: `app/m/[shortId]/page.tsx`, `components/share-button.tsx`
+- ✅ **Kabul Kriterleri**: Koyu/açık arkaplanda net görünür; mobilde taşma yok; backdrop-blur ve shadow efektleri eklendi.
 
 ### ✅ 18) Paylaş butonuna Instagram eklenmesi **[TAMAMLANDI]**
 - ✅ **Çözüm Uygulandı**: `components/share-button.tsx` dosyasında Instagram paylaşım seçeneği eklendi. `shareToInstagram` fonksiyonu ve Instagram ikonu entegre edildi.
 - ✅ **Değişiklik Yapılan Dosyalar**: `components/share-button.tsx`
 - ✅ **Kabul Kriterleri**: Instagram için link kopyalama + story/kare görsel export bilgi mesajı sağlandı.
 
-### 19) Detay ekranında tüm şablonlara YouTube linki
-- Önerilen Çözüm: Formlara `musicUrl` alanı ekle; `YouTubePlayer` ile ID çıkarıp oynat.
-- İlgili Dosyalar: `templates/*/form.tsx`, `components/ui/youtube-player.tsx`
-- Kabul Kriterleri: YouTube ve direkt ses URL destekli; mobil kontrol/erişilebilir.
+### ✅ 19) Detay ekranında tüm şablonlara YouTube linki **[TAMAMLANDI]**
+- ✅ **Çözüm Uygulandı**: Tüm şablonlarda `musicUrl` field'ı eklendi. `is-tebrigi` şablonu için `isTebrigiCommonFields` array'ine `musicUrl` eklendi. Form sayfasında YouTube player ile önizleme destekleniyor.
+- ✅ **Değişiklik Yapılan Dosyalar**: `templates/shared/types.ts`, `templates/shared/form-page.tsx`
+- ✅ **Kabul Kriterleri**: YouTube ve direkt ses URL destekli; form sayfasında input + preview gösteriliyor.
 
 ### 20) Tüm şablonlar mobil uyumlu
 - Önerilen Çözüm: Grid ve tipografi ölçekleri; 320–768px test; scroll/overflow problemleri gider.
@@ -131,10 +131,10 @@ Bu doküman, gizlimesaj/Heartnote projesinde yapılması gereken işleri modern,
 - İlgili Dosyalar: `app/contact/page.tsx`
 - Kabul Kriterleri: Yol haritasına eklendi; şimdilik kapsam dışı.
 
-### 25) WP paylaşım küçük resim ve açıklama uygunluğu
-- Önerilen Çözüm: Open Graph/Twitter meta’ları hediye odaklı güncelle; `seo.ts` ile şablon bazlı resim.
-- İlgili Dosyalar: `lib/seo.ts`, `app/templates/[slug]/page.tsx`
-- Kabul Kriterleri: WhatsApp/Twitter/FB önizlemeleri uygun başlık/açıklama/görsel gösterir.
+### ✅ 25) WhatsApp paylaşım küçük resim ve açıklama uygunluğu **[TAMAMLANDI]**
+- ✅ **Çözüm Uygulandı**: Open Graph ve Twitter Card meta'ları hediye odaklı güncellendi. `generatePersonalPageMetadata` ve `generateTemplateMetadata` fonksiyonları image parametresi almaya başladı. Personal page için özel layout oluşturuldu.
+- ✅ **Değişiklik Yapılan Dosyalar**: `lib/seo.ts`, `app/templates/[slug]/page.tsx`, `app/m/[shortId]/layout.tsx` (yeni), `app/layout.tsx`, `next.config.ts`
+- ✅ **Kabul Kriterleri**: WhatsApp/Twitter/FB önizlemeleri uygun başlık/açıklama/görsel gösteriyor; emoji ve hediye odaklı metinler kullanılıyor.
 
 ### ✅ 26) Anasayfa ve templates ekranındaki `&apos;` düzeltmeleri **[TAMAMLANDI]**
 - ✅ **Çözüm Uygulandı**: Tüm `&apos;` HTML entity'leri gerçek apostrof karakterine (`'`) çevrildi.
@@ -156,6 +156,11 @@ Bu doküman, gizlimesaj/Heartnote projesinde yapılması gereken işleri modern,
 - ✅ **Değişiklik Yapılan Dosyalar**: `app/api/payment/fail/route.ts`
 - ✅ **Kabul Kriterleri**: Başarısız işlemde anlamlı mesajlar; doğru sayfaya yönlendirme; kullanıcı ana sayfaya dönebilir sağlandı.
 
+### 30) Uygulama genelinde loading state'lerinin modernizasyonu
+- Önerilen Çözüm: Tüm sayfalarda (`loading.tsx`), formda, veri yüklenirken modern skeleton/spinner ekle. Gradient animasyonlar, pulse efektleri, anlamlı loading mesajları kullan.
+- İlgili Dosyalar: `app/loading.tsx`, `app/templates/loading.tsx`, `components/ui/skeleton.tsx`, tüm form sayfaları
+- Kabul Kriterleri: Tutarlı loading deneyimi; skeleton UI kullanımı; akıcı animasyonlar; en az 300ms loading için gösterim.
+
 ## ✅ Tamamlanan Görevler Özeti
 
 ### P0 - Kritik Görevler ✅ **TAMAMLANDI**
@@ -167,10 +172,10 @@ Bu doküman, gizlimesaj/Heartnote projesinde yapılması gereken işleri modern,
 4. **Gizlilik ve Kullanım Şartları** - Yasal sayfalar oluşturuldu ve footer'a eklendi
 5. **Ödeme Başarısız Ekranı Düzeltmesi** - Route uyumsuzluğu giderildi
 
-### P1 - Yüksek Öncelikli Görevler ✅ **9/14 TAMAMLANDI**
+### P1 - Yüksek Öncelikli Görevler ✅ **13/15 TAMAMLANDI**
 
 **Tamamlanan:**
-1. **Öne Çıkan 3 Şablon** - Anasayfaya dinamik olarak en çok satın alınan/yeni 3 şablon eklendi, modern tasarım
+1. **Öne Çıkan Şablonlar** - Anasayfaya 8 popüler şablon eklendi, e-ticaret tarzı modern tasarım (kare görsel, indirim badge, büyük fiyat)
 2. **Giriş Butonu Renk Düzeltmesi** - Header'daki "Giriş Yap" butonu daha görünür (default variant)
 3. **CTA Metni Değişikliği** - "Hikayeni Yazmaya Başla" → "Giriş Yap"
 4. **Template Kartları Tıklanabilir** - Kartın her yerine tıklanarak detaya gidilebiliyor
@@ -179,27 +184,42 @@ Bu doküman, gizlimesaj/Heartnote projesinde yapılması gereken işleri modern,
 7. **&apos; Düzeltmeleri** - HTML entity'leri temizlendi
 8. **Breadcrumb Kaldırma** - Kayıt sayfasından breadcrumb silindi
 9. **GitHub Kaldırma** - Kayıt sayfasından GitHub login kaldırıldı
+10. **Preview Stil Butonları Mobil** - Yatay scroll, emoji gösterimi
+11. **Paylaş Butonu Görünürlüğü** - Siyah arkaplan/beyaz metin ile her zaman görünür
+12. **YouTube Link Desteği** - Tüm şablonlara musicUrl field'ı eklendi
+13. **WhatsApp Meta Tags** - Open Graph/Twitter Card meta'ları hediye odaklı güncellendi
+
+**Anasayfa İyileştirmeleri:**
+- Modern, sade tasarım (sticky header, gradient hero)
+- E-ticaret benzeri ürün kartları (kare görsel, indirim badge'leri)
+- Gerçek kategoriler (veritabanından çekiliyor, mobil uyumlu)
+- 8 popüler şablon gösterimi (4 sütun grid)
+- "Nasıl Çalışır" bölümü üstte (3 adım, kompakt)
 
 **Kalan:**
-- 8) Templates sayfası modernizasyonu (e-ticaret benzeri)
-- 12) Preview sayfası stil butonları mobil uyumlu
-- 17) Kişisel sayfadaki paylaş butonu görünürlüğü
-- 19) Tüm şablonlara YouTube linki eklenmesi
-- 25) WhatsApp paylaşım küçük resim ve açıklama uygunluğu
+- 8) Templates sayfası modernizasyonu (e-ticaret benzeri) - İsteğe bağlı
+- 30) Uygulama genelinde loading state'lerinin modernizasyonu
 
 ### Değişiklik Yapılan Dosyalar (P0 + P1):
 - `templates/shared/form-page.tsx`
 - `templates/shared/scroll-to-form-button.tsx` (yeni)
+- `templates/shared/preview-page.tsx`
+- `templates/shared/types.ts`
 - `app/payment/[orderId]/payment-form.tsx`
 - `app/payment/success/page.tsx`
-- `app/page.tsx`
+- `app/page.tsx` (tamamen yeniden tasarlandı)
 - `app/templates/page.tsx`
 - `app/register/page.tsx`
+- `app/m/[shortId]/page.tsx`
+- `app/m/[shortId]/layout.tsx` (yeni)
+- `app/layout.tsx`
 - `components/auth/header-auth-button.tsx`
 - `components/share-button.tsx`
 - `app/privacy/page.tsx` (yeni)
 - `app/terms/page.tsx` (yeni)
 - `app/api/payment/fail/route.ts`
+- `lib/seo.ts`
+- `next.config.ts`
 
 ---
 

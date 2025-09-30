@@ -97,9 +97,48 @@ export default function PaymentForm({ order }: PaymentFormProps) {
         )}
 
         {isLoading && (
-          <div className="text-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-purple-600" />
-            <p className="text-gray-600">Ödeme sayfası hazırlanıyor...</p>
+          <div className="text-center py-12">
+            <div className="relative mb-8">
+              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl">
+                <Loader2 className="h-10 w-10 text-white animate-spin" />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full opacity-30 animate-pulse scale-110"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full opacity-20 animate-pulse scale-125 delay-75"></div>
+            </div>
+            
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800 animate-pulse">
+                🔐 Güvenli Ödeme Hazırlanıyor
+              </h3>
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                <div className="flex items-center justify-center gap-3 mb-3">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-rose-500 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-rose-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-rose-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                  <span className="text-blue-700 font-medium">Bağlantı kuruluyor...</span>
+                </div>
+                <div className="w-full bg-blue-100 rounded-full h-2 overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-rose-400 to-purple-600 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4 text-xs text-gray-500">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-rose-400 rounded-full animate-pulse"></div>
+                  <span>SSL Güvenlik</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-rose-400 rounded-full animate-pulse"></div>
+                  <span>3D Secure</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-rose-400 rounded-full animate-pulse"></div>
+                  <span>PCI DSS</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -121,7 +160,7 @@ export default function PaymentForm({ order }: PaymentFormProps) {
                   ✨ Paynkolay güvenli ödeme sistemine bağlanıyor...
                 </p>
                 <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-rose-400 rounded-full animate-pulse"></div>
                   <span>256-bit SSL şifreleme aktif</span>
                 </div>
               </div>

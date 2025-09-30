@@ -13,7 +13,8 @@ import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
 import { 
   ArrowLeft,
   Save,
-  Eye
+  Eye,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -274,9 +275,22 @@ export default function NewTemplatePage() {
           <Button type="button" variant="outline" asChild>
             <Link href="/admin/templates">İptal</Link>
           </Button>
-          <Button type="submit" disabled={isLoading}>
-            <Save className="h-4 w-4 mr-2" />
-            {isLoading ? 'Kaydediliyor...' : 'Şablonu Kaydet'}
+          <Button type="submit" disabled={isLoading} className={`transition-all duration-300 ${
+            isLoading 
+              ? 'animate-pulse bg-gradient-to-r from-rose-400 to-purple-500 shadow-lg shadow-rose-300/50' 
+              : 'hover:shadow-lg hover:shadow-rose-300/30'
+          }`}>
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Kaydediliyor...</span>
+              </div>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Şablonu Kaydet
+              </>
+            )}
           </Button>
         </div>
       </form>

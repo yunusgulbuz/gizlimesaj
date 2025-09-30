@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Heart, ArrowLeft, MessageCircle, Star } from "lucide-react";
+import { Heart, ArrowLeft, MessageCircle, Star, Loader2 } from "lucide-react";
 import TemplateRenderer from "./template-renderer";
 import { getTemplateConfig, getDefaultTextFields, TemplateTextFields } from "./types";
 import { YouTubePlayer, extractVideoId } from "@/components/ui/youtube-player";
@@ -109,7 +109,7 @@ const yilDonumuDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
   eglenceli: ['quizHeadline', 'quizIntro', 'quizButtonLabel', 'quizItems', 'quizHintLabel', 'quizCompletionTitle', 'quizCompletionMessage', 'quizFinalMessage', 'quizReplay']
 };
 
-const isTebrigiCommonFields = ['recipientName', 'mainMessage', 'newPosition', 'companyName'] as const;
+const isTebrigiCommonFields = ['recipientName', 'mainMessage', 'newPosition', 'companyName', 'musicUrl'] as const;
 
 const isTebrigiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
   modern: ['highlightMessage', 'highlightOne', 'highlightTwo', 'ctaLabel', 'ctaUrl', 'secondaryCtaLabel'],
@@ -528,11 +528,24 @@ export default function TemplateFormPage({ template, durations, templatePricing,
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-lg shadow-rose-200"
+              className={`w-full bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-lg shadow-rose-200 transition-all duration-300 ${
+                isSubmitting 
+                  ? 'animate-pulse bg-gradient-to-r from-rose-400 to-purple-500 shadow-lg shadow-rose-300/50' 
+                  : 'hover:from-rose-600 hover:to-purple-700 hover:shadow-xl hover:shadow-rose-300/50'
+              }`}
               size="lg"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'İşleniyor...' : 'Satın Al'}
+              {isSubmitting ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="bg-gradient-to-r from-white to-rose-100 bg-clip-text text-transparent">
+                    İşleniyor...
+                  </span>
+                </div>
+              ) : (
+                'Satın Al'
+              )}
             </Button>
           </form>
         </CardContent>

@@ -187,16 +187,23 @@ export default function LoginForm() {
       {/* Submit Button */}
       <Button
         type="submit"
-        className="w-full h-11 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-medium"
+        className="w-full h-11 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-medium relative overflow-hidden"
         disabled={isLoading}
       >
         {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Giriş Yapılıyor...
-          </>
+          <div className="flex items-center justify-center">
+            <div className="relative">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
+            </div>
+            <span className="animate-pulse">Giriş Yapılıyor...</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+          </div>
         ) : (
-          'Giriş Yap'
+          <span className="flex items-center justify-center">
+            <Lock className="mr-2 h-4 w-4" />
+            Giriş Yap
+          </span>
         )}
       </Button>
     </form>
