@@ -44,17 +44,21 @@ interface TemplateRendererProps {
   creatorName?: string;
   textFields?: TemplateTextFields;
   shortId?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
-export default function TemplateRenderer({ 
-  template, 
-  recipientName, 
-  message, 
+export default function TemplateRenderer({
+  template,
+  recipientName,
+  message,
   designStyle,
   isPreview = false,
   creatorName,
   textFields,
-  shortId
+  shortId,
+  isEditable = false,
+  onTextFieldChange
 }: TemplateRendererProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
@@ -111,13 +115,15 @@ export default function TemplateRenderer({
           textFields={textFields}
         />;
       case 'evlilik-teklifi-elegant':
-        return <EvlilikTeklifiTemplate 
-          recipientName={recipientName} 
-          message={message} 
+        return <EvlilikTeklifiTemplate
+          recipientName={recipientName}
+          message={message}
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist' | 'eglenceli'}
           creatorName={creatorName}
           textFields={textFields}
           shortId={shortId}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
         />;
       case 'dogum-gunu':
         return <DogumGunuStandardTemplate 

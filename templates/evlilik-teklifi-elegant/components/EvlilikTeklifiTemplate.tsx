@@ -5,13 +5,24 @@ import { Button } from '@/components/ui/button';
 import type { TemplateTextFields } from '../../shared/types';
 import { createAnalyticsTracker } from '@/lib/analytics';
 
-function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorName, textFields = {}, shortId }: {
+function EvlilikTeklifiTemplate({
+  recipientName,
+  message,
+  designStyle,
+  creatorName,
+  textFields = {},
+  shortId,
+  isEditable = false,
+  onTextFieldChange
+}: {
   recipientName: string;
   message: string;
   designStyle: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
   creatorName?: string;
   textFields?: TemplateTextFields;
   shortId?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }) {
   const [showQuestion, setShowQuestion] = useState(true);
   const [noClickCount, setNoClickCount] = useState(0);
@@ -20,6 +31,12 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
   const [animationElements, setAnimationElements] = useState<Array<{id: number, left: number, top: number, delay: number}>>([]);
   const [funAnimationElements, setFunAnimationElements] = useState<Array<{id: number, left: number, top: number, delay: number, emoji: string}>>([]);
   const [isClient, setIsClient] = useState(false);
+
+  // Local editable state
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMainMessage, setLocalMainMessage] = useState('');
+  const [localSpecialMessage, setLocalSpecialMessage] = useState('');
+  const [localFooterMessage, setLocalFooterMessage] = useState('');
 
   // Generate animation elements only on client-side to prevent hydration mismatch
   useEffect(() => {
@@ -60,10 +77,33 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
     });
   };
 
-  // Get text values from textFields or use defaults
-  const mainMessage = textFields?.mainMessage || message;
-  const footerMessage = textFields?.footerMessage || 'Seni sonsuza kadar seviyorum! 💍💕';
-  const specialMessage = textFields?.specialMessage || 'Sen benim hayatımın aşkısın, ruhuma dokunduğun ilk günden beri seni seviyorum.';
+  // Initialize local state with text fields
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalMainMessage(textFields?.mainMessage || message);
+    setLocalFooterMessage(textFields?.footerMessage || 'Seni sonsuza kadar seviyorum! 💍💕');
+    setLocalSpecialMessage(textFields?.specialMessage || 'Sen benim hayatımın aşkısın, ruhuma dokunduğun ilk günden beri seni seviyorum.');
+  }, [recipientName, message, textFields]);
+
+  // Handle content change
+  const handleContentChange = (key: string, value: string) => {
+    // Update local state immediately
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'mainMessage') setLocalMainMessage(value);
+    else if (key === 'specialMessage') setLocalSpecialMessage(value);
+    else if (key === 'footerMessage') setLocalFooterMessage(value);
+
+    // Notify parent component
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  // Get text values - use local state if editable, otherwise use props
+  const displayRecipientName = isEditable ? localRecipientName : recipientName;
+  const displayMainMessage = isEditable ? localMainMessage : (textFields?.mainMessage || message);
+  const displayFooterMessage = isEditable ? localFooterMessage : (textFields?.footerMessage || 'Seni sonsuza kadar seviyorum! 💍💕');
+  const displaySpecialMessage = isEditable ? localSpecialMessage : (textFields?.specialMessage || 'Sen benim hayatımın aşkısın, ruhuma dokunduğun ilk günden beri seni seviyorum.');
 
   const handleYesClick = () => {
     if (designStyle === 'eglenceli') {
@@ -129,8 +169,13 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
 
             {/* Ana Başlık */}
             <div className="mb-12">
-              <h1 className="text-5xl md:text-7xl font-serif text-yellow-100 mb-6 tracking-wide">
-                {recipientName ? `${recipientName},` : 'Aşkım,'}
+              <h1
+                className={`text-5xl md:text-7xl font-serif text-yellow-100 mb-6 tracking-wide ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+              >
+                {displayRecipientName ? `${displayRecipientName},` : 'Aşkım,'}
               </h1>
               <h2 className="text-4xl md:text-6xl font-light text-white mb-8 leading-tight">
                 Benimle Evlenir misin?
@@ -146,14 +191,24 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
 
             {/* Mesaj Kutusu */}
             <div className="bg-white/10 backdrop-blur-sm border border-yellow-400/30 rounded-lg p-8 mb-12 max-w-2xl mx-auto">
-              <p className="text-xl text-yellow-50 leading-relaxed font-light">
-                {mainMessage}
+              <p
+                className={`text-xl text-yellow-50 leading-relaxed font-light ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {displayMainMessage}
               </p>
-              
-              {specialMessage && (
+
+              {displaySpecialMessage && (
                 <div className="mt-6 pt-6 border-t border-yellow-400/20">
-                  <p className="text-lg text-yellow-100 italic">
-                    "{specialMessage}"
+                  <p
+                    className={`text-lg text-yellow-100 italic ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                    contentEditable={isEditable}
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleContentChange('specialMessage', e.currentTarget.textContent?.replace(/^"|"$/g, '') || '')}
+                  >
+                    "{displaySpecialMessage}"
                   </p>
                 </div>
               )}
@@ -161,8 +216,13 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
 
             {/* Footer Message */}
             <div className="mb-8">
-              <p className="text-lg text-yellow-200 font-medium">
-                {footerMessage}
+              <p
+                className={`text-lg text-yellow-200 font-medium ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors inline-block' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+              >
+                {displayFooterMessage}
               </p>
             </div>
 
@@ -219,24 +279,39 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
                 </div>
               </div>
 
-              <h1 className="text-4xl md:text-6xl font-serif text-rose-800 mb-6 italic">
-                {recipientName ? `${recipientName},` : 'Aşkım,'}
+              <h1
+                className={`text-4xl md:text-6xl font-serif text-rose-800 mb-6 italic ${isEditable ? 'hover:bg-rose-50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+              >
+                {displayRecipientName ? `${displayRecipientName},` : 'Aşkım,'}
               </h1>
-              
+
               <h2 className="text-3xl md:text-5xl font-serif text-yellow-700 mb-8 leading-relaxed">
                 Benimle Evlenir misin?
               </h2>
 
               {/* Mesaj */}
               <div className="bg-rose-50 border-l-4 border-rose-300 p-6 rounded-r-lg mb-8 max-w-2xl mx-auto">
-                <p className="text-lg text-rose-800 leading-relaxed font-serif italic">
-                  {mainMessage}
+                <p
+                  className={`text-lg text-rose-800 leading-relaxed font-serif italic ${isEditable ? 'hover:bg-rose-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+                >
+                  {displayMainMessage}
                 </p>
-                
-                {specialMessage && (
+
+                {displaySpecialMessage && (
                   <div className="mt-4 pt-4 border-t border-rose-200">
-                    <p className="text-base text-rose-700 italic">
-                      "{specialMessage}"
+                    <p
+                      className={`text-base text-rose-700 italic ${isEditable ? 'hover:bg-rose-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                      contentEditable={isEditable}
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleContentChange('specialMessage', e.currentTarget.textContent?.replace(/^"|"$/g, '') || '')}
+                    >
+                      "{displaySpecialMessage}"
                     </p>
                   </div>
                 )}
@@ -244,8 +319,13 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
 
               {/* Footer Message */}
               <div className="mb-6">
-                <p className="text-lg text-rose-600 font-serif">
-                  {footerMessage}
+                <p
+                  className={`text-lg text-rose-600 font-serif ${isEditable ? 'hover:bg-rose-50 cursor-text rounded-lg p-2 transition-colors inline-block' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+                >
+                  {displayFooterMessage}
                 </p>
               </div>
 
@@ -279,12 +359,17 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
           {/* Ana İçerik */}
           <div className="space-y-16">
             <div className="space-y-8">
-              <h1 className="text-3xl md:text-4xl font-light text-gray-900 tracking-wide">
-                {recipientName ? `${recipientName}` : 'Aşkım'}
+              <h1
+                className={`text-3xl md:text-4xl font-light text-gray-900 tracking-wide ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+              >
+                {displayRecipientName ? `${displayRecipientName}` : 'Aşkım'}
               </h1>
-              
+
               <div className="w-24 h-px bg-pink-400 mx-auto"></div>
-              
+
               <h2 className="text-5xl md:text-7xl font-thin text-gray-800 leading-tight">
                 Benimle<br />Evlenir misin?
               </h2>
@@ -292,14 +377,24 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
 
             {/* Mesaj */}
             <div className="max-w-xl mx-auto">
-              <p className="text-lg text-gray-600 leading-relaxed font-light">
-                {mainMessage}
+              <p
+                className={`text-lg text-gray-600 leading-relaxed font-light ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {displayMainMessage}
               </p>
-              
-              {specialMessage && (
+
+              {displaySpecialMessage && (
                 <div className="mt-8 pt-8 border-t border-gray-200">
-                  <p className="text-base text-gray-500 italic">
-                    "{specialMessage}"
+                  <p
+                    className={`text-base text-gray-500 italic ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                    contentEditable={isEditable}
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleContentChange('specialMessage', e.currentTarget.textContent?.replace(/^"|"$/g, '') || '')}
+                  >
+                    "{displaySpecialMessage}"
                   </p>
                 </div>
               )}
@@ -307,8 +402,13 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
 
             {/* Footer Message */}
             <div className="max-w-lg mx-auto">
-              <p className="text-base text-gray-500 font-light">
-                {footerMessage}
+              <p
+                className={`text-base text-gray-500 font-light ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors inline-block' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+              >
+                {displayFooterMessage}
               </p>
             </div>
 
@@ -409,28 +509,48 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
             {/* Ana Soru */}
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 mb-12 shadow-2xl">
               <div className="text-6xl mb-6 animate-bounce">💍</div>
-              <h1 className="text-3xl md:text-5xl font-bold text-gray-800 mb-6">
-                {recipientName ? `${recipientName},` : 'Aşkım,'}
+              <h1
+                className={`text-3xl md:text-5xl font-bold text-gray-800 mb-6 ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+              >
+                {displayRecipientName ? `${displayRecipientName},` : 'Aşkım,'}
               </h1>
               <h2 className="text-2xl md:text-4xl font-bold text-pink-600 mb-6">
                 Benimle Evlenir misin? 🥺
               </h2>
-              <p className="text-lg text-gray-600 mb-8">
-                {mainMessage}
+              <p
+                className={`text-lg text-gray-600 mb-8 ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {displayMainMessage}
               </p>
-              
-              {specialMessage && (
+
+              {displaySpecialMessage && (
                 <div className="mt-4 p-4 bg-pink-50 rounded-lg border-l-4 border-pink-300">
-                  <p className="text-base text-gray-700 italic">
-                    "{specialMessage}"
+                  <p
+                    className={`text-base text-gray-700 italic ${isEditable ? 'hover:bg-pink-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                    contentEditable={isEditable}
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleContentChange('specialMessage', e.currentTarget.textContent?.replace(/^"|"$/g, '') || '')}
+                  >
+                    "{displaySpecialMessage}"
                   </p>
                 </div>
               )}
-              
-              {footerMessage && (
+
+              {displayFooterMessage && (
                 <div className="mt-4">
-                  <p className="text-sm text-pink-600 font-medium">
-                    {footerMessage}
+                  <p
+                    className={`text-sm text-pink-600 font-medium ${isEditable ? 'hover:bg-pink-50 cursor-text rounded-lg p-2 transition-colors inline-block' : ''}`}
+                    contentEditable={isEditable}
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+                  >
+                    {displayFooterMessage}
                   </p>
                 </div>
               )}

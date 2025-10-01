@@ -59,7 +59,27 @@ export default async function TemplatePreviewPage({ params }: { params: Promise<
     notFound();
   }
 
+  // Get durations and pricing
+  const supabase = await createServerSupabaseClient();
+
+  const { data: durations } = await supabase
+    .from('durations')
+    .select('*')
+    .order('days', { ascending: true });
+
+  const { data: templatePricing } = await supabase
+    .from('template_pricing')
+    .select('*')
+    .eq('template_id', template.id)
+    .eq('is_active', true);
+
   const PreviewComponent = templateEntry.preview;
 
-  return <PreviewComponent template={template} />;
+  return (
+    <PreviewComponent
+      template={template}
+      durations={durations || []}
+      templatePricing={templatePricing || []}
+    />
+  );
 }

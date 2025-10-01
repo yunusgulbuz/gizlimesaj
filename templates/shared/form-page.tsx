@@ -131,7 +131,6 @@ export default function TemplateFormPage({ template, durations, templatePricing,
   const [selectedDesignStyle, setSelectedDesignStyle] = useState<keyof typeof designStyles>('modern');
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [creatorName, setCreatorName] = useState(isPreview ? 'Örnek Oluşturan' : '');
-  const [email, setEmail] = useState('');
   const [specialDate, setSpecialDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { width: persistedPreviewWidth, commitWidth: commitPreviewWidth } = usePreviewWidth();
@@ -252,8 +251,9 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       return;
     }
     
-    if (!email) {
-      alert('Lütfen e-posta adresinizi girin');
+    // Check if user is logged in
+    if (!sessionUser) {
+      alert('Lütfen önce giriş yapın');
       return;
     }
     
@@ -283,7 +283,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
         recipient_name: textFields.recipientName || '',
         sender_name: creatorName,
         message: textFields.mainMessage || '',
-        buyer_email: email,
+        buyer_email: sessionUser.email || '',
         special_date: specialDate,
         expires_in_hours: selectedDurationData ? 24 * selectedDurationData.days : 24,
         duration_id: selectedDurationData ? selectedDurationData.id : parseInt(selectedDuration),
@@ -489,19 +489,6 @@ export default function TemplateFormPage({ template, durations, templatePricing,
               <p className="text-xs text-gray-500">Yıldönümü, doğum günü gibi özel tarihler</p>
             </div>
 
-            {/* Email for Link */}
-            <div className="space-y-2">
-              <Label htmlFor="email">E-posta Adresiniz *</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="ornek@email.com" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required 
-              />
-              <p className="text-xs text-gray-500">Mesaj bağlantısı bu adrese gönderilecek</p>
-            </div>
 
             {/* Price Summary */}
             <div className="space-y-2 rounded-lg bg-gray-50 p-4">
@@ -672,13 +659,26 @@ export default function TemplateFormPage({ template, durations, templatePricing,
             </div>
           </section>
 
-          <ResizableLayout
-            form={formSection}
-            preview={previewContent}
-            previewWidth={persistedPreviewWidth}
-            commitPreviewWidth={commitPreviewWidth}
-            previewUrl={previewUrl}
-          />
+          {/* Preview yönlendirme butonu */}
+          <div className="mt-6 text-center rounded-3xl border border-white/50 bg-white/80 p-8 shadow-md backdrop-blur">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              İnteraktif Düzenleme
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Tasarım üzerinde direk düzenleme yapabilmek için önizleme sayfasına gidin
+            </p>
+            <Button
+              asChild
+              size="lg"
+              className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 shadow-lg"
+            >
+              <Link href={previewUrl}>
+                Önizleme Sayfasına Git
+              </Link>
+            </Button>
+          </div>
+
+          {formSection}
 
           {/* Yorum & Puanlama */}
           <section className="mt-6">
