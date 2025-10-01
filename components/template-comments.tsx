@@ -38,6 +38,7 @@ interface TemplateCommentsProps {
   onRatingSummaryChange?: (stats: { averageRating: number; totalRatings: number }) => void;
   onUserRatingChange?: (rating: number | null) => void;
   onCountChange?: (count: number) => void;
+  hideHeader?: boolean;
 }
 
 export function TemplateComments({
@@ -48,6 +49,7 @@ export function TemplateComments({
   onRatingSummaryChange,
   onUserRatingChange,
   onCountChange,
+  hideHeader = false,
 }: TemplateCommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
@@ -459,50 +461,8 @@ export function TemplateComments({
 
   const totalPagesDisplay = pagination.totalPages || (pagination.total > 0 ? Math.ceil(pagination.total / pagination.limit) : 0);
 
-  return (
-    <Card className="w-full">
-      <CardHeader className="space-y-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-1">
-            <CardTitle className="flex items-center gap-2 text-lg text-gray-900">
-              <MessageCircle className="w-5 h-5 text-rose-500" />
-              Yorumlar & Değerlendirmeler ({pagination.total})
-            </CardTitle>
-            <p className="text-sm text-gray-500">
-              Heartnote şablonunu deneyimleyen kullanıcıların görüşlerini inceleyin.
-            </p>
-          </div>
-          <div className="flex flex-col items-start gap-2 text-sm text-gray-600 md:items-end">
-            <div className="flex items-center gap-3">
-              <div className="flex flex-col items-start gap-1 md:items-end">
-                <div className="flex items-baseline gap-2 text-2xl font-semibold text-gray-900">
-                  <span>{averageRatingState ? averageRatingState.toFixed(1) : '—'}</span>
-                  <span className="text-sm font-normal text-gray-400">/ 5</span>
-                </div>
-                <StarRating rating={averageRatingState} readonly size="md" />
-              </div>
-              <div className="text-xs text-gray-500">
-                <div><span className="font-semibold text-gray-800">{totalRatingsState}</span> değerlendirme</div>
-                <div><span className="font-semibold text-gray-800">{pagination.total}</span> yorum</div>
-              </div>
-            </div>
-          </div>
-        </div>
-       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">Puanınız</span>
-              <div className="flex items-center gap-3">
-                <StarRating rating={pendingRating} onRatingChange={handleInlineRatingChange} size="lg" />
-                {savedRating > 0 && (
-                  <span className="text-xs text-gray-500">
-                    Son kaydedilen puanınız: <span className="font-medium text-gray-800">{savedRating}</span>
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
+  const commentsContent = (
+    <div className="space-y-6">
         <div className="space-y-3">
           {user ? (
             <>
@@ -677,6 +637,58 @@ export function TemplateComments({
             </div>
           </div>
         )}
+    </div>
+  );
+
+  if (hideHeader) {
+    return commentsContent;
+  }
+
+  return (
+    <Card className="w-full">
+      <CardHeader className="space-y-4">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
+            <CardTitle className="flex items-center gap-2 text-lg text-gray-900">
+              <MessageCircle className="w-5 h-5 text-rose-500" />
+              Yorumlar & Değerlendirmeler ({pagination.total})
+            </CardTitle>
+            <p className="text-sm text-gray-500">
+              Heartnote şablonunu deneyimleyen kullanıcıların görüşlerini inceleyin.
+            </p>
+          </div>
+          <div className="flex flex-col items-start gap-2 text-sm text-gray-600 md:items-end">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col items-start gap-1 md:items-end">
+                <div className="flex items-baseline gap-2 text-2xl font-semibold text-gray-900">
+                  <span>{averageRatingState ? averageRatingState.toFixed(1) : '—'}</span>
+                  <span className="text-sm font-normal text-gray-400">/ 5</span>
+                </div>
+                <StarRating rating={averageRatingState} readonly size="md" />
+              </div>
+              <div className="text-xs text-gray-500">
+                <div><span className="font-semibold text-gray-800">{totalRatingsState}</span> değerlendirme</div>
+                <div><span className="font-semibold text-gray-800">{pagination.total}</span> yorum</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">Puanınız</span>
+            <div className="flex items-center gap-3">
+              <StarRating rating={pendingRating} onRatingChange={handleInlineRatingChange} size="lg" />
+              {savedRating > 0 && (
+                <span className="text-xs text-gray-500">
+                  Son kaydedilen puanınız: <span className="font-medium text-gray-800">{savedRating}</span>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {commentsContent}
       </CardContent>
     </Card>
   );

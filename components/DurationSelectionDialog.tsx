@@ -47,11 +47,11 @@ export function DurationSelectionDialog({
     return pricing ? pricing.price_try : '0';
   };
 
-  const handleSelect = () => {
-    if (selectedDuration) {
-      const price = getPriceForDuration(selectedDuration);
-      onSelect(selectedDuration, price);
-    }
+  const handleDurationClick = (durationId: number) => {
+    setSelectedDuration(durationId);
+    const price = getPriceForDuration(durationId);
+    // Direkt ödeme işlemini başlat
+    onSelect(durationId, price);
   };
 
   return (
@@ -72,8 +72,8 @@ export function DurationSelectionDialog({
             return (
               <button
                 key={duration.id}
-                onClick={() => setSelectedDuration(duration.id)}
-                className={`w-full flex items-center justify-between p-4 rounded-lg border-2 transition-all hover:border-pink-300 ${
+                onClick={() => handleDurationClick(duration.id)}
+                className={`w-full flex items-center justify-between p-4 rounded-lg border-2 transition-all hover:border-pink-400 hover:shadow-md ${
                   isSelected
                     ? 'border-pink-500 bg-pink-50'
                     : 'border-gray-200 hover:bg-gray-50'
@@ -81,7 +81,7 @@ export function DurationSelectionDialog({
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                       isSelected
                         ? 'border-pink-500 bg-pink-500'
                         : 'border-gray-300'
@@ -89,9 +89,14 @@ export function DurationSelectionDialog({
                   >
                     {isSelected && <Check className="w-3 h-3 text-white" />}
                   </div>
-                  <span className="font-medium text-gray-900">
-                    {duration.label}
-                  </span>
+                  <div className="text-left">
+                    <span className="font-medium text-gray-900 block">
+                      {duration.label}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      Mesajınız {duration.days} gün aktif kalacak
+                    </span>
+                  </div>
                 </div>
                 <span className="text-lg font-semibold text-green-600">
                   ₺{price}
@@ -101,20 +106,13 @@ export function DurationSelectionDialog({
           })}
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 border-t pt-4">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             className="flex-1"
           >
             İptal
-          </Button>
-          <Button
-            onClick={handleSelect}
-            disabled={!selectedDuration}
-            className="flex-1 bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700"
-          >
-            Devam Et
           </Button>
         </div>
       </DialogContent>
