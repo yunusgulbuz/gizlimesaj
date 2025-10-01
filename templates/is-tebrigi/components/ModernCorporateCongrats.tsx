@@ -97,7 +97,7 @@ export default function ModernCorporateCongrats({
             <div className="mb-8 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-blue-500/30">
               <span className="text-4xl font-semibold">{name.charAt(0)}</span>
             </div>
-            <h2 className="text-lg font-medium uppercase tracking-[0.3em] text-cyan-300">Yeni Başlangıç</h2>
+            <h2 className="text-lg font-medium uppercase tracking-[0.3em] text-cyan-300" >Yeni Başlangıç</h2>
             <p className="mt-6 text-2xl font-semibold">{position}</p>
             <p className="mt-2 text-sm uppercase tracking-[0.25em] text-slate-300">{company}</p>
             <div className="mt-10 flex items-center gap-x-8 text-sm text-slate-300">
