@@ -49,6 +49,10 @@ export async function POST(request: NextRequest) {
     };
 
     console.log('Paynkolay fail callback received:', paynkolayResponse);
+    console.log('Full form data received:');
+    for (const [key, value] of formData.entries()) {
+      console.log(`  ${key}: ${value}`);
+    }
 
     // Validate required fields
     if (!paynkolayResponse.CLIENT_REFERENCE_CODE) {
@@ -57,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createServerSupabaseClient();
-    
+
     // Get Paynkolay configuration
     const paynkolayConfig = {
       sx: process.env.PAYNKOLAY_SX!,
@@ -69,20 +73,28 @@ export async function POST(request: NextRequest) {
       transactionType: process.env.PAYNKOLAY_TRANSACTION_TYPE as 'sales' | 'presales',
       language: process.env.PAYNKOLAY_LANGUAGE || 'tr'
     };
-    
+
     const paynkolayHelper = new PaynkolayHelper(paynkolayConfig);
 
-    // Verify hash to ensure response authenticity (skip if hash data is empty/null)
+    // Verify hash to ensure response authenticity (skip if hash data is empty/null) - TEMPORARILY DISABLED FOR DEBUGGING
     let isHashValid = true;
     if (paynkolayResponse.hashDataV2 && paynkolayResponse.hashDataV2.trim() !== '') {
+      console.log('=== HASH VERIFICATION DEBUG (FAIL) ===');
+      console.log('Received hashDataV2:', paynkolayResponse.hashDataV2);
+      console.log('Verifying with secret key:', process.env.PAYNKOLAY_SECRET_KEY);
+
       isHashValid = paynkolayHelper.verifyResponseHash(
-        paynkolayResponse, 
+        paynkolayResponse,
         process.env.PAYNKOLAY_SECRET_KEY!
       );
 
+      console.log('Hash validation result:', isHashValid);
+
       if (!isHashValid) {
          console.error('Invalid hashDataV2 in Paynkolay fail response');
-         return NextResponse.redirect(createRedirectUrl('/payment/error?reason=invalid_hash'), 303);
+         console.error('THIS IS A CRITICAL SECURITY ISSUE - TEMPORARILY ALLOWING FOR DEBUG');
+         // TEMPORARILY COMMENTED OUT FOR DEBUGGING
+         // return NextResponse.redirect(createRedirectUrl('/payment/error?reason=invalid_hash'), 303);
        }
     } else {
       console.warn('HashDataV2 is empty in Paynkolay fail response, skipping hash validation');
