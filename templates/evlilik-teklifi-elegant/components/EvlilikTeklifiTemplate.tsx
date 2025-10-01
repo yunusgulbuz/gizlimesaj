@@ -129,10 +129,10 @@ function EvlilikTeklifiTemplate({ recipientName, message, designStyle, creatorNa
 
             {/* Ana Başlık */}
             <div className="mb-12">
-              <h1 contentEditable="true" className="text-5xl md:text-7xl font-serif text-yellow-100 mb-6 tracking-wide">
+              <h1 className="text-5xl md:text-7xl font-serif text-yellow-100 mb-6 tracking-wide">
                 {recipientName ? `${recipientName},` : 'Aşkım,'}
               </h1>
-              <h2 contentEditable="true" className="text-4xl md:text-6xl font-light text-white mb-8 leading-tight">
+              <h2 className="text-4xl md:text-6xl font-light text-white mb-8 leading-tight">
                 Benimle Evlenir misin?
               </h2>
               
