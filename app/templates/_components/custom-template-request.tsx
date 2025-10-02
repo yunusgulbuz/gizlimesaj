@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 interface RequestFormState {
   name: string;
   email: string;
+  phone: string;
   templateType: string;
   message: string;
 }
@@ -27,6 +28,7 @@ interface RequestFormState {
 const initialFormState: RequestFormState = {
   name: '',
   email: '',
+  phone: '',
   templateType: '',
   message: '',
 };
@@ -37,7 +39,7 @@ export default function CustomTemplateRequest() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const isDisabled = useMemo(() => {
-    return !formState.name || !formState.email || !formState.templateType || !formState.message || formState.message.length < 20;
+    return !formState.name || !formState.email || !formState.phone || !formState.templateType || !formState.message || formState.message.length < 20;
   }, [formState]);
 
   const handleChange = (field: keyof RequestFormState) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -59,6 +61,7 @@ export default function CustomTemplateRequest() {
         .insert({
           name: formState.name,
           email: formState.email,
+          phone: formState.phone,
           preferred_style: formState.templateType,
           message: formState.message,
         });
@@ -176,6 +179,17 @@ export default function CustomTemplateRequest() {
                       value={formState.email}
                       onChange={handleChange('email')}
                       placeholder="ornek@firma.com"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="custom-phone">Telefon *</Label>
+                    <Input
+                      id="custom-phone"
+                      type="tel"
+                      value={formState.phone}
+                      onChange={handleChange('phone')}
+                      placeholder="05xx xxx xx xx"
                       required
                     />
                   </div>

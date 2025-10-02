@@ -93,6 +93,7 @@ export function YouTubePlayer({
   const [volume, setVolume] = useState(50);
   const [player, setPlayer] = useState<YouTubePlayerInstance | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
   const playerRef = useRef<HTMLDivElement>(null);
 
   const initializePlayer = useCallback(() => {
@@ -181,6 +182,33 @@ export function YouTubePlayer({
       }
     };
   }, [videoId, initializePlayer, player]);
+
+  // Mobil autoplay desteği için kullanıcı etkileşimini dinle
+  useEffect(() => {
+    if (!autoPlay || !player || !isReady || userInteracted) return;
+
+    const handleUserInteraction = () => {
+      if (!isPlaying && player) {
+        try {
+          player.playVideo();
+          setUserInteracted(true);
+        } catch (error) {
+          console.error('Error playing video on user interaction:', error);
+        }
+      }
+    };
+
+    // İlk touch/click/scroll'da oynatmayı başlat
+    window.addEventListener('touchstart', handleUserInteraction, { once: true });
+    window.addEventListener('click', handleUserInteraction, { once: true });
+    window.addEventListener('scroll', handleUserInteraction, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('scroll', handleUserInteraction);
+    };
+  }, [autoPlay, player, isReady, isPlaying, userInteracted]);
 
   const togglePlay = () => {
     if (!player || !isReady) return;

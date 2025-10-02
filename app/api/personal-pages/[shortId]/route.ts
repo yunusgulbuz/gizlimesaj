@@ -109,7 +109,10 @@ export async function GET(
       template_preview_url: template?.preview_url || null,
       template_bg_audio_url: order?.bg_audio_url || personalPage.bg_audio_url || template?.bg_audio_url || null,
       design_style: order?.design_style || personalPage.design_style || pickDesignStyle(templateSlug),
-      text_fields: order?.text_fields || personalPage.text_fields || {},
+      text_fields: {
+        ...personalPage.text_fields,
+        ...order?.text_fields
+      },
       expires_at: personalPage.expires_at,
       special_date: personalPage.special_date,
       is_active: personalPage.is_active

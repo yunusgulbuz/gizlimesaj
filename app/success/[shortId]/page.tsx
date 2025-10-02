@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle, ExternalLink, Mail, Clock } from 'lucide-react';
+import { CheckCircle, ExternalLink, Clock, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { SocialShare } from '@/components/ui/social-share';
 
 interface PersonalPageData {
@@ -28,6 +28,7 @@ export default function SuccessPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [copied, setCopied] = useState(false);
 
   // Get personal page URL safely (only on client side)
   const [personalPageUrl, setPersonalPageUrl] = useState<string>('');
@@ -77,6 +78,16 @@ export default function SuccessPage() {
     }
   }, [shortId]);
 
+  const handleCopyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(personalPageUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy URL:', err);
+    }
+  };
+
   const handleShare = (platform: string) => {
     // Track sharing analytics
     console.log(`Shared via ${platform}`);
@@ -85,8 +96,8 @@ export default function SuccessPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="text-center pt-6">
+        <Card className="max-w-md mx-auto shadow-lg">
+          <CardContent className="text-center pt-8 pb-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
               Gizli mesajınız hazırlanıyor...
@@ -112,17 +123,15 @@ export default function SuccessPage() {
   if (error || !pageData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-purple-50 flex items-center justify-center p-4">
-        <Card className="max-w-md mx-auto">
-          <CardHeader className="text-center">
+        <Card className="max-w-md mx-auto shadow-lg">
+          <CardContent className="text-center pt-8 pb-8">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <ExternalLink className="w-8 h-8 text-red-600" />
             </div>
-            <CardTitle className="text-red-600">Sayfa Bulunamadı</CardTitle>
-            <CardDescription>
+            <h3 className="text-xl font-semibold text-red-600 mb-2">Sayfa Bulunamadı</h3>
+            <p className="text-gray-600 mb-6">
               {error || 'Aradığınız sayfa bulunamadı veya süresi dolmuş olabilir.'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
+            </p>
             <Link href="/">
               <Button>Ana Sayfaya Dön</Button>
             </Link>
@@ -137,73 +146,84 @@ export default function SuccessPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4">
-      <div className="max-w-2xl mx-auto pt-8">
+      <div className="max-w-lg mx-auto pt-12">
         {/* Success Header */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
             <CheckCircle className="w-10 h-10 text-green-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Ödeme Başarılı! 🎉
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            Mesajınız Hazır! 🎉
           </h1>
           <p className="text-lg text-gray-600">
-            Gizli mesajınız hazır ve paylaşıma açık
+            Artık paylaşabilirsiniz
           </p>
         </div>
 
-        {/* Page Details */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="w-5 h-5 text-purple-600" />
-              Mesaj Detayları
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-medium text-gray-500">Şablon:</span>
-                <p className="font-semibold">{pageData.template_title}</p>
+        {/* Main Info Card */}
+        <Card className="mb-6 shadow-lg border-0">
+          <CardContent className="pt-6 pb-6">
+            <div className="space-y-4">
+              {/* Sender */}
+              <div className="flex justify-between items-center py-2">
+                <span className="text-gray-500 font-medium">Gönderen</span>
+                <span className="font-semibold text-gray-900">{pageData.sender_name}</span>
               </div>
-              <div>
-                <span className="font-medium text-gray-500">Alıcı:</span>
-                <p className="font-semibold">{pageData.recipient_name}</p>
-              </div>
-              <div>
-                <span className="font-medium text-gray-500">Gönderen:</span>
-                <p className="font-semibold">{pageData.sender_name}</p>
-              </div>
-              <div>
-                <span className="font-medium text-gray-500">Süre:</span>
-                <p className="font-semibold flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
+              
+              {/* Duration */}
+              <div className="flex justify-between items-center py-2 border-t border-gray-100">
+                <span className="text-gray-500 font-medium">Süre</span>
+                <span className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-purple-600" />
                   {daysLeft > 0 ? `${daysLeft} gün kaldı` : 'Süresi dolmuş'}
-                </p>
+                </span>
+              </div>
+              
+              {/* URL */}
+              <div className="border-t border-gray-100 pt-4">
+                <span className="text-gray-500 font-medium block mb-3">Mesaj Linki</span>
+                <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm text-gray-700 flex-1 truncate">{personalPageUrl}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyUrl}
+                    className="shrink-0"
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Share Section */}
-        <SocialShare
-          url={personalPageUrl}
-          title={`${pageData.sender_name} sana özel bir mesaj gönderdi!`}
-          description={`${pageData.recipient_name} için hazırlanan özel mesajı görüntüle`}
-          recipientName={pageData.recipient_name}
-          onShare={handleShare}
-        />
+        <div className="mb-6">
+          <SocialShare
+            url={personalPageUrl}
+            title={`${pageData.sender_name} sana özel bir mesaj gönderdi!`}
+            description={`${pageData.recipient_name} için hazırlanan özel mesajı görüntüle`}
+            recipientName={pageData.recipient_name}
+            onShare={handleShare}
+          />
+        </div>
 
         {/* Preview Button */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <p className="text-gray-600">
-                Mesajınızın nasıl göründüğünü merak ediyor musunuz?
-              </p>
+        <Card className="shadow-lg border-0">
+          <CardContent className="pt-6 pb-6">
+            <div className="text-center">
               <Link href={`/m/${shortId}`}>
-                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg"
+                >
                   <ExternalLink className="w-5 h-5 mr-2" />
-                  Mesajı Önizle
+                  Mesajı Görüntüle
                 </Button>
               </Link>
             </div>
@@ -212,10 +232,7 @@ export default function SuccessPage() {
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-gray-500">
-          <p>
-            Mesajınız {expiresAt.toLocaleDateString('tr-TR')} tarihine kadar aktif kalacak.
-          </p>
-          <Link href="/" className="text-purple-600 hover:underline mt-2 inline-block">
+          <Link href="/" className="text-purple-600 hover:underline">
             Yeni bir mesaj oluştur →
           </Link>
         </div>

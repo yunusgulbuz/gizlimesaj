@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -77,6 +78,7 @@ const designStyles = {
 };
 
 export default function TemplatePreviewPage({ template, durations, templatePricing }: TemplatePreviewPageProps) {
+  const router = useRouter();
   const [selectedDesignStyle, setSelectedDesignStyle] = useState<'modern' | 'classic' | 'minimalist' | 'eglenceli'>('modern');
   const [textFields, setTextFields] = useState<TemplateTextFields>(() => getDefaultTextFields(template.slug));
   const [creatorName, setCreatorName] = useState('Örnek Oluşturan');
@@ -272,12 +274,15 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
           <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             {/* Left Section */}
             <div className="flex items-center gap-3 min-w-0">
-              <Link href={`/templates/${template.slug}`}>
-                <Button variant="ghost" size="sm" className="shrink-0">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Geri
-                </Button>
-              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="shrink-0"
+                onClick={() => router.back()}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Geri
+              </Button>
               <div className="flex-1 min-w-0">
                 <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
                   {template.title}

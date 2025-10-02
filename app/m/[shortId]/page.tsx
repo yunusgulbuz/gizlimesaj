@@ -176,7 +176,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="h-8 w-8 text-gray-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Mesaj Bulunamadı</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{personalPage?.template_title || 'Mesaj Görüntülenemiyor'}</h1>
           <p className="text-gray-600 mb-6">
             Bu mesaj artık mevcut değil veya süresi dolmuş olabilir.
           </p>

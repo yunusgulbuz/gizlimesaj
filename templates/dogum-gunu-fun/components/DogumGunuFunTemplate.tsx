@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import type { TemplateTextFields } from '../../shared/types';
 
-function DogumGunuFunTemplate({ recipientName, message, designStyle, creatorName, textFields = {} }: {
+function DogumGunuFunTemplate({ recipientName, message, designStyle, creatorName, textFields = {}, isEditable = false, onFieldChange }: {
   recipientName: string;
   message: string;
   designStyle: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
   creatorName?: string;
   textFields?: TemplateTextFields;
+  isEditable?: boolean;
+  onFieldChange?: (field: string, value: string) => void;
 }) {
   const displayRecipientName = textFields.recipientName || recipientName;
   const displayAge = textFields.age;
@@ -26,6 +28,8 @@ function DogumGunuFunTemplate({ recipientName, message, designStyle, creatorName
     age: displayAge,
     wishMessage: displayWishMessage,
     footerMessage: displayFooterMessage,
+    isEditable,
+    onFieldChange,
   };
 
   switch (designStyle) {
@@ -48,14 +52,22 @@ interface DogumGunuFunTemplateProps {
   age?: string;
   wishMessage?: string;
   footerMessage?: string;
+  isEditable?: boolean;
+  onFieldChange?: (field: string, value: string) => void;
 }
 
-function DogumGunuFunModernTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage }: DogumGunuFunTemplateProps) {
+function DogumGunuFunModernTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage, isEditable = false, onFieldChange }: DogumGunuFunTemplateProps) {
   const [showPartyEffects, setShowPartyEffects] = useState(false);
 
   const triggerPartyEffects = () => {
     setShowPartyEffects(true);
     setTimeout(() => setShowPartyEffects(false), 3000);
+  };
+
+  const handleContentChange = (field: string, value: string) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
   };
 
   return (
@@ -103,7 +115,18 @@ function DogumGunuFunModernTemplate({ recipientName, mainMessage, creatorName, a
           {/* Main Content */}
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 border border-white/20 shadow-2xl relative overflow-hidden">
             <div className="mb-8">
-              <h1 className="text-6xl md:text-8xl font-black text-white mb-6 drop-shadow-lg">
+              <h1
+                className={`text-6xl md:text-8xl font-black text-white mb-6 drop-shadow-lg break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  const text = e.currentTarget.textContent || '';
+                  const match = text.match(/(.+?),/);
+                  if (match) {
+                    handleContentChange('recipientName', match[1]);
+                  }
+                }}
+              >
                 {recipientName ? `${recipientName},` : 'Canım,'}
                 {age && <span className="block text-4xl md:text-5xl mt-4">{age} Yaşında! ✨</span>}
               </h1>
@@ -111,17 +134,38 @@ function DogumGunuFunModernTemplate({ recipientName, mainMessage, creatorName, a
                 Doğum Günün Kutlu Olsun! 🎂
               </h2>
             </div>
-            
+
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 mb-8">
-              <p className="text-xl md:text-2xl text-white leading-relaxed font-medium">{mainMessage}</p>
+              <p
+                className={`text-xl md:text-2xl text-white leading-relaxed font-medium break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {mainMessage}
+              </p>
               {wishMessage && (
-                <p className="text-lg md:text-xl text-white/90 mt-4 leading-relaxed">{wishMessage}</p>
+                <p
+                  className={`text-lg md:text-xl text-white/90 mt-4 leading-relaxed break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent || '')}
+                >
+                  {wishMessage}
+                </p>
               )}
             </div>
 
             {footerMessage && (
               <div className="bg-gradient-to-r from-pink-500/30 to-purple-500/30 backdrop-blur-sm rounded-xl p-6 mb-8">
-                <p className="text-lg text-white font-medium">{footerMessage}</p>
+                <p
+                  className={`text-lg text-white font-medium break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+                >
+                  {footerMessage}
+                </p>
               </div>
             )}
 
@@ -199,7 +243,13 @@ function DogumGunuFunModernTemplate({ recipientName, mainMessage, creatorName, a
 
 export default DogumGunuFunTemplate;
 
-function DogumGunuFunClassicTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage }: DogumGunuFunTemplateProps) {
+function DogumGunuFunClassicTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage, isEditable = false, onFieldChange }: DogumGunuFunTemplateProps) {
+  const handleContentChange = (field: string, value: string) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-pink-50 relative overflow-hidden">
       {/* Decorative Background */}
@@ -235,13 +285,24 @@ function DogumGunuFunClassicTemplate({ recipientName, mainMessage, creatorName, 
 
             <div className="mb-8">
               <div className="text-6xl mb-6">🎂</div>
-              <h1 className="text-4xl md:text-6xl font-serif font-bold text-amber-800 mb-6">
+              <h1
+                className={`text-4xl md:text-6xl font-serif font-bold text-amber-800 mb-6 break-words ${isEditable ? 'hover:bg-amber-100/50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  const text = e.currentTarget.textContent || '';
+                  const match = text.match(/Sevgili (.+?),/);
+                  if (match) {
+                    handleContentChange('recipientName', match[1]);
+                  }
+                }}
+              >
                 {recipientName ? `Sevgili ${recipientName},` : 'Sevgili Dostum,'}
                 {age && <span className="block text-3xl md:text-4xl mt-4 text-amber-700">{age} Yaşını Kutluyoruz ✨</span>}
               </h1>
               <h2 className="text-3xl md:text-4xl font-serif text-amber-700 mb-8">Doğum Günün Kutlu Olsun</h2>
             </div>
-            
+
             {/* Decorative Divider */}
             <div className="flex items-center justify-center mb-8">
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
@@ -250,15 +311,36 @@ function DogumGunuFunClassicTemplate({ recipientName, mainMessage, creatorName, 
             </div>
 
             <div className="bg-amber-50/80 rounded-lg p-8 mb-8 border-2 border-amber-200">
-              <p className="text-lg md:text-xl text-amber-900 leading-relaxed font-serif">{mainMessage}</p>
+              <p
+                className={`text-lg md:text-xl text-amber-900 leading-relaxed font-serif break-words ${isEditable ? 'hover:bg-amber-100/50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {mainMessage}
+              </p>
               {wishMessage && (
-                <p className="text-md md:text-lg text-amber-800 mt-4 leading-relaxed font-serif">{wishMessage}</p>
+                <p
+                  className={`text-md md:text-lg text-amber-800 mt-4 leading-relaxed font-serif break-words ${isEditable ? 'hover:bg-amber-100/50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent || '')}
+                >
+                  {wishMessage}
+                </p>
               )}
             </div>
 
             {footerMessage && (
               <div className="bg-pink-50/80 rounded-lg p-6 mb-8 border border-pink-200">
-                <p className="text-md text-pink-800 font-serif">{footerMessage}</p>
+                <p
+                  className={`text-md text-pink-800 font-serif break-words ${isEditable ? 'hover:bg-pink-100/50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+                >
+                  {footerMessage}
+                </p>
               </div>
             )}
 
@@ -275,12 +357,18 @@ function DogumGunuFunClassicTemplate({ recipientName, mainMessage, creatorName, 
   );
 }
 
-function DogumGunuFunMinimalistTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage }: DogumGunuFunTemplateProps) {
+function DogumGunuFunMinimalistTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage, isEditable = false, onFieldChange }: DogumGunuFunTemplateProps) {
   const [showPartyEffects, setShowPartyEffects] = useState(false);
 
   const triggerPartyEffects = () => {
     setShowPartyEffects(true);
     setTimeout(() => setShowPartyEffects(false), 3000);
+  };
+
+  const handleContentChange = (field: string, value: string) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
   };
 
   return (
@@ -303,24 +391,50 @@ function DogumGunuFunMinimalistTemplate({ recipientName, mainMessage, creatorNam
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
             <div className="mb-12">
-              <h1 className="text-4xl md:text-6xl font-light text-gray-900 mb-8">
+              <h1
+                className={`text-4xl md:text-6xl font-light text-gray-900 mb-8 break-words ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+              >
                 {recipientName || 'Sevgili Dostum'}
                 {age && <span className="block text-3xl md:text-4xl mt-4 text-gray-600">{age} Yaş</span>}
               </h1>
               <h2 className="text-2xl md:text-3xl font-normal text-gray-600 mb-8">Doğum Günün Kutlu Olsun</h2>
               <div className="w-16 h-1 bg-orange-400 mx-auto mb-8"></div>
             </div>
-            
+
             <div className="bg-gray-50 rounded-lg p-8 mb-8 border border-gray-200 text-left">
-              <p className="text-base md:text-lg text-gray-800 leading-relaxed font-normal">{mainMessage}</p>
+              <p
+                className={`text-base md:text-lg text-gray-800 leading-relaxed font-normal break-words ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {mainMessage}
+              </p>
               {wishMessage && (
-                <p className="text-base text-gray-600 mt-4 leading-relaxed">{wishMessage}</p>
+                <p
+                  className={`text-base text-gray-600 mt-4 leading-relaxed break-words ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent || '')}
+                >
+                  {wishMessage}
+                </p>
               )}
             </div>
 
             {footerMessage && (
               <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8 text-gray-600">
-                {footerMessage}
+                <p
+                  className={`break-words ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+                >
+                  {footerMessage}
+                </p>
               </div>
             )}
 
@@ -354,8 +468,14 @@ function DogumGunuFunMinimalistTemplate({ recipientName, mainMessage, creatorNam
   );
 }
 
-function DogumGunuFunPlayfulTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage }: DogumGunuFunTemplateProps) {
+function DogumGunuFunPlayfulTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage, isEditable = false, onFieldChange }: DogumGunuFunTemplateProps) {
   const [showSurprise, setShowSurprise] = useState(false);
+
+  const handleContentChange = (field: string, value: string) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-500 to-pink-500 relative overflow-hidden">
@@ -387,23 +507,55 @@ function DogumGunuFunPlayfulTemplate({ recipientName, mainMessage, creatorName, 
           <div className="bg-white/95 backdrop-blur-lg rounded-3xl p-12 border-4 border-yellow-300 shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-300">
             <div className="mb-8">
               <div className="text-8xl mb-6 animate-bounce">🎂</div>
-              <h1 className="text-4xl md:text-6xl font-black text-transparent bg-gradient-to-r from-yellow-600 via-orange-600 to-pink-600 bg-clip-text mb-6">
+              <h1
+                className={`text-4xl md:text-6xl font-black text-transparent bg-gradient-to-r from-yellow-600 via-orange-600 to-pink-600 bg-clip-text mb-6 break-words ${isEditable ? 'hover:bg-yellow-100/50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  const text = e.currentTarget.textContent || '';
+                  const match = text.match(/(.+?)!/);
+                  if (match) {
+                    handleContentChange('recipientName', match[1]);
+                  }
+                }}
+              >
                 {recipientName ? `${recipientName}!` : 'Canım!'}
                 {age && <span className="block text-3xl md:text-4xl mt-2">{age} Yaş Partisi 🎉</span>}
               </h1>
               <h2 className="text-3xl md:text-4xl font-bold text-orange-600 mb-8 animate-pulse">Doğum Günün Kutlu Olsun! 🎉</h2>
             </div>
-            
+
             <div className="bg-yellow-100 rounded-2xl p-8 mb-8 border-2 border-yellow-300">
-              <p className="text-lg md:text-xl text-orange-800 leading-relaxed font-bold">{mainMessage}</p>
+              <p
+                className={`text-lg md:text-xl text-orange-800 leading-relaxed font-bold break-words ${isEditable ? 'hover:bg-yellow-200/50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {mainMessage}
+              </p>
               {wishMessage && (
-                <p className="text-lg text-orange-700 mt-4 font-semibold">{wishMessage}</p>
+                <p
+                  className={`text-lg text-orange-700 mt-4 font-semibold break-words ${isEditable ? 'hover:bg-yellow-200/50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent || '')}
+                >
+                  {wishMessage}
+                </p>
               )}
             </div>
 
             {footerMessage && (
               <div className="bg-pink-100 rounded-xl p-6 mb-6 border-2 border-pink-300">
-                <p className="text-md text-pink-800 font-bold">{footerMessage}</p>
+                <p
+                  className={`text-md text-pink-800 font-bold break-words ${isEditable ? 'hover:bg-pink-200/50 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+                >
+                  {footerMessage}
+                </p>
               </div>
             )}
 

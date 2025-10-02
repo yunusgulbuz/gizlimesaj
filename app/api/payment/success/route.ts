@@ -182,9 +182,13 @@ export async function POST(req: NextRequest) {
         template_id: orderDetails.templateId || 1,
         order_id: order.id,
         recipient_name: orderDetails.recipientName || 'Bilinmeyen',
+        sender_name: orderDetails.senderName || 'Bilinmeyen',
         message: orderDetails.message || 'Mesaj bulunamadı',
         expires_at: expiresAt.toISOString(),
-        is_active: true
+        is_active: true,
+        text_fields: orderDetails.textFields || {},
+        design_style: orderDetails.designStyle || 'modern',
+        bg_audio_url: orderDetails.bgAudioUrl || null
       })
       .select()
       .single();

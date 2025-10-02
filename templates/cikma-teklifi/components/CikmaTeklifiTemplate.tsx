@@ -15,6 +15,8 @@ interface CikmaTeklifiTemplateProps {
   creatorName?: string;
   textFields?: TemplateTextFields;
   shortId?: string;
+  isEditable?: boolean;
+  onFieldChange?: (field: string, value: string) => void;
 }
 
 interface BaseTemplateProps {
@@ -25,6 +27,8 @@ interface BaseTemplateProps {
   creatorName?: string;
   musicUrl?: string;
   shortId?: string;
+  isEditable?: boolean;
+  onFieldChange?: (field: string, value: string) => void;
 }
 
 export default function CikmaTeklifiTemplate({
@@ -33,7 +37,9 @@ export default function CikmaTeklifiTemplate({
   designStyle,
   creatorName,
   textFields,
-  shortId
+  shortId,
+  isEditable = false,
+  onFieldChange
 }: CikmaTeklifiTemplateProps) {
   const fields = textFields || {};
 
@@ -51,6 +57,8 @@ export default function CikmaTeklifiTemplate({
     creatorName,
     musicUrl,
     shortId,
+    isEditable,
+    onFieldChange,
   };
 
   switch (designStyle) {
@@ -88,12 +96,20 @@ function UltraModern3DScene({
   secondaryMessage,
   creatorName,
   shortId,
+  isEditable = false,
+  onFieldChange,
 }: BaseTemplateProps) {
   const [showFinalScene, setShowFinalScene] = useState(false);
   const [laserSweep, setLaserSweep] = useState(0);
 
   // Initialize analytics tracker
   const analytics = shortId ? createAnalyticsTracker(shortId) : null;
+
+  const handleContentChange = (field: string, value: string) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
+  };
 
   const seedBase = useMemo(
     () => `${recipientName}|${proposalQuestion}|${mainMessage}`,
@@ -204,34 +220,42 @@ function UltraModern3DScene({
             Ultra Modern · 3D · Hologram
           </div>
 
-          <div className="relative mx-auto inline-flex flex-wrap justify-center text-4xl font-bold leading-tight tracking-wide text-cyan-200 drop-shadow-[0_0_12px_rgba(8,145,178,0.8)] md:text-6xl">
-            {hologramLetters.map((char, index) => (
-              <span
-                key={`${char}-${index}`}
-                className="animate-fade-up"
-                style={{
-                  animationDelay: `${index * 0.04}s`,
-                  textShadow: '0 0 18px rgba(59,130,246,0.7)',
-                  color: char.trim() ? undefined : 'transparent',
-                }}
-              >
-                {char === ' ' ? '\u00A0' : char}
-              </span>
-            ))}
+          <h1
+            className={`relative mx-auto inline-flex flex-wrap justify-center text-4xl font-bold leading-tight tracking-wide text-cyan-200 drop-shadow-[0_0_12px_rgba(8,145,178,0.8)] md:text-6xl break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('proposalQuestion', e.currentTarget.textContent || '')}
+          >
+            {proposalQuestion}
             <div className="pointer-events-none absolute inset-0 animate-pulse rounded-3xl border border-cyan-400/20" />
-          </div>
+          </h1>
 
           <div className="mt-8 space-y-5 text-base text-slate-200 md:text-lg">
             {recipientName && (
-              <p className="text-sm uppercase tracking-[0.4em] text-cyan-300/70 md:text-xs">
+              <p
+                className={`text-sm uppercase tracking-[0.4em] text-cyan-300/70 md:text-xs break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded px-1 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent?.replace(' için özel fragman', '') || '')}
+              >
                 {recipientName} için özel fragman
               </p>
             )}
-            <p className="mx-auto max-w-3xl text-balance text-slate-200/90">
+            <p
+              className={`mx-auto max-w-3xl text-balance text-slate-200/90 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+            >
               {mainMessage}
             </p>
             {secondaryMessage && (
-              <p className="mx-auto max-w-2xl text-sm text-slate-400">
+              <p
+                className={`mx-auto max-w-2xl text-sm text-slate-400 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('secondaryMessage', e.currentTarget.textContent || '')}
+              >
                 {secondaryMessage}
               </p>
             )}
@@ -328,11 +352,19 @@ function MasalsiBroadwayScene({
   secondaryMessage,
   creatorName,
   shortId,
+  isEditable = false,
+  onFieldChange,
 }: BaseTemplateProps) {
   const [showMagic, setShowMagic] = useState(false);
-  
+
   // Initialize analytics tracker
   const analytics = shortId ? createAnalyticsTracker(shortId) : null;
+
+  const handleContentChange = (field: string, value: string) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
+  };
   const sparkles = useMemo(
     () => Array.from({ length: 80 }, (_, i) => ({
       id: i,
@@ -390,22 +422,42 @@ function MasalsiBroadwayScene({
             <div className="mb-4 text-sm uppercase tracking-[0.4em] text-rose-500/80">
               Masalsı Sahne
             </div>
-            <h1 className="font-serif text-4xl leading-tight text-rose-600 md:text-6xl">
+            <h1
+              className={`font-serif text-4xl leading-tight text-rose-600 md:text-6xl break-words ${isEditable ? 'hover:bg-white/20 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('proposalQuestion', e.currentTarget.textContent || '')}
+            >
               {proposalQuestion}
             </h1>
             {recipientName && (
-              <p className="mt-3 font-sans text-lg text-rose-400">
+              <p
+                className={`mt-3 font-sans text-lg text-rose-400 break-words ${isEditable ? 'hover:bg-white/20 cursor-text rounded px-1 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent?.replace(' için özel perde açılıyor', '') || '')}
+              >
                 {recipientName} için özel perde açılıyor
               </p>
             )}
           </div>
 
-          <p className="mx-auto max-w-2xl text-lg text-rose-700 md:text-xl">
+          <p
+            className={`mx-auto max-w-2xl text-lg text-rose-700 md:text-xl break-words ${isEditable ? 'hover:bg-white/20 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+          >
             {mainMessage}
           </p>
           {secondaryMessage && (
-            <p className="mt-4 font-serif text-lg italic text-amber-600">
-              “{secondaryMessage}”
+            <p
+              className={`mt-4 font-serif text-lg italic text-amber-600 break-words ${isEditable ? 'hover:bg-white/20 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('secondaryMessage', e.currentTarget.textContent?.replace(/^"|"$/g, '') || '')}
+            >
+              "{secondaryMessage}"
             </p>
           )}
 
@@ -482,6 +534,8 @@ function MinimalistPuzzleScene({
   secondaryMessage,
   creatorName,
   shortId,
+  isEditable = false,
+  onFieldChange,
 }: BaseTemplateProps) {
   const [started, setStarted] = useState(false);
   const [pieces, setPieces] = useState<PuzzlePiece[]>([]);
@@ -489,6 +543,12 @@ function MinimalistPuzzleScene({
 
   // Initialize analytics tracker
   const analytics = shortId ? createAnalyticsTracker(shortId) : null;
+
+  const handleContentChange = (field: string, value: string) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
+  };
 
   useEffect(() => {
     const words = proposalQuestion.trim().split(/\s+/);
@@ -561,7 +621,18 @@ function MinimalistPuzzleScene({
 
         <div className="text-center">
           <h1 className="text-sm uppercase tracking-[0.5em] text-slate-400">Minimal Puzzle</h1>
-          <p className="mt-3 text-lg text-slate-500">
+          <p
+            className={`mt-3 text-lg text-slate-500 break-words ${isEditable ? 'hover:bg-slate-100 cursor-text rounded px-2 py-1 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => {
+              const text = e.currentTarget.textContent || '';
+              const match = text.match(/(.+?) için interaktif teklif/);
+              if (match) {
+                handleContentChange('recipientName', match[1]);
+              }
+            }}
+          >
             {recipientName ? `${recipientName} için interaktif teklif` : 'Senin için özel hazırlanmış minimal teklif'}
           </p>
         </div>
@@ -617,9 +688,23 @@ function MinimalistPuzzleScene({
             </div>
 
             <div className="mt-6 space-y-4 text-center text-slate-600">
-              <p className="text-lg text-slate-500">{mainMessage}</p>
+              <p
+                className={`text-lg text-slate-500 break-words ${isEditable ? 'hover:bg-slate-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {mainMessage}
+              </p>
               {secondaryMessage && (
-                <p className="text-sm italic text-slate-400">{secondaryMessage}</p>
+                <p
+                  className={`text-sm italic text-slate-400 break-words ${isEditable ? 'hover:bg-slate-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('secondaryMessage', e.currentTarget.textContent || '')}
+                >
+                  {secondaryMessage}
+                </p>
               )}
             </div>
 
@@ -682,6 +767,8 @@ function GamifiedHeartsScene({
   creatorName,
   musicUrl,
   shortId,
+  isEditable = false,
+  onFieldChange,
 }: BaseTemplateProps) {
   const [score, setScore] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -690,6 +777,12 @@ function GamifiedHeartsScene({
 
   // Initialize analytics tracker
   const analytics = shortId ? createAnalyticsTracker(shortId) : null;
+
+  const handleContentChange = (field: string, value: string) => {
+    if (onFieldChange) {
+      onFieldChange(field, value);
+    }
+  };
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const hearts = useMemo(
@@ -824,19 +917,49 @@ function GamifiedHeartsScene({
         <div className="relative inline-block max-w-3xl rounded-[40px] bg-white/20 p-8 shadow-[0_20px_80px_rgba(244,63,94,0.45)] backdrop-blur-xl">
           <div className="absolute -top-5 -left-5 flex h-12 w-12 items-center justify-center rounded-full bg-white/30 text-2xl">🎈</div>
           <div className="absolute -bottom-6 -right-5 flex h-14 w-14 items-center justify-center rounded-full bg-white/30 text-2xl">🎉</div>
-          <h1 className="font-bold text-4xl text-white drop-shadow-[0_4px_20px_rgba(244,63,94,0.45)] md:text-5xl">
+          <h1
+            className={`font-bold text-4xl text-white drop-shadow-[0_4px_20px_rgba(244,63,94,0.45)] md:text-5xl break-words ${isEditable ? 'hover:bg-white/20 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('proposalQuestion', e.currentTarget.textContent || '')}
+          >
             {proposalQuestion}
           </h1>
           {recipientName && (
-            <p className="mt-3 text-lg text-white/80">Hey {recipientName}, oyuna hazır mısın?</p>
+            <p
+              className={`mt-3 text-lg text-white/80 break-words ${isEditable ? 'hover:bg-white/20 cursor-text rounded px-1 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => {
+                const text = e.currentTarget.textContent || '';
+                const match = text.match(/Hey (.+?), oyuna hazır mısın\?/);
+                if (match) {
+                  handleContentChange('recipientName', match[1]);
+                }
+              }}
+            >
+              Hey {recipientName}, oyuna hazır mısın?
+            </p>
           )}
         </div>
 
-        <p className="max-w-2xl text-lg text-white/90">
+        <p
+          className={`max-w-2xl text-lg text-white/90 break-words ${isEditable ? 'hover:bg-white/20 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+          contentEditable={isEditable}
+          suppressContentEditableWarning
+          onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+        >
           {mainMessage}
         </p>
         {secondaryMessage && (
-          <p className="text-base italic text-white/80">{secondaryMessage}</p>
+          <p
+            className={`text-base italic text-white/80 break-words ${isEditable ? 'hover:bg-white/20 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('secondaryMessage', e.currentTarget.textContent || '')}
+          >
+            {secondaryMessage}
+          </p>
         )}
 
         <div className="flex flex-wrap items-center justify-center gap-6">
