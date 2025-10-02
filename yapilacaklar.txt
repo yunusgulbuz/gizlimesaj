@@ -1,29 +1,23 @@
-1- Anasayfaya en çok tercih edilen 3 ürünün(şablonun) konulması, tıklayıp satın alınabilecek vaziyette olması
-2- Hesabım var butonunun yazısının renginin düzeltilmesi(anasayfada)
-3- Anasayfadaki yorumların daha gerçekçi hale getirilmesi
-4- Hikayeni yazmaya başla butonunu Giriş yap olarak değiştirilmesi (anasayfa)
-5- Pricing sayfasının oluşturuması ve pricing için planların oluşturulması (Aylık 10 hediye, Aylık 20 hediye, Aylık 30 hediye ve ekstra için görüşme)
-6- Hakkımızda sayfasının oluşturulması
-7- Anasayfanın daha anlaşılır hale getirilmesi
-8- Templates sayfası daha sade ve e ticaret sitesi misali haline getirilmesi
-9- templates sayfasında şablonu seç butonuna tıklandığında değil ürünün herhangi bir yerine tıklandığında detay sayfasının açılması
-10- şablon talep formunda telefon no da istenmeli
-11- iletişim sayfasının yapılması
-12- preview sayfasındaki stil butonları mobil cihazlara uygun olması
-13- detay sayfasındaki buton sepete ekle değil "satın al" şeklinde değiştirelim. ve şablon başlığının yanına da satın alma butonu ekleyelim
-14- "satın al" butonuna tıklayınca tekrar tıklanamamalı, loading olmalı
-15- "satın al" butonuna tıklayınca ödeme ekranından önce çıkan loading ekranının daha profesyonel ve modern hale getirilmesi
-16- Ödeme başarılı ekranının düzeltilmesi
-17- oluşturulan şablon ekranındaki paylaş butonunun ve heartnote ile yapıldı yazısının renkleri düzeltilmesi (arkaplan renginden dolayı yazı görünmüyor)
-18- paylaş butonuna instagram da eklenmeli
-19- detay ekranında bütün şablonlara youtube linki eklenebilmeli
-20- bütün şablonlar mobil cihazlara uygun olarak tasarlanmalı
-21- gizlilik sözleşmesi ve kullanım şartları hazırlanmalı
-22- templates ekranına sıralama eklenmesi
-23- wp üzerinden şablon oluşturabilme (daha sonra yapılacak)
-24- wp danışma hattı oluşturma (daha sonra yapılacak)
-25- wp üzerinden paylaşım yapıldığında küçük resim ve açıklamanın hediyeye uygun olması
-26- anasayfa ve templates ekranındaki &apos; yazılarının düzeltilmesi
-27- kayıt ol sayfasındaki anasayfa > kayıt ol yazısının kaldırılması
-28- kayıt sayfasındaki github'ın kaldırılması
-29- ödeme başarısız ekranı çalışmıyor. düzeltilmesi
+1- templates/.../preview ekranında geri tuşuna basınca hangi sayfadan geldiyse oraya dönmesi
+2- planlar(fiyatlar) sayfası oluşturma
+3- hakkımızda sayfası oluşturma
+4- 
+5- iletişim sayfası oluşturma
+6- hesap kısmında siparişlerim sayfası oluşturma
+7- hesap kısmında şifre değiştirme sayfası oluşturma
+8- hesap kısmında kişisel bilgiler sayfası oluşturma
+9- hesap kısmında değerlendirmelerim sayfası oluşturma
+10- hesap kısmında favorilerim sayfası oluşturma
+11- payment/xxx sayfasının tasarımını güncelle, sadece ödeme sayfasına yönlendiriyor çıksın. loading ekranını basitleştir, skeletonu burdan kaldır
+12- /success/xxx ekranını düzenle, gönderen, süre, url, wp, sosyal medya paylaşımları ve mesajı önizle butonu olsun, indirmeleri kaldıralım. modern ve sade olsun
+13- /m/xxx sayfası yüklenirken loading sade olsun
+14- payment/error ekranının tasarım modern ve sade olması
+15- yorum kısmına puanlama da eklenmesi (http://localhost:3000/templates/is-tebrigi ekranında yorum kısmında puanlama var oradan bakabilirsin.)
+16- anasayfa ve templates sayfalarındaki ürün kartlarına favori butonu, preview sayfasına favori butonu eklenmeli, butonları satın al, incele olmalı
+17- sitedeki vercel ikonunu kaldırmak.
+18- m/xxx oluşturulan sayfada başlık "Mesaj bulunamadı" kısmını düzeltilmesi
+19- Benimle çıkar mısın şablonundaki textler düzeltilmiyor. bunun diğer sayfadakiler gibi düzeltilmesi 
+20- Doğum günün kutlu olsun şablonundaki textler düzeltilmiyor. bunun diğer sayfadakiler gibi düzeltilmesi 
+21- Teşekkür ederim şablonundaki bazı textleri değiştiriyorum ama satın aldıktan sonra default text görünüyor.
+22- satın aldıktan sonra mobilde youtube'dan eklediğimiz ses çalışmıyor
+23- şablon talep dialoguna tel no eklenmesi

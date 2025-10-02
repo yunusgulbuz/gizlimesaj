@@ -116,7 +116,10 @@ export default function ModernCorporateCongrats({
     setTimeout(() => setShowConfetti(false), 2200);
 
     if (ctaUrl) {
-      window.open(ctaUrl, '_blank');
+      const url = ctaUrl.startsWith('http://') || ctaUrl.startsWith('https://')
+        ? ctaUrl
+        : `https://${ctaUrl}`;
+      window.open(url, '_blank');
     }
   };
 

@@ -123,7 +123,10 @@ export default function ClassicPrestigeCertificate({
     setTimeout(() => setShowStars(false), 2600);
 
     if (buttonUrl) {
-      window.open(buttonUrl, '_blank');
+      const url = buttonUrl.startsWith('http://') || buttonUrl.startsWith('https://')
+        ? buttonUrl
+        : `https://${buttonUrl}`;
+      window.open(url, '_blank');
     }
   };
 
