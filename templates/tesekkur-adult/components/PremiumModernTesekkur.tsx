@@ -7,12 +7,42 @@ interface PremiumModernTesekkurProps {
   recipientName: string;
   message: string;
   creatorName?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
-function PremiumModernTesekkur({ recipientName, message, creatorName }: PremiumModernTesekkurProps) {
+function PremiumModernTesekkur({ recipientName, message, creatorName, isEditable = false, onTextFieldChange }: PremiumModernTesekkurProps) {
   const [showExplosion, setShowExplosion] = useState(false);
   const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, vx: number, vy: number}>>([]);
   const [spheres, setSpheres] = useState<Array<{id: number, x: number, y: number, rotation: number}>>([]);
+
+  // Local editable state
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMessage, setLocalMessage] = useState(message);
+  const [localCreatorName, setLocalCreatorName] = useState(creatorName || '');
+
+  // Initialize local state from props
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalMessage(message);
+    setLocalCreatorName(creatorName || '');
+  }, [recipientName, message, creatorName]);
+
+  // Handle content change
+  const handleContentChange = (key: string, value: string) => {
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'message') setLocalMessage(value);
+    else if (key === 'creatorName') setLocalCreatorName(value);
+
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  // Get display values
+  const displayRecipientName = isEditable ? localRecipientName : recipientName;
+  const displayMessage = isEditable ? localMessage : message;
+  const displayCreatorName = isEditable ? localCreatorName : creatorName;
 
   useEffect(() => {
     // Create floating 3D spheres
@@ -95,13 +125,13 @@ function PremiumModernTesekkur({ recipientName, message, creatorName }: PremiumM
       ))}
 
       {/* Main Content */}
-      <div className="relative z-10 text-center px-8 max-w-4xl">
+      <div className="relative z-10 text-center p-4 sm:p-6 md:p-8 max-w-4xl">
         {/* 3D Title */}
-        <div className="mb-12">
-          <h1 
-            className={`text-6xl md:text-8xl font-bold mb-4 transition-all duration-1000 ${
-              showExplosion 
-                ? 'animate-pulse scale-110 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400' 
+        <div className="mb-8 sm:mb-10 md:mb-12">
+          <h1
+            className={`text-4xl sm:text-6xl md:text-8xl font-bold mb-4 sm:mb-6 transition-all duration-1000 break-words ${
+              showExplosion
+                ? 'animate-pulse scale-110 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400'
                 : 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400'
             }`}
             style={{
@@ -112,20 +142,35 @@ function PremiumModernTesekkur({ recipientName, message, creatorName }: PremiumM
           >
             TEŞEKKÜRLER
           </h1>
-          
-          <div className="text-2xl md:text-3xl text-yellow-200 font-light">
-            {recipientName}
+
+          <div
+            className={`text-xl sm:text-2xl md:text-3xl text-yellow-200 font-light break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+          >
+            {displayRecipientName}
           </div>
         </div>
 
         {/* Message */}
-        <div className="mb-12 p-8 bg-black/30 backdrop-blur-sm rounded-2xl border border-yellow-400/20">
-          <p className="text-xl md:text-2xl text-yellow-100 leading-relaxed font-light">
-            {message}
+        <div className="mb-8 sm:mb-10 md:mb-12 p-4 sm:p-6 md:p-8 bg-black/30 backdrop-blur-sm rounded-2xl border border-yellow-400/20">
+          <p
+            className={`text-base sm:text-lg md:text-xl lg:text-2xl text-yellow-100 leading-relaxed font-light break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('message', e.currentTarget.textContent || '')}
+          >
+            {displayMessage}
           </p>
-          {creatorName && (
-            <p className="text-lg text-yellow-300 mt-6 italic">
-              - {creatorName}
+          {displayCreatorName && (
+            <p
+              className={`text-sm sm:text-base md:text-lg text-yellow-300 mt-4 sm:mt-6 italic break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('creatorName', e.currentTarget.textContent || '')}
+            >
+              - {displayCreatorName}
             </p>
           )}
         </div>
@@ -133,10 +178,10 @@ function PremiumModernTesekkur({ recipientName, message, creatorName }: PremiumM
         {/* Action Button */}
         <Button
           onClick={handleCelebrationStart}
-          className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-black rounded-full transition-all duration-300 transform hover:scale-105"
+          className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-black rounded-full transition-all duration-300 transform hover:scale-105"
           style={{
-            boxShadow: showExplosion 
-              ? '0 0 50px rgba(255, 215, 0, 1), 0 0 100px rgba(255, 215, 0, 0.5)' 
+            boxShadow: showExplosion
+              ? '0 0 50px rgba(255, 215, 0, 1), 0 0 100px rgba(255, 215, 0, 0.5)'
               : '0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.2)',
             animation: showExplosion ? 'pulse 0.5s ease-in-out infinite' : 'none'
           }}

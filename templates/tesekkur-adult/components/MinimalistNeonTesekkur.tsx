@@ -7,12 +7,42 @@ interface MinimalistNeonTesekkurProps {
   recipientName: string;
   message: string;
   creatorName?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
-function MinimalistNeonTesekkur({ recipientName, message, creatorName }: MinimalistNeonTesekkurProps) {
+function MinimalistNeonTesekkur({ recipientName, message, creatorName, isEditable = false, onTextFieldChange }: MinimalistNeonTesekkurProps) {
   const [showLaser, setShowLaser] = useState(false);
   const [gridLines, setGridLines] = useState<Array<{id: number, x: number, y: number, direction: 'horizontal' | 'vertical'}>>([]);
   const [neonPulse, setNeonPulse] = useState(false);
+
+  // Local editable state
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMessage, setLocalMessage] = useState(message);
+  const [localCreatorName, setLocalCreatorName] = useState(creatorName || '');
+
+  // Initialize local state from props
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalMessage(message);
+    setLocalCreatorName(creatorName || '');
+  }, [recipientName, message, creatorName]);
+
+  // Handle content change
+  const handleContentChange = (key: string, value: string) => {
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'message') setLocalMessage(value);
+    else if (key === 'creatorName') setLocalCreatorName(value);
+
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  // Get display values
+  const displayRecipientName = isEditable ? localRecipientName : recipientName;
+  const displayMessage = isEditable ? localMessage : message;
+  const displayCreatorName = isEditable ? localCreatorName : creatorName;
 
   useEffect(() => {
     // Create grid lines
@@ -70,16 +100,16 @@ function MinimalistNeonTesekkur({ recipientName, message, creatorName }: Minimal
       }} />
 
       {/* Main Content */}
-      <div className="relative z-10 text-center px-8 max-w-4xl">
+      <div className="relative z-10 text-center p-4 sm:p-6 md:p-8 max-w-4xl">
         {/* Neon Title */}
-        <div className="mb-12 relative">
-          <h1 
-            className={`text-6xl md:text-8xl font-thin mb-4 transition-all duration-500 ${
+        <div className="mb-8 sm:mb-10 md:mb-12 relative">
+          <h1
+            className={`text-4xl sm:text-6xl md:text-8xl font-thin mb-4 sm:mb-6 transition-all duration-500 break-words ${
               neonPulse ? 'text-cyan-300' : 'text-cyan-400'
             }`}
             style={{
               fontFamily: 'monospace',
-              textShadow: neonPulse 
+              textShadow: neonPulse
                 ? '0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 80px #00ffff'
                 : '0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 20px #00ffff',
               letterSpacing: '0.1em',
@@ -88,9 +118,9 @@ function MinimalistNeonTesekkur({ recipientName, message, creatorName }: Minimal
           >
             TEŞEKKÜRLER
           </h1>
-          
+
           {/* Neon underline */}
-          <div 
+          <div
             className="mx-auto h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"
             style={{
               width: '60%',
@@ -98,42 +128,60 @@ function MinimalistNeonTesekkur({ recipientName, message, creatorName }: Minimal
               animation: 'neonGlow 2s ease-in-out infinite alternate'
             }}
           />
-          
-          <div className="text-2xl md:text-3xl text-pink-400 font-thin mt-6" style={{
-            fontFamily: 'monospace',
-            textShadow: '0 0 10px #ff1493, 0 0 20px #ff1493',
-            letterSpacing: '0.05em'
-          }}>
-            {recipientName}
+
+          <div
+            className={`text-xl sm:text-2xl md:text-3xl text-pink-400 font-thin mt-4 sm:mt-6 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            style={{
+              fontFamily: 'monospace',
+              textShadow: '0 0 10px #ff1493, 0 0 20px #ff1493',
+              letterSpacing: '0.05em'
+            }}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+          >
+            {displayRecipientName}
           </div>
         </div>
 
         {/* Message Box */}
-        <div className="mb-12 relative">
-          <div 
-            className="p-8 bg-black/80 backdrop-blur-sm rounded-lg border border-cyan-400/50 relative"
+        <div className="mb-8 sm:mb-10 md:mb-12 relative">
+          <div
+            className="p-4 sm:p-6 md:p-8 bg-black/80 backdrop-blur-sm rounded-lg border border-cyan-400/50 relative"
             style={{
               boxShadow: '0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0, 255, 255, 0.05)'
             }}
           >
             {/* Corner brackets */}
-            <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-cyan-400" style={{boxShadow: '0 0 5px #00ffff'}} />
-            <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-cyan-400" style={{boxShadow: '0 0 5px #00ffff'}} />
-            <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-cyan-400" style={{boxShadow: '0 0 5px #00ffff'}} />
-            <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-cyan-400" style={{boxShadow: '0 0 5px #00ffff'}} />
-            
-            <p className="text-xl md:text-2xl text-cyan-100 leading-relaxed font-thin" style={{
-              fontFamily: 'monospace',
-              letterSpacing: '0.02em'
-            }}>
-              {message}
-            </p>
-            {creatorName && (
-              <p className="text-lg text-pink-300 mt-6 font-thin" style={{
+            <div className="absolute top-2 left-2 w-3 h-3 sm:w-4 sm:h-4 border-l-2 border-t-2 border-cyan-400" style={{boxShadow: '0 0 5px #00ffff'}} />
+            <div className="absolute top-2 right-2 w-3 h-3 sm:w-4 sm:h-4 border-r-2 border-t-2 border-cyan-400" style={{boxShadow: '0 0 5px #00ffff'}} />
+            <div className="absolute bottom-2 left-2 w-3 h-3 sm:w-4 sm:h-4 border-l-2 border-b-2 border-cyan-400" style={{boxShadow: '0 0 5px #00ffff'}} />
+            <div className="absolute bottom-2 right-2 w-3 h-3 sm:w-4 sm:h-4 border-r-2 border-b-2 border-cyan-400" style={{boxShadow: '0 0 5px #00ffff'}} />
+
+            <p
+              className={`text-base sm:text-lg md:text-xl lg:text-2xl text-cyan-100 leading-relaxed font-thin break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              style={{
                 fontFamily: 'monospace',
-                textShadow: '0 0 5px #ff1493'
-              }}>
-                — {creatorName}
+                letterSpacing: '0.02em'
+              }}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('message', e.currentTarget.textContent || '')}
+            >
+              {displayMessage}
+            </p>
+            {displayCreatorName && (
+              <p
+                className={`text-sm sm:text-base md:text-lg text-pink-300 mt-4 sm:mt-6 font-thin break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                style={{
+                  fontFamily: 'monospace',
+                  textShadow: '0 0 5px #ff1493'
+                }}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('creatorName', e.currentTarget.textContent || '')}
+              >
+                — {displayCreatorName}
               </p>
             )}
           </div>
@@ -141,9 +189,9 @@ function MinimalistNeonTesekkur({ recipientName, message, creatorName }: Minimal
 
         {/* Laser Effect Message */}
         {showLaser && (
-          <div className="mb-8 relative">
-            <p 
-              className="text-3xl md:text-4xl text-yellow-400 font-thin"
+          <div className="mb-6 sm:mb-8 relative">
+            <p
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-yellow-400 font-thin break-words"
               style={{
                 fontFamily: 'monospace',
                 textShadow: '0 0 20px #ffff00, 0 0 40px #ffff00',
@@ -163,12 +211,12 @@ function MinimalistNeonTesekkur({ recipientName, message, creatorName }: Minimal
         {/* Neon Button */}
         <Button
           onClick={handleNeonEnter}
-          className="px-12 py-6 text-xl font-thin bg-transparent border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-300 transform hover:scale-105 relative overflow-hidden"
+          className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg md:text-xl font-thin bg-transparent border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-300 transform hover:scale-105 relative overflow-hidden"
           style={{
             fontFamily: 'monospace',
             textShadow: '0 0 10px #00ffff',
-            boxShadow: showLaser 
-              ? '0 0 30px #00ffff, 0 0 60px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.1)' 
+            boxShadow: showLaser
+              ? '0 0 30px #00ffff, 0 0 60px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.1)'
               : '0 0 15px #00ffff, inset 0 0 10px rgba(0, 255, 255, 0.05)',
             letterSpacing: '0.05em'
           }}

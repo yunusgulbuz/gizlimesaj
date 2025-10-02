@@ -9,22 +9,54 @@ interface MinimalistNeonTemplateProps {
   wishMessage?: string;
   footerMessage?: string;
   creatorName?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
-function MinimalistNeonTemplate({ 
-  recipientName, 
-  mainMessage, 
-  wishMessage, 
-  footerMessage, 
-  creatorName 
+function MinimalistNeonTemplate({
+  recipientName,
+  mainMessage,
+  wishMessage,
+  footerMessage,
+  creatorName,
+  isEditable = false,
+  onTextFieldChange
 }: MinimalistNeonTemplateProps) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [neonLines, setNeonLines] = useState<Array<{id: number, x: number, y: number, width: number, color: string, delay: number}>>([]);
   const [digitalRain, setDigitalRain] = useState<Array<{id: number, x: number, char: string, speed: number, color: string}>>([]);
   const [glitchEffect, setGlitchEffect] = useState(false);
 
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMainMessage, setLocalMainMessage] = useState(mainMessage);
+  const [localWishMessage, setLocalWishMessage] = useState(wishMessage || '');
+  const [localFooterMessage, setLocalFooterMessage] = useState(footerMessage || '');
+
   const neonColors = ['#00ffff', '#ff00ff', '#ffff00', '#00ff00', '#ff0080', '#8000ff'];
   const matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalMainMessage(mainMessage);
+    setLocalWishMessage(wishMessage || '');
+    setLocalFooterMessage(footerMessage || '');
+  }, [recipientName, mainMessage, wishMessage, footerMessage]);
+
+  const handleContentChange = (key: string, value: string) => {
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'mainMessage') setLocalMainMessage(value);
+    else if (key === 'wishMessage') setLocalWishMessage(value);
+    else if (key === 'footerMessage') setLocalFooterMessage(value);
+
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  const displayRecipientName = isEditable ? localRecipientName : recipientName;
+  const displayMainMessage = isEditable ? localMainMessage : mainMessage;
+  const displayWishMessage = isEditable ? localWishMessage : wishMessage;
+  const displayFooterMessage = isEditable ? localFooterMessage : footerMessage;
 
   useEffect(() => {
     // Create neon grid lines
@@ -123,10 +155,10 @@ function MinimalistNeonTemplate({
         ))}
 
         {/* Main Content */}
-        <div className={`relative z-20 text-center space-y-8 p-8 max-w-4xl ${glitchEffect ? 'animate-pulse' : ''}`}>
+        <div className={`relative z-20 text-center space-y-4 sm:space-y-6 md:space-y-8 p-4 sm:p-6 md:p-8 max-w-4xl ${glitchEffect ? 'animate-pulse' : ''}`}>
           {creatorName && (
-            <div className="text-center mb-6">
-              <p className="text-sm text-white font-mono bg-black/80 rounded px-3 py-1 border border-cyan-400/50" style={{
+            <div className="text-center mb-4 sm:mb-6">
+              <p className="text-xs sm:text-sm text-white font-mono bg-black/80 rounded px-3 py-1 border border-cyan-400/50 break-words" style={{
                 textShadow: '0 0 10px #ffffff'
               }}>
                 &gt; Hazırlayan: {creatorName}
@@ -135,7 +167,7 @@ function MinimalistNeonTemplate({
           )}
 
           {/* Neon Frame */}
-          <div className="relative border-2 border-cyan-400 p-12 bg-black/90 backdrop-blur-sm" style={{
+          <div className="relative border border-cyan-400 sm:border-2 p-6 sm:p-8 md:p-12 bg-black/90 backdrop-blur-sm" style={{
             boxShadow: '0 0 20px rgba(0,255,255,0.5), inset 0 0 20px rgba(0,255,255,0.1)'
           }}>
             {/* Corner Lights */}
@@ -160,7 +192,7 @@ function MinimalistNeonTemplate({
             }}></div>
 
             {/* Glitch Title */}
-            <h1 className="text-5xl md:text-7xl font-mono mb-8 text-white relative" style={{
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-mono mb-4 sm:mb-6 md:mb-8 text-white relative break-words" style={{
               textShadow: '0 0 20px #00ffff, 2px 2px 0px #ff00ff, -2px -2px 0px #ffff00',
               fontWeight: 'bold'
             }}>
@@ -169,43 +201,55 @@ function MinimalistNeonTemplate({
               </span>
               {glitchEffect && (
                 <>
-                  <div className="absolute inset-0 text-5xl md:text-7xl font-mono text-magenta-400 opacity-70 transform translate-x-1">
+                  <div className="absolute inset-0 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-mono text-magenta-400 opacity-70 transform translate-x-1 break-words">
                     MUTLU_YILLAR.exe
                   </div>
-                  <div className="absolute inset-0 text-5xl md:text-7xl font-mono text-yellow-400 opacity-50 transform -translate-x-1">
+                  <div className="absolute inset-0 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-mono text-yellow-400 opacity-50 transform -translate-x-1 break-words">
                     MUTLU_YILLAR.exe
                   </div>
                 </>
               )}
             </h1>
 
-            <h2 className="text-2xl md:text-4xl text-white mb-8 font-mono font-bold" style={{
-              textShadow: '0 0 25px #ff00ff, 4px 4px 8px rgba(0,0,0,1), 0 0 40px rgba(255,0,255,1), 2px 2px 0px rgba(0,0,0,1)',
-              background: 'rgba(0,0,0,0.95)',
-              padding: '12px 20px',
-              borderRadius: '8px',
-              border: '3px solid rgba(255,0,255,0.8)',
-              backdropFilter: 'blur(10px)'
-            }}>
-              &gt; {recipientName ? `${recipientName.toUpperCase()}` : 'SEVGILI_DOSTUM'}
+            <h2
+              className={`text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-white mb-4 sm:mb-6 md:mb-8 font-mono font-bold break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent?.replace(/^> /, '') || '')}
+              style={{
+                textShadow: '0 0 25px #ff00ff, 4px 4px 8px rgba(0,0,0,1), 0 0 40px rgba(255,0,255,1), 2px 2px 0px rgba(0,0,0,1)',
+                background: 'rgba(0,0,0,0.95)',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                border: '3px solid rgba(255,0,255,0.8)',
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              &gt; {displayRecipientName ? `${displayRecipientName.toUpperCase()}` : 'SEVGILI_DOSTUM'}
             </h2>
 
-            <div className="border p-6 mb-8" style={{
+            <div className="border p-4 sm:p-6 mb-4 sm:mb-6 md:mb-8" style={{
               borderColor: 'rgba(0,255,255,0.8)',
               background: 'rgba(0,0,0,0.95)',
               boxShadow: 'inset 0 0 20px rgba(0,255,255,0.5), 0 0 30px rgba(0,255,255,0.4)',
               border: '3px solid rgba(0,255,255,0.9)',
               backdropFilter: 'blur(15px)'
             }}>
-              <p className="text-lg md:text-xl text-white leading-relaxed font-mono font-medium" style={{
-                textShadow: '0 0 20px #00ff00, 3px 3px 6px rgba(0,0,0,1), 0 0 35px rgba(0,255,0,0.8), 1px 1px 0px rgba(0,0,0,1)'
-              }}>
-                &gt; {mainMessage}
+              <p
+                className={`text-base sm:text-lg md:text-xl text-white leading-relaxed font-mono font-medium break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent?.replace(/^> /, '') || '')}
+                style={{
+                  textShadow: '0 0 20px #00ff00, 3px 3px 6px rgba(0,0,0,1), 0 0 35px rgba(0,255,0,0.8), 1px 1px 0px rgba(0,0,0,1)'
+                }}
+              >
+                &gt; {displayMainMessage}
               </p>
             </div>
 
             {/* Matrix-style Success Message */}
-            <div className="text-2xl md:text-3xl text-white animate-pulse font-mono font-bold" style={{
+            <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white animate-pulse font-mono font-bold break-words" style={{
               textShadow: '0 0 25px #ffff00, 4px 4px 8px rgba(0,0,0,1), 0 0 40px rgba(255,255,0,1), 2px 2px 0px rgba(0,0,0,1)',
               background: 'rgba(0,0,0,0.95)',
               padding: '12px 20px',
@@ -217,24 +261,36 @@ function MinimalistNeonTemplate({
             </div>
           </div>
 
-          {wishMessage && (
-            <div className="text-lg md:text-xl text-white font-mono font-medium bg-black/80 rounded-lg p-4 border border-cyan-400/50" style={{
-              textShadow: '0 0 10px #00ffff'
-            }}>
-              &gt; {wishMessage}
+          {displayWishMessage && (
+            <div
+              className={`text-base sm:text-lg md:text-xl text-white font-mono font-medium bg-black/80 rounded-lg p-4 border border-cyan-400/50 break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent?.replace(/^> /, '') || '')}
+              style={{
+                textShadow: '0 0 10px #00ffff'
+              }}
+            >
+              &gt; {displayWishMessage}
             </div>
           )}
 
-          {footerMessage && (
-            <div className="text-lg text-white mt-8 font-mono font-medium bg-black/80 rounded-lg p-4 border border-magenta-400/50" style={{
-              textShadow: '0 0 10px #ff00ff'
-            }}>
-              &gt; {footerMessage}
+          {displayFooterMessage && (
+            <div
+              className={`text-base sm:text-lg text-white mt-4 sm:mt-6 md:mt-8 font-mono font-medium bg-black/80 rounded-lg p-4 border border-magenta-400/50 break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent?.replace(/^> /, '') || '')}
+              style={{
+                textShadow: '0 0 10px #ff00ff'
+              }}
+            >
+              &gt; {displayFooterMessage}
             </div>
           )}
 
           {/* Cyberpunk Emoji */}
-          <div className="text-6xl animate-bounce mt-8">🤖</div>
+          <div className="text-4xl sm:text-5xl md:text-6xl animate-bounce mt-4 sm:mt-6 md:mt-8">🤖</div>
         </div>
 
         <style jsx>{`
@@ -310,10 +366,10 @@ function MinimalistNeonTemplate({
       ))}
 
       {/* Main Content */}
-      <div className="relative z-10 text-center space-y-8 p-8 max-w-4xl">
+      <div className="relative z-10 text-center space-y-4 sm:space-y-6 md:space-y-8 p-4 sm:p-6 md:p-8 max-w-4xl">
         {creatorName && (
-          <div className="text-center mb-6">
-            <p className="text-sm text-cyan-300/70 font-mono" style={{
+          <div className="text-center mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm text-cyan-300/70 font-mono break-words" style={{
               textShadow: '0 0 10px #00ffff, 2px 2px 4px rgba(0,0,0,1)',
               background: 'rgba(0,0,0,0.9)',
               padding: '8px 16px',
@@ -327,69 +383,83 @@ function MinimalistNeonTemplate({
         )}
 
         {/* Neon Frame */}
-        <div className="relative border border-cyan-400/60 p-10 bg-black/60 backdrop-blur-sm" style={{
+        <div className="relative border border-cyan-400/60 p-6 sm:p-8 md:p-10 bg-black/60 backdrop-blur-sm" style={{
           boxShadow: '0 0 15px rgba(0,255,255,0.3), inset 0 0 15px rgba(0,255,255,0.05)'
         }}>
           {/* Corner Indicators */}
-          <div className="absolute top-0 left-0 w-3 h-3 bg-cyan-400/60 rounded-full animate-pulse" style={{
+          <div className="absolute top-0 left-0 w-2 h-2 sm:w-3 sm:h-3 bg-cyan-400/60 rounded-full animate-pulse" style={{
             boxShadow: '0 0 10px #00ffff',
             transform: 'translate(-50%, -50%)'
           }}></div>
-          <div className="absolute top-0 right-0 w-3 h-3 bg-magenta-400/60 rounded-full animate-pulse" style={{
+          <div className="absolute top-0 right-0 w-2 h-2 sm:w-3 sm:h-3 bg-magenta-400/60 rounded-full animate-pulse" style={{
             boxShadow: '0 0 10px #ff00ff',
             transform: 'translate(50%, -50%)',
             animationDelay: '1s'
           }}></div>
-          <div className="absolute bottom-0 left-0 w-3 h-3 bg-yellow-400/60 rounded-full animate-pulse" style={{
+          <div className="absolute bottom-0 left-0 w-2 h-2 sm:w-3 sm:h-3 bg-yellow-400/60 rounded-full animate-pulse" style={{
             boxShadow: '0 0 10px #ffff00',
             transform: 'translate(-50%, 50%)',
             animationDelay: '2s'
           }}></div>
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400/60 rounded-full animate-pulse" style={{
+          <div className="absolute bottom-0 right-0 w-2 h-2 sm:w-3 sm:h-3 bg-green-400/60 rounded-full animate-pulse" style={{
             boxShadow: '0 0 10px #00ff00',
             transform: 'translate(50%, 50%)',
             animationDelay: '3s'
           }}></div>
 
-          <h1 className="text-4xl md:text-6xl font-mono mb-6 text-white" style={{
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-mono mb-4 sm:mb-6 text-white break-words" style={{
             textShadow: '0 0 15px #00ffff, 2px 2px 4px rgba(0,0,0,0.8)',
             fontWeight: 'bold'
           }}>
             MUTLU_YILLAR
           </h1>
 
-          <h2 className="text-xl md:text-3xl text-white mb-6 font-mono font-bold" style={{
-            textShadow: '0 0 15px #ff00ff, 3px 3px 6px rgba(0,0,0,1), 0 0 25px rgba(255,0,255,0.8)',
-            background: 'rgba(0,0,0,0.9)',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            border: '2px solid rgba(255,0,255,0.6)'
-          }}>
-            &gt; {recipientName ? `${recipientName.toUpperCase()}` : 'SEVGILI_DOSTUM'}
+          <h2
+            className={`text-base sm:text-xl md:text-2xl lg:text-3xl text-white mb-4 sm:mb-6 font-mono font-bold break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent?.replace(/^> /, '') || '')}
+            style={{
+              textShadow: '0 0 15px #ff00ff, 3px 3px 6px rgba(0,0,0,1), 0 0 25px rgba(255,0,255,0.8)',
+              background: 'rgba(0,0,0,0.9)',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              border: '2px solid rgba(255,0,255,0.6)'
+            }}
+          >
+            &gt; {displayRecipientName ? `${displayRecipientName.toUpperCase()}` : 'SEVGILI_DOSTUM'}
           </h2>
 
-          <div className="border p-4 mb-6" style={{
+          <div className="border p-4 mb-4 sm:mb-6" style={{
             borderColor: 'rgba(0,255,255,0.8)',
             background: 'rgba(0,0,0,0.9)',
             border: '2px solid rgba(0,255,255,0.7)'
           }}>
-            <p className="text-lg md:text-xl text-white leading-relaxed font-mono font-medium" style={{
-              textShadow: '0 0 12px #00ff00, 2px 2px 4px rgba(0,0,0,1), 0 0 20px rgba(0,255,0,0.6)'
-            }}>
-              &gt; {mainMessage}
+            <p
+              className={`text-base sm:text-lg md:text-xl text-white leading-relaxed font-mono font-medium break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent?.replace(/^> /, '') || '')}
+              style={{
+                textShadow: '0 0 12px #00ff00, 2px 2px 4px rgba(0,0,0,1), 0 0 20px rgba(0,255,0,0.6)'
+              }}
+            >
+              &gt; {displayMainMessage}
             </p>
           </div>
 
           <Button
             onClick={handleNeonActivation}
-            className="bg-gradient-to-r from-cyan-600 to-magenta-600 hover:from-cyan-500 hover:to-magenta-500 text-white font-mono font-bold px-10 py-4 rounded-none text-lg transition-all duration-300 relative overflow-hidden group border border-cyan-400"
+            className="bg-gradient-to-r from-cyan-600 to-magenta-600 hover:from-cyan-500 hover:to-magenta-500 text-white font-mono font-bold px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-none text-base sm:text-lg transition-all duration-300 relative overflow-hidden group border border-cyan-400"
             style={{
               boxShadow: '0 0 20px rgba(0,255,255,0.5), 0 0 40px rgba(255,0,255,0.3)',
               textShadow: '2px 2px 4px rgba(0,0,0,1)'
             }}
           >
-            <span className="relative z-10 flex items-center gap-3">
-              🤖 NEON_AKTIF.exe 🤖
+            <span className="relative z-10 flex items-center gap-1 sm:gap-2 md:gap-3">
+              <span className="text-lg sm:text-xl md:text-2xl">🤖</span>
+              <span className="break-words">NEON_AKTIF.exe</span>
+              <span className="text-lg sm:text-xl md:text-2xl">🤖</span>
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
           </Button>

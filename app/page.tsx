@@ -404,7 +404,7 @@ export default async function HomePage() {
                           </Link>
                           <div className="h-4 w-px bg-gray-200" />
                           <Link
-                            href={`/templates/${template.slug}`}
+                            href={`/templates/${template.slug}/preview`}
                             className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors group/link"
                           >
                             Hediyeyi İncele

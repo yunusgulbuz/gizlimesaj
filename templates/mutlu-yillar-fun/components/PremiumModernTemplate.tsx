@@ -9,18 +9,50 @@ interface PremiumModernTemplateProps {
   wishMessage?: string;
   footerMessage?: string;
   creatorName?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
-function PremiumModernTemplate({ 
-  recipientName, 
-  mainMessage, 
-  wishMessage, 
-  footerMessage, 
-  creatorName 
+function PremiumModernTemplate({
+  recipientName,
+  mainMessage,
+  wishMessage,
+  footerMessage,
+  creatorName,
+  isEditable = false,
+  onTextFieldChange
 }: PremiumModernTemplateProps) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, size: number, delay: number}>>([]);
   const [spheres, setSpheres] = useState<Array<{id: number, x: number, y: number, rotation: number}>>([]);
+
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMainMessage, setLocalMainMessage] = useState(mainMessage);
+  const [localWishMessage, setLocalWishMessage] = useState(wishMessage || '');
+  const [localFooterMessage, setLocalFooterMessage] = useState(footerMessage || '');
+
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalMainMessage(mainMessage);
+    setLocalWishMessage(wishMessage || '');
+    setLocalFooterMessage(footerMessage || '');
+  }, [recipientName, mainMessage, wishMessage, footerMessage]);
+
+  const handleContentChange = (key: string, value: string) => {
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'mainMessage') setLocalMainMessage(value);
+    else if (key === 'wishMessage') setLocalWishMessage(value);
+    else if (key === 'footerMessage') setLocalFooterMessage(value);
+
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  const displayRecipientName = isEditable ? localRecipientName : recipientName;
+  const displayMainMessage = isEditable ? localMainMessage : mainMessage;
+  const displayWishMessage = isEditable ? localWishMessage : wishMessage;
+  const displayFooterMessage = isEditable ? localFooterMessage : footerMessage;
 
   useEffect(() => {
     // Create floating golden particles
@@ -120,10 +152,10 @@ function PremiumModernTemplate({
         ))}
 
         {/* Main Content */}
-        <div className="relative z-20 text-center space-y-8 p-8 max-w-4xl">
+        <div className="relative z-20 text-center space-y-4 sm:space-y-6 md:space-y-8 p-4 sm:p-6 md:p-8 max-w-4xl">
           {showCelebration && creatorName && (
-            <div className="text-center mb-6">
-              <p className="text-sm text-white" style={{
+            <div className="text-center mb-4 sm:mb-6">
+              <p className="text-xs sm:text-sm text-white break-words" style={{
                 textShadow: '2px 2px 4px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,1)',
                 background: 'rgba(0,0,0,0.8)',
                 padding: '8px 16px',
@@ -138,8 +170,8 @@ function PremiumModernTemplate({
 
           {/* 3D Metallic Title */}
           <div className="relative">
-            <h1 
-              className="text-6xl md:text-8xl font-bold mb-8 animate-pulse"
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-4 sm:mb-6 md:mb-8 animate-pulse break-words"
               style={{
                 background: 'linear-gradient(45deg, #ffd700, #ffed4e, #ffd700, #b8860b)',
                 backgroundSize: '400% 400%',
@@ -151,7 +183,7 @@ function PremiumModernTemplate({
             >
               MUTLU YILLAR
             </h1>
-            <div className="absolute inset-0 text-6xl md:text-8xl font-bold opacity-30 blur-sm"
+            <div className="absolute inset-0 text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold opacity-30 blur-sm break-words"
                  style={{
                    background: 'linear-gradient(45deg, #ffd700, #ffed4e)',
                    WebkitBackgroundClip: 'text',
@@ -163,28 +195,48 @@ function PremiumModernTemplate({
           </div>
 
           {showCelebration && (
-            <h2 className="text-2xl md:text-4xl text-white font-bold mb-6 drop-shadow-lg">
-              {recipientName ? `${recipientName}!` : 'Sevgili Dostum!'}
+            <h2
+              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-bold mb-4 sm:mb-6 drop-shadow-lg break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+            >
+              {displayRecipientName ? `${displayRecipientName}!` : 'Sevgili Dostum!'}
             </h2>
           )}
 
           {showCelebration && (
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 border border-gold-500/30 shadow-2xl">
-              <p className="text-xl md:text-2xl text-black leading-relaxed font-medium">
-                {mainMessage}
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-gold-500/30 shadow-2xl">
+              <p
+                className={`text-base sm:text-lg md:text-xl lg:text-2xl text-black leading-relaxed font-medium break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              >
+                {displayMainMessage}
               </p>
             </div>
           )}
 
-          {showCelebration && wishMessage && (
-            <div className="text-lg md:text-xl text-white font-semibold animate-pulse drop-shadow-lg bg-black/30 rounded-lg p-4">
-              {wishMessage}
+          {showCelebration && displayWishMessage && (
+            <div
+              className={`text-base sm:text-lg md:text-xl text-white font-semibold animate-pulse drop-shadow-lg bg-black/30 rounded-lg p-4 break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent || '')}
+            >
+              {displayWishMessage}
             </div>
           )}
 
-          {showCelebration && footerMessage && (
-            <div className="text-lg text-white font-medium mt-8 drop-shadow-lg bg-black/30 rounded-lg p-4">
-              {footerMessage}
+          {showCelebration && displayFooterMessage && (
+            <div
+              className={`text-base sm:text-lg text-white font-medium mt-4 sm:mt-6 md:mt-8 drop-shadow-lg bg-black/30 rounded-lg p-4 break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+            >
+              {displayFooterMessage}
             </div>
           )}
 
@@ -266,11 +318,11 @@ function PremiumModernTemplate({
       ))}
 
       {/* Main Content */}
-      <div className="relative z-10 text-center space-y-8 p-8 max-w-4xl">
+      <div className="relative z-10 text-center space-y-4 sm:space-y-6 md:space-y-8 p-4 sm:p-6 md:p-8 max-w-4xl">
         {!showCelebration && (
           <div className="text-center">
-            <h1 
-              className="text-5xl md:text-7xl font-bold mb-8"
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 md:mb-8 break-words"
               style={{
                 background: 'linear-gradient(45deg, #ffd700, #ffed4e, #ffd700)',
                 backgroundSize: '200% 200%',
@@ -282,10 +334,10 @@ function PremiumModernTemplate({
             >
               MUTLU YILLAR
             </h1>
-            <p className="text-white text-xl mb-8" style={{
+            <p className="text-white text-base sm:text-lg md:text-xl mb-4 sm:mb-6 md:mb-8 break-words" style={{
               textShadow: '2px 2px 4px rgba(0,0,0,1)',
               background: 'rgba(0,0,0,0.8)',
-              padding: '16px 24px',
+              padding: '12px 16px',
               borderRadius: '12px',
               border: '1px solid rgba(255,215,0,0.3)',
               backdropFilter: 'blur(5px)'
@@ -296,8 +348,8 @@ function PremiumModernTemplate({
         )}
 
         {showCelebration && creatorName && (
-          <div className="text-center mb-6">
-            <p className="text-sm text-white" style={{
+          <div className="text-center mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm text-white break-words" style={{
               textShadow: '2px 2px 4px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,1)',
               background: 'rgba(0,0,0,0.8)',
               padding: '8px 16px',
@@ -311,8 +363,8 @@ function PremiumModernTemplate({
         )}
 
         {showCelebration && (
-          <h1 
-            className="text-5xl md:text-7xl font-bold mb-8"
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 md:mb-8 break-words"
             style={{
               background: 'linear-gradient(45deg, #ffd700, #ffed4e, #ffd700)',
               backgroundSize: '200% 200%',
@@ -327,67 +379,93 @@ function PremiumModernTemplate({
         )}
 
         {showCelebration && (
-          <h2 className="text-2xl md:text-4xl text-white font-bold mb-6" style={{
-            textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.8), 2px 2px 0px rgba(0,0,0,1)',
-            background: 'rgba(0,0,0,0.95)',
-            padding: '12px 20px',
-            borderRadius: '12px',
-            border: '3px solid rgba(255,255,255,0.4)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            {recipientName ? `${recipientName}!` : 'Sevgili Dostum!'}
+          <h2
+            className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-bold mb-4 sm:mb-6 break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+            style={{
+              textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.8), 2px 2px 0px rgba(0,0,0,1)',
+              background: 'rgba(0,0,0,0.95)',
+              padding: '12px 20px',
+              borderRadius: '12px',
+              border: '3px solid rgba(255,255,255,0.4)',
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            {displayRecipientName ? `${displayRecipientName}!` : 'Sevgili Dostum!'}
           </h2>
         )}
 
         {showCelebration && (
-          <div className="backdrop-blur-sm rounded-2xl p-8 border border-gold-500/30 shadow-2xl" style={{
+          <div className="backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-gold-500/30 shadow-2xl" style={{
             background: 'rgba(0,0,0,0.95)',
             border: '3px solid rgba(255,215,0,0.7)',
             backdropFilter: 'blur(15px)'
           }}>
-            <p className="text-xl md:text-2xl leading-relaxed font-medium" style={{
-              color: '#ffffff',
-              textShadow: '3px 3px 6px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,1), 0 0 35px rgba(255,255,255,0.6), 1px 1px 0px rgba(0,0,0,1)'
-            }}>
-              {mainMessage}
+            <p
+              className={`text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed font-medium break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              style={{
+                color: '#ffffff',
+                textShadow: '3px 3px 6px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,1), 0 0 35px rgba(255,255,255,0.6), 1px 1px 0px rgba(0,0,0,1)'
+              }}
+            >
+              {displayMainMessage}
             </p>
           </div>
         )}
 
-        {showCelebration && wishMessage && (
-          <div className="text-lg md:text-xl font-semibold animate-pulse rounded-lg p-4" style={{
-            color: '#ffffff',
-            textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.7), 2px 2px 0px rgba(0,0,0,1)',
-            background: 'rgba(0,0,0,0.95)',
-            border: '2px solid rgba(255,255,255,0.5)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            {wishMessage}
+        {showCelebration && displayWishMessage && (
+          <div
+            className={`text-base sm:text-lg md:text-xl font-semibold animate-pulse rounded-lg p-4 break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent || '')}
+            style={{
+              color: '#ffffff',
+              textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.7), 2px 2px 0px rgba(0,0,0,1)',
+              background: 'rgba(0,0,0,0.95)',
+              border: '2px solid rgba(255,255,255,0.5)',
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            {displayWishMessage}
           </div>
         )}
 
-        {showCelebration && footerMessage && (
-          <div className="text-lg font-medium mt-8 rounded-lg p-4" style={{
-            color: '#ffffff',
-            textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.7), 2px 2px 0px rgba(0,0,0,1)',
-            background: 'rgba(0,0,0,0.95)',
-            border: '2px solid rgba(255,255,255,0.5)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            {footerMessage}
+        {showCelebration && displayFooterMessage && (
+          <div
+            className={`text-base sm:text-lg font-medium mt-4 sm:mt-6 md:mt-8 rounded-lg p-4 break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+            style={{
+              color: '#ffffff',
+              textShadow: '4px 4px 8px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(255,255,255,0.7), 2px 2px 0px rgba(0,0,0,1)',
+              background: 'rgba(0,0,0,0.95)',
+              border: '2px solid rgba(255,255,255,0.5)',
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            {displayFooterMessage}
           </div>
         )}
 
         <Button
           onClick={handleCelebrationStart}
-          className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-bold px-12 py-6 rounded-full text-xl transition-all duration-300 shadow-2xl border-2 border-gold-400 relative overflow-hidden group"
+          className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-bold px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 rounded-full text-base sm:text-lg md:text-xl transition-all duration-300 shadow-2xl border-2 border-gold-400 relative overflow-hidden group"
           style={{
             boxShadow: '0 0 30px rgba(255, 215, 0, 0.5)',
             textShadow: '2px 2px 4px rgba(0,0,0,1)'
           }}
         >
-          <span className="relative z-10 flex items-center gap-3">
-            ✨ Kutlamayı Başlat ✨
+          <span className="relative z-10 flex items-center gap-1 sm:gap-2 md:gap-3">
+            <span className="text-lg sm:text-xl md:text-2xl">✨</span>
+            <span className="break-words">Kutlamayı Başlat</span>
+            <span className="text-lg sm:text-xl md:text-2xl">✨</span>
           </span>
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
         </Button>

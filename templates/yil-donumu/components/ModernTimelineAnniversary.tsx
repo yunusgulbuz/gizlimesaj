@@ -8,6 +8,8 @@ interface ModernTimelineAnniversaryProps {
   creatorName?: string;
   textFields?: TemplateTextFields;
   primaryMessage?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
 interface TimelineEvent {
@@ -25,13 +27,51 @@ export default function ModernTimelineAnniversary({
   recipientName,
   creatorName,
   textFields,
-  primaryMessage
+  primaryMessage,
+  isEditable = false,
+  onTextFieldChange
 }: ModernTimelineAnniversaryProps) {
+  // Local editable state
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localHeadline, setLocalHeadline] = useState('');
+  const [localIntro, setLocalIntro] = useState('');
+  const [localCtaLabel, setLocalCtaLabel] = useState('');
+  const [localClosing, setLocalClosing] = useState('');
+  const [localFinalMessage, setLocalFinalMessage] = useState('');
+
   const sharedMessage = textFields?.mainMessage || primaryMessage;
-  const headline = textFields?.headlineMessage || 'Zamanda Yolculuk';
-  const intro = textFields?.timelineIntro || sharedMessage || 'Birlikte geçirdiğimiz her an, yıldızlarla dans eden sonsuz bir hikaye.';
-  const ctaLabel = textFields?.timelineCta || 'Birlikte Geçen Yıllarımız';
-  const closingMessage = textFields?.timelineClosing || 'Mutlu Yıl Dönümü';
+
+  // Initialize local state with text fields
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalHeadline(textFields?.headlineMessage || 'Zamanda Yolculuk');
+    setLocalIntro(textFields?.timelineIntro || sharedMessage || 'Birlikte geçirdiğimiz her an, yıldızlarla dans eden sonsuz bir hikaye.');
+    setLocalCtaLabel(textFields?.timelineCta || 'Birlikte Geçen Yıllarımız');
+    setLocalClosing(textFields?.timelineClosing || 'Mutlu Yıl Dönümü');
+    setLocalFinalMessage(textFields?.timelineFinalMessage || sharedMessage || 'Geçmişten geleceğe uzanan bu yolculukta, her anı birlikte yeniden yazmaya devam edelim.');
+  }, [recipientName, textFields, sharedMessage]);
+
+  // Handle content change
+  const handleContentChange = (key: string, value: string) => {
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'headlineMessage') setLocalHeadline(value);
+    else if (key === 'timelineIntro') setLocalIntro(value);
+    else if (key === 'timelineCta') setLocalCtaLabel(value);
+    else if (key === 'timelineClosing') setLocalClosing(value);
+    else if (key === 'timelineFinalMessage') setLocalFinalMessage(value);
+
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  // Get display values
+  const headline = isEditable ? localHeadline : (textFields?.headlineMessage || 'Zamanda Yolculuk');
+  const intro = isEditable ? localIntro : (textFields?.timelineIntro || sharedMessage || 'Birlikte geçirdiğimiz her an, yıldızlarla dans eden sonsuz bir hikaye.');
+  const ctaLabel = isEditable ? localCtaLabel : (textFields?.timelineCta || 'Birlikte Geçen Yıllarımız');
+  const closingMessage = isEditable ? localClosing : (textFields?.timelineClosing || 'Mutlu Yıl Dönümü');
+  const finalMessage = isEditable ? localFinalMessage : (textFields?.timelineFinalMessage || sharedMessage || 'Geçmişten geleceğe uzanan bu yolculukta, her anı birlikte yeniden yazmaya devam edelim.');
+  const displayRecipientName = isEditable ? localRecipientName : recipientName;
 
   const events = useMemo<TimelineEvent[]>(() => {
     const raw = (textFields?.timelineEvents && textFields.timelineEvents.trim().length > 0)
@@ -115,17 +155,27 @@ export default function ModernTimelineAnniversary({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-16 md:px-10">
-        <div className="text-center mb-8 md:mb-12">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 py-12 sm:py-16">
+        <div className="text-center mb-6 sm:mb-8 md:mb-12">
           {creatorName && (
-            <p className="mb-4 text-xs uppercase tracking-[0.3em] text-white/60">
+            <p className="mb-3 sm:mb-4 text-xs uppercase tracking-[0.3em] text-white/60">
               Hazırlayan: {creatorName}
             </p>
           )}
-          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-white/90">
+          <h1
+            className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white/90 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('headlineMessage', e.currentTarget.textContent || '')}
+          >
             {headline}
           </h1>
-          <p className="mt-4 max-w-2xl text-sm md:text-base text-white/70">
+          <p
+            className={`mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base md:text-lg text-white/70 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('timelineIntro', e.currentTarget.textContent || '')}
+          >
             {intro}
           </p>
         </div>
@@ -134,13 +184,13 @@ export default function ModernTimelineAnniversary({
           {/* 3D Ribbon */}
           <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-amber-200 via-amber-400 to-amber-200 opacity-80" style={{ boxShadow: '0 0 30px rgba(251, 191, 36, 0.35)' }}></div>
 
-          <div className="grid gap-8 md:grid-cols-2 md:gap-10">
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-2 md:gap-10">
             {events.map((event, index) => {
               const isActive = index === activeIndex;
               return (
                 <div
                   key={`${event.title}-${index}`}
-                  className={`relative rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all duration-700 md:p-8 ${
+                  className={`relative rounded-2xl sm:rounded-3xl border border-white/10 bg-white/5 p-4 sm:p-6 md:p-8 backdrop-blur-md transition-all duration-700 ${
                     isActive ? 'border-amber-400/80 bg-amber-400/10 ring-2 ring-amber-400/40 shadow-xl shadow-amber-500/20' : 'opacity-70'
                   }`}
                   style={{
@@ -149,14 +199,14 @@ export default function ModernTimelineAnniversary({
                   }}
                 >
                   <div className="absolute -left-4 top-6 hidden h-2 w-2 rounded-full bg-amber-300 shadow-lg shadow-amber-500/50 md:block"></div>
-                  <div className="flex flex-col gap-3">
-                    <span className="text-xs uppercase tracking-[0.25em] text-amber-200">
+                  <div className="flex flex-col gap-2 sm:gap-3">
+                    <span className="text-xs uppercase tracking-[0.25em] text-amber-200 break-words">
                       {event.date}
                     </span>
-                    <h3 className="text-xl md:text-2xl font-semibold text-white">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white break-words">
                       {event.title}
                     </h3>
-                    <p className="text-sm md:text-base leading-relaxed text-white/75">
+                    <p className="text-sm sm:text-base md:text-lg leading-relaxed text-white/75 break-words">
                       {event.description}
                     </p>
                   </div>
@@ -166,33 +216,51 @@ export default function ModernTimelineAnniversary({
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center gap-4">
+        <div className="mt-8 sm:mt-10 md:mt-12 flex flex-col items-center gap-3 sm:gap-4">
           <button
             onClick={() => setShowFinale(true)}
-            className="rounded-full border border-amber-300/60 bg-amber-200/20 px-8 py-3 text-sm md:text-base font-semibold uppercase tracking-[0.3em] text-amber-100 transition-all duration-300 hover:scale-105 hover:bg-amber-300/30 focus:outline-none"
+            className={`rounded-full border border-amber-300/60 bg-amber-200/20 px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm md:text-base font-semibold uppercase tracking-[0.3em] text-amber-100 transition-all duration-300 hover:scale-105 hover:bg-amber-300/30 focus:outline-none break-words ${isEditable ? 'hover:bg-amber-300/40 cursor-text' : ''}`}
             style={{ boxShadow: '0 0 20px rgba(251, 191, 36, 0.35)' }}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('timelineCta', e.currentTarget.textContent || '')}
           >
             {ctaLabel}
           </button>
-          <p className="text-xs text-white/60">
-            {recipientName ? `${recipientName} ile yazılan yıldızlı hikaye` : 'Yıldızların izinde bir aşk hikayesi'}
+          <p
+            className={`text-xs sm:text-sm text-white/60 text-center break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent?.replace(' ile yazılan yıldızlı hikaye', '') || '')}
+          >
+            {displayRecipientName ? `${displayRecipientName} ile yazılan yıldızlı hikaye` : 'Yıldızların izinde bir aşk hikayesi'}
           </p>
         </div>
       </div>
 
       {showFinale && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl">
-          <div className="relative flex max-w-3xl flex-col items-center gap-6 rounded-3xl border border-amber-200/30 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 px-6 py-10 text-center md:px-16">
-            <div className="text-5xl md:text-6xl">💫</div>
-            <h2 className="text-3xl md:text-5xl font-semibold text-amber-200">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-4">
+          <div className="relative flex max-w-3xl flex-col items-center gap-4 sm:gap-6 rounded-2xl sm:rounded-3xl border border-amber-200/30 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-6 sm:p-8 md:p-10 lg:px-16 text-center">
+            <div className="text-4xl sm:text-5xl md:text-6xl">💫</div>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-amber-200 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('timelineClosing', e.currentTarget.textContent || '')}
+            >
               {closingMessage}
             </h2>
-            <p className="max-w-xl text-sm md:text-lg text-white/75 leading-relaxed">
-              {textFields?.timelineFinalMessage || sharedMessage || 'Geçmişten geleceğe uzanan bu yolculukta, her anı birlikte yeniden yazmaya devam edelim.'}
+            <p
+              className={`max-w-xl text-sm sm:text-base md:text-lg text-white/75 leading-relaxed break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('timelineFinalMessage', e.currentTarget.textContent || '')}
+            >
+              {finalMessage}
             </p>
             <button
               onClick={() => setShowFinale(false)}
-              className="rounded-full border border-white/20 bg-white/10 px-6 py-2 text-xs uppercase tracking-[0.35em] text-white/80 transition hover:bg-white/20"
+              className="rounded-full border border-white/20 bg-white/10 px-5 sm:px-6 py-2 text-xs sm:text-sm uppercase tracking-[0.35em] text-white/80 transition hover:bg-white/20"
             >
               Devam Et
             </button>

@@ -10,6 +10,8 @@ interface OzurDilerimClassicTemplateProps {
   designStyle: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
   creatorName?: string;
   textFields?: TemplateTextFields;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
 export default function OzurDilerimClassicTemplate({
@@ -17,11 +19,23 @@ export default function OzurDilerimClassicTemplate({
   message,
   designStyle,
   creatorName,
-  textFields
+  textFields,
+  isEditable = false,
+  onTextFieldChange
 }: OzurDilerimClassicTemplateProps) {
   const [showAcceptButton, setShowAcceptButton] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
+
+  // Local editable state
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMainMessage, setLocalMainMessage] = useState('');
+
+  // Initialize local state with text fields
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalMainMessage(textFields?.mainMessage || message || "Yaptığım hata için gerçekten çok üzgünüm. Seni kırdığım için kendimi affetmiyorum. Umarım beni anlayışla karşılar ve özrümü kabul edersin.");
+  }, [recipientName, message, textFields]);
 
   useEffect(() => {
     // Show accept button after 3 seconds
@@ -32,6 +46,22 @@ export default function OzurDilerimClassicTemplate({
     return () => clearTimeout(timer);
   }, []);
 
+  // Handle content change
+  const handleContentChange = (key: string, value: string) => {
+    // Update local state immediately
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'mainMessage') setLocalMainMessage(value);
+
+    // Notify parent component
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  // Get text values - use local state if editable, otherwise use props
+  const displayRecipientName = isEditable ? localRecipientName : (textFields?.recipientName || recipientName);
+  const displayMainMessage = isEditable ? localMainMessage : (textFields?.mainMessage || message || "Yaptığım hata için gerçekten çok üzgünüm. Seni kırdığım için kendimi affetmiyorum. Umarım beni anlayışla karşılar ve özrümü kabul edersin.");
+
   const handleAccept = () => {
     setIsAccepted(true);
     setShowAnimation(true);
@@ -41,29 +71,45 @@ export default function OzurDilerimClassicTemplate({
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center relative overflow-hidden">
       {/* Cinematic curtain effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/10 to-transparent animate-pulse"></div>
-      
+
       {/* Spotlight effect */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-radial from-white/20 to-transparent rounded-full blur-3xl"></div>
-      
-      <div className="max-w-4xl mx-auto p-8 text-center relative z-10">
+
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8 text-center relative z-10">
         {creatorName && (
-          <div className="mb-6">
-            <p className="text-sm text-gray-300">Hazırlayan: {creatorName}</p>
+          <div className="mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm text-gray-300">Hazırlayan: {creatorName}</p>
           </div>
         )}
-        
-        <div className="mb-12">
-          <h1 className="text-7xl font-bold text-white mb-6 drop-shadow-2xl">
-            {recipientName ? `${recipientName},` : 'Sevgili Arkadaşım,'}
+
+        <div className="mb-8 sm:mb-10 md:mb-12">
+          <h1
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 drop-shadow-2xl break-words"
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+            style={isEditable ? { cursor: 'text', transition: 'background 0.3s' } : {}}
+            onMouseEnter={(e) => isEditable && (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+            onMouseLeave={(e) => isEditable && (e.currentTarget.style.background = 'transparent')}
+          >
+            {displayRecipientName ? `${displayRecipientName},` : 'Sevgili Arkadaşım,'}
           </h1>
-          <h2 className="text-5xl text-red-400 font-light mb-8 animate-pulse">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl text-red-400 font-light mb-6 sm:mb-8 animate-pulse">
             Özür Dilerim
           </h2>
         </div>
-        
-        <div className="bg-black/30 backdrop-blur-sm p-8 rounded-lg border border-red-500/30 mb-12">
-          <p className="text-xl text-gray-200 leading-relaxed">
-            {message || "Yaptığım hata için gerçekten çok üzgünüm. Seni kırdığım için kendimi affetmiyorum. Umarım beni anlayışla karşılar ve özrümü kabul edersin."}
+
+        <div className="bg-black/30 backdrop-blur-sm p-4 sm:p-6 md:p-8 rounded-lg border border-red-500/30 mb-8 sm:mb-10 md:mb-12">
+          <p
+            className="text-base sm:text-lg md:text-xl text-gray-200 leading-relaxed break-words"
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+            style={isEditable ? { cursor: 'text', transition: 'background 0.3s', padding: '0.5rem', borderRadius: '0.5rem' } : {}}
+            onMouseEnter={(e) => isEditable && (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+            onMouseLeave={(e) => isEditable && (e.currentTarget.style.background = 'transparent')}
+          >
+            {displayMainMessage}
           </p>
         </div>
         
@@ -110,32 +156,48 @@ export default function OzurDilerimClassicTemplate({
           </div>
         ))}
       </div>
-      
-      <div className="max-w-3xl mx-auto p-8 text-center relative z-10">
+
+      <div className="max-w-3xl mx-auto p-4 sm:p-6 md:p-8 text-center relative z-10">
         {creatorName && (
-          <div className="mb-6">
-            <p className="text-sm text-amber-700">Hazırlayan: {creatorName}</p>
+          <div className="mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm text-amber-700">Hazırlayan: {creatorName}</p>
           </div>
         )}
-        
+
         {/* Envelope effect */}
-        <div className="bg-gradient-to-br from-amber-100 to-rose-100 p-12 rounded-lg shadow-2xl border-4 border-amber-200 relative">
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-rose-300 rounded-full flex items-center justify-center">
+        <div className="bg-gradient-to-br from-amber-100 to-rose-100 p-6 sm:p-8 md:p-12 rounded-lg shadow-2xl border-4 border-amber-200 relative">
+          <div className="absolute -top-4 sm:-top-6 left-1/2 transform -translate-x-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-rose-300 rounded-full flex items-center justify-center text-xl sm:text-2xl">
             💌
           </div>
-          
-          <div className="mb-8">
-            <h1 className="text-5xl font-serif text-amber-800 mb-4">
-              {recipientName ? `Sevgili ${recipientName},` : 'Sevgili Arkadaşım,'}
+
+          <div className="mb-6 sm:mb-8">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-serif text-amber-800 mb-3 sm:mb-4 break-words"
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+              style={isEditable ? { cursor: 'text', transition: 'background 0.3s', padding: '0.5rem', borderRadius: '0.5rem' } : {}}
+              onMouseEnter={(e) => isEditable && (e.currentTarget.style.background = 'rgba(255,255,255,0.3)')}
+              onMouseLeave={(e) => isEditable && (e.currentTarget.style.background = 'transparent')}
+            >
+              {displayRecipientName ? `Sevgili ${displayRecipientName},` : 'Sevgili Arkadaşım,'}
             </h1>
-            <h2 className="text-4xl text-rose-600 font-serif italic mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl text-rose-600 font-serif italic mb-4 sm:mb-6">
               Özür Dilerim
             </h2>
           </div>
-          
-          <div className="bg-white/70 p-6 rounded-lg border-2 border-rose-200 mb-8">
-            <p className="text-lg text-amber-900 leading-relaxed font-serif">
-              {message || "Yaptığım hata için gerçekten çok üzgünüm. Seni kırdığım için kendimi affetmiyorum. Umarım beni anlayışla karşılar ve özrümü kabul edersin."}
+
+          <div className="bg-white/70 p-4 sm:p-6 rounded-lg border-2 border-rose-200 mb-6 sm:mb-8">
+            <p
+              className="text-base sm:text-lg text-amber-900 leading-relaxed font-serif break-words"
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+              style={isEditable ? { cursor: 'text', transition: 'background 0.3s', padding: '0.5rem', borderRadius: '0.5rem' } : {}}
+              onMouseEnter={(e) => isEditable && (e.currentTarget.style.background = 'rgba(255,255,255,0.3)')}
+              onMouseLeave={(e) => isEditable && (e.currentTarget.style.background = 'transparent')}
+            >
+              {displayMainMessage}
             </p>
           </div>
           
@@ -178,26 +240,42 @@ export default function OzurDilerimClassicTemplate({
 
   const renderMinimalistStyle = () => (
     <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="max-w-2xl mx-auto p-8 text-center">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 md:p-8 text-center">
         {creatorName && (
-          <div className="mb-6">
-            <p className="text-sm text-gray-500">Hazırlayan: {creatorName}</p>
+          <div className="mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm text-gray-500">Hazırlayan: {creatorName}</p>
           </div>
         )}
-        
-        <div className="mb-12">
-          <div className="text-6xl mb-8 animate-pulse">💙</div>
-          <h1 className="text-4xl font-light text-gray-900 mb-4">
-            {recipientName ? `${recipientName},` : 'Sevgili Arkadaşım,'}
+
+        <div className="mb-8 sm:mb-10 md:mb-12">
+          <div className="text-4xl sm:text-5xl md:text-6xl mb-6 sm:mb-8 animate-pulse">💙</div>
+          <h1
+            className="text-2xl sm:text-3xl md:text-4xl font-light text-gray-900 mb-3 sm:mb-4 break-words"
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+            style={isEditable ? { cursor: 'text', transition: 'background 0.3s', padding: '0.5rem', borderRadius: '0.5rem' } : {}}
+            onMouseEnter={(e) => isEditable && (e.currentTarget.style.background = 'rgba(0,0,0,0.05)')}
+            onMouseLeave={(e) => isEditable && (e.currentTarget.style.background = 'transparent')}
+          >
+            {displayRecipientName ? `${displayRecipientName},` : 'Sevgili Arkadaşım,'}
           </h1>
-          <h2 className="text-3xl text-blue-400 font-thin mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl text-blue-400 font-thin mb-6 sm:mb-8">
             Özür Dilerim
           </h2>
         </div>
-        
-        <div className="border-l-4 border-blue-400 pl-6 mb-12">
-          <p className="text-lg text-gray-700 leading-relaxed font-light">
-            {message || "Yaptığım hata için gerçekten çok üzgünüm. Seni kırdığım için kendimi affetmiyorum. Umarım beni anlayışla karşılar ve özrümü kabul edersin."}
+
+        <div className="border-l-4 border-blue-400 pl-4 sm:pl-6 mb-8 sm:mb-10 md:mb-12">
+          <p
+            className="text-base sm:text-lg text-gray-700 leading-relaxed font-light break-words"
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+            style={isEditable ? { cursor: 'text', transition: 'background 0.3s', padding: '0.5rem', borderRadius: '0.5rem' } : {}}
+            onMouseEnter={(e) => isEditable && (e.currentTarget.style.background = 'rgba(0,0,0,0.05)')}
+            onMouseLeave={(e) => isEditable && (e.currentTarget.style.background = 'transparent')}
+          >
+            {displayMainMessage}
           </p>
         </div>
         
@@ -244,29 +322,45 @@ export default function OzurDilerimClassicTemplate({
           </div>
         ))}
       </div>
-      
-      <div className="max-w-3xl mx-auto p-8 text-center relative z-10">
+
+      <div className="max-w-3xl mx-auto p-4 sm:p-6 md:p-8 text-center relative z-10">
         {creatorName && (
-          <div className="mb-6">
-            <p className="text-sm text-white/80">Hazırlayan: {creatorName}</p>
+          <div className="mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm text-white/80">Hazırlayan: {creatorName}</p>
           </div>
         )}
-        
-        <div className="mb-8">
-          <div className="text-8xl mb-4 animate-bounce">😔</div>
-          <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-lg comic-font">
-            {recipientName ? `${recipientName}!` : 'Hey Dostum!'}
+
+        <div className="mb-6 sm:mb-8">
+          <div className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl mb-3 sm:mb-4 animate-bounce">😔</div>
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 drop-shadow-lg comic-font break-words"
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+            style={isEditable ? { cursor: 'text', transition: 'background 0.3s', padding: '0.5rem', borderRadius: '1.5rem' } : {}}
+            onMouseEnter={(e) => isEditable && (e.currentTarget.style.background = 'rgba(255,255,255,0.2)')}
+            onMouseLeave={(e) => isEditable && (e.currentTarget.style.background = 'transparent')}
+          >
+            {displayRecipientName ? `${displayRecipientName}!` : 'Hey Dostum!'}
           </h1>
-          <div className="bg-white/90 p-6 rounded-3xl shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-300">
-            <h2 className="text-4xl text-purple-600 font-bold comic-font">
+          <div className="bg-white/90 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-300">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl text-purple-600 font-bold comic-font">
               Özür Dilerim! 🙏
             </h2>
           </div>
         </div>
-        
-        <div className="bg-white/90 p-8 rounded-3xl shadow-2xl mb-8 transform -rotate-1 hover:rotate-0 transition-transform duration-300">
-          <p className="text-xl text-gray-800 leading-relaxed comic-font">
-            {message || "Yaptığım hata için gerçekten çok üzgünüm. Seni kırdığım için kendimi affetmiyorum. Umarım beni anlayışla karşılar ve özrümü kabul edersin."}
+
+        <div className="bg-white/90 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl shadow-2xl mb-6 sm:mb-8 transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+          <p
+            className="text-base sm:text-lg md:text-xl text-gray-800 leading-relaxed comic-font break-words"
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+            style={isEditable ? { cursor: 'text', transition: 'background 0.3s', padding: '0.5rem', borderRadius: '1rem' } : {}}
+            onMouseEnter={(e) => isEditable && (e.currentTarget.style.background = 'rgba(0,0,0,0.05)')}
+            onMouseLeave={(e) => isEditable && (e.currentTarget.style.background = 'transparent')}
+          >
+            {displayMainMessage}
           </p>
         </div>
         

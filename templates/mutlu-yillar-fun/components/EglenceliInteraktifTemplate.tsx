@@ -11,6 +11,8 @@ interface EglenceliInteraktifTemplateProps {
   footerMessage?: string;
   creatorName?: string;
   shortId?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
 interface Gift {
@@ -22,13 +24,15 @@ interface Gift {
   collected: boolean;
 }
 
-function EglenceliInteraktifTemplate({ 
-  recipientName, 
-  mainMessage, 
-  wishMessage, 
-  footerMessage, 
+function EglenceliInteraktifTemplate({
+  recipientName,
+  mainMessage,
+  wishMessage,
+  footerMessage,
   creatorName,
-  shortId
+  shortId,
+  isEditable = false,
+  onTextFieldChange
 }: EglenceliInteraktifTemplateProps) {
   const analytics = shortId ? createAnalyticsTracker(shortId) : null;
   const [gameStarted, setGameStarted] = useState(false);
@@ -40,8 +44,36 @@ function EglenceliInteraktifTemplate({
   const [fireworks, setFireworks] = useState<Array<{id: number, x: number, y: number, color: string}>>([]);
   const [showCelebration, setShowCelebration] = useState(false);
 
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMainMessage, setLocalMainMessage] = useState(mainMessage);
+  const [localWishMessage, setLocalWishMessage] = useState(wishMessage || '');
+  const [localFooterMessage, setLocalFooterMessage] = useState(footerMessage || '');
+
   const giftEmojis = ['🎁', '🎀', '🎊', '🎉', '⭐', '💎', '🏆', '🎈', '🍰', '🎂'];
   const fireworkColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8'];
+
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalMainMessage(mainMessage);
+    setLocalWishMessage(wishMessage || '');
+    setLocalFooterMessage(footerMessage || '');
+  }, [recipientName, mainMessage, wishMessage, footerMessage]);
+
+  const handleContentChange = (key: string, value: string) => {
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'mainMessage') setLocalMainMessage(value);
+    else if (key === 'wishMessage') setLocalWishMessage(value);
+    else if (key === 'footerMessage') setLocalFooterMessage(value);
+
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  const displayRecipientName = isEditable ? localRecipientName : recipientName;
+  const displayMainMessage = isEditable ? localMainMessage : mainMessage;
+  const displayWishMessage = isEditable ? localWishMessage : wishMessage;
+  const displayFooterMessage = isEditable ? localFooterMessage : footerMessage;
 
   useEffect(() => {
     // Create snowflakes
@@ -164,10 +196,10 @@ function EglenceliInteraktifTemplate({
         ))}
 
         {/* Main Content */}
-        <div className="relative z-20 text-center space-y-8 p-8 max-w-4xl">
+        <div className="relative z-20 text-center space-y-4 sm:space-y-6 md:space-y-8 p-4 sm:p-6 md:p-8 max-w-4xl">
           {creatorName && (
-            <div className="text-center mb-6">
-              <p className="text-sm text-purple-300/70" style={{
+            <div className="text-center mb-4 sm:mb-6">
+              <p className="text-xs sm:text-sm text-purple-300/70 break-words" style={{
                 textShadow: '2px 2px 4px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,1)',
                 background: 'rgba(0,0,0,0.8)',
                 padding: '8px 16px',
@@ -181,24 +213,29 @@ function EglenceliInteraktifTemplate({
           )}
 
           {/* Game Results */}
-          <div className="bg-white/10 backdrop-blur-md rounded-3xl p-12 border border-white/20 shadow-2xl">
-            <div className="text-6xl mb-6">🎉</div>
-            
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 animate-pulse">
+          <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 border border-white/20 shadow-2xl">
+            <div className="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6">🎉</div>
+
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 md:mb-8 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 animate-pulse break-words">
               MUTLU YILLAR!
             </h1>
 
-            <h2 className="text-2xl md:text-4xl text-white mb-8 font-bold">
-              {recipientName ? `${recipientName}` : '2025'}
+            <h2
+              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white mb-4 sm:mb-6 md:mb-8 font-bold break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+            >
+              {displayRecipientName ? `${displayRecipientName}` : '2025'}
             </h2>
 
             {/* Score Display */}
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-6 rounded-2xl mb-8 shadow-lg" style={{
+            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 sm:p-6 rounded-2xl mb-4 sm:mb-6 md:mb-8 shadow-lg" style={{
               textShadow: '2px 2px 4px rgba(0,0,0,1)'
             }}>
-              <div className="text-3xl font-bold mb-2">🏆 OYUN TAMAMLANDI! 🏆</div>
-              <div className="text-2xl font-bold">Skorun: {score} Puan!</div>
-              <div className="text-lg mt-2">
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 break-words">🏆 OYUN TAMAMLANDI! 🏆</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold break-words">Skorun: {score} Puan!</div>
+              <div className="text-sm sm:text-base md:text-lg mt-2 break-words">
                 {score >= 500 ? "🌟 Muhteşem! Hediye Avcısısın!" :
                  score >= 300 ? "🎯 Harika! Çok İyi Oynadın!" :
                  score >= 150 ? "👍 İyi! Güzel Bir Skor!" :
@@ -206,26 +243,41 @@ function EglenceliInteraktifTemplate({
               </div>
             </div>
 
-            <div className="bg-white/10 p-6 rounded-2xl mb-8">
-              <p className="text-lg md:text-xl text-white leading-relaxed">
-                "{mainMessage}"
+            <div className="bg-white/10 p-4 sm:p-6 rounded-2xl mb-4 sm:mb-6 md:mb-8">
+              <p
+                className={`text-base sm:text-lg md:text-xl text-white leading-relaxed break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent?.replace(/^"|"$/g, '') || '')}
+              >
+                "{displayMainMessage}"
               </p>
             </div>
 
-            <div className="text-2xl md:text-3xl text-yellow-300 animate-bounce font-bold">
+            <div className="text-xl sm:text-2xl md:text-3xl text-yellow-300 animate-bounce font-bold break-words">
               🎊 Yeni Yılın Kutlu Olsun! 🎊
             </div>
           </div>
 
-          {wishMessage && (
-            <div className="text-lg md:text-xl text-purple-200">
-              {wishMessage}
+          {displayWishMessage && (
+            <div
+              className={`text-base sm:text-lg md:text-xl text-purple-200 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent || '')}
+            >
+              {displayWishMessage}
             </div>
           )}
 
-          {footerMessage && (
-            <div className="text-lg text-pink-300 mt-8">
-              {footerMessage}
+          {displayFooterMessage && (
+            <div
+              className={`text-base sm:text-lg text-pink-300 mt-4 sm:mt-6 md:mt-8 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+            >
+              {displayFooterMessage}
             </div>
           )}
 
@@ -340,10 +392,10 @@ function EglenceliInteraktifTemplate({
       ))}
 
       {/* Main Content */}
-      <div className="relative z-10 text-center space-y-8 p-8 max-w-4xl">
+      <div className="relative z-10 text-center space-y-4 sm:space-y-6 md:space-y-8 p-4 sm:p-6 md:p-8 max-w-4xl">
         {creatorName && (
-          <div className="text-center mb-6">
-            <p className="text-sm text-purple-300/70" style={{
+          <div className="text-center mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm text-purple-300/70 break-words" style={{
               textShadow: '2px 2px 4px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,1)',
               background: 'rgba(0,0,0,0.8)',
               padding: '8px 16px',
@@ -357,53 +409,75 @@ function EglenceliInteraktifTemplate({
         )}
 
         {/* Welcome Card */}
-        <div className="bg-white/10 backdrop-blur-md rounded-3xl p-12 border border-white/20 shadow-2xl">
-          <div className="text-6xl mb-6 animate-bounce">🎮</div>
-          
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600">
+        <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 border border-white/20 shadow-2xl">
+          <div className="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 animate-bounce">🎮</div>
+
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 break-words">
             Mutlu Yıllar
           </h1>
 
-          <h2 className="text-xl md:text-3xl text-white mb-6 font-bold">
-            {recipientName ? `${recipientName}` : '2025'}
+          <h2
+            className={`text-base sm:text-xl md:text-2xl lg:text-3xl text-white mb-4 sm:mb-6 font-bold break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+          >
+            {displayRecipientName ? `${displayRecipientName}` : '2025'}
           </h2>
 
-          <div className="bg-white/10 p-6 rounded-2xl mb-8">
-            <p className="text-lg md:text-xl text-white leading-relaxed">
-              {mainMessage}
+          <div className="bg-white/10 p-4 sm:p-6 rounded-2xl mb-4 sm:mb-6 md:mb-8">
+            <p
+              className={`text-base sm:text-lg md:text-xl text-white leading-relaxed break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+            >
+              {displayMainMessage}
             </p>
           </div>
 
           {/* Game Description */}
-          <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 p-6 rounded-2xl mb-8 border border-white/10">
-            <div className="text-2xl mb-4">🎯 Hediye Avı Oyunu</div>
-            <p className="text-white/90 mb-4">
+          <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 p-4 sm:p-6 rounded-2xl mb-4 sm:mb-6 md:mb-8 border border-white/10">
+            <div className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4 break-words">🎯 Hediye Avı Oyunu</div>
+            <p className="text-sm sm:text-base text-white/90 mb-2 sm:mb-4 break-words">
               Yeni yıl kutlaması için özel bir oyun hazırladım! 10 saniye içinde mümkün olduğunca çok hediye topla ve yüksek skor yap!
             </p>
-            <div className="text-sm text-white/70">
+            <div className="text-xs sm:text-sm text-white/70 break-words">
               🎁 Her hediye farklı puan değerinde • ⏰ 10 saniye süren • 🏆 Skor tabanlı
             </div>
           </div>
 
           <Button
             onClick={startGame}
-            className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold px-12 py-6 rounded-full text-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+            className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 rounded-full text-base sm:text-lg md:text-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
           >
-            <span className="flex items-center gap-3">
-              🎮 Oyunu Başlat 🎮
+            <span className="flex items-center gap-1 sm:gap-2 md:gap-3">
+              <span className="text-lg sm:text-xl md:text-2xl">🎮</span>
+              <span className="break-words">Oyunu Başlat</span>
+              <span className="text-lg sm:text-xl md:text-2xl">🎮</span>
             </span>
           </Button>
         </div>
 
-        {wishMessage && (
-          <div className="text-lg md:text-xl text-purple-200">
-            {wishMessage}
+        {displayWishMessage && (
+          <div
+            className={`text-base sm:text-lg md:text-xl text-purple-200 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('wishMessage', e.currentTarget.textContent || '')}
+          >
+            {displayWishMessage}
           </div>
         )}
 
-        {footerMessage && (
-          <div className="text-lg text-pink-300 mt-8">
-            {footerMessage}
+        {displayFooterMessage && (
+          <div
+            className={`text-base sm:text-lg text-pink-300 mt-4 sm:mt-6 md:mt-8 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('footerMessage', e.currentTarget.textContent || '')}
+          >
+            {displayFooterMessage}
           </div>
         )}
       </div>

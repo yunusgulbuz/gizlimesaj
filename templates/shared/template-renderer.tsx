@@ -96,23 +96,30 @@ export default function TemplateRenderer({
           message={message}
           creatorName={creatorName}
           shortId={shortId}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
+          textFields={textFields}
         />;
         }
-        return <SeniSeviyorumTemplate 
-          recipientName={recipientName} 
-          message={message} 
+        return <SeniSeviyorumTemplate
+          recipientName={recipientName}
+          message={message}
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
           creatorName={creatorName}
           textFields={textFields}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
         />;
       case 'affet-beni':
       case 'affet-beni-classic':
-        return <AffetBeniTemplate 
-          recipientName={recipientName} 
-          message={message} 
+        return <AffetBeniTemplate
+          recipientName={recipientName}
+          message={message}
           designStyle={designStyle}
           creatorName={creatorName}
           textFields={textFields}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
         />;
       case 'evlilik-teklifi-elegant':
         return <EvlilikTeklifiTemplate
@@ -126,19 +133,24 @@ export default function TemplateRenderer({
           onTextFieldChange={onTextFieldChange}
         />;
       case 'dogum-gunu':
-        return <DogumGunuStandardTemplate 
-          recipientName={recipientName} 
-          message={message} 
-          designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
-          creatorName={creatorName}
-        />;
-      case 'dogum-gunu-fun':
-        return <DogumGunuFunTemplate 
-          recipientName={recipientName} 
-          message={message} 
+        return <DogumGunuStandardTemplate
+          recipientName={recipientName}
+          message={message}
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist' | 'eglenceli'}
           creatorName={creatorName}
           textFields={textFields}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
+        />;
+      case 'dogum-gunu-fun':
+        return <DogumGunuFunTemplate
+          recipientName={recipientName}
+          message={message}
+          designStyle={designStyle as 'modern' | 'classic' | 'minimalist' | 'eglenceli'}
+          creatorName={creatorName}
+          textFields={textFields}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
         />;
       case 'tesekkur':
         return <TesekkurTemplate 
@@ -150,44 +162,56 @@ export default function TemplateRenderer({
       case 'tesekkur-adult':
         switch (designStyle) {
           case 'modern':
-            return <PremiumModernTesekkur 
-              recipientName={recipientName} 
-              message={message} 
+            return <PremiumModernTesekkur
+              recipientName={recipientName}
+              message={message}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
           case 'classic':
-            return <KlasikElegansTesekkur 
-              recipientName={recipientName} 
-              message={message} 
+            return <KlasikElegansTesekkur
+              recipientName={recipientName}
+              message={message}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
           case 'minimalist':
-            return <MinimalistNeonTesekkur 
-              recipientName={recipientName} 
-              message={message} 
+            return <MinimalistNeonTesekkur
+              recipientName={recipientName}
+              message={message}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
           case 'eglenceli':
-            return <EglenceliInteraktifTesekkur 
-              recipientName={recipientName} 
-              message={message} 
+            return <EglenceliInteraktifTesekkur
+              recipientName={recipientName}
+              message={message}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
           default:
-            return <PremiumModernTesekkur 
-              recipientName={recipientName} 
-              message={message} 
+            return <PremiumModernTesekkur
+              recipientName={recipientName}
+              message={message}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
         }
       case 'ozur-dilerim':
       case 'ozur-dilerim-classic':
-        return <OzurDilerimClassicTemplate 
-          recipientName={recipientName} 
-          message={message} 
+        return <OzurDilerimClassicTemplate
+          recipientName={recipientName}
+          message={message}
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist' | 'eglenceli'}
           creatorName={creatorName}
           textFields={textFields}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
         />;
       case 'mutlu-yillar':
         return <MutluYillarTemplate 
@@ -199,45 +223,55 @@ export default function TemplateRenderer({
       case 'mutlu-yillar-fun':
         switch (designStyle) {
           case 'modern':
-            return <PremiumModernTemplate 
-              recipientName={recipientName} 
-              mainMessage={textFields?.mainMessage || message} 
+            return <PremiumModernTemplate
+              recipientName={recipientName}
+              mainMessage={textFields?.mainMessage || message}
               wishMessage={textFields?.wishMessage}
               footerMessage={textFields?.footerMessage}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
           case 'classic':
-            return <KlasikElegansTemplate 
-              recipientName={recipientName} 
-              mainMessage={textFields?.mainMessage || message} 
+            return <KlasikElegansTemplate
+              recipientName={recipientName}
+              mainMessage={textFields?.mainMessage || message}
               wishMessage={textFields?.wishMessage}
               footerMessage={textFields?.footerMessage}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
           case 'minimalist':
-            return <MinimalistNeonTemplate 
-              recipientName={recipientName} 
-              mainMessage={textFields?.mainMessage || message} 
+            return <MinimalistNeonTemplate
+              recipientName={recipientName}
+              mainMessage={textFields?.mainMessage || message}
               wishMessage={textFields?.wishMessage}
               footerMessage={textFields?.footerMessage}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
           case 'eglenceli':
-            return <EglenceliInteraktifTemplate 
-              recipientName={recipientName} 
-              mainMessage={textFields?.mainMessage || message} 
+            return <EglenceliInteraktifTemplate
+              recipientName={recipientName}
+              mainMessage={textFields?.mainMessage || message}
               wishMessage={textFields?.wishMessage}
               footerMessage={textFields?.footerMessage}
               creatorName={creatorName}
               shortId={shortId}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
           default:
-            return <PremiumModernTemplate 
-              recipientName={recipientName} 
-              mainMessage={textFields?.mainMessage || message} 
+            return <PremiumModernTemplate
+              recipientName={recipientName}
+              mainMessage={textFields?.mainMessage || message}
               wishMessage={textFields?.wishMessage}
               footerMessage={textFields?.footerMessage}
               creatorName={creatorName}
+              isEditable={isEditable}
+              onTextFieldChange={onTextFieldChange}
             />;
         }
       case 'yil-donumu':
@@ -249,6 +283,8 @@ export default function TemplateRenderer({
                 creatorName={creatorName}
                 textFields={textFields}
                 primaryMessage={textFields?.mainMessage || message}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
           case 'classic':
@@ -259,6 +295,8 @@ export default function TemplateRenderer({
                 textFields={textFields}
                 primaryMessage={textFields?.mainMessage || message}
                 shortId={shortId}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
           case 'minimalist':
@@ -268,6 +306,8 @@ export default function TemplateRenderer({
                 creatorName={creatorName}
                 textFields={textFields}
                 primaryMessage={textFields?.mainMessage || message}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
           case 'eglenceli':
@@ -277,6 +317,8 @@ export default function TemplateRenderer({
                 creatorName={creatorName}
                 textFields={textFields}
                 primaryMessage={textFields?.mainMessage || message}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
           default:
@@ -286,6 +328,8 @@ export default function TemplateRenderer({
                 creatorName={creatorName}
                 textFields={textFields}
                 primaryMessage={textFields?.mainMessage || message}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
         }
@@ -298,6 +342,8 @@ export default function TemplateRenderer({
                 message={message}
                 creatorName={creatorName}
                 textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
           case 'classic':
@@ -307,6 +353,8 @@ export default function TemplateRenderer({
                 message={message}
                 creatorName={creatorName}
                 textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
           case 'minimalist':
@@ -317,6 +365,8 @@ export default function TemplateRenderer({
                 creatorName={creatorName}
                 textFields={textFields}
                 shortId={shortId}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
           case 'eglenceli':
@@ -327,6 +377,8 @@ export default function TemplateRenderer({
                 creatorName={creatorName}
                 textFields={textFields}
                 shortId={shortId}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
           default:
@@ -336,6 +388,8 @@ export default function TemplateRenderer({
                 message={message}
                 creatorName={creatorName}
                 textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
               />
             );
         }
@@ -348,6 +402,8 @@ export default function TemplateRenderer({
             creatorName={creatorName}
             textFields={textFields}
             shortId={shortId}
+            isEditable={isEditable}
+            onTextFieldChange={onTextFieldChange}
           />
         );
       case 'romantik-mesaj':

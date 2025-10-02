@@ -9,6 +9,8 @@ interface ModernCorporateCongratsProps {
   message: string;
   creatorName?: string;
   textFields?: TemplateTextFields;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
 const CONFETTI_COLORS = ['#22d3ee', '#0ea5e9', '#2563eb', '#1e40af', '#f8fafc'];
@@ -18,13 +20,68 @@ export default function ModernCorporateCongrats({
   message,
   creatorName,
   textFields,
+  isEditable = false,
+  onTextFieldChange,
 }: ModernCorporateCongratsProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
 
+  // Local editable state
+  const [localRecipientName, setLocalRecipientName] = useState('');
+  const [localNewPosition, setLocalNewPosition] = useState('');
+  const [localCompanyName, setLocalCompanyName] = useState('');
+  const [localHighlightMessage, setLocalHighlightMessage] = useState('');
+  const [localMainMessage, setLocalMainMessage] = useState('');
+  const [localCtaLabel, setLocalCtaLabel] = useState('');
+  const [localCtaUrl, setLocalCtaUrl] = useState('');
+  const [localNewStartLabel, setLocalNewStartLabel] = useState('');
+  const [localLeadershipLabel, setLocalLeadershipLabel] = useState('');
+  const [localLeadershipDesc, setLocalLeadershipDesc] = useState('');
+  const [localStrategyLabel, setLocalStrategyLabel] = useState('');
+  const [localStrategyDesc, setLocalStrategyDesc] = useState('');
+  const [showUrlInput, setShowUrlInput] = useState(false);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Initialize local state with text fields
+  useEffect(() => {
+    setLocalRecipientName(recipientName || textFields?.recipientName || 'Başarılı Profesyonel');
+    setLocalNewPosition(textFields?.newPosition || 'Yeni Operasyon Direktörü');
+    setLocalCompanyName(textFields?.companyName || 'Atlas Teknoloji');
+    setLocalHighlightMessage(textFields?.highlightMessage || 'Yeni görevinizde parlamaya hazırsınız.');
+    setLocalMainMessage(textFields?.mainMessage || message || 'Yeni pozisyonunda başarılarının katlanarak artmasını diliyoruz. Liderlik vizyonunla ekibini ileri taşıyacağına eminiz!');
+    setLocalCtaLabel(textFields?.ctaLabel || 'Teşekkürler');
+    setLocalCtaUrl(textFields?.ctaUrl || '');
+    setLocalNewStartLabel(textFields?.newStartLabel || 'Yeni Başlangıç');
+    setLocalLeadershipLabel(textFields?.leadershipLabel || 'Takım Liderliği');
+    setLocalLeadershipDesc(textFields?.leadershipDesc || 'Yüksek performans');
+    setLocalStrategyLabel(textFields?.strategyLabel || 'Strateji');
+    setLocalStrategyDesc(textFields?.strategyDesc || 'Güçlü vizyon');
+  }, [recipientName, message, textFields]);
+
+  // Handle content change
+  const handleContentChange = (key: string, value: string) => {
+    // Update local state immediately
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'newPosition') setLocalNewPosition(value);
+    else if (key === 'companyName') setLocalCompanyName(value);
+    else if (key === 'highlightMessage') setLocalHighlightMessage(value);
+    else if (key === 'mainMessage') setLocalMainMessage(value);
+    else if (key === 'ctaLabel') setLocalCtaLabel(value);
+    else if (key === 'ctaUrl') setLocalCtaUrl(value);
+    else if (key === 'newStartLabel') setLocalNewStartLabel(value);
+    else if (key === 'leadershipLabel') setLocalLeadershipLabel(value);
+    else if (key === 'leadershipDesc') setLocalLeadershipDesc(value);
+    else if (key === 'strategyLabel') setLocalStrategyLabel(value);
+    else if (key === 'strategyDesc') setLocalStrategyDesc(value);
+
+    // Notify parent component
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
 
   const confettiPieces = useMemo(
     () =>
@@ -39,14 +96,20 @@ export default function ModernCorporateCongrats({
     []
   );
 
-  const name = recipientName || textFields?.recipientName || 'Başarılı Profesyonel';
-  const position = textFields?.newPosition || 'Yeni Operasyon Direktörü';
-  const company = textFields?.companyName || 'Atlas Teknoloji';
+  // Get text values - use local state if editable, otherwise use props
+  const name = isEditable ? localRecipientName : (recipientName || textFields?.recipientName || 'Başarılı Profesyonel');
+  const position = isEditable ? localNewPosition : (textFields?.newPosition || 'Yeni Operasyon Direktörü');
+  const company = isEditable ? localCompanyName : (textFields?.companyName || 'Atlas Teknoloji');
   const headline = `Tebrikler ${name}!`;
-  const highlightMessage = textFields?.highlightMessage || 'Yeni görevinizde parlamaya hazırsınız.';
-  const mainMessage = textFields?.mainMessage || message || 'Yeni pozisyonunda başarılarının katlanarak artmasını diliyoruz. Liderlik vizyonunla ekibini ileri taşıyacağına eminiz!';
-  const ctaLabel = textFields?.ctaLabel || 'Teşekkürler';
-  const ctaUrl = textFields?.ctaUrl;
+  const highlightMessage = isEditable ? localHighlightMessage : (textFields?.highlightMessage || 'Yeni görevinizde parlamaya hazırsınız.');
+  const mainMessage = isEditable ? localMainMessage : (textFields?.mainMessage || message || 'Yeni pozisyonunda başarılarının katlanarak artmasını diliyoruz. Liderlik vizyonunla ekibini ileri taşıyacağına eminiz!');
+  const ctaLabel = isEditable ? localCtaLabel : (textFields?.ctaLabel || 'Teşekkürler');
+  const ctaUrl = isEditable ? localCtaUrl : (textFields?.ctaUrl || '');
+  const newStartLabel = isEditable ? localNewStartLabel : (textFields?.newStartLabel || 'Yeni Başlangıç');
+  const leadershipLabel = isEditable ? localLeadershipLabel : (textFields?.leadershipLabel || 'Takım Liderliği');
+  const leadershipDesc = isEditable ? localLeadershipDesc : (textFields?.leadershipDesc || 'Yüksek performans');
+  const strategyLabel = isEditable ? localStrategyLabel : (textFields?.strategyLabel || 'Strateji');
+  const strategyDesc = isEditable ? localStrategyDesc : (textFields?.strategyDesc || 'Güçlü vizyon');
 
   const handleShare = () => {
     setShowConfetti(true);
@@ -84,59 +147,139 @@ export default function ModernCorporateCongrats({
         </div>
       )}
 
-      <div className="relative z-20 mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center gap-12 px-6 py-16 lg:flex-row lg:items-center lg:py-24">
+      <div className="relative z-20 mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center gap-8 sm:gap-12 px-4 sm:px-6 py-12 sm:py-16 lg:flex-row lg:items-center lg:py-24">
         <div
-          className={`relative flex h-[420px] w-full max-w-md items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 shadow-2xl lg:h-[520px] ${
+          className={`relative flex h-[360px] sm:h-[420px] w-full max-w-md items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 shadow-2xl lg:h-[520px] ${
             isMounted ? 'animate-slide-in-left' : 'opacity-0'
           }`}
         >
-          <div className="absolute inset-8 rounded-3xl border border-white/10" />
+          <div className="absolute inset-6 sm:inset-8 rounded-3xl border border-white/10" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#38bdf81a,_transparent_60%)]" />
           <div className="absolute -right-12 top-24 h-24 w-24 rounded-full bg-cyan-400/20 blur-2xl" />
-          <div className="relative flex flex-col items-center text-center text-white">
-            <div className="mb-8 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-blue-500/30">
-              <span className="text-4xl font-semibold">{name.charAt(0)}</span>
+          <div className="relative flex flex-col items-center text-center text-white px-4">
+            <div className="mb-6 sm:mb-8 flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-blue-500/30">
+              <span className="text-3xl sm:text-4xl font-semibold">{name.charAt(0)}</span>
             </div>
-            <h2 className="text-lg font-medium uppercase tracking-[0.3em] text-cyan-300" >Yeni Başlangıç</h2>
-            <p className="mt-6 text-2xl font-semibold">{position}</p>
-            <p className="mt-2 text-sm uppercase tracking-[0.25em] text-slate-300">{company}</p>
+            <h2
+              className={`text-base sm:text-lg font-medium uppercase tracking-[0.3em] text-cyan-300 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('newStartLabel', e.currentTarget.textContent || '')}
+            >
+              {newStartLabel}
+            </h2>
+            <p
+              className={`mt-4 sm:mt-6 text-xl sm:text-2xl font-semibold break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('newPosition', e.currentTarget.textContent || '')}
+            >
+              {position}
+            </p>
+            <p
+              className={`mt-2 text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-300 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('companyName', e.currentTarget.textContent || '')}
+            >
+              {company}
+            </p>
             <div className="mt-10 flex items-center gap-x-8 text-sm text-slate-300">
               <div>
-                <p className="font-semibold text-white">Takım Liderliği</p>
-                <p>Yüksek performans</p>
+                <p
+                  className={`font-semibold text-white break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded px-1 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('leadershipLabel', e.currentTarget.textContent || '')}
+                >
+                  {leadershipLabel}
+                </p>
+                <p
+                  className={`break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded px-1 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('leadershipDesc', e.currentTarget.textContent || '')}
+                >
+                  {leadershipDesc}
+                </p>
               </div>
               <div className="h-12 w-px bg-slate-700" />
               <div>
-                <p className="font-semibold text-white">Strateji</p>
-                <p>Güçlü vizyon</p>
+                <p
+                  className={`font-semibold text-white break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded px-1 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('strategyLabel', e.currentTarget.textContent || '')}
+                >
+                  {strategyLabel}
+                </p>
+                <p
+                  className={`break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded px-1 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('strategyDesc', e.currentTarget.textContent || '')}
+                >
+                  {strategyDesc}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className={`flex-1 space-y-8 ${isMounted ? 'animate-slide-in-right' : 'opacity-0'}`}>
+        <div className={`flex-1 space-y-4 sm:space-y-6 md:space-y-8 ${isMounted ? 'animate-slide-in-right' : 'opacity-0'}`}>
           {creatorName && (
-            <div className="inline-flex items-center gap-x-2 rounded-full border border-slate-200/60 bg-white/70 px-4 py-2 text-xs font-medium uppercase tracking-[0.3em] text-slate-500 backdrop-blur">
+            <div className="inline-flex items-center gap-x-1 sm:gap-x-2 rounded-full border border-slate-200/60 bg-white/70 px-3 sm:px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] sm:tracking-[0.3em] text-slate-500 backdrop-blur">
               Hazırlayan: <span className="text-slate-800">{creatorName}</span>
             </div>
           )}
 
-          <div className="space-y-4">
-            <h1 className="text-4xl font-bold text-white sm:text-5xl">
+          <div className="space-y-3 sm:space-y-4">
+            <h1
+              className={`text-3xl sm:text-4xl md:text-5xl font-bold text-white break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent?.replace('Tebrikler ', '').replace('!', '') || '')}
+            >
               {headline}
             </h1>
-            <p className="text-lg font-medium text-cyan-700 sm:text-xl">
+            <p
+              className={`text-base sm:text-lg md:text-xl font-medium text-cyan-700 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('highlightMessage', e.currentTarget.textContent || '')}
+            >
               {highlightMessage}
             </p>
           </div>
 
-          <div className="rounded-3xl border border-slate-200/80 bg-white/80 p-8 shadow-xl backdrop-blur">
-            <p className="text-base leading-relaxed text-slate-600 sm:text-lg">
+          <div className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 sm:p-8 shadow-xl backdrop-blur">
+            <p
+              className={`text-sm sm:text-base md:text-lg leading-relaxed text-slate-600 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+            >
               {mainMessage}
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <span className="inline-flex items-center rounded-full bg-cyan-100 px-4 py-1 text-sm font-semibold text-cyan-700">
-                {position} @ {company}
+                <span
+                  className={`${isEditable ? 'hover:bg-cyan-200 cursor-text rounded px-1 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('newPosition', e.currentTarget.textContent || '')}
+                >
+                  {position}
+                </span>
+                {' @ '}
+                <span
+                  className={`${isEditable ? 'hover:bg-cyan-200 cursor-text rounded px-1 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('companyName', e.currentTarget.textContent || '')}
+                >
+                  {company}
+                </span>
               </span>
               {(textFields?.highlightOne || textFields?.highlightTwo) && (
                 <span className="inline-flex items-center rounded-full bg-slate-100 px-4 py-1 text-sm font-medium text-slate-600">
@@ -146,18 +289,39 @@ export default function ModernCorporateCongrats({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 relative">
+            {isEditable && showUrlInput && (
+              <div className="absolute top-full mt-2 left-0 z-50 bg-white rounded-lg shadow-xl border border-slate-200 p-3 w-full max-w-md">
+                <label className="block text-xs font-medium text-slate-700 mb-1">Buton Tıklandığında Yönlendirilecek URL (opsiyonel):</label>
+                <input
+                  type="url"
+                  value={localCtaUrl}
+                  onChange={(e) => handleContentChange('ctaUrl', e.target.value)}
+                  onBlur={() => setShowUrlInput(false)}
+                  autoFocus
+                  placeholder="https://example.com"
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+            )}
             <Button
-              onClick={handleShare}
-              className="group relative overflow-hidden bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg transition hover:shadow-blue-500/40"
+              onClick={isEditable ? () => setShowUrlInput(!showUrlInput) : handleShare}
+              className="group relative overflow-hidden bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg transition hover:shadow-blue-500/40 px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 text-sm sm:text-base"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <span className="relative z-10 flex items-center gap-1 sm:gap-2">
+                <svg className="h-3 w-3 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
                   <path d="m16 6-4-4-4 4" />
                   <path d="M12 2v14" />
                 </svg>
-                {ctaLabel}
+                <span
+                  className={`${isEditable ? 'hover:bg-white/10 cursor-text rounded px-1 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange('ctaLabel', e.currentTarget.textContent || '')}
+                >
+                  {ctaLabel}
+                </span>
               </span>
               <span className="absolute inset-0 z-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 transition group-hover:opacity-100" />
             </Button>

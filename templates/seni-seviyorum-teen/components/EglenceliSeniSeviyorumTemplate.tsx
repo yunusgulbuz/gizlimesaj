@@ -1,20 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { createAnalyticsTracker } from '@/lib/analytics';
+import type { TemplateTextFields } from '../../shared/types';
 
-function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, shortId }: {
+function EglenceliSeniSeviyorumTemplate({
+  recipientName,
+  message,
+  creatorName,
+  shortId,
+  isEditable = false,
+  onTextFieldChange,
+  textFields = {}
+}: {
   recipientName: string;
   message: string;
   creatorName?: string;
   shortId?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
+  textFields?: TemplateTextFields;
 }) {
   const [showQuestion, setShowQuestion] = useState(true);
   const [noClickCount, setNoClickCount] = useState(0);
   const [showParty, setShowParty] = useState(false);
   const [confetti, setConfetti] = useState<Array<{id: number, x: number, y: number, color: string, size: number}>>([]);
   const [fireworks, setFireworks] = useState<Array<{id: number, x: number, y: number}>>([]);
+
+  // Local editable state
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMessage, setLocalMessage] = useState(message);
+
+  // Initialize local state with text fields
+  useEffect(() => {
+    setLocalRecipientName(textFields?.recipientName || recipientName);
+    setLocalMessage(textFields?.mainMessage || message);
+  }, [recipientName, message, textFields]);
+
+  // Handle content change
+  const handleContentChange = (key: string, value: string) => {
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'mainMessage') setLocalMessage(value);
+
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  // Get display values
+  const displayRecipientName = isEditable ? localRecipientName : (textFields?.recipientName || recipientName);
+  const displayMessage = isEditable ? localMessage : (textFields?.mainMessage || message);
 
   // Initialize analytics tracker
   const analytics = shortId ? createAnalyticsTracker(shortId) : null;
@@ -130,7 +166,7 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, s
                   }}
                 />
               ))}
-              <div className="text-4xl animate-pulse">✨</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl animate-pulse">✨</div>
             </div>
           </div>
         ))}
@@ -140,7 +176,7 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, s
           {[...Array(20)].map((_, i) => (
             <div
               key={i}
-              className="absolute text-pink-200/60 text-3xl animate-bounce"
+              className="absolute text-pink-200/60 text-xl sm:text-2xl md:text-3xl animate-bounce"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -153,35 +189,45 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, s
           ))}
         </div>
 
-        <div className="relative z-10 text-center space-y-6 p-8">
+        <div className="relative z-10 text-center space-y-4 sm:space-y-6 p-4 sm:p-6 md:p-8">
           {creatorName && (
-            <div className="text-center mb-6">
-              <p className="text-sm text-white/70">
+            <div className="text-center mb-4 sm:mb-6">
+              <p className="text-xs sm:text-sm text-white/70">
                 Hazırlayan: {creatorName}
               </p>
             </div>
           )}
-          
-          <div className="text-8xl mb-8 animate-bounce">🎉</div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-pulse">
+
+          <div className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl mb-4 sm:mb-6 md:mb-8 animate-bounce">🎉</div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 animate-pulse break-words">
             Yaşasın! 🥳
           </h1>
-          <h2 className="text-2xl md:text-4xl mb-8">
-            {recipientName ? `${recipientName}, sen de beni seviyorsun!` : 'Sen de beni seviyorsun!'}
+          <h2
+            className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 sm:mb-6 md:mb-8 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+          >
+            {displayRecipientName ? `${displayRecipientName}, sen de beni seviyorsun!` : 'Sen de beni seviyorsun!'}
           </h2>
-          <div className="text-xl md:text-2xl mb-8 bg-white/20 backdrop-blur-sm rounded-2xl p-6">
-            {message || "Bu kadar mutlu olmamıştım! Seni çok ama çok seviyorum! 💕"}
+          <div
+            className={`text-base sm:text-lg md:text-xl lg:text-2xl mb-4 sm:mb-6 md:mb-8 bg-white/20 backdrop-blur-sm rounded-2xl p-4 sm:p-6 break-words ${isEditable ? 'hover:bg-white/10 cursor-text transition-colors' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+          >
+            {displayMessage || "Bu kadar mutlu olmamıştım! Seni çok ama çok seviyorum! 💕"}
           </div>
-          
+
           {/* Dancing Emojis */}
-          <div className="flex justify-center space-x-4 text-6xl">
+          <div className="flex justify-center space-x-2 sm:space-x-4 text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
             <span className="animate-bounce" style={{animationDelay: '0s'}}>💃</span>
             <span className="animate-bounce" style={{animationDelay: '0.2s'}}>🕺</span>
             <span className="animate-bounce" style={{animationDelay: '0.4s'}}>💃</span>
             <span className="animate-bounce" style={{animationDelay: '0.6s'}}>🕺</span>
           </div>
-          
-          <div className="mt-8 text-lg">
+
+          <div className="mt-4 sm:mt-6 md:mt-8 text-sm sm:text-base md:text-lg">
             <p className="animate-pulse">🎊 Parti zamanı! 🎊</p>
           </div>
         </div>
@@ -197,7 +243,7 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, s
           {[...Array(15)].map((_, i) => (
             <div
               key={i}
-              className="absolute text-white/20 text-2xl animate-pulse"
+              className="absolute text-white/20 text-xl sm:text-2xl animate-pulse"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -210,36 +256,46 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, s
           ))}
         </div>
 
-        <div className="text-center max-w-4xl mx-auto p-8 relative z-10">
+        <div className="text-center max-w-4xl mx-auto p-4 sm:p-6 md:p-8 relative z-10">
           {/* Creator Name Display */}
           {creatorName && (
-            <div className="text-center mb-6">
-              <p className="text-sm text-white/70">
+            <div className="text-center mb-4 sm:mb-6">
+              <p className="text-xs sm:text-sm text-white/70">
                 Hazırlayan: {creatorName}
               </p>
             </div>
           )}
-          
+
           {/* Header */}
-          <div className="mb-12">
-            <div className="text-6xl mb-6 animate-bounce">💕</div>
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-              {recipientName ? `Merhaba ${recipientName}!` : 'Merhaba Canım!'}
+          <div className="mb-8 sm:mb-10 md:mb-12">
+            <div className="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 animate-bounce">💕</div>
+            <h1
+              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+            >
+              {displayRecipientName ? `Merhaba ${displayRecipientName}!` : 'Merhaba Canım!'}
             </h1>
           </div>
 
           {/* Question */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 mb-12 shadow-2xl">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-4 sm:p-6 md:p-8 mb-8 sm:mb-10 md:mb-12 shadow-2xl">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-4 sm:mb-6 break-words">
               Seni çok seviyorum. Sen de beni seviyor musun? 🥺
             </h2>
-            <p className="text-lg text-gray-600 mb-8">
-              {message || "Çok merak ediyorum... Lütfen dürüst ol! 💭"}
+            <p
+              className={`text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 md:mb-8 break-words ${isEditable ? 'hover:bg-gray-100 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('mainMessage', e.currentTarget.textContent || '')}
+            >
+              {displayMessage || "Çok merak ediyorum... Lütfen dürüst ol! 💭"}
             </p>
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-col items-center space-y-8">
+          <div className="flex flex-col items-center space-y-6 sm:space-y-8">
             <Button
               onClick={handleYesClick}
               className="bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-bold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl border-2 border-white/30 backdrop-blur-sm relative overflow-hidden group"
@@ -252,10 +308,10 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, s
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
             </Button>
-            
+
             <Button
               onClick={handleNoClick}
-              className="bg-gradient-to-r from-red-400 to-pink-500 hover:from-red-500 hover:to-pink-600 text-white font-bold px-8 py-4 rounded-full transition-all duration-300 shadow-lg border-2 border-white/20 relative group"
+              className="bg-gradient-to-r from-red-400 to-pink-500 hover:from-red-500 hover:to-pink-600 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full transition-all duration-300 shadow-lg border-2 border-white/20 relative group"
               style={getNoButtonStyle()}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
@@ -268,7 +324,7 @@ function EglenceliSeniSeviyorumTemplate({ recipientName, message, creatorName, s
           </div>
 
           {noClickCount > 0 && (
-            <div className="mt-8 text-white text-lg animate-bounce">
+            <div className="mt-6 sm:mt-8 text-white text-base sm:text-lg animate-bounce break-words">
               {noClickCount === 1 && "Emin misin? 🤔"}
               {noClickCount === 2 && "Gerçekten mi? 😢"}
               {noClickCount === 3 && "Lütfen tekrar düşün! 🥺"}

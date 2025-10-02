@@ -7,6 +7,8 @@ interface EglenceliInteraktifTesekkurProps {
   recipientName: string;
   message: string;
   creatorName?: string;
+  isEditable?: boolean;
+  onTextFieldChange?: (key: string, value: string) => void;
 }
 
 interface Gift {
@@ -17,7 +19,7 @@ interface Gift {
   emoji: string;
 }
 
-function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: EglenceliInteraktifTesekkurProps) {
+function EglenceliInteraktifTesekkur({ recipientName, message, creatorName, isEditable = false, onTextFieldChange }: EglenceliInteraktifTesekkurProps) {
   const [gameStarted, setGameStarted] = useState(false);
   const [score, setScore] = useState(0);
   const [gifts, setGifts] = useState<Gift[]>([]);
@@ -25,7 +27,35 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: Eg
   const [snowflakes, setSnowflakes] = useState<Array<{id: number, x: number, y: number, size: number}>>([]);
   const [fireworks, setFireworks] = useState<Array<{id: number, x: number, y: number}>>([]);
 
+  // Local editable state
+  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
+  const [localMessage, setLocalMessage] = useState(message);
+  const [localCreatorName, setLocalCreatorName] = useState(creatorName || '');
+
   const giftEmojis = ['🎁', '🎀', '🎊', '🎉', '💝', '🎈', '🌟', '✨'];
+
+  // Initialize local state from props
+  useEffect(() => {
+    setLocalRecipientName(recipientName);
+    setLocalMessage(message);
+    setLocalCreatorName(creatorName || '');
+  }, [recipientName, message, creatorName]);
+
+  // Handle content change
+  const handleContentChange = (key: string, value: string) => {
+    if (key === 'recipientName') setLocalRecipientName(value);
+    else if (key === 'message') setLocalMessage(value);
+    else if (key === 'creatorName') setLocalCreatorName(value);
+
+    if (onTextFieldChange) {
+      onTextFieldChange(key, value);
+    }
+  };
+
+  // Get display values
+  const displayRecipientName = isEditable ? localRecipientName : recipientName;
+  const displayMessage = isEditable ? localMessage : message;
+  const displayCreatorName = isEditable ? localCreatorName : creatorName;
 
   useEffect(() => {
     // Create snowflakes
@@ -95,7 +125,7 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: Eg
             animationDelay: `${Math.random() * 2}s`
           }}
         >
-          ❄️
+          <span className="text-xs sm:text-sm md:text-base">❄️</span>
         </div>
       ))}
 
@@ -125,13 +155,13 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: Eg
       )}
 
       {/* Main Content */}
-      <div className="relative z-10 text-center px-8 max-w-4xl">
+      <div className="relative z-10 text-center p-4 sm:p-6 md:p-8 max-w-4xl">
         {/* Title with Balloons */}
-        <div className="mb-8 relative">
-          <div className="absolute -top-4 -left-4 text-3xl animate-bounce">🎈</div>
-          <div className="absolute -top-4 -right-4 text-3xl animate-bounce" style={{animationDelay: '0.5s'}}>🎈</div>
-          
-          <h1 className="text-6xl md:text-8xl font-bold mb-4 text-white" style={{
+        <div className="mb-6 sm:mb-8 relative">
+          <div className="absolute -top-3 sm:-top-4 -left-2 sm:-left-4 text-2xl sm:text-3xl animate-bounce">🎈</div>
+          <div className="absolute -top-3 sm:-top-4 -right-2 sm:-right-4 text-2xl sm:text-3xl animate-bounce" style={{animationDelay: '0.5s'}}>🎈</div>
+
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 sm:mb-6 text-white break-words" style={{
             fontFamily: 'Comic Sans MS, cursive',
             textShadow: '4px 4px 8px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.3)',
             background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4)',
@@ -142,32 +172,38 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: Eg
           }}>
             TEŞEKKÜRLER!
           </h1>
-          
-          <div className="text-2xl md:text-3xl text-yellow-200 font-bold" style={{
-            fontFamily: 'Comic Sans MS, cursive',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-          }}>
-            {recipientName}
+
+          <div
+            className={`text-xl sm:text-2xl md:text-3xl text-yellow-200 font-bold break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+            style={{
+              fontFamily: 'Comic Sans MS, cursive',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+            }}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(e) => handleContentChange('recipientName', e.currentTarget.textContent || '')}
+          >
+            {displayRecipientName}
           </div>
         </div>
 
         {/* Game Area */}
         {gameStarted && !gameCompleted && (
-          <div className="mb-8">
-            <div className="text-2xl font-bold text-white mb-4" style={{
+          <div className="mb-6 sm:mb-8">
+            <div className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6" style={{
               fontFamily: 'Comic Sans MS, cursive',
               textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
             }}>
               Hediye Sayısı: {score}/10
             </div>
-            
+
             {/* Interactive Gifts */}
-            <div className="relative h-64 mb-4">
+            <div className="relative h-48 sm:h-56 md:h-64 mb-4">
               {gifts.filter(gift => !gift.caught).map(gift => (
                 <button
                   key={gift.id}
                   onClick={() => catchGift(gift.id)}
-                  className="absolute text-4xl hover:scale-125 transition-transform duration-200 animate-pulse cursor-pointer"
+                  className="absolute text-2xl sm:text-3xl md:text-4xl hover:scale-125 transition-transform duration-200 animate-pulse cursor-pointer"
                   style={{
                     left: `${gift.x}%`,
                     top: `${gift.y}%`,
@@ -184,15 +220,15 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: Eg
 
         {/* Game Completed */}
         {gameCompleted && (
-          <div className="mb-8 animate-bounce">
-            <h2 className="text-4xl md:text-5xl font-bold text-yellow-300 mb-4" style={{
+          <div className="mb-6 sm:mb-8 animate-bounce">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-yellow-300 mb-4 break-words" style={{
               fontFamily: 'Comic Sans MS, cursive',
               textShadow: '3px 3px 6px rgba(0,0,0,0.5)',
               animation: 'celebration 2s ease-in-out infinite'
             }}>
               🎉 TEBRIKLER! 🎉
             </h2>
-            <p className="text-2xl text-white font-bold" style={{
+            <p className="text-xl sm:text-2xl text-white font-bold break-words" style={{
               fontFamily: 'Comic Sans MS, cursive',
               textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
             }}>
@@ -203,24 +239,36 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: Eg
 
         {/* Message */}
         {!gameStarted && (
-          <div className="mb-8 p-6 bg-white/20 backdrop-blur-sm rounded-3xl border-4 border-yellow-300 relative">
-            <div className="absolute -top-2 -left-2 text-2xl">🌟</div>
-            <div className="absolute -top-2 -right-2 text-2xl">🌟</div>
-            <div className="absolute -bottom-2 -left-2 text-2xl">✨</div>
-            <div className="absolute -bottom-2 -right-2 text-2xl">✨</div>
-            
-            <p className="text-xl md:text-2xl text-white leading-relaxed font-bold" style={{
-              fontFamily: 'Comic Sans MS, cursive',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-            }}>
-              {message}
-            </p>
-            {creatorName && (
-              <p className="text-lg text-yellow-200 mt-4 font-bold" style={{
+          <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-white/20 backdrop-blur-sm rounded-3xl border-4 border-yellow-300 relative">
+            <div className="absolute -top-2 -left-2 text-xl sm:text-2xl">🌟</div>
+            <div className="absolute -top-2 -right-2 text-xl sm:text-2xl">🌟</div>
+            <div className="absolute -bottom-2 -left-2 text-xl sm:text-2xl">✨</div>
+            <div className="absolute -bottom-2 -right-2 text-xl sm:text-2xl">✨</div>
+
+            <p
+              className={`text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-relaxed font-bold break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+              style={{
                 fontFamily: 'Comic Sans MS, cursive',
                 textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-              }}>
-                — {creatorName}
+              }}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(e) => handleContentChange('message', e.currentTarget.textContent || '')}
+            >
+              {displayMessage}
+            </p>
+            {displayCreatorName && (
+              <p
+                className={`text-sm sm:text-base md:text-lg text-yellow-200 mt-4 font-bold break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg p-2 transition-colors' : ''}`}
+                style={{
+                  fontFamily: 'Comic Sans MS, cursive',
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                }}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleContentChange('creatorName', e.currentTarget.textContent || '')}
+              >
+                — {displayCreatorName}
               </p>
             )}
           </div>
@@ -230,7 +278,7 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: Eg
         <Button
           onClick={startGame}
           disabled={gameStarted && !gameCompleted}
-          className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 hover:from-yellow-300 hover:via-orange-300 hover:to-red-300 text-white rounded-full transition-all duration-300 transform hover:scale-110 relative overflow-hidden"
+          className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 hover:from-yellow-300 hover:via-orange-300 hover:to-red-300 text-white rounded-full transition-all duration-300 transform hover:scale-110 relative overflow-hidden"
           style={{
             fontFamily: 'Comic Sans MS, cursive',
             boxShadow: '0 8px 16px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.2)',
@@ -238,7 +286,7 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName }: Eg
             animation: gameStarted && !gameCompleted ? 'none' : 'wiggle 2s ease-in-out infinite'
           }}
         >
-          <span className="relative z-10">
+          <span className="relative z-10 break-words">
             {gameCompleted ? '🎉 Tekrar Oyna! 🎉' : gameStarted ? 'Oyun Devam Ediyor...' : '🎁 Hediye Avını Başlat! 🎁'}
           </span>
           {!gameStarted && (
