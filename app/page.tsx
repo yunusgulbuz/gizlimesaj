@@ -340,7 +340,7 @@ export default async function HomePage() {
                       {/* Content */}
                       <CardContent className="p-4">
                         {/* Title */}
-                        <Link href={`/templates/${template.slug}`}>
+                        <Link href={`/templates/${template.slug}/preview`}>
                           <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-rose-600 transition-colors duration-200 mb-3">
                             {template.title}
                           </h3>
