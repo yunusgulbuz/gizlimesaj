@@ -502,7 +502,7 @@ export default async function TemplatesPage({
                   <div key={template.id}>
                     <Card className="group relative h-full overflow-hidden rounded-2xl border-0 bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-xl hover:ring-gray-200">
                       {/* Preview Container */}
-                      <Link href={`/templates/${template.slug}`}>
+                      <Link href={`/templates/${template.slug}/preview`}>
                         <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
                           <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
                             <TemplateCardPreview template={previewData} />
