@@ -1,23 +1,23 @@
-1- 
-2- planlar(fiyatlar) sayfası oluşturma (Aylık 10 sürpriz(999tl), Aylık 20 sürpriz(1799tl), Aylık 30 sürpriz(2499tl), özel görüşme paketleri olacak.)
-3- hakkımızda sayfası oluşturma
-4- 
-5- iletişim sayfası oluşturma
-6- hesap kısmında siparişlerim sayfası oluşturma
-7- hesap kısmında şifre değiştirme sayfası oluşturma
-8- hesap kısmında kişisel bilgiler sayfası oluşturma
-9- hesap kısmında değerlendirmelerim sayfası oluşturma
-10- hesap kısmında favorilerim sayfası oluşturma
+1- appbarda sağda planlar, hakkımızda, iletişim ve profil sayfaları olsun her zaman başka bir şey olmasın.
+2- planlar(fiyatlar) sayfasındaki ödeme entegrasyonunun yapılması, /Users/yunusgulbuz/NextJS/gizlimesaj/gizlimesaj/paynkolay_doc'tan düzenli ödeme dökümanına bakabilirsin 
+3- siparişlerim sayfasının aktifleştirilmesi (supabase veritabanımızla entegre olması)
+4- değerlendirmelerim sayfasında kaç yıldız verdiğimiz doğru görünmüyor, bunun düzeltilmesi
+5- anasayfa, templatesteki ürün kartlarına ve preview sayfasına favoriye ekleme butonu konulması
+6- preview sayfasında yorum kısmına puanlama da eklenmesi (http://localhost:3000/templates/is-tebrigi ekranında yorum kısmında puanlama var oradan bakabilirsin nasıl yapılacağına.)
+7- anasayfa ve templates sayfalarındaki ürün kartlarındaki butonlar satın al ve incele olmalı
+8- sitedeki vercel ikonunu kaldırmak. onun yerine şuanlık bir icon konulabilir.
+9- https://heartnote2.vercel.app/m/xxx ekranı açıldığı zaman şarkı varsa açılabiliyorsa otomatik açılsın, eğer mobil otomatik açamıyorsa o zaman ekranda herhangi bir yere tıkladığı zaman şarkı otomatik başlasın
+10- 
 11- 
 12- 
 13- 
 14- 
-15- yorum kısmına puanlama da eklenmesi (http://localhost:3000/templates/is-tebrigi ekranında yorum kısmında puanlama var oradan bakabilirsin.)
-16- anasayfa ve templates sayfalarındaki ürün kartlarına favori butonu, preview sayfasına favori butonu eklenmeli, butonları satın al, incele olmalı
-17- sitedeki vercel ikonunu kaldırmak. onun yerine şuanlık bir icon konulabilir.
-18- m/xxx oluşturulan sayfada başlık "Mesaj bulunamadı" kısmını düzeltilmesi. Şablonun ismi yazması
+15- 
+16- 
+17- 
+18- 
 19- 
 20- 
 21- 
-22- satın aldıktan sonra mobilde youtube'dan eklediğimiz ses açıldığı gibi ekrana tıklamazsak çalışmıyor, sayfa açıldıktan sonra 1sn içinde ekrana tıklarsak çalıyor, tıklamazsak çalışmıyor. bunun da düzeltilmesi lazım, en azından 10-20sn geçtikten sonra ekrana tıklansa bile çalması lazım.
+22- 
 
