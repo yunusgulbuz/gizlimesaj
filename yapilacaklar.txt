@@ -1,4 +1,4 @@
-1- templates/.../preview ekranında geri tuşuna basınca hangi sayfadan geldiyse oraya dönmesi
+1- 
 2- planlar(fiyatlar) sayfası oluşturma
 3- hakkımızda sayfası oluşturma
 4- 
@@ -8,16 +8,16 @@
 8- hesap kısmında kişisel bilgiler sayfası oluşturma
 9- hesap kısmında değerlendirmelerim sayfası oluşturma
 10- hesap kısmında favorilerim sayfası oluşturma
-11- payment/xxx sayfasının tasarımını güncelle, sadece ödeme sayfasına yönlendiriyor çıksın. loading ekranını basitleştir, skeletonu burdan kaldır
-12- /success/xxx ekranını düzenle, gönderen, süre, url, wp, sosyal medya paylaşımları ve mesajı önizle butonu olsun, indirmeleri kaldıralım. modern ve sade olsun
-13- /m/xxx sayfası yüklenirken loading sade olsun
-14- payment/error ekranının tasarım modern ve sade olması
+11- 
+12- 
+13- 
+14- 
 15- yorum kısmına puanlama da eklenmesi (http://localhost:3000/templates/is-tebrigi ekranında yorum kısmında puanlama var oradan bakabilirsin.)
 16- anasayfa ve templates sayfalarındaki ürün kartlarına favori butonu, preview sayfasına favori butonu eklenmeli, butonları satın al, incele olmalı
-17- sitedeki vercel ikonunu kaldırmak.
-18- m/xxx oluşturulan sayfada başlık "Mesaj bulunamadı" kısmını düzeltilmesi
-19- Benimle çıkar mısın şablonundaki textler düzeltilmiyor. bunun diğer sayfadakiler gibi düzeltilmesi 
-20- Doğum günün kutlu olsun şablonundaki textler düzeltilmiyor. bunun diğer sayfadakiler gibi düzeltilmesi 
-21- Teşekkür ederim şablonundaki bazı textleri değiştiriyorum ama satın aldıktan sonra default text görünüyor.
-22- satın aldıktan sonra mobilde youtube'dan eklediğimiz ses çalışmıyor
-23- şablon talep dialoguna tel no eklenmesi
+17- sitedeki vercel ikonunu kaldırmak. onun yerine şuanlık bir icon konulabilir.
+18- m/xxx oluşturulan sayfada başlık "Mesaj bulunamadı" kısmını düzeltilmesi. Şablonun ismi yazması
+19- 
+20- 
+21- 
+22- satın aldıktan sonra mobilde youtube'dan eklediğimiz ses açıldığı gibi ekrana tıklamazsak çalışmıyor, sayfa açıldıktan sonra 1sn içinde ekrana tıklarsak çalıyor, tıklamazsak çalışmıyor. bunun da düzeltilmesi lazım, en azından 10-20sn geçtikten sonra ekrana tıklansa bile çalması lazım.
+

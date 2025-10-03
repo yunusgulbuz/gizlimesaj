@@ -145,9 +145,9 @@ function DogumGunuFunModernTemplate({ recipientName, mainMessage, creatorName, a
                 suppressContentEditableWarning
                 onBlur={(e) => {
                   const text = e.currentTarget.textContent || '';
-                  const match = text.match(/(.+?),/);
-                  if (match) {
-                    handleContentChange('recipientName', match[1]);
+                  const match = text.match(/(.+?)(?:,|$)/);
+                  if (match && match[1].trim()) {
+                    handleContentChange('recipientName', match[1].trim());
                   }
                 }}
               >
@@ -315,9 +315,9 @@ function DogumGunuFunClassicTemplate({ recipientName, mainMessage, creatorName, 
                 suppressContentEditableWarning
                 onBlur={(e) => {
                   const text = e.currentTarget.textContent || '';
-                  const match = text.match(/Sevgili (.+?),/);
-                  if (match) {
-                    handleContentChange('recipientName', match[1]);
+                  const match = text.match(/(?:Sevgili\s+)?(.+?)(?:,|$)/);
+                  if (match && match[1].trim()) {
+                    handleContentChange('recipientName', match[1].trim());
                   }
                 }}
               >
@@ -537,9 +537,9 @@ function DogumGunuFunPlayfulTemplate({ recipientName, mainMessage, creatorName, 
                 suppressContentEditableWarning
                 onBlur={(e) => {
                   const text = e.currentTarget.textContent || '';
-                  const match = text.match(/(.+?)!/);
-                  if (match) {
-                    handleContentChange('recipientName', match[1]);
+                  const match = text.match(/(.+?)(?:!|$)/);
+                  if (match && match[1].trim()) {
+                    handleContentChange('recipientName', match[1].trim());
                   }
                 }}
               >

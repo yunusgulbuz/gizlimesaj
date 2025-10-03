@@ -29,6 +29,7 @@ interface BaseTemplateProps {
   shortId?: string;
   isEditable?: boolean;
   onTextFieldChange?: (field: string, value: string) => void;
+  onFieldChange?: (field: string, value: string) => void;
 }
 
 export default function CikmaTeklifiTemplate({
@@ -84,6 +85,7 @@ export default function CikmaTeklifiTemplate({
     shortId,
     isEditable,
     onTextFieldChange: handleLocalChange,
+    onFieldChange: handleLocalChange,
   };
 
   switch (designStyle) {

@@ -155,10 +155,22 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
   }, [template.slug]);
 
   const handleTextFieldChange = (key: string, value: string) => {
-    setTextFields(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    setTextFields(prev => {
+      const updated = { ...prev, [key]: value };
+      // Sync message and mainMessage for compatibility
+      if (key === 'message') {
+        updated.mainMessage = value;
+      } else if (key === 'mainMessage') {
+        updated.message = value;
+      }
+      // Sync recipientName and recipient_name for compatibility
+      if (key === 'recipientName') {
+        updated.recipient_name = value;
+      } else if (key === 'recipient_name') {
+        updated.recipientName = value;
+      }
+      return updated;
+    });
   };
 
   const handleRatingSummaryUpdate = useCallback((stats: { averageRating: number; totalRatings: number }) => {
