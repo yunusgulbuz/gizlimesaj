@@ -2,6 +2,9 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heart, Search } from "lucide-react";
+import Link from "next/link";
+import HeaderAuthButton from "@/components/auth/header-auth-button";
+import { MobileDrawerMenu } from "@/components/mobile-drawer-menu";
 
 export default function TemplatesLoading() {
   return (
@@ -13,23 +16,30 @@ export default function TemplatesLoading() {
         <div className="absolute left-1/2 bottom-10 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-200/40 blur-3xl" />
       </div>
 
-      {/* Header */}
-      <header className="relative z-10">
-        <div className="container mx-auto px-4 py-6">
-          <nav className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-purple-600">
+      {/* Header - Normal app bar instead of skeleton */}
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
+        <div className="container mx-auto px-4">
+          <nav className="flex h-16 items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
                 <Heart className="h-5 w-5 text-white" />
-              </span>
-              <div className="flex flex-col">
-                <span className="text-xl font-semibold text-gray-900">Heartnote</span>
-                <span className="text-xs text-gray-500">Şablon kütüphanen</span>
               </div>
-            </div>
-            <div className="hidden items-center space-x-6 md:flex">
-              <Skeleton variant="shimmer" className="h-4 w-20" />
-              <Skeleton variant="shimmer" className="h-4 w-16" />
-              <Skeleton variant="gradient" className="h-10 w-24 rounded-lg" />
+              <span className="text-lg font-bold text-gray-900">Heartnote</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                Planlar
+              </Link>
+              <Link href="/about" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                Hakkımızda
+              </Link>
+              <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                İletişim
+              </Link>
+              <div className="hidden md:block">
+                <HeaderAuthButton />
+              </div>
+              <MobileDrawerMenu user={null} />
             </div>
           </nav>
         </div>

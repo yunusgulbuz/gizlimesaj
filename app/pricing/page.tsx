@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
+import { MobileDrawerMenu } from "@/components/mobile-drawer-menu";
 import { createClient } from "@/lib/supabase-client";
 import { toast } from "sonner";
 import {
@@ -84,6 +85,22 @@ export default function PricingPage() {
   const router = useRouter();
   const supabase = createClient();
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   const handleSubscribe = async (planId: string) => {
     setLoadingPlanId(planId);
@@ -157,7 +174,10 @@ export default function PricingPage() {
               <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
                 İletişim
               </Link>
-              <HeaderAuthButton />
+              <div className="hidden md:block">
+                <HeaderAuthButton />
+              </div>
+              <MobileDrawerMenu user={user} />
             </div>
           </nav>
         </div>

@@ -39,6 +39,7 @@ import { generateMetadata } from "@/lib/seo";
 import CustomTemplateRequest from "./_components/custom-template-request";
 import TemplateCardPreview from "./_components/template-card-preview-client";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
+import { MobileDrawerMenu } from "@/components/mobile-drawer-menu";
 import CustomTemplateRequestCta from "./_components/custom-template-request-cta";
 import SearchForm from "./_components/search-form";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -275,6 +276,9 @@ export default async function TemplatesPage({
   searchParams?: Promise<{ category?: string; sort?: string; search?: string; page?: string }>;
 }) {
   const params = searchParams ? await searchParams : {};
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
   const [templates, durations, categories, allPricing] = await Promise.all([
     getTemplates(),
     getDurations(),
@@ -393,7 +397,10 @@ export default async function TemplatesPage({
               <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
                 İletişim
               </Link>
-              <HeaderAuthButton />
+              <div className="hidden md:block">
+                <HeaderAuthButton />
+              </div>
+              <MobileDrawerMenu user={user} />
             </div>
           </nav>
         </div>

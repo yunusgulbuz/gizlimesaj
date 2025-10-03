@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
+import { MobileDrawerMenu } from "@/components/mobile-drawer-menu";
+import { createClient } from "@/lib/supabase-client";
 import {
   Heart,
   Mail,
@@ -49,12 +51,30 @@ const contactInfo = [
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const supabase = createClient();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
-    message: '',
+    message: ''
   });
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
@@ -115,7 +135,10 @@ export default function ContactPage() {
               <Link href="/contact" className="hidden text-sm font-medium text-gray-900 md:block">
                 İletişim
               </Link>
-              <HeaderAuthButton />
+              <div className="hidden md:block">
+                <HeaderAuthButton />
+              </div>
+              <MobileDrawerMenu user={user} />
             </div>
           </nav>
         </div>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
+import { MobileDrawerMenu } from "@/components/mobile-drawer-menu";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import TemplateCardPreview from "@/app/templates/_components/template-card-preview-client";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -209,6 +210,9 @@ async function getFeaturedTemplates(): Promise<FeaturedTemplate[]> {
 }
 
 export default async function HomePage() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
   const [featuredTemplates, categories] = await Promise.all([
     getFeaturedTemplates(),
     getCategories(),
@@ -239,7 +243,10 @@ export default async function HomePage() {
               <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
                 İletişim
               </Link>
-              <HeaderAuthButton />
+              <div className="hidden md:block">
+                <HeaderAuthButton />
+              </div>
+              <MobileDrawerMenu user={user} />
             </div>
           </nav>
         </div>

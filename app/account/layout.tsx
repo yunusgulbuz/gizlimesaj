@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase-client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import HeaderAuthButton from '@/components/auth/header-auth-button';
+import { MobileDrawerMenu } from '@/components/mobile-drawer-menu';
 import {
   Heart,
   User,
@@ -54,6 +55,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [user, setUser] = useState<any>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         return;
       }
 
+      setUser(user);
       setUserEmail(user.email || '');
       setIsLoading(false);
     };
@@ -120,15 +123,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
               <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
                 İletişim
               </Link>
-              <HeaderAuthButton />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden"
-              >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
+              <div className="hidden md:block">
+                <HeaderAuthButton />
+              </div>
+              <MobileDrawerMenu user={user} />
             </div>
           </nav>
         </div>
