@@ -176,7 +176,9 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="h-8 w-8 text-gray-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{personalPage?.template_title || 'Mesaj Görüntülenemiyor'}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {personalPage?.template_title ? `${personalPage.template_title} - Mesaj Bulunamadı` : 'Mesaj Bulunamadı'}
+          </h1>
           <p className="text-gray-600 mb-6">
             Bu mesaj artık mevcut değil veya süresi dolmuş olabilir.
           </p>
@@ -225,12 +227,12 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
           {(() => {
             // Öncelik sırası: text_fields.musicUrl, sonra bg_audio_url
             const audioUrl = personalPage.text_fields?.musicUrl || personalPage.bg_audio_url;
-            
+
             if (audioUrl && (audioUrl.includes('youtube.com') || audioUrl.includes('youtu.be'))) {
               return (
                 <YouTubePlayer
                   videoId={extractVideoId(audioUrl) || undefined}
-                  autoPlay={true}
+                  autoPlay={false}
                   loop={true}
                   className="bg-white/10 backdrop-blur-sm rounded-lg p-2 shadow-lg"
                 />
@@ -239,7 +241,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
               return (
                 <AudioPlayer
                   src={audioUrl}
-                  autoPlay={true}
+                  autoPlay={false}
                   loop={true}
                   className="bg-white/10 backdrop-blur-sm rounded-lg p-2 shadow-lg"
                 />
