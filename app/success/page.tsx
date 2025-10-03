@@ -225,7 +225,7 @@ export default function SuccessPage() {
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild>
                 <Link href="/templates">
-                  Yeni Mesaj Oluştur
+                  Yeni Sürpriz Oluştur
                 </Link>
               </Button>
               <Button variant="outline" asChild>

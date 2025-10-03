@@ -196,7 +196,7 @@ export default function FavoritesPage() {
               Beğendiğiniz şablonları favorilere ekleyin
             </p>
             <Button asChild>
-              <Link href="/templates">Şablonları İncele</Link>
+              <Link href="/templates">Sürprizleri İncele</Link>
             </Button>
           </CardContent>
         </Card>

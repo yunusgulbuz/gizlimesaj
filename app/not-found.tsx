@@ -27,7 +27,7 @@ export default function NotFound() {
             <Button variant="outline" asChild className="w-full">
               <Link href="/templates">
                 <Search className="h-4 w-4 mr-2" />
-                Şablonları Keşfet
+                Sürprizleri Keşfet
               </Link>
             </Button>
           </div>

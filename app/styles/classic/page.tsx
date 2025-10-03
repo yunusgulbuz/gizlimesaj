@@ -203,7 +203,7 @@ export default function ClassicStylePage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/templates">
                   <Button size="lg" className="bg-white text-amber-600 hover:bg-gray-100 font-serif">
-                    Şablon Seç
+                    Sürpriz Seç
                   </Button>
                 </Link>
                 <Link href="/styles">

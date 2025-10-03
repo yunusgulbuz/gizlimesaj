@@ -163,7 +163,7 @@ export default function PricingPage() {
             </Link>
             <div className="flex items-center gap-6">
               <Link href="/templates" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
-                Şablonlar
+                Sürprizler
               </Link>
               <Link href="/pricing" className="hidden text-sm font-medium text-gray-900 md:block">
                 Planlar
@@ -388,7 +388,7 @@ export default function PricingPage() {
                 <Link href="/register">Ücretsiz Deneyin</Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white/10" asChild>
-                <Link href="/templates">Şablonları İnceleyin</Link>
+                <Link href="/templates">Sürprizleri İnceleyin</Link>
               </Button>
             </div>
           </div>
@@ -413,7 +413,7 @@ export default function PricingPage() {
             <div>
               <h4 className="mb-4 font-semibold text-gray-900">Ürün</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/templates" className="hover:text-rose-600">Şablonlar</Link></li>
+                <li><Link href="/templates" className="hover:text-rose-600">Sürprizler</Link></li>
                 <li><Link href="/pricing" className="hover:text-rose-600">Fiyatlandırma</Link></li>
               </ul>
             </div>

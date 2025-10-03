@@ -128,7 +128,7 @@ export default function OrdersPage() {
               Sevdiklerinize özel mesajlar oluşturmaya başlayın
             </p>
             <Button asChild>
-              <Link href="/templates">Şablonları İncele</Link>
+              <Link href="/templates">Sürprizleri İncele</Link>
             </Button>
           </CardContent>
         </Card>

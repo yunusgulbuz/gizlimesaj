@@ -162,7 +162,7 @@ export default function ReviewsPage() {
               Kullandığınız şablonları puanlayarak diğer kullanıcılara yardımcı olun
             </p>
             <Button asChild>
-              <Link href="/templates">Şablonları İncele</Link>
+              <Link href="/templates">Sürprizleri İncele</Link>
             </Button>
           </CardContent>
         </Card>

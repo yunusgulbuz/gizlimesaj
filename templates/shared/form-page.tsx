@@ -601,7 +601,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                 <Button variant="ghost" size="sm" asChild className="text-gray-600 hover:text-gray-900">
                   <Link href="/templates">
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Şablonlara Dön
+                    Sürprizlere Dön
                   </Link>
                 </Button>
               )}

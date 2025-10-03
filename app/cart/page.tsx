@@ -70,7 +70,7 @@ export default function CartPage() {
             <Button variant="ghost" size="sm" asChild>
               <Link href="/templates">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Şablonlara Dön
+                Sürprizlere Dön
               </Link>
             </Button>
             <div className="flex items-center space-x-2">
@@ -98,7 +98,7 @@ export default function CartPage() {
                 Henüz sepetinize ürün eklemediniz. Şablonlarımıza göz atın!
               </p>
               <Button asChild>
-                <Link href="/templates">Şablonları İncele</Link>
+                <Link href="/templates">Sürprizleri İncele</Link>
               </Button>
             </div>
           ) : (
@@ -167,7 +167,7 @@ export default function CartPage() {
                   <Button variant="outline" asChild>
                     <Link href="/templates">
                       <Plus className="h-4 w-4 mr-2" />
-                      Başka Şablon Ekle
+                      Başka Sürpriz Ekle
                     </Link>
                   </Button>
                 </div>

@@ -64,7 +64,7 @@ export default function StylesPage() {
           <Link href="/templates">
             <Button variant="ghost" size="sm" className="gap-2">
               <ArrowLeft className="w-4 h-4" />
-              Şablonlara Dön
+              Sürprizlere Dön
             </Button>
           </Link>
         </div>
@@ -139,7 +139,7 @@ export default function StylesPage() {
               </p>
               <Link href="/templates">
                 <Button size="lg" className="bg-pink-600 hover:bg-pink-700 text-white">
-                  Şablon Seçmeye Başla
+                  Sürpriz Seçmeye Başla
                 </Button>
               </Link>
             </CardContent>

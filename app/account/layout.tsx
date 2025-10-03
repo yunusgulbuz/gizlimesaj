@@ -112,7 +112,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
             <div className="flex items-center gap-6">
               <Link href="/templates" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
-                Şablonlar
+                Sürprizler
               </Link>
               <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
                 Planlar
