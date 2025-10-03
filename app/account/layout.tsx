@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import HeaderAuthButton from '@/components/auth/header-auth-button';
 import {
   Heart,
   User,
@@ -106,10 +107,20 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
               <span className="text-lg font-bold text-gray-900">Heartnote</span>
             </Link>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <Link href="/templates" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
                 Şablonlar
               </Link>
+              <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                Planlar
+              </Link>
+              <Link href="/about" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                Hakkımızda
+              </Link>
+              <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                İletişim
+              </Link>
+              <HeaderAuthButton />
               <Button
                 variant="ghost"
                 size="sm"

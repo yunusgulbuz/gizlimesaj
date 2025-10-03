@@ -113,12 +113,15 @@ export function FavoriteButton({
 
   return (
     <Button
-      variant={isFavorite ? 'default' : 'outline'}
+      variant="outline"
       size={size}
       onClick={handleClick}
       disabled={isLoading}
       className={cn(
-        isFavorite && 'bg-rose-500 hover:bg-rose-600 text-white border-rose-500',
+        'transition-all',
+        isFavorite
+          ? 'border-rose-500 hover:border-rose-600 text-rose-500 hover:text-rose-600 bg-white hover:bg-rose-50'
+          : 'border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-700',
         className
       )}
     >
@@ -127,9 +130,9 @@ export function FavoriteButton({
       ) : (
         <Heart
           className={cn(
-            'h-4 w-4',
+            'h-4 w-4 transition-all',
             !iconOnly && 'mr-2',
-            isFavorite && 'fill-current'
+            isFavorite && 'fill-rose-500'
           )}
         />
       )}

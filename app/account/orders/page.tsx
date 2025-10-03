@@ -58,14 +58,13 @@ export default function OrdersPage() {
             amount,
             status,
             created_at,
-            personal_pages (
-              short_id,
-              recipient_name,
-              expires_at,
-              templates (
-                title,
-                slug
-              )
+            expires_at,
+            short_id,
+            recipient_name,
+            sender_name,
+            templates (
+              title,
+              slug
             )
           `)
           .eq('user_id', user.id)
@@ -74,21 +73,18 @@ export default function OrdersPage() {
         if (error) throw error;
 
         const formattedOrders: Order[] = (data || []).map((order: any) => {
-          const personalPage = Array.isArray(order.personal_pages)
-            ? order.personal_pages[0]
-            : order.personal_pages;
-          const template = personalPage?.templates;
+          const template = order.templates;
 
           return {
             id: order.id,
-            template_title: Array.isArray(template) ? template[0]?.title : template?.title || 'Bilinmeyen Şablon',
-            template_slug: Array.isArray(template) ? template[0]?.slug : template?.slug || '',
-            recipient_name: personalPage?.recipient_name || 'Bilinmeyen Alıcı',
+            template_title: template?.title || 'Bilinmeyen Şablon',
+            template_slug: template?.slug || '',
+            recipient_name: order.recipient_name || 'Bilinmeyen Alıcı',
             amount: order.amount || '0',
             status: order.status || 'pending',
-            short_id: personalPage?.short_id || null,
+            short_id: order.short_id || null,
             created_at: order.created_at,
-            expires_at: personalPage?.expires_at || null,
+            expires_at: order.expires_at || null,
           };
         });
 

@@ -463,6 +463,32 @@ export function TemplateComments({
 
   const commentsContent = (
     <div className="space-y-6">
+        {/* Rating Section - Always show */}
+        {user && (
+          <div className="rounded-lg border border-gray-100 bg-white/70 p-4 shadow-sm">
+            <div className="space-y-3">
+              <span className="text-sm font-semibold text-gray-700">Puanınız</span>
+              <div className="flex items-center gap-3">
+                <StarRating
+                  rating={pendingRating}
+                  onRatingChange={handleInlineRatingChange}
+                  size="lg"
+                />
+                {savedRating > 0 && (
+                  <span className="text-xs text-gray-500">
+                    Kaydedildi: <span className="font-medium text-gray-800">{savedRating} ⭐</span>
+                  </span>
+                )}
+              </div>
+              {pendingRating === 0 && (
+                <p className="text-xs text-amber-600">
+                  Yorum yapmak için lütfen önce puan verin
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="space-y-3">
           {user ? (
             <>
@@ -484,9 +510,9 @@ export function TemplateComments({
                 </span>
                 <Button
                   onClick={handleSubmitComment}
-                  disabled={isSubmitting || isRatingSaving || newComment.trim().length < 10}
+                  disabled={isSubmitting || isRatingSaving || newComment.trim().length < 10 || pendingRating === 0}
                 >
-                  {isSubmitting ? 'Gönderiliyor...' : 'Puanla ve Yorum Yap'}
+                  {isSubmitting ? 'Gönderiliyor...' : 'Yorum Yap'}
                 </Button>
               </div>
             </>
