@@ -1,5 +1,5 @@
 1- 
-2- planlar(fiyatlar) sayfası oluşturma
+2- planlar(fiyatlar) sayfası oluşturma (Aylık 10 sürpriz(999tl), Aylık 20 sürpriz(1799tl), Aylık 30 sürpriz(2499tl), özel görüşme paketleri olacak.)
 3- hakkımızda sayfası oluşturma
 4- 
 5- iletişim sayfası oluşturma
