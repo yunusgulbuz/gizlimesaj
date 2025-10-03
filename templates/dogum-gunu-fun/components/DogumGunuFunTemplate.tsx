@@ -1,25 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { TemplateTextFields } from '../../shared/types';
 
-function DogumGunuFunTemplate({ recipientName, message, designStyle, creatorName, textFields = {}, isEditable = false, onFieldChange }: {
+function DogumGunuFunTemplate({ recipientName, message, designStyle, creatorName, textFields = {}, isEditable = false, onTextFieldChange }: {
   recipientName: string;
   message: string;
   designStyle: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
   creatorName?: string;
   textFields?: TemplateTextFields;
   isEditable?: boolean;
-  onFieldChange?: (field: string, value: string) => void;
+  onTextFieldChange?: (field: string, value: string) => void;
 }) {
-  const displayRecipientName = textFields.recipientName || recipientName;
-  const displayAge = textFields.age;
-  const displayMainMessage =
-    textFields.mainMessage ||
-    message ||
-    "Bu özel günde sana en güzel dilekleri gönderiyorum. Yeni yaşın sana sağlık, mutluluk ve başarı getirsin. Doğum günün kutlu olsun!";
-  const displayWishMessage = textFields.wishMessage;
-  const displayFooterMessage = textFields.footerMessage;
+  const [localFields, setLocalFields] = useState({
+    recipientName: textFields?.recipientName || recipientName,
+    age: textFields?.age,
+    mainMessage: textFields?.mainMessage || message || "Bu özel günde sana en güzel dilekleri gönderiyorum. Yeni yaşın sana sağlık, mutluluk ve başarı getirsin. Doğum günün kutlu olsun!",
+    wishMessage: textFields?.wishMessage,
+    footerMessage: textFields?.footerMessage
+  });
+
+  useEffect(() => {
+    setLocalFields({
+      recipientName: textFields?.recipientName || recipientName,
+      age: textFields?.age,
+      mainMessage: textFields?.mainMessage || message || "Bu özel günde sana en güzel dilekleri gönderiyorum. Yeni yaşın sana sağlık, mutluluk ve başarı getirsin. Doğum günün kutlu olsun!",
+      wishMessage: textFields?.wishMessage,
+      footerMessage: textFields?.footerMessage
+    });
+  }, [recipientName, message, textFields]);
+
+  const handleLocalChange = (field: string, value: string) => {
+    setLocalFields(prev => ({ ...prev, [field]: value }));
+    if (onTextFieldChange) {
+      onTextFieldChange(field, value);
+    }
+  };
+
+  const displayRecipientName = isEditable ? localFields.recipientName : (textFields?.recipientName || recipientName);
+  const displayAge = isEditable ? localFields.age : textFields?.age;
+  const displayMainMessage = isEditable ? localFields.mainMessage : (textFields?.mainMessage || message || "Bu özel günde sana en güzel dilekleri gönderiyorum. Yeni yaşın sana sağlık, mutluluk ve başarı getirsin. Doğum günün kutlu olsun!");
+  const displayWishMessage = isEditable ? localFields.wishMessage : textFields?.wishMessage;
+  const displayFooterMessage = isEditable ? localFields.footerMessage : textFields?.footerMessage;
 
   const baseProps: DogumGunuFunTemplateProps = {
     recipientName: displayRecipientName,
@@ -29,7 +51,8 @@ function DogumGunuFunTemplate({ recipientName, message, designStyle, creatorName
     wishMessage: displayWishMessage,
     footerMessage: displayFooterMessage,
     isEditable,
-    onFieldChange,
+    onFieldChange: handleLocalChange,
+    onTextFieldChange: handleLocalChange,
   };
 
   switch (designStyle) {
@@ -54,6 +77,7 @@ interface DogumGunuFunTemplateProps {
   footerMessage?: string;
   isEditable?: boolean;
   onFieldChange?: (field: string, value: string) => void;
+  onTextFieldChange?: (field: string, value: string) => void;
 }
 
 function DogumGunuFunModernTemplate({ recipientName, mainMessage, creatorName, age, wishMessage, footerMessage, isEditable = false, onFieldChange }: DogumGunuFunTemplateProps) {

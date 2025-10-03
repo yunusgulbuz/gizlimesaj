@@ -16,7 +16,7 @@ interface CikmaTeklifiTemplateProps {
   textFields?: TemplateTextFields;
   shortId?: string;
   isEditable?: boolean;
-  onFieldChange?: (field: string, value: string) => void;
+  onTextFieldChange?: (field: string, value: string) => void;
 }
 
 interface BaseTemplateProps {
@@ -28,7 +28,7 @@ interface BaseTemplateProps {
   musicUrl?: string;
   shortId?: string;
   isEditable?: boolean;
-  onFieldChange?: (field: string, value: string) => void;
+  onTextFieldChange?: (field: string, value: string) => void;
 }
 
 export default function CikmaTeklifiTemplate({
@@ -39,15 +39,40 @@ export default function CikmaTeklifiTemplate({
   textFields,
   shortId,
   isEditable = false,
-  onFieldChange
+  onTextFieldChange
 }: CikmaTeklifiTemplateProps) {
   const fields = textFields || {};
 
-  const resolvedRecipient = fields.recipientName || recipientName;
-  const proposalQuestion = fields.proposalQuestion || 'Benimle çıkar mısın?';
-  const mainMessage = fields.mainMessage || message;
-  const secondaryMessage = fields.secondaryMessage;
-  const musicUrl = fields.musicUrl;
+  const [localFields, setLocalFields] = useState({
+    recipientName: fields.recipientName || recipientName,
+    proposalQuestion: fields.proposalQuestion || 'Benimle çıkar mısın?',
+    mainMessage: fields.mainMessage || message,
+    secondaryMessage: fields.secondaryMessage,
+    musicUrl: fields.musicUrl
+  });
+
+  useEffect(() => {
+    setLocalFields({
+      recipientName: fields.recipientName || recipientName,
+      proposalQuestion: fields.proposalQuestion || 'Benimle çıkar mısın?',
+      mainMessage: fields.mainMessage || message,
+      secondaryMessage: fields.secondaryMessage,
+      musicUrl: fields.musicUrl
+    });
+  }, [recipientName, message, textFields, fields.recipientName, fields.proposalQuestion, fields.mainMessage, fields.secondaryMessage, fields.musicUrl]);
+
+  const handleLocalChange = (field: string, value: string) => {
+    setLocalFields(prev => ({ ...prev, [field]: value }));
+    if (onTextFieldChange) {
+      onTextFieldChange(field, value);
+    }
+  };
+
+  const resolvedRecipient = isEditable ? localFields.recipientName : (fields.recipientName || recipientName);
+  const proposalQuestion = isEditable ? localFields.proposalQuestion : (fields.proposalQuestion || 'Benimle çıkar mısın?');
+  const mainMessage = isEditable ? localFields.mainMessage : (fields.mainMessage || message);
+  const secondaryMessage = isEditable ? localFields.secondaryMessage : fields.secondaryMessage;
+  const musicUrl = isEditable ? localFields.musicUrl : fields.musicUrl;
 
   const baseProps: BaseTemplateProps = {
     recipientName: resolvedRecipient,
@@ -58,7 +83,7 @@ export default function CikmaTeklifiTemplate({
     musicUrl,
     shortId,
     isEditable,
-    onFieldChange,
+    onTextFieldChange: handleLocalChange,
   };
 
   switch (designStyle) {

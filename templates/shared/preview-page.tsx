@@ -225,9 +225,9 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
 
       const paymentData = {
         template_id: template.id,
-        recipient_name: textFields.recipientName || '',
+        recipient_name: textFields.recipientName || textFields.recipient_name || '',
         sender_name: creatorName,
-        message: textFields.mainMessage || '',
+        message: textFields.mainMessage || textFields.message || '',
         buyer_email: sessionUser?.email || '',
         special_date: '',
         expires_in_hours: selectedDurationData ? 24 * selectedDurationData.days : 24,

@@ -785,13 +785,21 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         maxLength: 50
       },
       {
-        key: 'mainMessage',
+        key: 'message',
         label: 'Teşekkür Mesajınız',
         placeholder: 'Teşekkür mesajınızı yazın...',
         type: 'textarea',
         required: true,
         maxLength: 500,
         defaultValue: 'Hayatımda olduğun için çok şanslıyım. Bana verdiğin destek, sevgi ve anlayış için sana ne kadar teşekkür etsem az. Sen gerçekten çok özelsin ve seni ne kadar takdir ettiğimi bilmeni istiyorum. 🙏💕'
+      },
+      {
+        key: 'creatorName',
+        label: 'İsminiz',
+        placeholder: 'İsminizi girin',
+        type: 'input',
+        required: false,
+        maxLength: 50
       },
       {
         key: 'musicUrl',

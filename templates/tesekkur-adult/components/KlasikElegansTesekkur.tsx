@@ -7,26 +7,27 @@ interface KlasikElegansTesekkurProps {
   recipientName: string;
   message: string;
   creatorName?: string;
+  textFields?: any;
   isEditable?: boolean;
   onTextFieldChange?: (key: string, value: string) => void;
 }
 
-function KlasikElegansTesekkur({ recipientName, message, creatorName, isEditable = false, onTextFieldChange }: KlasikElegansTesekkurProps) {
+function KlasikElegansTesekkur({ recipientName, message, creatorName, textFields, isEditable = false, onTextFieldChange }: KlasikElegansTesekkurProps) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [bubbles, setBubbles] = useState<Array<{id: number, x: number, y: number, size: number, delay: number}>>([]);
   const [showMessage, setShowMessage] = useState(false);
 
   // Local editable state
-  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
-  const [localMessage, setLocalMessage] = useState(message);
-  const [localCreatorName, setLocalCreatorName] = useState(creatorName || '');
+  const [localRecipientName, setLocalRecipientName] = useState(textFields?.recipientName || recipientName);
+  const [localMessage, setLocalMessage] = useState(textFields?.message || message);
+  const [localCreatorName, setLocalCreatorName] = useState(textFields?.creatorName || creatorName || '');
 
   // Initialize local state from props
   useEffect(() => {
-    setLocalRecipientName(recipientName);
-    setLocalMessage(message);
-    setLocalCreatorName(creatorName || '');
-  }, [recipientName, message, creatorName]);
+    setLocalRecipientName(textFields?.recipientName || recipientName);
+    setLocalMessage(textFields?.message || message);
+    setLocalCreatorName(textFields?.creatorName || creatorName || '');
+  }, [recipientName, message, creatorName, textFields]);
 
   // Handle content change
   const handleContentChange = (key: string, value: string) => {
@@ -40,9 +41,9 @@ function KlasikElegansTesekkur({ recipientName, message, creatorName, isEditable
   };
 
   // Get display values
-  const displayRecipientName = isEditable ? localRecipientName : recipientName;
-  const displayMessage = isEditable ? localMessage : message;
-  const displayCreatorName = isEditable ? localCreatorName : creatorName;
+  const displayRecipientName = isEditable ? localRecipientName : (textFields?.recipientName || recipientName);
+  const displayMessage = isEditable ? localMessage : (textFields?.message || message);
+  const displayCreatorName = isEditable ? localCreatorName : (textFields?.creatorName || creatorName);
 
   useEffect(() => {
     // Create initial champagne bubbles

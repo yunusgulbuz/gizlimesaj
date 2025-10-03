@@ -166,6 +166,7 @@ export default function TemplateRenderer({
               recipientName={recipientName}
               message={message}
               creatorName={creatorName}
+              textFields={textFields}
               isEditable={isEditable}
               onTextFieldChange={onTextFieldChange}
             />;
@@ -174,6 +175,7 @@ export default function TemplateRenderer({
               recipientName={recipientName}
               message={message}
               creatorName={creatorName}
+              textFields={textFields}
               isEditable={isEditable}
               onTextFieldChange={onTextFieldChange}
             />;
@@ -182,6 +184,7 @@ export default function TemplateRenderer({
               recipientName={recipientName}
               message={message}
               creatorName={creatorName}
+              textFields={textFields}
               isEditable={isEditable}
               onTextFieldChange={onTextFieldChange}
             />;
@@ -190,6 +193,7 @@ export default function TemplateRenderer({
               recipientName={recipientName}
               message={message}
               creatorName={creatorName}
+              textFields={textFields}
               isEditable={isEditable}
               onTextFieldChange={onTextFieldChange}
             />;
@@ -198,6 +202,7 @@ export default function TemplateRenderer({
               recipientName={recipientName}
               message={message}
               creatorName={creatorName}
+              textFields={textFields}
               isEditable={isEditable}
               onTextFieldChange={onTextFieldChange}
             />;

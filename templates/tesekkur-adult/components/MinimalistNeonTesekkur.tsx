@@ -7,26 +7,27 @@ interface MinimalistNeonTesekkurProps {
   recipientName: string;
   message: string;
   creatorName?: string;
+  textFields?: any;
   isEditable?: boolean;
   onTextFieldChange?: (key: string, value: string) => void;
 }
 
-function MinimalistNeonTesekkur({ recipientName, message, creatorName, isEditable = false, onTextFieldChange }: MinimalistNeonTesekkurProps) {
+function MinimalistNeonTesekkur({ recipientName, message, creatorName, textFields, isEditable = false, onTextFieldChange }: MinimalistNeonTesekkurProps) {
   const [showLaser, setShowLaser] = useState(false);
   const [gridLines, setGridLines] = useState<Array<{id: number, x: number, y: number, direction: 'horizontal' | 'vertical'}>>([]);
   const [neonPulse, setNeonPulse] = useState(false);
 
   // Local editable state
-  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
-  const [localMessage, setLocalMessage] = useState(message);
-  const [localCreatorName, setLocalCreatorName] = useState(creatorName || '');
+  const [localRecipientName, setLocalRecipientName] = useState(textFields?.recipientName || recipientName);
+  const [localMessage, setLocalMessage] = useState(textFields?.message || message);
+  const [localCreatorName, setLocalCreatorName] = useState(textFields?.creatorName || creatorName || '');
 
   // Initialize local state from props
   useEffect(() => {
-    setLocalRecipientName(recipientName);
-    setLocalMessage(message);
-    setLocalCreatorName(creatorName || '');
-  }, [recipientName, message, creatorName]);
+    setLocalRecipientName(textFields?.recipientName || recipientName);
+    setLocalMessage(textFields?.message || message);
+    setLocalCreatorName(textFields?.creatorName || creatorName || '');
+  }, [recipientName, message, creatorName, textFields]);
 
   // Handle content change
   const handleContentChange = (key: string, value: string) => {
@@ -40,9 +41,9 @@ function MinimalistNeonTesekkur({ recipientName, message, creatorName, isEditabl
   };
 
   // Get display values
-  const displayRecipientName = isEditable ? localRecipientName : recipientName;
-  const displayMessage = isEditable ? localMessage : message;
-  const displayCreatorName = isEditable ? localCreatorName : creatorName;
+  const displayRecipientName = isEditable ? localRecipientName : (textFields?.recipientName || recipientName);
+  const displayMessage = isEditable ? localMessage : (textFields?.message || message);
+  const displayCreatorName = isEditable ? localCreatorName : (textFields?.creatorName || creatorName);
 
   useEffect(() => {
     // Create grid lines

@@ -197,54 +197,6 @@ export function SocialShare({
           </div>
         </div>
 
-        {/* Visual Export */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-700">Görsel Paylaşım</h4>
-          <div className="grid grid-cols-1 gap-2">
-            <Button
-              onClick={() => generateVisualShare('instagram-square')}
-              variant="outline"
-              size="sm"
-              disabled={isGeneratingImage}
-              className="justify-start"
-            >
-              {isGeneratingImage ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4 mr-2" />
-              )}
-              Instagram Kare (1080x1080)
-            </Button>
-            <Button
-              onClick={() => generateVisualShare('instagram-story')}
-              variant="outline"
-              size="sm"
-              disabled={isGeneratingImage}
-              className="justify-start"
-            >
-              {isGeneratingImage ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4 mr-2" />
-              )}
-              Instagram Story (1080x1920)
-            </Button>
-            <Button
-              onClick={() => generateVisualShare('whatsapp')}
-              variant="outline"
-              size="sm"
-              disabled={isGeneratingImage}
-              className="justify-start"
-            >
-              {isGeneratingImage ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4 mr-2" />
-              )}
-              WhatsApp Görseli (1080x1350)
-            </Button>
-          </div>
-        </div>
 
         {/* Native Share (Mobile) */}
         {typeof window !== 'undefined' && 'share' in navigator && (

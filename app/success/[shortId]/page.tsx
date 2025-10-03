@@ -223,7 +223,7 @@ export default function SuccessPage() {
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg"
                 >
                   <ExternalLink className="w-5 h-5 mr-2" />
-                  Mesajı Görüntüle
+                  Sürprizi Görüntüle
                 </Button>
               </Link>
             </div>

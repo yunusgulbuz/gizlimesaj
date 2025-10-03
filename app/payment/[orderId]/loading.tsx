@@ -10,12 +10,9 @@ export default function PaymentLoading() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <h3 className="text-xl font-semibold text-gray-800">
-            Ödeme sayfası hazırlanıyor
-          </h3>
-          <p className="text-sm text-gray-600">Lütfen bekleyin...</p>
-        </div>
+        <p className="text-lg text-gray-700">
+          Ödeme sayfasına yönlendiriyor
+        </p>
       </div>
     </div>
   );

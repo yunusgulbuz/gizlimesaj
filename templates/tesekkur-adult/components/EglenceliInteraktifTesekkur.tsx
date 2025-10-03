@@ -7,6 +7,7 @@ interface EglenceliInteraktifTesekkurProps {
   recipientName: string;
   message: string;
   creatorName?: string;
+  textFields?: any;
   isEditable?: boolean;
   onTextFieldChange?: (key: string, value: string) => void;
 }
@@ -19,7 +20,7 @@ interface Gift {
   emoji: string;
 }
 
-function EglenceliInteraktifTesekkur({ recipientName, message, creatorName, isEditable = false, onTextFieldChange }: EglenceliInteraktifTesekkurProps) {
+function EglenceliInteraktifTesekkur({ recipientName, message, creatorName, textFields, isEditable = false, onTextFieldChange }: EglenceliInteraktifTesekkurProps) {
   const [gameStarted, setGameStarted] = useState(false);
   const [score, setScore] = useState(0);
   const [gifts, setGifts] = useState<Gift[]>([]);
@@ -28,18 +29,18 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName, isEd
   const [fireworks, setFireworks] = useState<Array<{id: number, x: number, y: number}>>([]);
 
   // Local editable state
-  const [localRecipientName, setLocalRecipientName] = useState(recipientName);
-  const [localMessage, setLocalMessage] = useState(message);
-  const [localCreatorName, setLocalCreatorName] = useState(creatorName || '');
+  const [localRecipientName, setLocalRecipientName] = useState(textFields?.recipientName || recipientName);
+  const [localMessage, setLocalMessage] = useState(textFields?.message || message);
+  const [localCreatorName, setLocalCreatorName] = useState(textFields?.creatorName || creatorName || '');
 
   const giftEmojis = ['🎁', '🎀', '🎊', '🎉', '💝', '🎈', '🌟', '✨'];
 
   // Initialize local state from props
   useEffect(() => {
-    setLocalRecipientName(recipientName);
-    setLocalMessage(message);
-    setLocalCreatorName(creatorName || '');
-  }, [recipientName, message, creatorName]);
+    setLocalRecipientName(textFields?.recipientName || recipientName);
+    setLocalMessage(textFields?.message || message);
+    setLocalCreatorName(textFields?.creatorName || creatorName || '');
+  }, [recipientName, message, creatorName, textFields]);
 
   // Handle content change
   const handleContentChange = (key: string, value: string) => {
@@ -53,9 +54,9 @@ function EglenceliInteraktifTesekkur({ recipientName, message, creatorName, isEd
   };
 
   // Get display values
-  const displayRecipientName = isEditable ? localRecipientName : recipientName;
-  const displayMessage = isEditable ? localMessage : message;
-  const displayCreatorName = isEditable ? localCreatorName : creatorName;
+  const displayRecipientName = isEditable ? localRecipientName : (textFields?.recipientName || recipientName);
+  const displayMessage = isEditable ? localMessage : (textFields?.message || message);
+  const displayCreatorName = isEditable ? localCreatorName : (textFields?.creatorName || creatorName);
 
   useEffect(() => {
     // Create snowflakes
