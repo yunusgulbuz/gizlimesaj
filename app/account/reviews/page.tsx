@@ -181,7 +181,7 @@ export default function ReviewsPage() {
                     </Link>
 
                     <div className="mt-2 flex items-center gap-4">
-                      <StarRating value={review.rating} readonly size="sm" />
+                      <StarRating rating={review.rating} readonly size="sm" />
                       <span className="text-sm text-gray-600">
                         <Calendar className="mr-1 inline h-3 w-3" />
                         {new Date(review.created_at).toLocaleDateString('tr-TR')}

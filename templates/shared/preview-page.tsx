@@ -15,6 +15,7 @@ import { DurationSelectionDialog } from '@/components/DurationSelectionDialog';
 import { LoginRequiredDialog } from '@/components/LoginRequiredDialog';
 import { TemplateComments } from '@/components/template-comments';
 import { StarRating } from '@/components/ui/star-rating';
+import { FavoriteButton } from '@/components/favorite-button';
 import { createClient } from '@/lib/supabase-client';
 import type { User } from '@supabase/supabase-js';
 
@@ -324,6 +325,14 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
                   </>
                 )}
               </Button>
+
+              {/* Favorite Button */}
+              <FavoriteButton
+                templateId={template.id}
+                iconOnly
+                size="sm"
+                className="shrink-0"
+              />
 
               {/* Comments & Rating Button */}
               <Button

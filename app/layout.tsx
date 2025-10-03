@@ -14,18 +14,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gizli Mesaj - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
+  title: "Heartnote - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
   description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun. Romantik, eğlenceli ve unutulmaz anlar için zamanlı mesaj deneyimi.",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-icon.png',
+  },
   openGraph: {
-    title: "Gizli Mesaj - Özel Dijital Hediyeler",
+    title: "Heartnote - Özel Dijital Hediyeler",
     description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun. Romantik, eğlenceli ve unutulmaz anlar için zamanlı mesaj deneyimi.",
     locale: "tr_TR",
     type: "website",
-    siteName: "Gizli Mesaj - Özel Dijital Hediyeler",
+    siteName: "Heartnote - Özel Dijital Hediyeler",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gizli Mesaj - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
+    title: "Heartnote - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
     description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun.",
   },
 };

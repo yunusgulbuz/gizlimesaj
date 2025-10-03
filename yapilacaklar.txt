@@ -1,11 +1,11 @@
-1- appbarda sağda planlar, hakkımızda, iletişim ve profil sayfaları olsun her zaman başka bir şey olmasın.
-2- planlar(fiyatlar) sayfasındaki ödeme entegrasyonunun yapılması, /Users/yunusgulbuz/NextJS/gizlimesaj/gizlimesaj/paynkolay_doc'tan düzenli ödeme dökümanına bakabilirsin 
-3- siparişlerim sayfasının aktifleştirilmesi (supabase veritabanımızla entegre olması)
-4- değerlendirmelerim sayfasında kaç yıldız verdiğimiz doğru görünmüyor, bunun düzeltilmesi
-5- anasayfa, templatesteki ürün kartlarına ve preview sayfasına favoriye ekleme butonu konulması
+1- anasayfa ve templates ekranlarında favoriye eklendiğinde preview sayfasındaki gibi favori işaretinin çerçevesi kırmızı, kalp de beyaz olsun
+2- planlar(fiyatlar) sayfasındaki ödeme entegrasyonunun yapılması, /Users/yunusgulbuz/NextJS/gizlimesaj/gizlimesaj/paynkolay_doc'tan düzenli ödeme dökümanına bakabilirsin. şuan tıkladığımda "geçersiz paket seçimi" hatası çıkıyor. console: POST /api/subscriptions/create-recurring 400 in 291ms
+3- siparişlerim sayfasının aktifleştirilmesi (supabase veritabanımızla entegre olması (orders tablosundan.))
+4- değerlendirmelerim sayfasında kaç yıldız verdiğimiz doğru görünmüyor, bunun düzeltilmesi. (şuan sadece boş 5 tane yıldız görünüyor. kaç yıldız verdiysek o kadar yıldız sarı olmalı)
+5- 
 6- preview sayfasında yorum kısmına puanlama da eklenmesi (http://localhost:3000/templates/is-tebrigi ekranında yorum kısmında puanlama var oradan bakabilirsin nasıl yapılacağına.)
-7- anasayfa ve templates sayfalarındaki ürün kartlarındaki butonlar satın al ve incele olmalı
-8- sitedeki vercel ikonunu kaldırmak. onun yerine şuanlık bir icon konulabilir.
+7- anasayfa ve templates sayfalarındaki ürün kartlarındaki satın al ve incele butonlarının daha modern,sade ama ilgi çekici hale getirilmesi
+8- 
 9- https://heartnote2.vercel.app/m/xxx ekranı açıldığı zaman şarkı varsa açılabiliyorsa otomatik açılsın, eğer mobil otomatik açamıyorsa o zaman ekranda herhangi bir yere tıkladığı zaman şarkı otomatik başlasın
 10- 
 11- 

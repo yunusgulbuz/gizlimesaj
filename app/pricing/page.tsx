@@ -1,8 +1,14 @@
+'use client';
+
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
+import { createClient } from "@/lib/supabase-client";
+import { toast } from "sonner";
 import {
   Heart,
   Check,
@@ -11,6 +17,7 @@ import {
   Crown,
   MessageCircle,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 
 const pricingPlans = [
@@ -74,6 +81,57 @@ const pricingPlans = [
 ];
 
 export default function PricingPage() {
+  const router = useRouter();
+  const supabase = createClient();
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+
+  const handleSubscribe = async (planId: string) => {
+    setLoadingPlanId(planId);
+
+    try {
+      // Check authentication
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast.error('Lütfen önce giriş yapın');
+        router.push('/login?redirect=/pricing');
+        return;
+      }
+
+      // Create recurring payment
+      const response = await fetch('/api/subscriptions/create-recurring', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId,
+          totalPayments: 12, // 12 months
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        toast.error(result.error || 'Abonelik oluşturulamadı');
+        return;
+      }
+
+      // Redirect to Paynkolay payment link
+      if (result.payment_link) {
+        window.location.href = result.payment_link;
+      } else {
+        toast.error('Ödeme linki alınamadı');
+      }
+
+    } catch (error) {
+      console.error('Subscribe error:', error);
+      toast.error('Beklenmeyen bir hata oluştu');
+    } finally {
+      setLoadingPlanId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -91,7 +149,13 @@ export default function PricingPage() {
                 Şablonlar
               </Link>
               <Link href="/pricing" className="hidden text-sm font-medium text-gray-900 md:block">
-                Fiyatlar
+                Planlar
+              </Link>
+              <Link href="/about" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                Hakkımızda
+              </Link>
+              <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                İletişim
               </Link>
               <HeaderAuthButton />
             </div>
@@ -181,12 +245,20 @@ export default function PricingPage() {
                             : "bg-gray-900 hover:bg-gray-800"
                         }`}
                         size="lg"
-                        asChild
+                        onClick={() => handleSubscribe(plan.id)}
+                        disabled={loadingPlanId === plan.id}
                       >
-                        <Link href="/register">
-                          Hemen Başla
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
+                        {loadingPlanId === plan.id ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            İşleniyor
+                          </>
+                        ) : (
+                          <>
+                            Hemen Başla
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </>
+                        )}
                       </Button>
                     </CardFooter>
                   </Card>

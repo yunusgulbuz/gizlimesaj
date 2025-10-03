@@ -53,6 +53,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
   const [isMuted, setIsMuted] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [shortId, setShortId] = useState<string>('');
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
   
   // Initialize params
   useEffect(() => {
@@ -210,8 +211,39 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
     );
   }
 
+  // Handle first user interaction to start audio
+  const handleUserInteraction = () => {
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+
+      // Try to start audio/video player
+      const audioUrl = personalPage.text_fields?.musicUrl || personalPage.bg_audio_url;
+      if (audioUrl) {
+        // Wait a bit for the player to be ready
+        setTimeout(() => {
+          // Find video or audio element and try to play
+          const videoElement = document.querySelector('video');
+          const audioElement = document.querySelector('audio');
+
+          if (videoElement) {
+            videoElement.play().catch(() => {
+              // Ignore error - user might need to click again
+            });
+          } else if (audioElement) {
+            audioElement.play().catch(() => {
+              // Ignore error - user might need to click again
+            });
+          }
+        }, 100);
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div
+      className="min-h-screen relative overflow-hidden"
+      onClick={handleUserInteraction}
+    >
       {/* Share Button */}
       <div className="fixed top-4 left-4 z-50">
         <ShareButton

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import TemplateCardPreview from "@/app/templates/_components/template-card-preview-client";
+import { FavoriteButton } from "@/components/favorite-button";
 import {
   Heart,
   Sparkles,
@@ -230,7 +231,13 @@ export default async function HomePage() {
                 Şablonlar
               </Link>
               <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
-                Fiyatlar
+                Planlar
+              </Link>
+              <Link href="/about" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                Hakkımızda
+              </Link>
+              <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+                İletişim
               </Link>
               <HeaderAuthButton />
             </div>
@@ -332,6 +339,16 @@ export default async function HomePage() {
                             )}
                           </div>
 
+                          {/* Favorite Button */}
+                          <div className="absolute right-4 top-4 z-10">
+                            <FavoriteButton
+                              templateId={template.id}
+                              iconOnly
+                              size="sm"
+                              className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-sm"
+                            />
+                          </div>
+
                           {/* Overlay Gradient */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                         </div>
@@ -400,14 +417,14 @@ export default async function HomePage() {
                             className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors"
                           >
                             <Eye className="h-3.5 w-3.5" />
-                            Önizleme
+                            İncele
                           </Link>
                           <div className="h-4 w-px bg-gray-200" />
                           <Link
                             href={`/templates/${template.slug}/preview`}
                             className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors group/link"
                           >
-                            Hediyeyi İncele
+                            Satın Al
                             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/link:translate-x-0.5" />
                           </Link>
                         </div>

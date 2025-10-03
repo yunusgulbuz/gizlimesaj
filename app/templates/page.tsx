@@ -41,6 +41,7 @@ import TemplateCardPreview from "./_components/template-card-preview-client";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
 import CustomTemplateRequestCta from "./_components/custom-template-request-cta";
 import SearchForm from "./_components/search-form";
+import { FavoriteButton } from "@/components/favorite-button";
 
 export const metadata = generateMetadata({
   title: "Heartnote Şablonları",
@@ -383,14 +384,17 @@ export default async function TemplatesPage({
               </div>
             </Link>
             <div className="hidden items-center space-x-6 md:flex">
-              <Link href="/" className="text-gray-600 transition hover:text-gray-900">
-                Ana Sayfa
+              <Link href="/templates" className="text-gray-600 transition hover:text-gray-900">
+                Şablonlar
               </Link>
               <Link href="/pricing" className="text-gray-600 transition hover:text-gray-900">
                 Planlar
               </Link>
-              <Link href="/help" className="text-gray-600 transition hover:text-gray-900">
-                Yardım
+              <Link href="/about" className="text-gray-600 transition hover:text-gray-900">
+                Hakkımızda
+              </Link>
+              <Link href="/contact" className="text-gray-600 transition hover:text-gray-900">
+                İletişim
               </Link>
               <HeaderAuthButton />
             </div>
@@ -522,6 +526,16 @@ export default async function TemplatesPage({
                             )}
                           </div>
 
+                          {/* Favorite Button */}
+                          <div className="absolute right-4 top-4 z-10">
+                            <FavoriteButton
+                              templateId={template.id}
+                              iconOnly
+                              size="sm"
+                              className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-sm"
+                            />
+                          </div>
+
                           {/* Overlay Gradient */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                         </div>
@@ -590,14 +604,14 @@ export default async function TemplatesPage({
                             className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors"
                           >
                             <Eye className="h-3.5 w-3.5" />
-                            Önizleme
+                            İncele
                           </Link>
                           <div className="h-4 w-px bg-gray-200" />
                           <Link
                             href={`/templates/${template.slug}/preview`}
                             className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-rose-600 transition-colors group/link"
                           >
-                            Hediyeyi İncele
+                            Satın Al
                             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/link:translate-x-0.5" />
                           </Link>
                         </div>
