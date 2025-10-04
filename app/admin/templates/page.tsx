@@ -100,7 +100,7 @@ function TemplatesGrid({ templates }: { templates: Template[] }) {
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {templates.map((template) => (
         <Card key={template.id} className={`relative ${!template.is_active ? 'opacity-60' : ''}`}>
           {template.preview_url && (
@@ -112,13 +112,13 @@ function TemplatesGrid({ templates }: { templates: Template[] }) {
               />
             </div>
           )}
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="space-y-2">
-                <CardTitle className="text-lg">{template.title}</CardTitle>
-                <div className="flex items-center gap-2">
+          <CardHeader className="p-4 md:p-6">
+            <div className="flex items-start justify-between gap-2">
+              <div className="space-y-2 flex-1">
+                <CardTitle className="text-base md:text-lg">{template.title}</CardTitle>
+                <div className="flex items-center gap-2 flex-wrap">
                   {getAudienceBadge(template.audience)}
-                  <Badge variant={template.is_active ? 'default' : 'secondary'}>
+                  <Badge variant={template.is_active ? 'default' : 'secondary'} className="text-xs">
                     {template.is_active ? 'Aktif' : 'Pasif'}
                   </Badge>
                 </div>
@@ -130,12 +130,12 @@ function TemplatesGrid({ templates }: { templates: Template[] }) {
               )}
             </div>
             {template.description && (
-              <CardDescription className="line-clamp-2">
+              <CardDescription className="line-clamp-2 text-xs md:text-sm">
                 {template.description}
               </CardDescription>
             )}
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 md:p-6 pt-0">
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground">
                 {new Date(template.created_at).toLocaleDateString('tr-TR')}
@@ -177,28 +177,29 @@ export default async function AdminTemplatesPage({
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Breadcrumb Navigation */}
       <Breadcrumb items={breadcrumbItems} />
-      
+
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <Button variant="ghost" size="sm" asChild>
             <Link href="/admin">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Geri
+              <ArrowLeft className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Geri</span>
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Şablonlar</h1>
-            <p className="text-muted-foreground">{total} şablon bulundu</p>
+            <h1 className="text-xl md:text-2xl font-bold">Şablonlar</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">{total} şablon bulundu</p>
           </div>
         </div>
-        <Button asChild>
+        <Button asChild size="sm" className="self-start md:self-auto">
           <Link href="/admin/templates/new">
             <Plus className="h-4 w-4 mr-2" />
-            Yeni Şablon
+            <span className="hidden sm:inline">Yeni Şablon</span>
+            <span className="sm:hidden">Yeni</span>
           </Link>
         </Button>
       </div>
@@ -223,19 +224,19 @@ export default async function AdminTemplatesPage({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2">
+        <div className="flex justify-center gap-2 flex-wrap">
           {currentPage > 1 && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <Link href={`/admin/templates?page=${currentPage - 1}`}>
                 Önceki
               </Link>
             </Button>
           )}
-          <span className="flex items-center px-4">
+          <span className="flex items-center px-3 md:px-4 text-xs md:text-sm">
             Sayfa {currentPage} / {totalPages}
           </span>
           {currentPage < totalPages && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <Link href={`/admin/templates?page=${currentPage + 1}`}>
                 Sonraki
               </Link>

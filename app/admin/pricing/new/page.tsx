@@ -47,7 +47,7 @@ export default function NewPricingPage() {
     template_id: '',
     duration_id: '',
     price_try: '',
-    price_usd: '',
+    old_price: '',
     is_active: true
   });
 
@@ -121,6 +121,7 @@ export default function NewPricingPage() {
           template_id: formData.template_id,
           duration_id: parseInt(formData.duration_id),
           price_try: formData.price_try,
+          old_price: formData.old_price ? parseFloat(formData.old_price) : null,
           is_active: formData.is_active
         });
 
@@ -238,6 +239,23 @@ export default function NewPricingPage() {
                 onChange={(e) => handleInputChange('price_try', e.target.value)}
                 required
               />
+            </div>
+
+            {/* Old Price */}
+            <div className="space-y-2">
+              <Label htmlFor="old_price">Eski Fiyat (₺)</Label>
+              <Input
+                id="old_price"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="99.90"
+                value={formData.old_price}
+                onChange={(e) => handleInputChange('old_price', e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                İndirimli fiyat göstermek için eski fiyatı girin (opsiyonel)
+              </p>
             </div>
 
             {/* Active Status */}

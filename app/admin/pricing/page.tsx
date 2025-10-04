@@ -23,6 +23,7 @@ interface TemplatePricing {
   template_id: string;
   duration_id: number;
   price_try: string;
+  old_price: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -195,9 +196,17 @@ function PricingTable({ pricing }: { pricing: TemplatePricing[] }) {
                     <Calendar className="h-4 w-4" />
                     <span>{item.duration.label} ({item.duration.days} gün)</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4" />
+                    {item.old_price && (
+                      <span className="line-through text-gray-400">₺{item.old_price}</span>
+                    )}
                     <span className="font-semibold text-green-600">₺{item.price_try}</span>
+                    {item.old_price && (
+                      <Badge variant="secondary" className="bg-red-100 text-red-800 text-xs">
+                        %{Math.round(((parseFloat(item.old_price) - parseFloat(item.price_try)) / parseFloat(item.old_price)) * 100)} İndirim
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>

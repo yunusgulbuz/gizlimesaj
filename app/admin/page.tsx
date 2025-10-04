@@ -150,20 +150,27 @@ function RecentOrdersTable({ orders }: { orders: DashboardStats['recentOrders'] 
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       {orders.map((order) => (
-        <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="space-y-1">
-            <p className="font-medium">{order.recipient_name}</p>
-            <p className="text-sm text-muted-foreground">{order.template_title}</p>
+        <div key={order.id} className="flex flex-col md:flex-row md:items-center md:justify-between p-3 md:p-4 border rounded-lg gap-3 md:gap-0">
+          <div className="space-y-1 flex-1">
+            <div className="flex items-start justify-between md:block">
+              <p className="font-medium text-sm md:text-base">{order.recipient_name}</p>
+              <div className="md:hidden">
+                {getStatusBadge(order.status)}
+              </div>
+            </div>
+            <p className="text-xs md:text-sm text-muted-foreground">{order.template_title}</p>
             <p className="text-xs text-muted-foreground">
               {new Date(order.created_at).toLocaleDateString('tr-TR')}
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="font-medium">₺{order.amount}</p>
-              {getStatusBadge(order.status)}
+          <div className="flex items-center justify-between md:gap-4">
+            <div className="flex items-center gap-3">
+              <p className="font-medium text-sm md:text-base">₺{order.amount}</p>
+              <div className="hidden md:block">
+                {getStatusBadge(order.status)}
+              </div>
             </div>
             <Button variant="ghost" size="sm" asChild>
               <Link href={`/admin/orders/${order.id}`}>
@@ -186,27 +193,29 @@ export default async function AdminDashboard() {
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
       {/* Breadcrumb Navigation */}
       <Breadcrumb items={breadcrumbItems} />
-      
+
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Admin Paneli</h1>
-          <p className="text-muted-foreground">Gizli Mesaj yönetim paneli</p>
+          <h1 className="text-2xl md:text-3xl font-bold">Admin Paneli</h1>
+          <p className="text-muted-foreground text-sm md:text-base">Gizli Mesaj yönetim paneli</p>
         </div>
-        <div className="flex gap-2">
-          <Button asChild>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild className="flex-1 md:flex-none">
             <Link href="/admin/templates/new">
               <Plus className="h-4 w-4 mr-2" />
-              Yeni Şablon
+              <span className="hidden sm:inline">Yeni Şablon</span>
+              <span className="sm:hidden">Şablon</span>
             </Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="flex-1 md:flex-none">
             <Link href="/admin/settings">
               <Settings className="h-4 w-4 mr-2" />
-              Ayarlar
+              <span className="hidden sm:inline">Ayarlar</span>
+              <span className="sm:hidden">Ayar</span>
             </Link>
           </Button>
         </div>
@@ -241,29 +250,29 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Button variant="outline" className="h-20" asChild>
-          <Link href="/admin/orders" className="flex flex-col items-center gap-2">
-            <CreditCard className="h-6 w-6" />
-            <span>Siparişleri Yönet</span>
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+        <Button variant="outline" className="h-20 md:h-24" asChild>
+          <Link href="/admin/orders" className="flex flex-col items-center gap-1 md:gap-2">
+            <CreditCard className="h-5 w-5 md:h-6 md:w-6" />
+            <span className="text-xs md:text-sm text-center">Siparişleri Yönet</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-20" asChild>
-          <Link href="/admin/templates" className="flex flex-col items-center gap-2">
-            <FileText className="h-6 w-6" />
-            <span>Şablonları Yönet</span>
+        <Button variant="outline" className="h-20 md:h-24" asChild>
+          <Link href="/admin/templates" className="flex flex-col items-center gap-1 md:gap-2">
+            <FileText className="h-5 w-5 md:h-6 md:w-6" />
+            <span className="text-xs md:text-sm text-center">Şablonları Yönet</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-20" asChild>
-          <Link href="/admin/pages" className="flex flex-col items-center gap-2">
-            <Users className="h-6 w-6" />
-            <span>Kişisel Sayfalar</span>
+        <Button variant="outline" className="h-20 md:h-24" asChild>
+          <Link href="/admin/pages" className="flex flex-col items-center gap-1 md:gap-2">
+            <Users className="h-5 w-5 md:h-6 md:w-6" />
+            <span className="text-xs md:text-sm text-center">Kişisel Sayfalar</span>
           </Link>
         </Button>
-        <Button variant="outline" className="h-20" asChild>
-          <Link href="/admin/analytics" className="flex flex-col items-center gap-2">
-            <TrendingUp className="h-6 w-6" />
-            <span>Analitik</span>
+        <Button variant="outline" className="h-20 md:h-24" asChild>
+          <Link href="/admin/analytics" className="flex flex-col items-center gap-1 md:gap-2">
+            <TrendingUp className="h-5 w-5 md:h-6 md:w-6" />
+            <span className="text-xs md:text-sm text-center">Analitik</span>
           </Link>
         </Button>
       </div>

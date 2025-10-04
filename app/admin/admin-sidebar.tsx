@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,9 @@ import {
   LogOut,
   MessageSquare,
   FileQuestion,
-  Loader2
+  Loader2,
+  Menu,
+  X
 } from 'lucide-react';
 
 const navigation = [
@@ -70,74 +72,128 @@ export default function AdminSidebar() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [loadingPath, setLoadingPath] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNavigation = (href: string) => {
     if (pathname === href) return;
 
     setLoadingPath(href);
+    setIsMobileMenuOpen(false); // Close mobile menu on navigation
     startTransition(() => {
       router.push(href);
     });
   };
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
+
   return (
-    <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
-      <div className="flex h-full flex-col">
-        {/* Logo */}
-        <div className="flex h-16 items-center justify-center border-b px-6">
-          <Link href="/admin" className="flex items-center gap-2">
-            <div className="h-8 w-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">GM</span>
-            </div>
-            <span className="font-semibold text-lg">Admin Panel</span>
-          </Link>
-        </div>
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsMobileMenuOpen(!isMobileMenuOpen);
+        }}
+        className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg bg-white shadow-md hover:bg-gray-100 transition-colors"
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? (
+          <X className="h-6 w-6 text-gray-700" />
+        ) : (
+          <Menu className="h-6 w-6 text-gray-700" />
+        )}
+      </button>
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
-            const isLoading = loadingPath === item.href && isPending;
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
 
-            return (
-              <button
-                key={item.name}
-                onClick={() => handleNavigation(item.href)}
-                disabled={isLoading}
-                className={`
-                  w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors
-                  ${isActive
-                    ? 'bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                  }
-                  ${isLoading ? 'opacity-50 cursor-wait' : ''}
-                `}
-              >
-                {isLoading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <item.icon className="h-5 w-5" />
-                )}
-                {item.name}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Footer */}
-        <div className="border-t p-4">
-          <Button variant="ghost" className="w-full justify-start" asChild>
-            <Link href="/">
-              <LogOut className="h-4 w-4 mr-2" />
-              Ana Siteye Dön
+      {/* Sidebar */}
+      <div
+        className={`
+          fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg
+          transform transition-transform duration-300 ease-in-out
+          lg:translate-x-0
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex h-full flex-col">
+          {/* Logo */}
+          <div className="flex h-16 items-center justify-center border-b px-6">
+            <Link href="/admin" className="flex items-center gap-2">
+              <div className="h-8 w-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">GM</span>
+              </div>
+              <span className="font-semibold text-lg">Admin Panel</span>
             </Link>
-          </Button>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+              const isLoading = loadingPath === item.href && isPending;
+
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavigation(item.href)}
+                  disabled={isLoading}
+                  className={`
+                    w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors
+                    ${isActive
+                      ? 'bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    }
+                    ${isLoading ? 'opacity-50 cursor-wait' : ''}
+                  `}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <item.icon className="h-5 w-5" />
+                  )}
+                  {item.name}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Footer */}
+          <div className="border-t p-4">
+            <Button variant="ghost" className="w-full justify-start" asChild>
+              <Link href="/">
+                <LogOut className="h-4 w-4 mr-2" />
+                Ana Siteye Dön
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Global Loading Bar */}
       {isPending && (
-        <div className="fixed top-0 left-64 right-0 h-1 bg-gray-200 z-50">
+        <div className="fixed top-0 left-0 lg:left-64 right-0 h-1 bg-gray-200 z-50">
           <div
             className="h-full bg-gradient-to-r from-pink-500 to-purple-600 transition-all duration-500 ease-out"
             style={{
@@ -155,6 +211,6 @@ export default function AdminSidebar() {
           100% { transform: translateX(100%); }
         }
       `}</style>
-    </div>
+    </>
   );
 }

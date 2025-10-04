@@ -130,22 +130,22 @@ function OrdersTable({ orders }: { orders: Order[] }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       {orders.map((order) => (
         <Card key={order.id}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold">{order.recipient_name}</h3>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="space-y-2 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="font-semibold text-sm md:text-base">{order.recipient_name}</h3>
                   {getStatusBadge(order.status)}
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   Gönderen: {order.sender_name || 'Bilinmiyor'}
                 </p>
                 {order.template && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{order.template.title}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs md:text-sm font-medium">{order.template.title}</span>
                     {getAudienceBadge(order.template.audience)}
                   </div>
                 )}
@@ -153,9 +153,9 @@ function OrdersTable({ orders }: { orders: Order[] }) {
                   {new Date(order.created_at).toLocaleDateString('tr-TR')}
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <p className="font-semibold text-lg">₺{order.amount}</p>
+              <div className="flex items-center justify-between md:justify-end gap-4">
+                <div className="text-left md:text-right">
+                  <p className="font-semibold text-base md:text-lg">₺{order.amount}</p>
                   {order.expires_at && (
                     <p className="text-xs text-muted-foreground">
                       Son: {new Date(order.expires_at).toLocaleDateString('tr-TR')}
@@ -164,8 +164,8 @@ function OrdersTable({ orders }: { orders: Order[] }) {
                 </div>
                 <Button variant="outline" size="sm" asChild>
                   <Link href={`/admin/orders/${order.id}`}>
-                    <Eye className="h-4 w-4 mr-2" />
-                    Detay
+                    <Eye className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Detay</span>
                   </Link>
                 </Button>
               </div>
@@ -194,27 +194,28 @@ export default async function AdminOrdersPage({
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Breadcrumb Navigation */}
       <Breadcrumb items={breadcrumbItems} />
-      
+
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <Button variant="ghost" size="sm" asChild>
             <Link href="/admin">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Geri
+              <ArrowLeft className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Geri</span>
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Siparişler</h1>
-            <p className="text-muted-foreground">{total} sipariş bulundu</p>
+            <h1 className="text-xl md:text-2xl font-bold">Siparişler</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">{total} sipariş bulundu</p>
           </div>
         </div>
-        <Button variant="outline">
+        <Button variant="outline" size="sm" className="self-start md:self-auto">
           <Download className="h-4 w-4 mr-2" />
-          Dışa Aktar
+          <span className="hidden sm:inline">Dışa Aktar</span>
+          <span className="sm:hidden">Dışa Al</span>
         </Button>
       </div>
 
@@ -238,19 +239,19 @@ export default async function AdminOrdersPage({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2">
+        <div className="flex justify-center gap-2 flex-wrap">
           {currentPage > 1 && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <Link href={`/admin/orders?page=${currentPage - 1}`}>
                 Önceki
               </Link>
             </Button>
           )}
-          <span className="flex items-center px-4">
+          <span className="flex items-center px-3 md:px-4 text-xs md:text-sm">
             Sayfa {currentPage} / {totalPages}
           </span>
           {currentPage < totalPages && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="sm" asChild>
               <Link href={`/admin/orders?page=${currentPage + 1}`}>
                 Sonraki
               </Link>
