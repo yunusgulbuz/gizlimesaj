@@ -10,6 +10,8 @@ import SeniSeviyorumForm from './seni-seviyorum/form';
 import SeniSeviyorumPreview from './seni-seviyorum/preview';
 import SeniSeviyorumTeenForm from './seni-seviyorum-teen/form';
 import SeniSeviyorumTeenPreview from './seni-seviyorum-teen/preview';
+import SeniSeviyorumPremiumForm from './seni-seviyorum-premium/form';
+import SeniSeviyorumPremiumPreview from './seni-seviyorum-premium/preview';
 import EvlilikTeklifiElegantForm from './evlilik-teklifi-elegant/form';
 import EvlilikTeklifiElegantPreview from './evlilik-teklifi-elegant/preview';
 import DogumGunuFunForm from './dogum-gunu-fun/form';
@@ -58,6 +60,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'seni-seviyorum-teen',
     form: SeniSeviyorumTeenForm,
     preview: SeniSeviyorumTeenPreview,
+  },
+  'seni-seviyorum-premium': {
+    slug: 'seni-seviyorum-premium',
+    form: SeniSeviyorumPremiumForm,
+    preview: SeniSeviyorumPremiumPreview,
   },
   'evlilik-teklifi-elegant': {
     slug: 'evlilik-teklifi-elegant',

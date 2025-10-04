@@ -96,6 +96,7 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO public.templates (slug, title, audience, preview_url, bg_audio_url, is_active) VALUES
 ('seni-seviyorum-teen', 'Seni Seviyorum', 'teen', '/templates/teen-love.jpg', null, true),
+('seni-seviyorum-premium', 'Seni Seviyorum Premium', 'adult', null, '/templates/romantic-music.mp3', true),
 ('affet-beni-classic', 'Affet Beni', 'classic', '/templates/classic-forgive.jpg', null, true),
 ('evlilik-teklifi-elegant', 'Benimle Evlenir misin?', 'elegant', '/templates/elegant-proposal.jpg', '/templates/romantic-music.mp3', true),
 ('dogum-gunu-fun', 'Doğum Günün Kutlu Olsun', 'fun', '/templates/fun-birthday.jpg', '/templates/birthday-music.mp3', true),

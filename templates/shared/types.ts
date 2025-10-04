@@ -163,6 +163,90 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'seni-seviyorum-premium': {
+    slug: 'seni-seviyorum-premium',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Kalplerinizi ısıtacak ana mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Kalbimin her kıvrımında sen varsın. Gözlerinin ışığıyla aydınlanan dünyamda, seninle her an yeniden aşık oluyorum.'
+      },
+      {
+        key: 'mainTitle',
+        label: 'Başlık',
+        placeholder: 'Sayfanın ana başlığını yazın (örn. Seni Seviyorum)',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Seni Seviyorum'
+      },
+      {
+        key: 'secondaryMessage',
+        label: 'İkincil Mesaj / Motto',
+        placeholder: 'Modern ve klasik tasarımlarda öne çıkan kısa cümleniz...',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Kalbimin her ritmindesin.'
+      },
+      {
+        key: 'classicSignature',
+        label: 'Klasik Stil İmza Metni',
+        placeholder: 'Örn: Daima Aşk ile',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Daima Aşk ile'
+      },
+      {
+        key: 'minimalistTagline',
+        label: 'Minimalist Stil Alt Metni',
+        placeholder: 'Örn: Sadece Sen ve Ben',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Sadece Sen ve Ben'
+      },
+      {
+        key: 'buttonLabel',
+        label: 'Modern Stil Buton Yazısı',
+        placeholder: 'Örn: Seni Okuyorum ❤️',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Seni Okuyorum ❤️'
+      },
+      {
+        key: 'playfulButtonLabel',
+        label: 'Eğlenceli Stil Buton Yazısı',
+        placeholder: 'Örn: Kalbimi Kabul Et 💘',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Kalbimi Kabul Et 💘'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
+  },
   'is-tebrigi': {
     slug: 'is-tebrigi',
     fields: [

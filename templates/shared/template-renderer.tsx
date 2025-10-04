@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import SeniSeviyorumTemplate from '../seni-seviyorum/components/SeniSeviyorumTemplate';
 import AffetBeniTemplate from '../affet-beni/components/AffetBeniTemplate';
 import EglenceliSeniSeviyorumTemplate from '../seni-seviyorum-teen/components/EglenceliSeniSeviyorumTemplate';
+import SeniSeviyorumPremiumTemplate from '../seni-seviyorum-premium/components/SeniSeviyorumPremiumTemplate';
 import EvlilikTeklifiTemplate from '../evlilik-teklifi-elegant/components/EvlilikTeklifiTemplate';
 import DogumGunuStandardTemplate from '../dogum-gunu/components/DogumGunuStandardTemplate';
 import DogumGunuFunTemplate from '../dogum-gunu-fun/components/DogumGunuFunTemplate';
@@ -109,6 +110,16 @@ export default function TemplateRenderer({
           recipientName={recipientName}
           message={message}
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
+          creatorName={creatorName}
+          textFields={textFields}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
+        />;
+      case 'seni-seviyorum-premium':
+        return <SeniSeviyorumPremiumTemplate
+          recipientName={recipientName}
+          message={message}
+          designStyle={designStyle}
           creatorName={creatorName}
           textFields={textFields}
           isEditable={isEditable}
