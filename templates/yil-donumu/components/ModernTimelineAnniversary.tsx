@@ -73,12 +73,14 @@ export default function ModernTimelineAnniversary({
   const finalMessage = isEditable ? localFinalMessage : (textFields?.timelineFinalMessage || sharedMessage || 'Geçmişten geleceğe uzanan bu yolculukta, her anı birlikte yeniden yazmaya devam edelim.');
   const displayRecipientName = isEditable ? localRecipientName : recipientName;
 
-  const events = useMemo<TimelineEvent[]>(() => {
+  const [events, setEvents] = useState<TimelineEvent[]>([]);
+
+  useEffect(() => {
     const raw = (textFields?.timelineEvents && textFields.timelineEvents.trim().length > 0)
       ? textFields.timelineEvents
       : FALLBACK_EVENTS;
 
-    return raw
+    const parsed = raw
       .split('\n')
       .map(line => {
         const [date, title, description] = line.split('|').map(part => part?.trim() || '');
@@ -89,6 +91,8 @@ export default function ModernTimelineAnniversary({
         };
       })
       .filter(item => item.title.length > 0);
+
+    setEvents(parsed);
   }, [textFields?.timelineEvents]);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -101,6 +105,24 @@ export default function ModernTimelineAnniversary({
     }, 5000);
     return () => clearInterval(timer);
   }, [events.length]);
+
+  const handleEventChange = (index: number, field: 'date' | 'title' | 'description', value: string) => {
+    const updatedEvents = [...events];
+    updatedEvents[index] = {
+      ...updatedEvents[index],
+      [field]: value
+    };
+    setEvents(updatedEvents);
+
+    // Update textFields
+    const serialized = updatedEvents
+      .map(e => `${e.date}|${e.title}|${e.description}`)
+      .join('\n');
+
+    if (onTextFieldChange) {
+      onTextFieldChange('timelineEvents', serialized);
+    }
+  };
 
   const [stars, setStars] = useState(() => [] as Array<{ id: number; left: number; top: number; size: number; delay: number; duration: number }>);
 
@@ -200,13 +222,28 @@ export default function ModernTimelineAnniversary({
                 >
                   <div className="absolute -left-4 top-6 hidden h-2 w-2 rounded-full bg-amber-300 shadow-lg shadow-amber-500/50 md:block"></div>
                   <div className="flex flex-col gap-2 sm:gap-3">
-                    <span className="text-xs uppercase tracking-[0.25em] text-amber-200 break-words">
+                    <span
+                      className={`text-xs uppercase tracking-[0.25em] text-amber-200 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                      contentEditable={isEditable}
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleEventChange(index, 'date', e.currentTarget.textContent || '')}
+                    >
                       {event.date}
                     </span>
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white break-words">
+                    <h3
+                      className={`text-lg sm:text-xl md:text-2xl font-semibold text-white break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                      contentEditable={isEditable}
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleEventChange(index, 'title', e.currentTarget.textContent || '')}
+                    >
                       {event.title}
                     </h3>
-                    <p className="text-sm sm:text-base md:text-lg leading-relaxed text-white/75 break-words">
+                    <p
+                      className={`text-sm sm:text-base md:text-lg leading-relaxed text-white/75 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                      contentEditable={isEditable}
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleEventChange(index, 'description', e.currentTarget.textContent || '')}
+                    >
                       {event.description}
                     </p>
                   </div>

@@ -841,6 +841,190 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'romantik-mesaj-elegant': {
+    slug: 'romantik-mesaj-elegant',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50,
+        defaultValue: 'Kalbimin Sahibi'
+      },
+      {
+        key: 'headline',
+        label: 'Neon Başlık',
+        placeholder: 'Neon efektli başlık için kısa bir cümle',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Seninle her şey daha anlamlı ❤️'
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Sayfada yer alacak ana romantik mesajınızı yazın',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Şehrin neon ışıkları bile senin parıltın yanında sönük kalıyor. Kalbimin ritmi, senin adını her attığında yeniden yazıyor.'
+      },
+      {
+        key: 'subtext',
+        label: 'Neon Alt Metin',
+        placeholder: 'Kısa tamamlayıcı metin',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Şehrin ışıkları arasında bile senin gülüşün en parlak olanı.'
+      },
+      {
+        key: 'ctaText',
+        label: 'Neon Buton Metni',
+        placeholder: 'Örn. Birlikte Parlıyoruz ✨',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Birlikte Parlıyoruz ✨'
+      },
+      {
+        key: 'letterTitle',
+        label: 'Mektup Başlığı',
+        placeholder: 'Örn. Seni Seviyorum',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Seni Seviyorum'
+      },
+      {
+        key: 'letterBody',
+        label: 'Mektup Metni',
+        placeholder: 'Zarfın içinden çıkacak mektup metni',
+        type: 'textarea',
+        required: false,
+        maxLength: 900,
+        defaultValue: 'Bu mektubun her satırında kalbimin en sıcak duyguları saklı. Sen yanımdayken her an hatıra, her bakış bir mucize oluyor. Sevgim sana hep en güzel kelimeleri arıyor.'
+      },
+      {
+        key: 'letterSignature',
+        label: 'Mektup İmzası',
+        placeholder: 'Örn. Sevgiyle, ...',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Sevgiyle'
+      },
+      {
+        key: 'letterButtonLabel',
+        label: 'Mektup Buton Metni',
+        placeholder: 'Örn. Mektubu Kapat',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mektubu Kapat'
+      },
+      {
+        key: 'minimalMessage',
+        label: 'Minimal Ana Mesaj',
+        placeholder: 'Örn. Sen olunca her şey tamam.',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Sen olunca her şey tamam.'
+      },
+      {
+        key: 'minimalAlternate',
+        label: 'Minimal Kalp Mesajı',
+        placeholder: 'Kalp butonuna tıklanınca gösterilecek mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Seni Seviyorum'
+      },
+      {
+        key: 'minimalSignature',
+        label: 'Minimal İmza',
+        placeholder: 'Kısa bir imza veya not',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Kalbimin en saf köşesi seninle.'
+      },
+      {
+        key: 'minimalTagline',
+        label: 'Minimal Başlık',
+        placeholder: 'Örn. Pure Love',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Pure Love'
+      },
+      {
+        key: 'minimalNote',
+        label: 'Minimal Not',
+        placeholder: 'Örn. Sessiz bir mutluluk...',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Sessiz bir mutluluk ve kalbimden düşen sade bir ışık... her şey seninle tamamlanıyor.'
+      },
+      {
+        key: 'minimalToggleIcon',
+        label: 'Minimal Buton İkonu',
+        placeholder: 'Örn. ❤️',
+        type: 'input',
+        required: false,
+        maxLength: 10,
+        defaultValue: '❤️'
+      },
+      {
+        key: 'gameIntro',
+        label: 'Oyun Başlığı',
+        placeholder: 'Örn. Beni Bulabilir misin?',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Beni Bulabilir misin?'
+      },
+      {
+        key: 'gameHelper',
+        label: 'Oyun Açıklaması',
+        placeholder: 'Kalpleri tıklayınca ne olacağını anlatan kısa metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 280,
+        defaultValue: 'Uçuşan kalpleri yakala, sonuncu seni bekliyor! Her kalp seni büyük sürprize bir adım daha yaklaştıracak.'
+      },
+      {
+        key: 'gameWinMessage',
+        label: 'Oyun Sonu Mesajı',
+        placeholder: 'Tüm kalpler bulununca gösterilecek mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Seni Seviyorum'
+      },
+      {
+        key: 'gameButtonText',
+        label: 'Oyun Buton Metni',
+        placeholder: 'Örn. Kalp Avını Başlat ❤️',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Kalp Avını Başlat ❤️'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
+  },
   'yil-donumu': {
     slug: 'yil-donumu',
     fields: [
@@ -945,11 +1129,11 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       {
         key: 'hatiraMemories',
         label: 'Hatıra Öğeleri',
-        placeholder: 'Başlık|Açıklama|Yıl (her satıra bir hatıra)',
+        placeholder: 'Başlık|Açıklama|Yıl|Fotoğraf URL (her satıra bir hatıra)',
         type: 'textarea',
         required: false,
-        maxLength: 800,
-        defaultValue: 'Polaroid Fotoğraf|Gülen yüzünün arkasında saklanan heyecanın ilk anı.|2016\nSinema Bileti|İlk film gecemiz; popcorn, kahkahalar ve kalp çarpıntıları.|2018\nEl Yazısı Not|"Sonsuza dek" dediğin o satırlar, kalbime mühür oldu.|2020\nMinik Deniz Kabuğu|Birlikte topladığımız o gün, güneş kadar parlaktın.|2022'
+        maxLength: 1200,
+        defaultValue: 'Polaroid Fotoğraf|Gülen yüzünün arkasında saklanan heyecanın ilk anı.|2016|https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&q=80\nSinema Bileti|İlk film gecemiz; popcorn, kahkahalar ve kalp çarpıntıları.|2018|https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&q=80\nEl Yazısı Not|"Sonsuza dek" dediğin o satırlar, kalbime mühür oldu.|2020|https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&q=80\nMinik Deniz Kabuğu|Birlikte topladığımız o gün, güneş kadar parlaktın.|2022|https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&q=80'
       },
       {
         key: 'hatiraBackgroundUrl',

@@ -27,6 +27,10 @@ import ModernCorporateCongrats from '../is-tebrigi/components/ModernCorporateCon
 import ClassicPrestigeCertificate from '../is-tebrigi/components/ClassicPrestigeCertificate';
 import MinimalistProfessionalCard from '../is-tebrigi/components/MinimalistProfessionalCard';
 import PremiumDynamicCelebration from '../is-tebrigi/components/PremiumDynamicCelebration';
+import NeonGlowLove from '../romantik-mesaj-elegant/components/NeonGlowLove';
+import RomanticLetterScene from '../romantik-mesaj-elegant/components/RomanticLetterScene';
+import PureLoveMinimal from '../romantik-mesaj-elegant/components/PureLoveMinimal';
+import HeartAdventureInteractive from '../romantik-mesaj-elegant/components/HeartAdventureInteractive';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -389,6 +393,64 @@ export default function TemplateRenderer({
           default:
             return (
               <ModernCorporateCongrats
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
+      case 'romantik-mesaj-elegant':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <NeonGlowLove
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'classic':
+            return (
+              <RomanticLetterScene
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <PureLoveMinimal
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <HeartAdventureInteractive
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <NeonGlowLove
                 recipientName={recipientName}
                 message={message}
                 creatorName={creatorName}

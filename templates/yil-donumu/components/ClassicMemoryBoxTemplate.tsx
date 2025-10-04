@@ -18,12 +18,13 @@ interface MemoryItem {
   title: string;
   description: string;
   year?: string;
+  photoUrl?: string;
 }
 
-const FALLBACK_MEMORIES = `Polaroid Fotoğraf|Gülen yüzünün arkasında saklanan heyecanın ilk anı.|2016
-Sinema Bileti|İlk film gecemiz; popcorn, kahkahalar ve kalp çarpıntıları.|2018
-El Yazısı Not|"Sonsuza dek" dediğin o satırlar, kalbime mühür oldu.|2020
-Minik Deniz Kabuğu|Birlikte topladığımız o gün, güneş kadar parlaktın.|2022`;
+const FALLBACK_MEMORIES = `Polaroid Fotoğraf|Gülen yüzünün arkasında saklanan heyecanın ilk anı.|2016|https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&q=80
+Sinema Bileti|İlk film gecemiz; popcorn, kahkahalar ve kalp çarpıntıları.|2018|https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&q=80
+El Yazısı Not|"Sonsuza dek" dediğin o satırlar, kalbime mühür oldu.|2020|https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&q=80
+Minik Deniz Kabuğu|Birlikte topladığımız o gün, güneş kadar parlaktın.|2022|https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&q=80`;
 
 export default function ClassicMemoryBoxTemplate({
   recipientName,
@@ -73,27 +74,50 @@ export default function ClassicMemoryBoxTemplate({
   const displayRecipientName = isEditable ? localRecipientName : recipientName;
   const albumBackground = textFields?.hatiraBackgroundUrl || 'https://images.unsplash.com/photo-1520854221050-0f4caff449fb?w=1280&q=80&auto=format&fit=crop';
 
-  const memories = useMemo<MemoryItem[]>(() => {
+  const [memories, setMemories] = useState<MemoryItem[]>([]);
+
+  useEffect(() => {
     const raw = (textFields?.hatiraMemories && textFields.hatiraMemories.trim().length > 0)
       ? textFields.hatiraMemories
       : FALLBACK_MEMORIES;
 
-    return raw
+    const parsed = raw
       .split('\n')
       .map(line => {
-        const [title, description, year] = line.split('|').map(part => part?.trim() || '');
+        const [title, description, year, photoUrl] = line.split('|').map(part => part?.trim() || '');
         if (!title) return null;
         return {
           title,
           description: description || 'Bu hatırayı anlatan küçük bir not ekleyebilirsiniz.',
-          year
+          year,
+          photoUrl
         };
       })
       .filter(Boolean) as MemoryItem[];
+
+    setMemories(parsed);
   }, [textFields?.hatiraMemories]);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [showPetals, setShowPetals] = useState(false);
+
+  const handleMemoryChange = (index: number, field: 'title' | 'description' | 'year' | 'photoUrl', value: string) => {
+    const updatedMemories = [...memories];
+    updatedMemories[index] = {
+      ...updatedMemories[index],
+      [field]: value
+    };
+    setMemories(updatedMemories);
+
+    // Update textFields
+    const serialized = updatedMemories
+      .map(m => `${m.title}|${m.description}|${m.year || ''}|${m.photoUrl || ''}`)
+      .join('\n');
+
+    if (onTextFieldChange) {
+      onTextFieldChange('hatiraMemories', serialized);
+    }
+  };
 
   const petals = useMemo(
     () => Array.from({ length: 18 }, (_, index) => ({
@@ -219,27 +243,101 @@ export default function ClassicMemoryBoxTemplate({
                 <span className="text-xs uppercase tracking-[0.35em] text-rose-300">{activeIndex + 1} / {memories.length}</span>
               </div>
 
-              <div
-                className="relative flex-1 overflow-hidden rounded-xl sm:rounded-2xl border border-rose-100 bg-rose-50/90 p-4 sm:p-5"
-                style={albumBackground ? {
-                  backgroundImage: `linear-gradient(135deg, rgba(255, 192, 203, 0.45), rgba(255,255,255,0.55)), url(${albumBackground})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                } : undefined}
-              >
-                <div className="absolute inset-0 bg-gradient-to-tr from-rose-200/20 via-white/10 to-transparent" />
-                <div className="relative h-full">
-                  <div className="flex h-full flex-col gap-2 sm:gap-3">
-                    <div className="text-4xl sm:text-5xl md:text-6xl">📷</div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-rose-400 break-words">{memories[activeIndex]?.year || 'anı'}</p>
-                    <h4 className="font-serif text-xl sm:text-2xl text-rose-700 break-words">
-                      {memories[activeIndex]?.title}
-                    </h4>
-                    <p className="text-sm sm:text-base leading-relaxed text-rose-500 break-words">
-                      {memories[activeIndex]?.description}
-                    </p>
+              <div className="relative flex-1 overflow-hidden rounded-xl sm:rounded-2xl border border-rose-100 bg-rose-50/90">
+                {memories[activeIndex]?.photoUrl ? (
+                  <div className="relative h-full">
+                    <img
+                      src={memories[activeIndex].photoUrl}
+                      alt={memories[activeIndex].title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-rose-900/80 via-rose-900/30 to-transparent" />
+                    <div className="relative h-full flex flex-col justify-end p-4 sm:p-5 gap-2 sm:gap-3">
+                      <p
+                        className={`text-xs uppercase tracking-[0.3em] text-rose-200 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                        contentEditable={isEditable}
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleMemoryChange(activeIndex, 'year', e.currentTarget.textContent || '')}
+                      >
+                        {memories[activeIndex]?.year || 'anı'}
+                      </p>
+                      <h4
+                        className={`font-serif text-xl sm:text-2xl text-white break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                        contentEditable={isEditable}
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleMemoryChange(activeIndex, 'title', e.currentTarget.textContent || '')}
+                      >
+                        {memories[activeIndex]?.title}
+                      </h4>
+                      <p
+                        className={`text-sm sm:text-base leading-relaxed text-rose-100 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                        contentEditable={isEditable}
+                        suppressContentEditableWarning
+                        onBlur={(e) => handleMemoryChange(activeIndex, 'description', e.currentTarget.textContent || '')}
+                      >
+                        {memories[activeIndex]?.description}
+                      </p>
+                      {isEditable && (
+                        <input
+                          type="url"
+                          placeholder="Fotoğraf URL'i..."
+                          value={memories[activeIndex]?.photoUrl || ''}
+                          onChange={(e) => handleMemoryChange(activeIndex, 'photoUrl', e.target.value)}
+                          className="mt-2 text-xs bg-white/20 border border-white/30 text-white placeholder:text-white/60 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-300"
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div
+                    className="relative h-full p-4 sm:p-5"
+                    style={albumBackground ? {
+                      backgroundImage: `linear-gradient(135deg, rgba(255, 192, 203, 0.45), rgba(255,255,255,0.55)), url(${albumBackground})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    } : undefined}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-tr from-rose-200/20 via-white/10 to-transparent" />
+                    <div className="relative h-full">
+                      <div className="flex h-full flex-col gap-2 sm:gap-3">
+                        <div className="text-4xl sm:text-5xl md:text-6xl">📷</div>
+                        <p
+                          className={`text-xs uppercase tracking-[0.3em] text-rose-400 break-words ${isEditable ? 'hover:bg-rose-100 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                          contentEditable={isEditable}
+                          suppressContentEditableWarning
+                          onBlur={(e) => handleMemoryChange(activeIndex, 'year', e.currentTarget.textContent || '')}
+                        >
+                          {memories[activeIndex]?.year || 'anı'}
+                        </p>
+                        <h4
+                          className={`font-serif text-xl sm:text-2xl text-rose-700 break-words ${isEditable ? 'hover:bg-rose-100 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                          contentEditable={isEditable}
+                          suppressContentEditableWarning
+                          onBlur={(e) => handleMemoryChange(activeIndex, 'title', e.currentTarget.textContent || '')}
+                        >
+                          {memories[activeIndex]?.title}
+                        </h4>
+                        <p
+                          className={`text-sm sm:text-base leading-relaxed text-rose-500 break-words ${isEditable ? 'hover:bg-rose-100 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                          contentEditable={isEditable}
+                          suppressContentEditableWarning
+                          onBlur={(e) => handleMemoryChange(activeIndex, 'description', e.currentTarget.textContent || '')}
+                        >
+                          {memories[activeIndex]?.description}
+                        </p>
+                        {isEditable && (
+                          <input
+                            type="url"
+                            placeholder="Fotoğraf URL'i ekleyin..."
+                            value={memories[activeIndex]?.photoUrl || ''}
+                            onChange={(e) => handleMemoryChange(activeIndex, 'photoUrl', e.target.value)}
+                            className="mt-2 text-xs bg-white/70 border border-rose-200 text-rose-700 placeholder:text-rose-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-300"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-between gap-2 sm:gap-3 text-sm text-rose-400">

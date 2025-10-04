@@ -19,7 +19,7 @@ const BASE_WIDTH = 1280;
 const BASE_HEIGHT = 960;
 
 const FALLBACK_TEXT: TemplateTextFields = {
-  recipientName: 'Sevgili Dostum',
+recipientName: 'Sevgili Leyla',
   mainMessage: 'Bu özel mesajı senin için hazırladım. Umarım beğenirsin! 💌',
   footerMessage: 'Sevgiyle, Gizli Mesaj',
 };
@@ -109,6 +109,7 @@ export default function TemplateCardPreview({ template }: TemplateCardPreviewPro
           creatorName="Gizli Mesaj"
           isPreview
           textFields={textFields}
+          isEditable={false}
         />
       </div>
     </div>

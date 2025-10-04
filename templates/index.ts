@@ -26,6 +26,8 @@ import YilDonumuForm from './yil-donumu/form';
 import YilDonumuPreview from './yil-donumu/preview';
 import IsTebrigiForm from './is-tebrigi/form';
 import IsTebrigiPreview from './is-tebrigi/preview';
+import RomantikMesajElegantForm from './romantik-mesaj-elegant/form';
+import RomantikMesajElegantPreview from './romantik-mesaj-elegant/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => React.ReactElement;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => React.ReactElement;
@@ -96,6 +98,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'is-tebrigi',
     form: IsTebrigiForm,
     preview: IsTebrigiPreview,
+  },
+  'romantik-mesaj-elegant': {
+    slug: 'romantik-mesaj-elegant',
+    form: RomantikMesajElegantForm,
+    preview: RomantikMesajElegantPreview,
   },
 };
 

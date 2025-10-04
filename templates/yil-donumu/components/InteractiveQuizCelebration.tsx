@@ -80,24 +80,28 @@ export default function InteractiveQuizCelebration({
   const replayLabel = isEditable ? localReplayLabel : (textFields?.quizReplay || 'Tekrar Oyna');
   const displayRecipientName = isEditable ? localRecipientName : recipientName;
 
-  const questions = useMemo<QuizItem[]>(() => {
+  const [questions, setQuestions] = useState<QuizItem[]>([]);
+
+  useEffect(() => {
     const raw = (textFields?.quizItems && textFields.quizItems.trim().length > 0)
       ? textFields.quizItems
       : FALLBACK_QUIZ;
 
-    return raw
+    const parsed = raw
       .split('\n')
       .map(line => {
         const [question, answer, memory, hint] = line.split('|').map(part => part?.trim() || '');
         if (!question || !answer) return null;
         return {
           question,
-          answer: answer.toLowerCase(),
+          answer: answer,
           memory,
           hint
         };
       })
       .filter(Boolean) as QuizItem[];
+
+    setQuestions(parsed);
   }, [textFields?.quizItems]);
 
   const [gameStarted, setGameStarted] = useState(false);
@@ -108,6 +112,24 @@ export default function InteractiveQuizCelebration({
   const [completed, setCompleted] = useState(false);
 
   const currentQuestion = questions[currentIndex];
+
+  const handleQuestionChange = (index: number, field: 'question' | 'answer' | 'hint' | 'memory', value: string) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[index] = {
+      ...updatedQuestions[index],
+      [field]: value
+    };
+    setQuestions(updatedQuestions);
+
+    // Update textFields
+    const serialized = updatedQuestions
+      .map(q => `${q.question}|${q.answer}|${q.memory || ''}|${q.hint || ''}`)
+      .join('\n');
+
+    if (onTextFieldChange) {
+      onTextFieldChange('quizItems', serialized);
+    }
+  };
 
   const handleStart = () => {
     if (questions.length === 0) return;
@@ -211,9 +233,25 @@ export default function InteractiveQuizCelebration({
                 <span>Skor: {score}</span>
               </div>
               <div className="text-4xl sm:text-5xl">🧩</div>
-              <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-white break-words">
+              <p
+                className={`text-xl sm:text-2xl md:text-3xl font-semibold text-white break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(e) => handleQuestionChange(currentIndex, 'question', e.currentTarget.textContent || '')}
+              >
                 {currentQuestion.question}
               </p>
+              {isEditable && (
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-[0.3em] text-white/60">Doğru Cevap:</label>
+                  <input
+                    value={currentQuestion.answer}
+                    onChange={e => handleQuestionChange(currentIndex, 'answer', e.target.value)}
+                    placeholder="Doğru cevabı girin..."
+                    className="w-full rounded-xl border border-white/30 bg-white/20 px-4 py-2.5 text-sm text-white placeholder:text-white/60 focus:border-white focus:outline-none"
+                  />
+                </div>
+              )}
               <input
                 value={userAnswer}
                 onChange={e => setUserAnswer(e.target.value)}
@@ -232,9 +270,30 @@ export default function InteractiveQuizCelebration({
               >
                 Yanıtla
               </button>
-              <p className="text-xs uppercase tracking-[0.35em] text-white/60 break-words">
-                {textFields?.quizHintLabel || 'İpucu'}: {currentQuestion.hint || 'Kalbini dinle'}
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+                  {textFields?.quizHintLabel || 'İpucu'}:
+                </p>
+                <p
+                  className={`text-sm text-white/80 break-words ${isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-2 py-1 transition-colors' : ''}`}
+                  contentEditable={isEditable}
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleQuestionChange(currentIndex, 'hint', e.currentTarget.textContent || '')}
+                >
+                  {currentQuestion.hint || 'Kalbini dinle'}
+                </p>
+              </div>
+              {isEditable && (
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-[0.3em] text-white/60">Hatıra Notu:</label>
+                  <input
+                    value={currentQuestion.memory || ''}
+                    onChange={e => handleQuestionChange(currentIndex, 'memory', e.target.value)}
+                    placeholder="Doğru cevaplandığında gösterilecek hatıra..."
+                    className="w-full rounded-xl border border-white/30 bg-white/20 px-4 py-2.5 text-sm text-white placeholder:text-white/60 focus:border-white focus:outline-none"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col gap-4 sm:gap-6 rounded-2xl sm:rounded-3xl border border-white/20 bg-white/10 p-6 sm:p-8 backdrop-blur-lg">
