@@ -96,7 +96,7 @@ export default function HeartAdventureInteractive({
   };
 
   const handleHeartClick = (id: number) => {
-    if (isEditable || !gameStarted || collected.includes(id)) return;
+    if (!gameStarted || collected.includes(id)) return;
 
     setCollected((prev) => [...prev, id]);
     const remaining = hearts.filter((heart) => heart.id !== id);
@@ -129,7 +129,6 @@ export default function HeartAdventureInteractive({
   };
 
   const handleGameButtonClick = () => {
-    if (isEditable) return;
     if (gameFinished) {
       resetGame();
       window.setTimeout(() => {
@@ -154,8 +153,8 @@ export default function HeartAdventureInteractive({
 
       <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#fdf6ff] via-[#ffe8f4] to-transparent opacity-70" />
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-16 text-center space-y-10">
-        <div className="space-y-4 max-w-xl">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16 text-center space-y-8 sm:space-y-10">
+        <div className="space-y-3 sm:space-y-4 max-w-xl">
           <p
             className={`uppercase tracking-[0.45em] text-xs text-[#b78bc7] ${
               isEditable ? 'hover:bg-white/50 cursor-text rounded-lg px-3 py-1 transition-colors inline-block' : ''
@@ -171,7 +170,7 @@ export default function HeartAdventureInteractive({
           </p>
 
           <h1
-            className={`text-4xl font-bold text-[#8c3fa9] drop-shadow-sm ${
+            className={`text-3xl sm:text-4xl font-bold text-[#8c3fa9] drop-shadow-sm ${
               isEditable ? 'hover:bg-white/50 cursor-text rounded-lg px-4 py-2 transition-colors' : ''
             }`}
             contentEditable={isEditable}
@@ -182,7 +181,7 @@ export default function HeartAdventureInteractive({
           </h1>
 
           <p
-            className={`text-base sm:text-lg text-[#6d4a8f] ${isEditable ? 'hover:bg-white/50 cursor-text rounded-lg px-3 py-2 transition-colors' : ''}`}
+            className={`text-sm sm:text-lg text-[#6d4a8f] ${isEditable ? 'hover:bg-white/50 cursor-text rounded-lg px-3 py-2 transition-colors' : ''}`}
             contentEditable={isEditable}
             suppressContentEditableWarning
             onBlur={(event) => handleContentChange('gameHelper', event.currentTarget.textContent || '')}
@@ -191,10 +190,10 @@ export default function HeartAdventureInteractive({
           </p>
         </div>
 
-        <div className="relative h-[400px] w-full max-w-3xl rounded-[2rem] bg-white/60 backdrop-blur-md border border-white/80 shadow-[0_25px_60px_rgba(150,90,180,0.18)] overflow-hidden">
+        <div className="relative h-[320px] sm:h-[400px] w-full max-w-3xl rounded-[2rem] bg-white/60 backdrop-blur-md border border-white/80 shadow-[0_25px_60px_rgba(150,90,180,0.18)] overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute -left-12 top-12 h-32 w-32 rounded-full bg-gradient-to-tr from-[#fda4af] via-[#fb7185] to-[#f43f5e] blur-2xl opacity-30" />
-            <div className="absolute -right-10 bottom-12 h-40 w-40 rounded-full bg-gradient-to-tr from-[#bfdbfe] via-[#93c5fd] to-[#818cf8] blur-3xl opacity-30" />
+            <div className="absolute -left-12 top-12 h-24 sm:h-32 w-24 sm:w-32 rounded-full bg-gradient-to-tr from-[#fda4af] via-[#fb7185] to-[#f43f5e] blur-2xl opacity-30" />
+            <div className="absolute -right-10 bottom-12 h-28 sm:h-40 w-28 sm:w-40 rounded-full bg-gradient-to-tr from-[#bfdbfe] via-[#93c5fd] to-[#818cf8] blur-3xl opacity-30" />
           </div>
 
           {gameStarted && hearts.map((heart) => (
@@ -220,9 +219,9 @@ export default function HeartAdventureInteractive({
           ))}
 
           {gameFinished && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center space-y-6">
+            <div className="absolute inset-0 flex flex-col items-center justify-center space-y-5 sm:space-y-6 px-6">
               <div className="relative">
-                <div className="h-40 w-40 rounded-full bg-gradient-to-br from-[#fb7185] via-[#f472b6] to-[#c084fc] shadow-[0_20px_40px_rgba(244,114,182,0.4)] animate-pulse" />
+                <div className="h-32 w-32 sm:h-40 sm:w-40 rounded-full bg-gradient-to-br from-[#fb7185] via-[#f472b6] to-[#c084fc] shadow-[0_20px_40px_rgba(244,114,182,0.4)] animate-pulse" />
                 <span className="absolute inset-0 flex items-center justify-center text-6xl">❤️</span>
               </div>
 
@@ -254,7 +253,7 @@ export default function HeartAdventureInteractive({
           ))}
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center">
           <div className="flex flex-col items-center gap-2">
             <Button
               onClick={handleGameButtonClick}
@@ -264,7 +263,7 @@ export default function HeartAdventureInteractive({
                   : gameStarted
                     ? 'bg-[#a855f7] hover:bg-[#9333ea]'
                     : 'bg-[#f43f5e] hover:bg-[#e11d48]'
-              } ${isEditable ? 'opacity-80' : ''}`}
+              }`}
               variant="default"
             >
               <span
@@ -277,14 +276,12 @@ export default function HeartAdventureInteractive({
               </span>
             </Button>
 
-            {!isEditable && (
-              <p className="text-xs uppercase tracking-[0.3em] text-[#a979bf]">
-                {gameFinished ? 'Kalp avı tamamlandı' : gameStarted ? 'Kalpler seni bekliyor' : 'Hazırsan oyunu başlat'}
-              </p>
-            )}
+            <p className="text-xs uppercase tracking-[0.3em] text-[#a979bf]">
+              {gameFinished ? 'Kalp avı tamamlandı' : gameStarted ? 'Kalpler seni bekliyor' : 'Hazırsan oyunu başlat'}
+            </p>
           </div>
 
-          {gameStarted && !isEditable && (
+          {gameStarted && (
             <span className="self-center text-sm text-[#8c3fa9]/70">
               {collected.length}/{HEART_COUNT} kalp
             </span>

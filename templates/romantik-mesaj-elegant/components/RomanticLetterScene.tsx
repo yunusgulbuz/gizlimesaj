@@ -60,10 +60,7 @@ export default function RomanticLetterScene({
   const [localSignature, setLocalSignature] = useState(textFields?.letterSignature || creatorName || DEFAULT_SIGNATURE);
   const [localButtonLabel, setLocalButtonLabel] = useState(textFields?.letterButtonLabel || DEFAULT_BUTTON_LABEL);
 
-  useEffect(() => {
-    const timeout = window.setTimeout(() => setIsLetterOpen(true), 600);
-    return () => window.clearTimeout(timeout);
-  }, []);
+  // Mektup başlangıçta kapalı, kullanıcı butona tıklayarak açar
 
   useEffect(() => {
     setLocalRecipient(textFields?.recipientName || recipientName || DEFAULT_RECIPIENT);
@@ -95,7 +92,6 @@ export default function RomanticLetterScene({
   };
 
   const handleToggleLetter = () => {
-    if (isEditable) return;
     setIsLetterOpen((prev) => !prev);
   };
 
@@ -136,27 +132,18 @@ export default function RomanticLetterScene({
         ))}
       </div>
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-16">
-        <div className="flex flex-col items-center gap-2 mb-8">
-          <div
-            className={`text-center uppercase tracking-[0.55em] text-xs text-[#8c6b58] ${
-              isEditable ? 'hover:bg-[#f7efe5] cursor-text rounded-lg px-3 py-1 transition-colors' : ''
-            }`}
-            contentEditable={isEditable}
-            suppressContentEditableWarning
-            onBlur={(event) => handleContentChange('recipientName', event.currentTarget.textContent?.trim() || '')}
-          >
-            {displayRecipient}
-          </div>
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16">
+        <div className="flex flex-col items-center gap-1 sm:gap-2 mb-6 sm:mb-8 text-center">
           <div className="text-[0.65rem] uppercase tracking-[0.4em] text-[#b28c78]">
             Hazırlayan: {displayCreator}
           </div>
         </div>
 
         <div className="relative w-full max-w-3xl">
-          <div className="relative mx-auto h-[460px] w-full max-w-2xl">
+          <div className="relative mx-auto h-[360px] sm:h-[460px] w-full max-w-xl sm:max-w-2xl">
+            {/* Zarfın Üst Kapağı */}
             <div
-              className="absolute inset-x-12 top-8 h-40 rounded-2xl bg-[#e5d4c4]"
+              className="absolute inset-x-8 sm:inset-x-12 top-6 sm:top-8 h-32 sm:h-40 rounded-2xl bg-[#e5d4c4]"
               style={{
                 boxShadow: '0 10px 30px rgba(83,57,43,0.15)',
                 transform: isLetterOpen ? 'rotateX(0deg)' : 'rotateX(75deg)',
@@ -164,8 +151,10 @@ export default function RomanticLetterScene({
                 transition: 'transform 1s ease',
               }}
             />
+
+            {/* Zarfın İç Kısmı */}
             <div
-              className="absolute inset-x-8 top-28 h-56 rounded-2xl bg-[#fdf8f1] border border-[#e2d3c2]"
+              className="absolute inset-x-6 sm:inset-x-8 top-24 sm:top-28 h-48 sm:h-56 rounded-2xl bg-[#fdf8f1] border border-[#e2d3c2]"
               style={{
                 transform: isLetterOpen ? 'translateY(-70px)' : 'translateY(40px)',
                 transition: 'transform 1.2s ease',
@@ -174,22 +163,70 @@ export default function RomanticLetterScene({
             >
               <div className="h-full w-full rounded-[2rem] border-[20px] border-double border-[#e8d9c7] bg-[#fcf7f1]/70" />
             </div>
-            <div className="absolute inset-x-12 bottom-8 h-24 rounded-2xl bg-[#dcbfaa]" style={{ boxShadow: '0 20px 40px rgba(83,57,43,0.18)' }} />
+
+            {/* Zarfın Gövdesi */}
+            <div className="absolute inset-x-8 sm:inset-x-12 bottom-6 sm:bottom-8 h-48 sm:h-56 rounded-2xl bg-[#dcbfaa]" style={{ boxShadow: '0 20px 40px rgba(83,57,43,0.18)' }}>
+              {/* Kapalı Zarf Dekorasyonu */}
+              {!isLetterOpen && (
+                <div className="absolute inset-0">
+                  {/* Alıcı İsmi - Zarfın Üstünde */}
+                  <div className="absolute top-8 sm:top-12 left-1/2 -translate-x-1/2 text-center">
+                    <p
+                      className={`font-serif text-xl sm:text-2xl md:text-3xl text-[#8c6b58] italic tracking-wide ${
+                        isEditable ? 'hover:bg-[#f7efe5] cursor-text rounded-lg px-3 py-1 transition-colors' : ''
+                      }`}
+                      contentEditable={isEditable}
+                      suppressContentEditableWarning
+                      onBlur={(event) => handleContentChange('recipientName', event.currentTarget.textContent?.trim() || '')}
+                    >
+                      {displayRecipient}
+                    </p>
+                    <div className="mt-2 h-px w-40 sm:w-48 bg-gradient-to-r from-transparent via-[#c6a98c] to-transparent" />
+                  </div>
+
+                  {/* Kalp Mührü */}
+                  <div className="absolute bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2">
+                    <div className="relative animate-pulse" style={{ animationDuration: '2s' }}>
+                      {/* Mühür Dairesi */}
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#c75a6f] to-[#a94458] shadow-lg flex items-center justify-center" style={{ boxShadow: '0 8px 20px rgba(169,68,88,0.35), inset 0 2px 4px rgba(255,255,255,0.3)' }}>
+                        <span className="text-4xl sm:text-5xl">❤️</span>
+                      </div>
+                      {/* Mühür Işıltısı */}
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/30 to-transparent opacity-40" />
+                    </div>
+                  </div>
+
+                  {/* Dekoratif Süslemeler */}
+                  <div className="absolute top-10 sm:top-14 left-8 sm:left-12 text-[#d4b9a3] opacity-30">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                  </div>
+                  <div className="absolute top-10 sm:top-14 right-8 sm:right-12 text-[#d4b9a3] opacity-30">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div
-              className="absolute inset-x-16 top-0 h-[380px] rounded-[26px] bg-[#fffdf9] px-8 py-10 border border-[#e6d7c7]"
+              className="absolute inset-x-8 sm:inset-x-16 top-0 h-[300px] sm:h-[380px] rounded-[26px] bg-[#fffdf9] px-6 sm:px-8 py-8 sm:py-10 border border-[#e6d7c7]"
               style={{
-                transform: isLetterOpen ? 'translateY(-110px)' : 'translateY(120px)',
-                transition: 'transform 1.2s ease',
+                transform: isLetterOpen ? 'translateY(-90px)' : 'translateY(120px)',
+                opacity: isLetterOpen ? 1 : 0,
+                transition: 'transform 1.1s ease, opacity 0.8s ease',
                 boxShadow: '0 24px 60px rgba(83,57,43,0.18)',
                 overflow: 'hidden',
+                pointerEvents: isLetterOpen ? 'auto' : 'none',
               }}
             >
               <div className="h-full w-full bg-repeat" style={{ backgroundImage: 'linear-gradient(transparent 95%, rgba(210,180,140,0.35) 95%)', backgroundSize: '100% 32px' }}>
                 <div className="flex h-full flex-col justify-between">
                   <div>
                     <div
-                      className={`text-3xl md:text-4xl font-light text-[#8c6b58] mb-6 ${
+                      className={`text-2xl sm:text-3xl md:text-4xl font-light text-[#8c6b58] mb-4 sm:mb-6 ${
                         isEditable ? 'hover:bg-[#f7efe5] cursor-text rounded-lg px-3 py-1 transition-colors' : ''
                       }`}
                       contentEditable={isEditable}
@@ -199,7 +236,7 @@ export default function RomanticLetterScene({
                       {displayTitle}
                     </div>
 
-                    <div className="space-y-4 text-lg leading-relaxed text-[#5c4035]">
+                    <div className="space-y-3 sm:space-y-4 text-base sm:text-lg leading-relaxed text-[#5c4035]">
                       <p
                         className={isEditable ? 'hover:bg-[#f7efe5] cursor-text rounded-lg px-3 py-2 transition-colors' : ''}
                         contentEditable={isEditable}
@@ -212,7 +249,7 @@ export default function RomanticLetterScene({
                   </div>
 
                   <div
-                    className={`text-right text-xl italic text-[#856857] ${
+                    className={`text-right text-lg sm:text-xl italic text-[#856857] ${
                       isEditable ? 'hover:bg-[#f7efe5] cursor-text rounded-lg px-3 py-2 transition-colors' : ''
                     }`}
                     contentEditable={isEditable}
@@ -227,34 +264,34 @@ export default function RomanticLetterScene({
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={handleToggleLetter}
-          className={`mt-12 rounded-full border-2 border-[#c6a98c] px-10 py-4 text-base font-medium text-[#6a4c3b] transition ${
-            isEditable ? 'pointer-events-none opacity-80' : 'hover:text-[#4a2f20]'
-          } ${isLetterOpen ? 'bg-[#f9f1e8]/60' : 'bg-[#e8dccc]/60'}`}
-        >
-          <span
-            className={`relative inline-block ${isEditable ? 'hover:bg-[#f7efe5] cursor-text rounded px-3 py-1 transition-colors' : ''}`}
-            style={{
-              paddingBottom: '2px',
-              backgroundImage: 'linear-gradient(currentColor, currentColor)',
-              backgroundSize: '0% 2px',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: '0 100%',
-              transition: 'background-size 0.4s ease',
-            }}
-            contentEditable={isEditable}
-            suppressContentEditableWarning
-            onBlur={(event) => handleContentChange('letterButtonLabel', event.currentTarget.textContent || '')}
+        <div className="mt-12 flex flex-col items-center space-y-3">
+          <Button
+            variant="outline"
+            onClick={handleToggleLetter}
+            className={`rounded-full border-2 border-[#c6a98c] px-10 py-4 text-base font-medium text-[#6a4c3b] transition hover:text-[#4a2f20] ${isLetterOpen ? 'bg-[#f9f1e8]/60' : 'bg-[#e8dccc]/60'}`}
           >
-            {displayButtonLabel}
-          </span>
-        </Button>
+            <span
+              className={`relative inline-block ${isEditable ? 'hover:bg-[#f7efe5] cursor-text rounded px-3 py-1 transition-colors' : ''}`}
+              style={{
+                paddingBottom: '2px',
+                backgroundImage: 'linear-gradient(currentColor, currentColor)',
+                backgroundSize: '0% 2px',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: '0 100%',
+                transition: 'background-size 0.4s ease',
+              }}
+              contentEditable={isEditable}
+              suppressContentEditableWarning
+              onBlur={(event) => handleContentChange('letterButtonLabel', event.currentTarget.textContent || '')}
+            >
+              {isLetterOpen ? displayButtonLabel : 'Mektubu Aç'}
+            </span>
+          </Button>
 
-        <p className="mt-4 text-xs uppercase tracking-[0.3em] text-[#a4836a]">
-          {isLetterOpen ? 'Mektup açık' : 'Mektup kapalı'}
-        </p>
+          <p className="text-xs uppercase tracking-[0.3em] text-[#a4836a]">
+            {isLetterOpen ? '💌 Mektup okunuyor' : '✉️ Zarfın içinde bir sürpriz var'}
+          </p>
+        </div>
       </div>
 
       <style jsx>{`

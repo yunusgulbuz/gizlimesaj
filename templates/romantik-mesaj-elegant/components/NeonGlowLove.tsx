@@ -151,8 +151,6 @@ export default function NeonGlowLove({
   };
 
   const handleCtaClick = () => {
-    if (isEditable) return;
-
     if (pulseTimeoutRef.current) window.clearTimeout(pulseTimeoutRef.current);
     if (feedbackTimeoutRef.current) window.clearTimeout(feedbackTimeoutRef.current);
 
@@ -209,12 +207,12 @@ export default function NeonGlowLove({
         />
       ))}
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 py-16 text-center space-y-10 sm:space-y-12 md:space-y-16">
-        <div className="relative">
-          <div className="flex flex-col items-center space-y-6">
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16 text-center space-y-8 sm:space-y-12 md:space-y-16">
+        <div className="relative pb-10 sm:pb-12">
+          <div className="flex flex-col items-center space-y-5 sm:space-y-6">
             <div
-              className={`uppercase tracking-[0.5em] text-xs sm:text-sm text-pink-200/80 ${
-                isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-4 py-1 transition-colors' : ''
+              className={`uppercase tracking-[0.45em] text-[0.55rem] sm:text-xs text-pink-200/80 ${
+                isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-3 sm:px-4 py-1 transition-colors' : ''
               }`}
               contentEditable={isEditable}
               suppressContentEditableWarning
@@ -224,7 +222,7 @@ export default function NeonGlowLove({
             </div>
 
             <h1
-              className={`text-4xl sm:text-5xl md:text-6xl font-light tracking-wide ${
+              className={`text-3xl sm:text-5xl md:text-6xl font-light tracking-wide ${
                 isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-4 transition-colors' : 'text-fuchsia-100'
               }`}
               style={{
@@ -239,7 +237,7 @@ export default function NeonGlowLove({
             </h1>
 
             <div
-              className={`max-w-2xl text-base sm:text-lg md:text-xl leading-relaxed text-pink-100/90 ${
+              className={`max-w-xl sm:max-w-2xl text-sm sm:text-lg md:text-xl leading-relaxed text-pink-100/90 ${
                 isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-4 py-2 transition-colors' : ''
               }`}
               contentEditable={isEditable}
@@ -250,7 +248,7 @@ export default function NeonGlowLove({
             </div>
 
             <div
-              className={`text-sm sm:text-base md:text-lg text-fuchsia-200/80 ${
+              className={`text-xs sm:text-base md:text-lg text-fuchsia-200/80 ${
                 isEditable ? 'hover:bg-white/10 cursor-text rounded-lg px-3 py-1 transition-colors' : ''
               }`}
               contentEditable={isEditable}
@@ -264,10 +262,10 @@ export default function NeonGlowLove({
 
         <div className="relative">
           <svg
-            width="400"
-            height="200"
+            width="320"
+            height="180"
             viewBox="0 0 400 200"
-            className="w-56 sm:w-72 md:w-96 mx-auto"
+            className="w-48 sm:w-72 md:w-96 mx-auto"
           >
             <path
               d="M20 120 C 80 40, 150 40, 200 120 C 250 40, 320 40, 380 120"
@@ -292,7 +290,7 @@ export default function NeonGlowLove({
             </defs>
           </svg>
 
-          <div className="absolute inset-x-0 -bottom-12 mx-auto w-max text-sm text-fuchsia-100/80 tracking-[0.35em] uppercase">
+          <div className="absolute inset-x-0 -bottom-8 sm:-bottom-10 mx-auto w-max text-[0.6rem] sm:text-sm text-fuchsia-100/80 tracking-[0.3em] uppercase">
             Hazırlayan: {displayCreator}
           </div>
         </div>
@@ -300,9 +298,7 @@ export default function NeonGlowLove({
         <div className="flex flex-col items-center space-y-4">
           <Button
             onClick={handleCtaClick}
-            className={`relative px-10 py-4 text-base sm:text-lg font-medium rounded-full border-0 transition transform hover:scale-105 ${
-              isEditable ? 'pointer-events-none opacity-70' : ''
-            } ${ctaPulse ? 'ring-2 ring-pink-300/70 ring-offset-2 ring-offset-transparent scale-[1.03]' : ''}`}
+            className={`relative px-10 py-4 text-base sm:text-lg font-medium rounded-full border-0 transition transform hover:scale-105 ${ctaPulse ? 'ring-2 ring-pink-300/70 ring-offset-2 ring-offset-transparent scale-[1.03]' : ''}`}
             style={{
               background: 'linear-gradient(90deg, #ff00c3, #ff4de1, #ff007a)',
               boxShadow: '0 0 25px rgba(255,0,180,0.5), 0 0 55px rgba(255,0,120,0.4)',
