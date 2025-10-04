@@ -238,10 +238,10 @@ export default function PricingPage() {
                       <CardTitle className="text-2xl">{plan.name}</CardTitle>
                       <CardDescription className="text-base">{plan.subtitle}</CardDescription>
                       <div className="mt-4 flex items-baseline gap-1">
-                        <span className="text-4xl font-bold text-gray-900">₺{plan.price}</span>
-                        <span className="text-gray-500">{plan.period}</span>
+                        <span className="text-4xl font-bold text-gray-900">Yakında</span>
+                        <span className="text-gray-500"></span>
                       </div>
-                      <p className="mt-3 text-sm text-gray-600">{plan.description}</p>
+                      <p className="mt-3 text-sm text-gray-600">Fiyatlandırma çok yakında açıklanacak</p>
                     </CardHeader>
 
                     <CardContent className="pb-6">
@@ -261,24 +261,14 @@ export default function PricingPage() {
                       <Button
                         className={`w-full ${
                           plan.highlight
-                            ? "bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
-                            : "bg-gray-900 hover:bg-gray-800"
-                        }`}
+                            ? "bg-gradient-to-r from-purple-500 to-indigo-500"
+                            : "bg-gray-900"
+                        } cursor-not-allowed opacity-60`}
                         size="lg"
-                        onClick={() => handleSubscribe(plan.id)}
-                        disabled={loadingPlanId === plan.id}
+                        disabled={true}
                       >
-                        {loadingPlanId === plan.id ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            İşleniyor
-                          </>
-                        ) : (
-                          <>
-                            Hemen Başla
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </>
-                        )}
+                        Yakında
+                        <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </CardFooter>
                   </Card>
