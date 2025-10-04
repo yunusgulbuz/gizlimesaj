@@ -3,49 +3,48 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
-import { 
-  Eye, 
-  Search,
+import {
+  Eye,
   Filter,
   Download,
   ArrowLeft
 } from 'lucide-react';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAuthSupabaseClient } from '@/lib/supabase-auth-server';
+import OrderFilters from './order-filters';
 
 interface Order {
   id: string;
   recipient_name: string;
   sender_name: string;
-  total_amount: number;
-  status: 'pending' | 'paid' | 'expired';
+  amount: number;
+  status: 'pending' | 'completed' | 'failed' | 'canceled';
   created_at: string;
-  expires_at: string;
+  expires_at: string | null;
   template: {
     title: string;
     audience: string;
-  };
-  duration: {
-    name: string;
-    hours: number;
-  };
+  } | null;
 }
 
-async function getOrders(searchParams: { 
-  search?: string; 
-  status?: string; 
-  page?: string; 
+async function getOrders(searchParams: {
+  search?: string;
+  status?: string;
+  page?: string;
 }): Promise<{ orders: Order[]; total: number }> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createAuthSupabaseClient();
   
   let query = supabase
     .from('orders')
     .select(`
-      *,
-      template:templates(title, audience),
-      duration:durations(name, hours)
+      id,
+      recipient_name,
+      sender_name,
+      amount,
+      status,
+      created_at,
+      expires_at,
+      template:templates(title, audience)
     `, { count: 'exact' });
 
   // Apply filters
@@ -67,7 +66,13 @@ async function getOrders(searchParams: {
     .range(offset, offset + limit - 1);
 
   if (error) {
-    console.error('Error fetching orders:', error);
+    console.error('Error fetching orders:', {
+      error,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code
+    });
     return { orders: [], total: 0 };
   }
 
@@ -81,16 +86,18 @@ function OrdersTable({ orders }: { orders: Order[] }) {
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: 'bg-yellow-100 text-yellow-800',
-      paid: 'bg-green-100 text-green-800',
-      expired: 'bg-red-100 text-red-800'
+      completed: 'bg-green-100 text-green-800',
+      failed: 'bg-red-100 text-red-800',
+      canceled: 'bg-gray-100 text-gray-800'
     };
-    
+
     const labels = {
       pending: 'Bekliyor',
-      paid: 'Ödendi',
-      expired: 'Süresi Doldu'
+      completed: 'Tamamlandı',
+      failed: 'Başarısız',
+      canceled: 'İptal'
     };
-    
+
     return (
       <Badge className={variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-800'}>
         {labels[status as keyof typeof labels] || status}
@@ -134,22 +141,26 @@ function OrdersTable({ orders }: { orders: Order[] }) {
                   {getStatusBadge(order.status)}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Gönderen: {order.sender_name}
+                  Gönderen: {order.sender_name || 'Bilinmiyor'}
                 </p>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{order.template.title}</span>
-                  {getAudienceBadge(order.template.audience)}
-                </div>
+                {order.template && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">{order.template.title}</span>
+                    {getAudienceBadge(order.template.audience)}
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground">
-                  {order.duration.name} • {new Date(order.created_at).toLocaleDateString('tr-TR')}
+                  {new Date(order.created_at).toLocaleDateString('tr-TR')}
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="font-semibold text-lg">₺{order.total_amount}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Son: {new Date(order.expires_at).toLocaleDateString('tr-TR')}
-                  </p>
+                  <p className="font-semibold text-lg">₺{order.amount}</p>
+                  {order.expires_at && (
+                    <p className="text-xs text-muted-foreground">
+                      Son: {new Date(order.expires_at).toLocaleDateString('tr-TR')}
+                    </p>
+                  )}
                 </div>
                 <Button variant="outline" size="sm" asChild>
                   <Link href={`/admin/orders/${order.id}`}>
@@ -216,29 +227,7 @@ export default async function AdminOrdersPage({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="İsim ile ara..."
-                  defaultValue={params.search}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <Select defaultValue={params.status || 'all'}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Durum seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tüm Durumlar</SelectItem>
-                <SelectItem value="pending">Bekliyor</SelectItem>
-                <SelectItem value="paid">Ödendi</SelectItem>
-                <SelectItem value="expired">Süresi Doldu</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <OrderFilters />
         </CardContent>
       </Card>
 

@@ -3,20 +3,17 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/breadcrumb";
-import { 
-  Eye, 
+import {
+  Eye,
   Edit,
-  Search,
   Filter,
   Plus,
   ArrowLeft,
-  Play,
-  Pause
+  Play
 } from 'lucide-react';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAuthSupabaseClient } from '@/lib/supabase-auth-server';
+import TemplateFilters from './template-filters';
 
 interface Template {
   id: string;
@@ -36,7 +33,7 @@ async function getTemplates(searchParams: {
   status?: string;
   page?: string; 
 }): Promise<{ templates: Template[]; total: number }> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createAuthSupabaseClient();
   
   let query = supabase
     .from('templates')
@@ -215,41 +212,7 @@ export default async function AdminTemplatesPage({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Şablon adı ile ara..."
-                  defaultValue={params.search}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <Select defaultValue={params.audience || 'all'}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Hedef kitle seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tüm Hedef Kitleler</SelectItem>
-                <SelectItem value="teen">Genç</SelectItem>
-                <SelectItem value="adult">Yetişkin</SelectItem>
-                <SelectItem value="classic">Klasik</SelectItem>
-                <SelectItem value="fun">Eğlenceli</SelectItem>
-                <SelectItem value="elegant">Zarif</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select defaultValue={params.status || 'all'}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Durum seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tüm Durumlar</SelectItem>
-                <SelectItem value="active">Aktif</SelectItem>
-                <SelectItem value="inactive">Pasif</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <TemplateFilters />
         </CardContent>
       </Card>
 

@@ -16,7 +16,7 @@ import {
   Filter,
   Search
 } from 'lucide-react';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAuthSupabaseClient } from '@/lib/supabase-auth-server';
 
 interface TemplatePricing {
   id: number;
@@ -59,7 +59,7 @@ async function getTemplatePricing(searchParams: {
   status?: string;
   page?: string; 
 }): Promise<{ pricing: TemplatePricing[]; total: number }> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createAuthSupabaseClient();
   
   let query = supabase
     .from('template_pricing')
@@ -109,7 +109,7 @@ async function getTemplatePricing(searchParams: {
 }
 
 async function getTemplates(): Promise<Template[]> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createAuthSupabaseClient();
   
   const { data: templates, error } = await supabase
     .from('templates')
@@ -126,7 +126,7 @@ async function getTemplates(): Promise<Template[]> {
 }
 
 async function getDurations(): Promise<Duration[]> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createAuthSupabaseClient();
   
   const { data: durations, error } = await supabase
     .from('durations')

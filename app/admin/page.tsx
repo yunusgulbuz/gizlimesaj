@@ -14,7 +14,7 @@ import {
   Eye,
   LucideIcon
 } from 'lucide-react';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAuthSupabaseClient } from '@/lib/supabase-auth-server';
 
 interface DashboardStats {
   totalOrders: number;
@@ -25,7 +25,7 @@ interface DashboardStats {
     id: string;
     recipient_name: string;
     template_title: string;
-    total_amount: number;
+    amount: number;
     status: string;
     created_at: string;
   }>;
@@ -34,7 +34,7 @@ interface DashboardStats {
 interface Order {
   id: string;
   recipient_name: string;
-  total_amount: number;
+  amount: number;
   status: string;
   created_at: string;
   template: {
@@ -43,7 +43,7 @@ interface Order {
 }
 
 async function getDashboardStats(): Promise<DashboardStats> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createAuthSupabaseClient();
 
   // Get total orders
   const { count: totalOrders } = await supabase
@@ -53,10 +53,10 @@ async function getDashboardStats(): Promise<DashboardStats> {
   // Get total revenue
   const { data: revenueData } = await supabase
     .from('orders')
-    .select('total_amount')
-    .eq('status', 'paid');
+    .select('amount')
+    .eq('status', 'completed');
 
-  const totalRevenue = revenueData?.reduce((sum: number, order: { total_amount: number }) => sum + order.total_amount, 0) || 0;
+  const totalRevenue = revenueData?.reduce((sum: number, order: { amount: number }) => sum + order.amount, 0) || 0;
 
   // Get active pages
   const { count: activePages } = await supabase
@@ -75,7 +75,7 @@ async function getDashboardStats(): Promise<DashboardStats> {
     .select(`
       id,
       recipient_name,
-      total_amount,
+      amount,
       status,
       created_at,
       template:templates(title)
@@ -92,7 +92,7 @@ async function getDashboardStats(): Promise<DashboardStats> {
       id: order.id,
       recipient_name: order.recipient_name,
       template_title: order.template?.[0]?.title || 'Bilinmeyen Şablon',
-      total_amount: order.total_amount,
+      amount: order.amount,
       status: order.status,
       created_at: order.created_at
     })) || []
@@ -130,13 +130,21 @@ function RecentOrdersTable({ orders }: { orders: DashboardStats['recentOrders'] 
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: 'bg-yellow-100 text-yellow-800',
-      paid: 'bg-green-100 text-green-800',
-      expired: 'bg-red-100 text-red-800'
+      completed: 'bg-green-100 text-green-800',
+      failed: 'bg-red-100 text-red-800',
+      canceled: 'bg-gray-100 text-gray-800'
     };
-    
+
+    const labels = {
+      pending: 'Bekliyor',
+      completed: 'Tamamlandı',
+      failed: 'Başarısız',
+      canceled: 'İptal'
+    };
+
     return (
       <Badge className={variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-800'}>
-        {status === 'pending' ? 'Bekliyor' : status === 'paid' ? 'Ödendi' : 'Süresi Doldu'}
+        {labels[status as keyof typeof labels] || status}
       </Badge>
     );
   };
@@ -154,7 +162,7 @@ function RecentOrdersTable({ orders }: { orders: DashboardStats['recentOrders'] 
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="font-medium">₺{order.total_amount}</p>
+              <p className="font-medium">₺{order.amount}</p>
               {getStatusBadge(order.status)}
             </div>
             <Button variant="ghost" size="sm" asChild>
