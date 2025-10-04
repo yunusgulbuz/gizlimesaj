@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 // Image metadata
-export const alt = 'Heartnote - Sevdiklerinize Özel Sürpriz Mesajlar'
+export const alt = 'birmesajmutluluk - Sevdiklerinize Özel Sürpriz Mesajlar'
 export const size = {
   width: 1200,
   height: 630,
@@ -45,13 +45,13 @@ export default async function OgImage() {
         </div>
         <div
           style={{
-            fontSize: 80,
+            fontSize: 70,
             fontWeight: 'bold',
             color: 'white',
             marginBottom: '20px',
           }}
         >
-          Heartnote
+          birmesajmutluluk
         </div>
         <div
           style={{

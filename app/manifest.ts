@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Heartnote - Özel Dijital Hediyeler',
-    short_name: 'Heartnote',
+    name: 'birmesajmutluluk - Özel Dijital Hediyeler',
+    short_name: 'birmesajmutluluk',
     description: 'Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun.',
     start_url: '/',
     display: 'standalone',

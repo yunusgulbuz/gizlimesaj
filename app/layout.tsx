@@ -15,18 +15,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
-  title: "Heartnote - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
+  title: "birmesajmutluluk - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
   description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun. Romantik, eğlenceli ve unutulmaz anlar için zamanlı mesaj deneyimi.",
   openGraph: {
-    title: "Heartnote - Özel Dijital Hediyeler",
+    title: "birmesajmutluluk - Özel Dijital Hediyeler",
     description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun. Romantik, eğlenceli ve unutulmaz anlar için zamanlı mesaj deneyimi.",
     locale: "tr_TR",
     type: "website",
-    siteName: "Heartnote - Özel Dijital Hediyeler",
+    siteName: "birmesajmutluluk - Özel Dijital Hediyeler",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Heartnote - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
+    title: "birmesajmutluluk - Sevdiklerinize Özel Sürpriz Mesajlar ve Hediyeler",
     description: "Sevdiklerinize özel, kişiselleştirilmiş dijital mesajlar ve hediye sayfaları oluşturun.",
   },
 };
