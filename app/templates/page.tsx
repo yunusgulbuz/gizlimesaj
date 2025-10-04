@@ -45,9 +45,9 @@ import SearchForm from "./_components/search-form";
 import { FavoriteButton } from "@/components/favorite-button";
 
 export const metadata = generateMetadata({
-  title: "Heartnote Şablonları",
+  title: "birmesajmutluluk Şablonları",
   description:
-    "Heartnote ile dakikalar içinde romantik sürpriz sayfanızı tasarlayın. Temalar, müzikler ve sahne sahne akışlar tek yerde.",
+    "birmesajmutluluk ile dakikalar içinde romantik sürpriz sayfanızı tasarlayın. Temalar, müzikler ve sahne sahne akışlar tek yerde.",
 });
 
 interface Template {
@@ -382,7 +382,7 @@ export default async function TemplatesPage({
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
                 <Heart className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-900">Heartnote</span>
+              <span className="text-lg font-bold text-gray-900">birmesajmutluluk</span>
             </Link>
             <div className="flex items-center gap-6">
               <Link href="/templates" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
@@ -490,7 +490,7 @@ export default async function TemplatesPage({
 
           {paginatedTemplates.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-rose-200 bg-white/70 p-12 text-center text-gray-600">
-              {searchQuery ? `"${searchQuery}" için sonuç bulunamadı.` : "Seçtiğiniz kategoride şu an Heartnote şablonu bulunmuyor. Başka bir kategori deneyin ya da özel istekte bulunun."}
+              {searchQuery ? `"${searchQuery}" için sonuç bulunamadı.` : "Seçtiğiniz kategoride şu an birmesajmutluluk şablonu bulunmuyor. Başka bir kategori deneyin ya da özel istekte bulunun."}
             </div>
           ) : (
             <>
@@ -695,10 +695,10 @@ export default async function TemplatesPage({
               <div className="space-y-3">
                 <p className="text-sm uppercase tracking-[0.2em] text-white/75">Kişiye Özel Şablon</p>
                 <h2 className="text-2xl font-semibold md:text-3xl">
-                  Hayalindeki Heartnote şablonu yok mu?
+                  Hayalindeki birmesajmutluluk şablonu yok mu?
                 </h2>
                 <p className="max-w-xl text-sm text-white/85">
-                  Tasarım ekibimize birkaç satırda fikrini anlat, sadece sana özel bir Heartnote sahnesi oluşturalım.
+                  Tasarım ekibimize birkaç satırda fikrini anlat, sadece sana özel bir birmesajmutluluk sahnesi oluşturalım.
                 </p>
               </div>
               <CustomTemplateRequestCta className="h-12 gap-2 px-6 text-base" />
@@ -711,7 +711,7 @@ export default async function TemplatesPage({
         <section className="bg-white/80 py-16">
           <div className="container mx-auto flex flex-col items-center gap-4 px-4 text-center">
             <h2 className="text-3xl font-semibold text-gray-900 md:text-4xl">
-              İlk Heartnote'un için hazır mısın?
+              İlk birmesajmutluluk'un için hazır mısın?
             </h2>
             <p className="max-w-2xl text-base text-gray-600">
               Ücretsiz kaydol, şablonu seç, dakikalar içinde duygularını anlatan dijital sürprizini yayına al.

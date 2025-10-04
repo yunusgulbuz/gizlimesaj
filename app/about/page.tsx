@@ -98,7 +98,7 @@ export default function AboutPage() {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
                 <Heart className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-900">Heartnote</span>
+              <span className="text-lg font-bold text-gray-900">birmesajmutluluk</span>
             </Link>
             <div className="flex items-center gap-6">
               <Link href="/templates" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
@@ -135,7 +135,7 @@ export default function AboutPage() {
                 </span>
               </h1>
               <p className="mb-8 text-lg text-gray-600 md:text-xl">
-                Heartnote, sevdiklerinize özel anlar yaratmanız için tasarlandı.
+                birmesajmutluluk, sevdiklerinize özel anlar yaratmanız için tasarlandı.
                 <br className="hidden md:block" />
                 Her mesaj bir hikaye, her tasarım bir duygu.
               </p>
@@ -174,7 +174,7 @@ export default function AboutPage() {
                 </h2>
                 <div className="space-y-4 text-gray-600">
                   <p>
-                    Heartnote, sevdiklerine özel anlar yaratmak isteyen ancak bunu
+                    birmesajmutluluk, sevdiklerine özel anlar yaratmak isteyen ancak bunu
                     ifade etmekte zorlanan insanlar için doğdu. Bazen kelimeler yetmiyor,
                     bazen bir kartpostal çok sıradan kalıyor.
                   </p>
@@ -183,7 +183,7 @@ export default function AboutPage() {
                     duyguların samimiyetiyle birleştirirsek?"
                   </p>
                   <p>
-                    İşte böyle başladı Heartnote'un hikayesi. Bugün binlerce kişi,
+                    İşte böyle başladı birmesajmutluluk'un hikayesi. Bugün binlerce kişi,
                     sevdiklerine özel anlar yaşatmak için platformumuzu kullanıyor.
                   </p>
                 </div>
@@ -225,7 +225,7 @@ export default function AboutPage() {
                   <h3 className="mb-4 text-2xl font-bold text-gray-900">Vizyonumuz</h3>
                   <p className="text-gray-600">
                     Türkiye'nin en sevilen dijital hediye platformu olmak. Her özel günde,
-                    her kutlamada, her sürprizde akla gelen ilk isim Heartnote olmalı.
+                    her kutlamada, her sürprizde akla gelen ilk isim birmesajmutluluk olmalı.
                   </p>
                 </CardContent>
               </Card>
@@ -272,7 +272,7 @@ export default function AboutPage() {
                 Ekibimiz
               </h2>
               <p className="text-lg text-gray-600">
-                Heartnote'u hayata geçiren tutkulu ekip
+                birmesajmutluluk'u hayata geçiren tutkulu ekip
               </p>
             </div>
 
@@ -330,7 +330,7 @@ export default function AboutPage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
                   <Heart className="h-4 w-4 text-white" />
                 </div>
-                <span className="font-bold text-gray-900">Heartnote</span>
+                <span className="font-bold text-gray-900">birmesajmutluluk</span>
               </div>
               <p className="text-sm text-gray-600">
                 Sevdiklerinize özel dijital mesajlar ve hediyeler oluşturun.
@@ -359,7 +359,7 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="mt-8 border-t border-gray-200 pt-8 text-center text-sm text-gray-600">
-            © {new Date().getFullYear()} Heartnote. Tüm hakları saklıdır.
+            © {new Date().getFullYear()} birmesajmutluluk. Tüm hakları saklıdır.
           </div>
         </div>
       </footer>

@@ -313,11 +313,11 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
       {/* Floating Hearts Animation */}
       <FloatingHearts isActive={true} />
 
-      {/* Footer - HeartNote Branding */}
+      {/* Footer - birmesajmutluluk Branding */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
         <div className="bg-gray-900/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
           <p className="text-xs text-white font-medium">
-            ❤️ HeartNote ile yapılmıştır
+            ❤️ birmesajmutluluk ile yapılmıştır
           </p>
         </div>
       </div>

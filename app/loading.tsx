@@ -14,7 +14,7 @@ export default function Loading() {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
                 <Heart className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-900">Heartnote</span>
+              <span className="text-lg font-bold text-gray-900">birmesajmutluluk</span>
             </div>
             <div className="flex items-center gap-6">
               <Skeleton variant="shimmer" className="hidden md:block h-4 w-16" />

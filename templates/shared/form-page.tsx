@@ -348,7 +348,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
         <CardHeader>
           <CardTitle>Mesajınızı Oluşturun</CardTitle>
           <CardDescription>
-            Formu doldurun, Heartnote&apos;unuzu dakikalar içinde tamamlayın
+            Formu doldurun, birmesajmutluluk&apos;unuzu dakikalar içinde tamamlayın
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -545,7 +545,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
         <CardContent className="space-y-3 text-sm text-gray-600">
           {[
             'Formu doldurun ve ödemeyi tamamlayın',
-            'Size özel Heartnote bağlantısı e-postanıza gönderilsin',
+            'Size özel birmesajmutluluk bağlantısı e-postanıza gönderilsin',
             'Bağlantıyı sevdiklerinizle paylaşın',
             'Mesajınız seçtiğiniz süre boyunca aktif kalsın',
           ].map((step, index) => (
@@ -589,7 +589,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
         <div className="container mx-auto px-4 py-6 lg:py-10">
           <header className="flex flex-col gap-3 rounded-3xl border border-white/60 bg-white/80 px-4 py-4 shadow-sm md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
-              <p className="text-[11px] uppercase tracking-[0.45em] text-gray-400">Heartnote Studio</p>
+              <p className="text-[11px] uppercase tracking-[0.45em] text-gray-400">birmesajmutluluk Studio</p>
               <p className="text-sm text-gray-600">Kişisel mesaj şablonlarınızı burada yapılandırın.</p>
             </div>
             <div className="flex items-center gap-3 text-xs text-gray-500 sm:text-sm">
@@ -627,7 +627,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                       {template.title}
                     </h1>
                     <p className="max-w-2xl text-sm text-gray-600 md:text-base">
-                      {template.description || `${primaryCategoryLabel} kategorisinde özel mesaj şablonu. Heartnote ile sahne sahne duygularınızı anlatın.`}
+                      {template.description || `${primaryCategoryLabel} kategorisinde özel mesaj şablonu. birmesajmutluluk ile sahne sahne duygularınızı anlatın.`}
                     </p>
                   </div>
                   {!isPreview && (

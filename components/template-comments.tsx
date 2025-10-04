@@ -537,7 +537,7 @@ export function TemplateComments({
             </div>
           ) : (
             comments.map((comment) => {
-              const displayName = comment?.display_name || 'Heartnote Kullanıcısı';
+              const displayName = comment?.display_name || 'birmesajmutluluk Kullanıcısı';
               return (
                 <div key={comment.id} className="rounded-2xl border border-gray-100 bg-white/70 p-4 shadow-sm">
                   <div className="flex items-start justify-between">
@@ -680,7 +680,7 @@ export function TemplateComments({
               Yorumlar & Değerlendirmeler ({pagination.total})
             </CardTitle>
             <p className="text-sm text-gray-500">
-              Heartnote şablonunu deneyimleyen kullanıcıların görüşlerini inceleyin.
+              birmesajmutluluk şablonunu deneyimleyen kullanıcıların görüşlerini inceleyin.
             </p>
           </div>
           <div className="flex flex-col items-start gap-2 text-sm text-gray-600 md:items-end">

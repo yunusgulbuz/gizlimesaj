@@ -4,8 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: 'Kullanım Şartları | Heartnote',
-  description: 'Heartnote kullanım şartları ve hizmet koşulları.',
+  title: 'Kullanım Şartları | birmesajmutluluk',
+  description: 'birmesajmutluluk kullanım şartları ve hizmet koşulları.',
 };
 
 export default function TermsPage() {
@@ -29,7 +29,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Hizmet Tanımı</h2>
             <p className="text-gray-700 leading-relaxed">
-              Heartnote, kullanıcıların kişiselleştirilmiş dijital mesajlar oluşturmasına ve 
+              birmesajmutluluk, kullanıcıların kişiselleştirilmiş dijital mesajlar oluşturmasına ve 
               paylaşmasına olanak sağlayan bir platformdur. Bu kullanım şartları, platformumuzun 
               kullanımına ilişkin kuralları ve koşulları belirlemektedir.
             </p>
@@ -38,7 +38,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Kabul ve Onay</h2>
             <p className="text-gray-700 leading-relaxed">
-              Heartnote hizmetlerini kullanarak, bu kullanım şartlarını okuduğunuzu, anladığınızı 
+              birmesajmutluluk hizmetlerini kullanarak, bu kullanım şartlarını okuduğunuzu, anladığınızı 
               ve kabul ettiğinizi beyan edersiniz. Bu şartları kabul etmiyorsanız, lütfen 
               hizmetlerimizi kullanmayınız.
             </p>
@@ -108,7 +108,7 @@ export default function TermsPage() {
               <div>
                 <h3 className="text-lg font-medium text-gray-800 mb-2">5.2 Platform İçeriği</h3>
                 <p className="text-gray-700">
-                  Heartnote platformunun tasarımı, şablonları, logosu ve diğer içerikleri 
+                  birmesajmutluluk platformunun tasarımı, şablonları, logosu ve diğer içerikleri 
                   bizim fikri mülkiyetimizdir ve izinsiz kullanılamaz.
                 </p>
               </div>
@@ -149,7 +149,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Sorumluluk Sınırlaması</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Heartnote olarak aşağıdaki konularda sorumluluk kabul etmeyiz:
+              birmesajmutluluk olarak aşağıdaki konularda sorumluluk kabul etmeyiz:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2">
               <li>Kullanıcı içeriğinin doğruluğu veya uygunluğu</li>
@@ -204,7 +204,7 @@ export default function TermsPage() {
             </p>
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-700">
-                <strong>E-posta:</strong> support@heartnote.com<br />
+                <strong>E-posta:</strong> support@birmesajmutluluk.com<br />
                 <strong>Adres:</strong> [Şirket Adresi]<br />
                 <strong>Telefon:</strong> [Telefon Numarası]
               </p>

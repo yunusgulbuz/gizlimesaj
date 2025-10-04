@@ -4,8 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: 'Gizlilik Sözleşmesi | Heartnote',
-  description: 'Heartnote gizlilik sözleşmesi ve kişisel verilerin korunması politikası.',
+  title: 'Gizlilik Sözleşmesi | birmesajmutluluk',
+  description: 'birmesajmutluluk gizlilik sözleşmesi ve kişisel verilerin korunması politikası.',
 };
 
 export default function PrivacyPage() {
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Giriş</h2>
             <p className="text-gray-700 leading-relaxed">
-              Heartnote olarak, kişisel verilerinizin güvenliği ve gizliliği bizim için son derece önemlidir. 
+              birmesajmutluluk olarak, kişisel verilerinizin güvenliği ve gizliliği bizim için son derece önemlidir. 
               Bu gizlilik sözleşmesi, hizmetlerimizi kullanırken kişisel verilerinizin nasıl toplandığını, 
               kullanıldığını, saklandığını ve korunduğunu açıklamaktadır.
             </p>
@@ -146,7 +146,7 @@ export default function PrivacyPage() {
             </p>
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-700">
-                <strong>E-posta:</strong> privacy@heartnote.com<br />
+                <strong>E-posta:</strong> privacy@birmesajmutluluk.com<br />
                 <strong>Adres:</strong> [Şirket Adresi]<br />
                 <strong>Telefon:</strong> [Telefon Numarası]
               </p>
