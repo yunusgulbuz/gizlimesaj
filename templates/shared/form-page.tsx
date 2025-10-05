@@ -109,6 +109,15 @@ const yilDonumuDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
   eglenceli: ['quizHeadline', 'quizIntro', 'quizButtonLabel', 'quizItems', 'quizHintLabel', 'quizCompletionTitle', 'quizCompletionMessage', 'quizFinalMessage', 'quizReplay']
 };
 
+const yilDonumuLuxeCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as const;
+
+const yilDonumuLuxeDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+  modern: ['glassHeading', 'glassSubheading', 'glassBody', 'glassButtonLabel', 'glassLightNote', 'glassPhotoInitial', 'glassPhotoUrl'],
+  classic: ['timelineHeading', 'timelineIntro', 'timelineEntries', 'timelineButtonLabel', 'timelineOutroHeading', 'timelineOutroMessage'],
+  minimalist: ['minimalHeading', 'minimalMessage', 'minimalDateLabel', 'minimalButtonLabel', 'minimalFooter', 'minimalCelebrationBadge', 'minimalCelebrationTitle', 'minimalCelebrationSubtitle', 'minimalPhotoUrl'],
+  eglenceli: ['funHeading', 'funSubheading', 'funMessage', 'funPhotoUrl', 'funButtonLabel', 'funConfettiMessage', 'funCelebrationTitle', 'funFloatingNote']
+};
+
 const isTebrigiCommonFields = ['recipientName', 'mainMessage', 'newPosition', 'companyName', 'musicUrl'] as const;
 
 const isTebrigiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
@@ -196,6 +205,14 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       const allowedKeys = new Set<string>([
         ...yilDonumuCommonFields,
         ...(yilDonumuDesignFieldMap[selectedDesignStyle] ?? [])
+      ]);
+      return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+    }
+
+    if (template.slug === 'yil-donumu-luxe') {
+      const allowedKeys = new Set<string>([
+        ...yilDonumuLuxeCommonFields,
+        ...(yilDonumuLuxeDesignFieldMap[selectedDesignStyle] ?? [])
       ]);
       return templateConfig.fields.filter(field => allowedKeys.has(field.key));
     }

@@ -16,6 +16,10 @@ import PremiumModernTesekkur from '../tesekkur-adult/components/PremiumModernTes
 import KlasikElegansTesekkur from '../tesekkur-adult/components/KlasikElegansTesekkur';
 import MinimalistNeonTesekkur from '../tesekkur-adult/components/MinimalistNeonTesekkur';
 import EglenceliInteraktifTesekkur from '../tesekkur-adult/components/EglenceliInteraktifTesekkur';
+import NeonSoftGlowThanks from '../tesekkur-ederim-askim/components/NeonSoftGlowThanks';
+import LetterRoseThanks from '../tesekkur-ederim-askim/components/LetterRoseThanks';
+import PureLoveMinimalThanks from '../tesekkur-ederim-askim/components/PureLoveMinimalThanks';
+import HeartBubblesThanks from '../tesekkur-ederim-askim/components/HeartBubblesThanks';
 import PremiumModernTemplate from '../mutlu-yillar-fun/components/PremiumModernTemplate';
 import KlasikElegansTemplate from '../mutlu-yillar-fun/components/KlasikElegansTemplate';
 import MinimalistNeonTemplate from '../mutlu-yillar-fun/components/MinimalistNeonTemplate';
@@ -25,6 +29,7 @@ import ModernTimelineAnniversary from '../yil-donumu/components/ModernTimelineAn
 import ClassicMemoryBoxTemplate from '../yil-donumu/components/ClassicMemoryBoxTemplate';
 import MinimalistSecretMessage from '../yil-donumu/components/MinimalistSecretMessage';
 import InteractiveQuizCelebration from '../yil-donumu/components/InteractiveQuizCelebration';
+import AnniversaryLuxeTemplate from '../yil-donumu-luxe/components/AnniversaryLuxeTemplate';
 import ModernCorporateCongrats from '../is-tebrigi/components/ModernCorporateCongrats';
 import ClassicPrestigeCertificate from '../is-tebrigi/components/ClassicPrestigeCertificate';
 import MinimalistProfessionalCard from '../is-tebrigi/components/MinimalistProfessionalCard';
@@ -185,6 +190,64 @@ export default function TemplateRenderer({
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
           creatorName={creatorName}
         />;
+      case 'tesekkur-ederim-askim':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <NeonSoftGlowThanks
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'classic':
+            return (
+              <LetterRoseThanks
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <PureLoveMinimalThanks
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <HeartBubblesThanks
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <NeonSoftGlowThanks
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
       case 'tesekkur-adult':
         switch (designStyle) {
           case 'modern':
@@ -305,6 +368,18 @@ export default function TemplateRenderer({
               onTextFieldChange={onTextFieldChange}
             />;
         }
+      case 'yil-donumu-luxe':
+        return (
+          <AnniversaryLuxeTemplate
+            recipientName={recipientName}
+            message={message}
+            designStyle={designStyle}
+            creatorName={creatorName}
+            textFields={textFields}
+            isEditable={isEditable}
+            onTextFieldChange={onTextFieldChange}
+          />
+        );
       case 'yil-donumu':
         switch (designStyle) {
           case 'modern':

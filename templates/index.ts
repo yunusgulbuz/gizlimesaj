@@ -22,12 +22,16 @@ import OzurDilerimClassicForm from './ozur-dilerim-classic/form';
 import OzurDilerimClassicPreview from './ozur-dilerim-classic/preview';
 import TesekkurAdultForm from './tesekkur-adult/form';
 import TesekkurAdultPreview from './tesekkur-adult/preview';
+import TesekkurEderimAskimForm from './tesekkur-ederim-askim/form';
+import TesekkurEderimAskimPreview from './tesekkur-ederim-askim/preview';
 import MutluYillarFunForm from './mutlu-yillar-fun/form';
 import MutluYillarFunPreview from './mutlu-yillar-fun/preview';
 import CikmaTeklifiForm from './cikma-teklifi/form';
 import CikmaTeklifiPreview from './cikma-teklifi/preview';
 import YilDonumuForm from './yil-donumu/form';
 import YilDonumuPreview from './yil-donumu/preview';
+import YilDonumuLuxeForm from './yil-donumu-luxe/form';
+import YilDonumuLuxePreview from './yil-donumu-luxe/preview';
 import IsTebrigiForm from './is-tebrigi/form';
 import IsTebrigiPreview from './is-tebrigi/preview';
 import RomantikMesajElegantForm from './romantik-mesaj-elegant/form';
@@ -93,6 +97,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     form: TesekkurAdultForm,
     preview: TesekkurAdultPreview,
   },
+  'tesekkur-ederim-askim': {
+    slug: 'tesekkur-ederim-askim',
+    form: TesekkurEderimAskimForm,
+    preview: TesekkurEderimAskimPreview,
+  },
   'mutlu-yillar-fun': {
     slug: 'mutlu-yillar-fun',
     form: MutluYillarFunForm,
@@ -102,6 +111,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'yil-donumu',
     form: YilDonumuForm,
     preview: YilDonumuPreview,
+  },
+  'yil-donumu-luxe': {
+    slug: 'yil-donumu-luxe',
+    form: YilDonumuLuxeForm,
+    preview: YilDonumuLuxePreview,
   },
   'cikma-teklifi': {
     slug: 'cikma-teklifi',

@@ -1015,6 +1015,266 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'tesekkur-ederim-askim': {
+    slug: 'tesekkur-ederim-askim',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'message',
+        label: 'Ana Mesajınız',
+        placeholder: 'Genel teşekkür mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Seninle geçen her an kalbimde mor bir parıltı bırakıyor. Varlığın, günümü aydınlatan en güzel neon ışığı gibi. Tüm desteklerin, sevgin ve sabrın için minnettarım. 💜'
+      },
+      {
+        key: 'creatorName',
+        label: 'İsminiz (opsiyonel)',
+        placeholder: 'Mesajın hazırlayanı olarak isminizi yazabilirsiniz',
+        type: 'input',
+        required: false,
+        maxLength: 60
+      },
+      {
+        key: 'modernTitle',
+        label: 'Modern Başlık',
+        placeholder: 'Örn. Teşekkür Ederim Aşkım 💜',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Teşekkür Ederim Aşkım 💜'
+      },
+      {
+        key: 'modernSubtitle',
+        label: 'Modern Alt Metin',
+        placeholder: 'Kısa duygusal cümlenizi yazın',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Neon ışıklar kadar büyülü bir minnet duygusu.'
+      },
+      {
+        key: 'modernSecondaryLine',
+        label: 'Modern Neon Alt Satır',
+        placeholder: 'Örn. Birlikte parlamaya devam edelim 💫',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Birlikte parlamaya devam edelim 💫'
+      },
+      {
+        key: 'modernButtonLabel',
+        label: 'Modern Buton Metni',
+        placeholder: 'Örn. Söylemek İstediklerim 💬',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Söylemek İstediklerim 💬'
+      },
+      {
+        key: 'modernDrawerMessage',
+        label: 'Modern Açılır Mesaj',
+        placeholder: 'Butona tıklanınca görünen mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 600,
+        defaultValue: 'Seninle paylaştığım her an, mor neon ışıklar gibi kalbimde yumuşacık bir iz bırakıyor. Her gülüşün geceyi aydınlatan bir parıltı gibi. İyi ki varsın.'
+      },
+      {
+        key: 'modernPhotoUrl',
+        label: 'Modern Stil Fotoğraf URL',
+        placeholder: 'https://... (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'classicTitle',
+        label: 'Klasik Başlık',
+        placeholder: 'Örn. Teşekkür Ederim Aşkım',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Teşekkür Ederim Aşkım'
+      },
+      {
+        key: 'classicSubtitle',
+        label: 'Klasik Alt Metin',
+        placeholder: 'Örn. Kalbimin en zarif mektubunu sana gönderiyorum.',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Kalbimin en zarif mektubunu sana gönderiyorum.'
+      },
+      {
+        key: 'classicButtonLabel',
+        label: 'Klasik Buton Metni',
+        placeholder: 'Örn. Mektubu Aç ✉️',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Mektubu Aç ✉️'
+      },
+      {
+        key: 'classicLetterMessage',
+        label: 'Klasik Mektup Mesajı',
+        placeholder: 'Zarf açıldığında gösterilecek uzun mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 700,
+        defaultValue: 'Sevgili aşkım, seninle geçen her an bana hayatın en güzel armağanı gibi geliyor. Nazik gülüşünü, sabrını ve sevgini her hissettiğimde kalbim yeniden çiçek açıyor. İyi ki varsın, iyi ki kalbimin ortağısın.'
+      },
+      {
+        key: 'classicLetterSignature',
+        label: 'Klasik İmza / Kapanış',
+        placeholder: 'Örn. Sonsuz sevgiyle 💌',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Sonsuz sevgiyle 💌'
+      },
+      {
+        key: 'classicPhotoUrl',
+        label: 'Klasik Stil Fotoğraf URL',
+        placeholder: 'https://... (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'minimalMainText',
+        label: 'Minimal Ana Metin',
+        placeholder: 'Örn. Teşekkür Ederim',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Teşekkür Ederim'
+      },
+      {
+        key: 'minimalAccentText',
+        label: 'Minimal Vurgu Metni',
+        placeholder: 'Örn. Aşkım',
+        type: 'input',
+        required: false,
+        maxLength: 40,
+        defaultValue: 'Aşkım'
+      },
+      {
+        key: 'minimalBodyText',
+        label: 'Minimal Açıklama Satırı',
+        placeholder: 'Kısa açıklayıcı not',
+        type: 'textarea',
+        required: false,
+        maxLength: 280,
+        defaultValue: 'Sıradan bir gün, seninle olağanüstü bir ana dönüşüyor.'
+      },
+      {
+        key: 'minimalButtonLabel',
+        label: 'Minimal Buton Metni',
+        placeholder: 'Örn. ❤️',
+        type: 'input',
+        required: false,
+        maxLength: 10,
+        defaultValue: '❤️'
+      },
+      {
+        key: 'minimalPopupText',
+        label: 'Minimal Pop-up Mesajı',
+        placeholder: 'Butona basınca görünen metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 350,
+        defaultValue: 'Sen her şeyin en güzeline layıksın.'
+      },
+      {
+        key: 'funTitle',
+        label: 'Eğlenceli Başlık',
+        placeholder: 'Örn. Teşekkür Ederim Aşkım!',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Teşekkür Ederim Aşkım!'
+      },
+      {
+        key: 'funSubtitle',
+        label: 'Eğlenceli Alt Metin',
+        placeholder: 'Kısa enerjik mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Kalbimi rengârenk baloncuklarla doldurduğun için.'
+      },
+      {
+        key: 'funButtonLabel',
+        label: 'Eğlenceli Buton Metni',
+        placeholder: 'Örn. Balonları Patlat 🎈',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Balonları Patlat 🎈'
+      },
+      {
+        key: 'funBubbleMessage1',
+        label: 'Balon Mesajı 1',
+        placeholder: 'İlk teşekkür notu',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'İyi ki varsın!'
+      },
+      {
+        key: 'funBubbleMessage2',
+        label: 'Balon Mesajı 2',
+        placeholder: 'İkinci teşekkür notu',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Her günün kahramanı sensin 💖'
+      },
+      {
+        key: 'funBubbleMessage3',
+        label: 'Balon Mesajı 3',
+        placeholder: 'Üçüncü teşekkür notu',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Sevgin her şeyi güzelleştiriyor ✨'
+      },
+      {
+        key: 'funBubbleMessage4',
+        label: 'Balon Mesajı 4',
+        placeholder: 'Dördüncü teşekkür notu',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Sonsuz teşekkürler!'
+      },
+      {
+        key: 'funPhotoUrl',
+        label: 'Eğlenceli Stil Fotoğraf URL',
+        placeholder: 'https://... (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
+  },
   'mutlu-yillar-fun': {
     slug: 'mutlu-yillar-fun',
     fields: [
@@ -1491,6 +1751,303 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         required: false,
         maxLength: 80,
         defaultValue: 'Tekrar Oyna'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
+  },
+  'yil-donumu-luxe': {
+    slug: 'yil-donumu-luxe',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'mainMessage',
+        label: 'Genel Mesaj',
+        placeholder: 'Tüm tasarımlarda kullanılacak ana mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 600,
+        defaultValue: 'Seninle geçen her yıldönümü, ışığın camdan süzülüşü gibi zarif ve özel hissettiriyor.'
+      },
+      {
+        key: 'glassHeading',
+        label: 'Modern Cam Başlığı',
+        placeholder: 'Mutlu Yıl Dönümü',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mutlu Yıl Dönümü'
+      },
+      {
+        key: 'glassSubheading',
+        label: 'Modern Cam Alt Başlığı',
+        placeholder: 'Cam panel içinde görünecek kısa metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: 'Bu özel gün, camın içinden süzülen ışık gibi zarifçe parlasın.'
+      },
+      {
+        key: 'glassBody',
+        label: 'Modern Cam Gövde Mesajı',
+        placeholder: 'Detaylı mesajı buraya yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 600,
+        defaultValue: 'Seninle geçen her yıldönümü, ışığın camdan süzülüşü gibi zarif ve özel hissettiriyor.'
+      },
+      {
+        key: 'glassButtonLabel',
+        label: 'Modern Cam Buton Metni',
+        placeholder: 'Hatıralarımızı Gör',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Hatıralarımızı Gör'
+      },
+      {
+        key: 'glassLightNote',
+        label: 'Modern Cam Üst Not',
+        placeholder: 'Işığımız hiç sönmesin.',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Işığımız hiç sönmesin.'
+      },
+      {
+        key: 'glassPhotoInitial',
+        label: 'Modern Cam Fotoğraf Yer Tutucusu',
+        placeholder: '♥',
+        type: 'input',
+        required: false,
+        maxLength: 4,
+        defaultValue: '♥'
+      },
+      {
+        key: 'glassPhotoUrl',
+        label: 'Modern Cam Fotoğraf Bağlantısı',
+        placeholder: 'https://... şeklinde fotoğraf adresi',
+        type: 'input',
+        required: false,
+        maxLength: 400
+      },
+      {
+        key: 'timelineHeading',
+        label: 'Zaman Tüneli Başlığı',
+        placeholder: 'Zaman Tünelimiz',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Zaman Tünelimiz'
+      },
+      {
+        key: 'timelineIntro',
+        label: 'Zaman Tüneli Giriş Mesajı',
+        placeholder: 'Hatıraların giriş metni',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Hatıralarımızı kaydırırken her anı yeniden yaşıyoruz.'
+      },
+      {
+        key: 'timelineEntries',
+        label: 'Zaman Tüneli Olayları',
+        placeholder: 'Yıl|Başlık|Kısa mesaj|Fotoğraf bağlantısı (her satıra bir olay)',
+        type: 'textarea',
+        required: false,
+        maxLength: 1200,
+        defaultValue: '2015|İlk Buluşmamız|O yaz akşamında kalbimin sana ait olduğunu anladım.|https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=640&q=80\n2017|İlk Tatilimiz|Birlikte yeni yerler keşfetmenin heyecanını yaşadık.|https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=640&q=80\n2020|Evet Dediğin An|Gözlerinin içine bakarken dünyamız güzelleşti.|https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=640&q=80\n2023|Yeni Başlangıç|Hayallerimizi aynı sayfada büyütmeye devam ettik.|https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=640&q=80'
+      },
+      {
+        key: 'timelineButtonLabel',
+        label: 'Zaman Tüneli Buton Metni',
+        placeholder: 'Birlikte Geri Sar',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Birlikte Geri Sar'
+      },
+      {
+        key: 'timelineOutroHeading',
+        label: 'Zaman Tüneli Final Başlığı',
+        placeholder: 'Mutlu Yıl Dönümü',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mutlu Yıl Dönümü'
+      },
+      {
+        key: 'timelineOutroMessage',
+        label: 'Zaman Tüneli Final Mesajı',
+        placeholder: 'Final mesajınızı yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Seninle geçen her yıldönümü, ışığın camdan süzülüşü gibi zarif ve özel hissettiriyor.'
+      },
+      {
+        key: 'minimalHeading',
+        label: 'Minimal Başlık',
+        placeholder: 'Mutlu Yıl Dönümü',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mutlu Yıl Dönümü'
+      },
+      {
+        key: 'minimalMessage',
+        label: 'Minimal Mesaj',
+        placeholder: 'Kısa ve anlamlı mesajınız',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Seninle geçen her yıldönümü, ışığın camdan süzülüşü gibi zarif ve özel hissettiriyor.'
+      },
+      {
+        key: 'minimalDateLabel',
+        label: 'Minimal Tarih',
+        placeholder: '14 Şubat 2024',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: '14 Şubat 2024'
+      },
+      {
+        key: 'minimalButtonLabel',
+        label: 'Minimal Buton Metni',
+        placeholder: 'Kutlamayı Paylaş',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Kutlamayı Paylaş'
+      },
+      {
+        key: 'minimalFooter',
+        label: 'Minimal Alt Mesaj',
+        placeholder: 'Bugün, bizim hikayemizin en sevdiğim sayfası.',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Bugün, bizim hikayemizin en sevdiğim sayfası.'
+      },
+      {
+        key: 'minimalCelebrationBadge',
+        label: 'Minimal Kutlama Rozeti',
+        placeholder: 'Kutlama',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Kutlama'
+      },
+      {
+        key: 'minimalCelebrationTitle',
+        label: 'Minimal Kutlama Başlığı',
+        placeholder: 'Kutlama Başlıyor!',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Kutlama Başlıyor!'
+      },
+      {
+        key: 'minimalCelebrationSubtitle',
+        label: 'Minimal Kutlama Notu',
+        placeholder: 'Kutlama sırasında görünecek kısa not',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Sevgiyle dolu bu anı birlikte kutluyoruz.'
+      },
+      {
+        key: 'minimalPhotoUrl',
+        label: 'Minimal Fotoğraf Bağlantısı',
+        placeholder: 'https://... şeklinde kare/yuvarlak fotoğraf adresi',
+        type: 'input',
+        required: false,
+        maxLength: 400
+      },
+      {
+        key: 'funHeading',
+        label: 'Kutlama Başlığı',
+        placeholder: 'Mutlu Yıl Dönümü',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mutlu Yıl Dönümü'
+      },
+      {
+        key: 'funSubheading',
+        label: 'Kutlama Alt Başlık',
+        placeholder: 'Sen + Ben',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Sen + Ben'
+      },
+      {
+        key: 'funMessage',
+        label: 'Kutlama Mesajı',
+        placeholder: 'Eğlenceli kutlama mesajınız',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Seninle geçen her yıldönümü, ışığın camdan süzülüşü gibi zarif ve özel hissettiriyor.'
+      },
+      {
+        key: 'funPhotoUrl',
+        label: 'Kutlama Fotoğrafı Bağlantısı',
+        placeholder: 'https://... kutlama fotoğrafı',
+        type: 'input',
+        required: false,
+        maxLength: 400
+      },
+      {
+        key: 'funButtonLabel',
+        label: 'Kutlama Buton Metni',
+        placeholder: 'Kutlamayı Gör',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Kutlamayı Gör'
+      },
+      {
+        key: 'funConfettiMessage',
+        label: 'Konfeti Mesajı',
+        placeholder: 'Aşkımız gökyüzünü konfetiye boğuyor!',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Aşkımız gökyüzünü konfetiye boğuyor!'
+      },
+      {
+        key: 'funCelebrationTitle',
+        label: 'Kutlama Başlığı (Overlay)',
+        placeholder: 'Parti Başlıyor!',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Parti Başlıyor!'
+      },
+      {
+        key: 'funFloatingNote',
+        label: 'Yüzen Not',
+        placeholder: 'Birlikte nice senelere!',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Birlikte nice senelere!'
       },
       {
         key: 'musicUrl',
