@@ -127,6 +127,15 @@ const isTebrigiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
   eglenceli: ['headline', 'subHeadline', 'celebrationButtonLabel', 'teamName', 'secondaryMessage']
 };
 
+const yeniIsTerfiCommonFields = ['recipientName', 'positionTitle', 'companyName', 'eventDate'] as const;
+
+const yeniIsTerfiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+  modern: ['heroPhotoUrl', 'modernTitle', 'modernSubtitle', 'modernMessage', 'modernSecondary', 'optionalQuote'],
+  classic: ['heroPhotoUrl', 'premiumTitle', 'premiumMessage', 'premiumHighlight', 'premiumFooter'],
+  minimalist: ['minimalTitle', 'minimalMessage', 'minimalFooter', 'minimalLogoText', 'minimalPhotoUrl'],
+  eglenceli: ['creativeHeadline', 'creativeSubheadline', 'creativeNote', 'profilePhotoUrl', 'themePhotoUrl']
+};
+
 interface TemplateFormPageProps {
   template: Template;
   durations: Duration[];
@@ -221,6 +230,14 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       const allowedKeys = new Set<string>([
         ...isTebrigiCommonFields,
         ...(isTebrigiDesignFieldMap[selectedDesignStyle] ?? [])
+      ]);
+      return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+    }
+
+    if (template.slug === 'yeni-is-terfi-tebrigi') {
+      const allowedKeys = new Set<string>([
+        ...yeniIsTerfiCommonFields,
+        ...(yeniIsTerfiDesignFieldMap[selectedDesignStyle] ?? [])
       ]);
       return templateConfig.fields.filter(field => allowedKeys.has(field.key));
     }

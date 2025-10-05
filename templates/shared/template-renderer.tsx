@@ -38,6 +38,10 @@ import ModernCorporateCongrats from '../is-tebrigi/components/ModernCorporateCon
 import ClassicPrestigeCertificate from '../is-tebrigi/components/ClassicPrestigeCertificate';
 import MinimalistProfessionalCard from '../is-tebrigi/components/MinimalistProfessionalCard';
 import PremiumDynamicCelebration from '../is-tebrigi/components/PremiumDynamicCelebration';
+import ModernFocusPortraitCongrats from '../yeni-is-terfi-tebrigi/components/ModernFocusPortraitCongrats';
+import MinimalCleanFrameCard from '../yeni-is-terfi-tebrigi/components/MinimalCleanFrameCard';
+import DynamicSplitImageCongrats from '../yeni-is-terfi-tebrigi/components/DynamicSplitImageCongrats';
+import ElegantGradientOverlayCongrats from '../yeni-is-terfi-tebrigi/components/ElegantGradientOverlayCongrats';
 import NeonGlowLove from '../romantik-mesaj-elegant/components/NeonGlowLove';
 import RomanticLetterScene from '../romantik-mesaj-elegant/components/RomanticLetterScene';
 import PureLoveMinimal from '../romantik-mesaj-elegant/components/PureLoveMinimal';
@@ -629,6 +633,59 @@ export default function TemplateRenderer({
                 recipientName={recipientName}
                 message={message}
                 creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
+      case 'yeni-is-terfi-tebrigi':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <ModernFocusPortraitCongrats
+                recipientName={recipientName}
+                message={message}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'classic':
+            return (
+              <ElegantGradientOverlayCongrats
+                recipientName={recipientName}
+                message={message}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <MinimalCleanFrameCard
+                recipientName={recipientName}
+                message={message}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <DynamicSplitImageCongrats
+                recipientName={recipientName}
+                message={message}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <ModernFocusPortraitCongrats
+                recipientName={recipientName}
+                message={message}
                 textFields={textFields}
                 isEditable={isEditable}
                 onTextFieldChange={onTextFieldChange}

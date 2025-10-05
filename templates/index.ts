@@ -36,6 +36,8 @@ import YilDonumuLuxeForm from './yil-donumu-luxe/form';
 import YilDonumuLuxePreview from './yil-donumu-luxe/preview';
 import IsTebrigiForm from './is-tebrigi/form';
 import IsTebrigiPreview from './is-tebrigi/preview';
+import YeniIsTerfiTebrigiForm from './yeni-is-terfi-tebrigi/form';
+import YeniIsTerfiTebrigiPreview from './yeni-is-terfi-tebrigi/preview';
 import RomantikMesajElegantForm from './romantik-mesaj-elegant/form';
 import RomantikMesajElegantPreview from './romantik-mesaj-elegant/preview';
 import SurprizRandevuDavetiForm from './surpriz-randevu-daveti/form';
@@ -141,6 +143,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'is-tebrigi',
     form: IsTebrigiForm,
     preview: IsTebrigiPreview,
+  },
+  'yeni-is-terfi-tebrigi': {
+    slug: 'yeni-is-terfi-tebrigi',
+    form: YeniIsTerfiTebrigiForm,
+    preview: YeniIsTerfiTebrigiPreview,
   },
   'romantik-mesaj-elegant': {
     slug: 'romantik-mesaj-elegant',
