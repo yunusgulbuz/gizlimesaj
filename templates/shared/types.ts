@@ -1489,6 +1489,366 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'surpriz-randevu-daveti': {
+    slug: 'surpriz-randevu-daveti',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50,
+        defaultValue: 'Aşkım'
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Tüm stillerde kullanılacak ana mesajınızı yazın',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Seninle geçireceğimiz sürpriz akşam için sabırsızlanıyorum. Her detay senin için planlandı ve bu davet, birlikte yaratacağımız yeni hatıraların başlangıcı. ❤️'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      },
+      {
+        key: 'modernTitle',
+        label: 'Modern Başlık',
+        placeholder: 'Soft glass davet başlığınızı yazın',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Birlikte Olmak İster misin?'
+      },
+      {
+        key: 'modernSubtitle',
+        label: 'Modern Alt Metin',
+        placeholder: 'Tarih ve kısa mesajınızı yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Lavanta tonlarında bir akşam planladım. 14 Şubat 19.30, favori kafemizde buluşalım mı?'
+      },
+      {
+        key: 'modernButtonLabel',
+        label: 'Modern Buton Metni',
+        placeholder: 'Örn. Detayları Gör 💫',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Detayları Gör 💫'
+      },
+      {
+        key: 'modernPanelTitle',
+        label: 'Modern Panel Başlığı',
+        placeholder: 'Panel başlığınızı yazın',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Cam Panelin Ardındaki Sürpriz'
+      },
+      {
+        key: 'modernPanelMessage',
+        label: 'Modern Panel Mesajı',
+        placeholder: 'Butona tıklanınca açılan panel metnini yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 500,
+        defaultValue: 'Önce seni mor ışıklarla karşılayacak ufak bir galeriye götürüyorum. Sonra gizli terasta senin için hazırladığım menü var.'
+      },
+      {
+        key: 'modernPanelSecondary',
+        label: 'Modern Panel Alt Notu',
+        placeholder: 'Ek notunuzu yazın (ör. Dress code)',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Dress code: Lavanta & beyaz. Rahat ayakkabı getir.'
+      },
+      {
+        key: 'modernPhotoUrl',
+        label: 'Modern Fotoğraf URL',
+        placeholder: "Soft glass tasarımda kullanılacak fotoğraf URL'si",
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'modernPhotoHint',
+        label: 'Modern Fotoğraf Buton Metni',
+        placeholder: 'Fotoğrafı Göster butonu metni',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Fotoğrafı Görüntüle'
+      },
+      {
+        key: 'modernSignatureLabel',
+        label: 'Modern İmza Etiketi',
+        placeholder: 'Örn. Sevgilerle,',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Sevgilerle,'
+      },
+      {
+        key: 'classicTitle',
+        label: 'Klasik Başlık',
+        placeholder: 'Romantik davet başlığı',
+        type: 'input',
+        required: false,
+        maxLength: 90,
+        defaultValue: 'Seni Özel Bir Akşama Davet Ediyorum 🌙'
+      },
+      {
+        key: 'classicSubtitle',
+        label: 'Klasik Alt Metin',
+        placeholder: 'Tarih, mekan ve kısa açıklama',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: "18 Şubat Cumartesi | 20.00 | Galata'da buluşma noktası"
+      },
+      {
+        key: 'classicButtonLabel',
+        label: 'Klasik Buton Metni',
+        placeholder: 'Örn. Davetiyeyi Aç ✨',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Davetiyeyi Aç ✨'
+      },
+      {
+        key: 'classicEnvelopeHeading',
+        label: 'Zarf Başlığı',
+        placeholder: 'Zarf açılınca görülecek başlık',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Altın Zarfı Aç'
+      },
+      {
+        key: 'classicEnvelopeMessage',
+        label: 'Zarf Mesajı',
+        placeholder: 'Zarfın içindeki davet metni',
+        type: 'textarea',
+        required: false,
+        maxLength: 600,
+        defaultValue: 'Seni zarif bir akşam yemeğine davet ediyorum. Şehrin ışıkları altında yalnızca ikimizin paylaşacağı bir masa ayırttım. Gecenin her detayı seninle daha da güzel olacak.'
+      },
+      {
+        key: 'classicEnvelopeFooter',
+        label: 'Zarf Alt Notu',
+        placeholder: 'Kısa kapanış notu',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'El ele yıldızları izlemeye ne dersin?'
+      },
+      {
+        key: 'classicPhotoUrl',
+        label: 'Klasik Fotoğraf URL',
+        placeholder: "Zarf tasarımındaki fotoğraf URL'si",
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'classicPhotoHint',
+        label: 'Klasik Fotoğraf Buton Metni',
+        placeholder: 'Fotoğrafı gösteren buton metni',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Fotoğrafı Gör'
+      },
+      {
+        key: 'classicSignatureLabel',
+        label: 'Klasik İmza Etiketi',
+        placeholder: 'Örn. Kalpten davetle,',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Kalpten davetle,'
+      },
+      {
+        key: 'minimalTitle',
+        label: 'Minimal Başlık',
+        placeholder: 'Minimalist davet başlığı',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Küçük Bir Planım Var 💙'
+      },
+      {
+        key: 'minimalSubtitle',
+        label: 'Minimal Alt Metin',
+        placeholder: 'Kısa not veya tarih',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Cumartesi seni şaşırtacağım... Rahat bir şeyler giy lütfen.'
+      },
+      {
+        key: 'minimalButtonLabel',
+        label: 'Minimal Buton Metni',
+        placeholder: 'Örn. Spoiler Verme 🙈',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Spoiler Verme 🙈'
+      },
+      {
+        key: 'minimalBubbleText',
+        label: 'Minimal Balon Metni',
+        placeholder: 'Butona tıklayınca çıkan metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Sadece küçük bir ipucu: kısa bir yürüyüş ve ardından sıcak bir kahve molası.'
+      },
+      {
+        key: 'minimalPhotoUrl',
+        label: 'Minimal Fotoğraf URL',
+        placeholder: "Polaroid efektli fotoğraf URL'si",
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'minimalPhotoHint',
+        label: 'Minimal Fotoğraf Buton Metni',
+        placeholder: 'Fotoğrafı açan buton metni',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Polaroidi Aç'
+      },
+      {
+        key: 'minimalSignatureLabel',
+        label: 'Minimal İmza Etiketi',
+        placeholder: 'Örn. Buluşma ortağın:',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Buluşma ortağın:'
+      },
+      {
+        key: 'funTitle',
+        label: 'Eğlenceli Başlık',
+        placeholder: 'Oyunlaştırılmış başlık metni',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Sürprizi Bulabilir misin? 🎁'
+      },
+      {
+        key: 'funSubtitle',
+        label: 'Eğlenceli Alt Metin',
+        placeholder: 'Kutular için ipucu metni',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: 'Kutulardan biri akşamki planı saklıyor. Hazır mısın?'
+      },
+      {
+        key: 'funButtonOneLabel',
+        label: '1. Kutu Etiketi',
+        placeholder: 'Örn. 1️⃣',
+        type: 'input',
+        required: false,
+        maxLength: 10,
+        defaultValue: '1️⃣'
+      },
+      {
+        key: 'funButtonTwoLabel',
+        label: '2. Kutu Etiketi',
+        placeholder: 'Örn. 2️⃣',
+        type: 'input',
+        required: false,
+        maxLength: 10,
+        defaultValue: '2️⃣'
+      },
+      {
+        key: 'funButtonThreeLabel',
+        label: '3. Kutu Etiketi',
+        placeholder: 'Örn. 3️⃣',
+        type: 'input',
+        required: false,
+        maxLength: 10,
+        defaultValue: '3️⃣'
+      },
+      {
+        key: 'funButtonOneMessage',
+        label: '1. Kutu Mesajı',
+        placeholder: 'Yanlış seçimde gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Bu kutu sıcak bir hazırlık ipucu veriyor: çikolata molası!'
+      },
+      {
+        key: 'funButtonTwoMessage',
+        label: '2. Kutu Mesajı',
+        placeholder: 'Yanlış seçimde gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Yaklaştın! Rahat ayakkabıları hazırlamayı unutma.'
+      },
+      {
+        key: 'funButtonThreeMessage',
+        label: '3. Kutu Mesajı',
+        placeholder: 'Doğru seçimde gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: "Doğru kutu! Rooftop'ta senin için sakladığım bir masa var."
+      },
+      {
+        key: 'funSuccessMessage',
+        label: 'Başarı Mesajı',
+        placeholder: 'Doğru kutuya tıklanınca çıkan mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Tebrikler! Yarın akşam buluşuyoruz ❤️'
+      },
+      {
+        key: 'funPhotoUrl',
+        label: 'Eğlenceli Fotoğraf URL',
+        placeholder: "Kazanan kutudan sonra gösterilecek fotoğraf URL'si",
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'funPhotoHint',
+        label: 'Eğlenceli Fotoğraf Buton Metni',
+        placeholder: 'Fotoğrafı açan buton metni',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Sürpriz Fotoğrafı Gör'
+      },
+      {
+        key: 'funSignatureLabel',
+        label: 'Eğlenceli İmza Etiketi',
+        placeholder: 'Örn. Planın kahramanı:',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Planın kahramanı:'
+      }
+    ]
+  },
   'yil-donumu': {
     slug: 'yil-donumu',
     fields: [

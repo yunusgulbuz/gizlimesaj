@@ -38,6 +38,10 @@ import NeonGlowLove from '../romantik-mesaj-elegant/components/NeonGlowLove';
 import RomanticLetterScene from '../romantik-mesaj-elegant/components/RomanticLetterScene';
 import PureLoveMinimal from '../romantik-mesaj-elegant/components/PureLoveMinimal';
 import HeartAdventureInteractive from '../romantik-mesaj-elegant/components/HeartAdventureInteractive';
+import SoftGlassInvitation from '../surpriz-randevu-daveti/components/SoftGlassInvitation';
+import RomantikAksamInvitation from '../surpriz-randevu-daveti/components/RomantikAksamInvitation';
+import CleanRomanticPlan from '../surpriz-randevu-daveti/components/CleanRomanticPlan';
+import HiddenSurpriseGame from '../surpriz-randevu-daveti/components/HiddenSurpriseGame';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -239,6 +243,64 @@ export default function TemplateRenderer({
           default:
             return (
               <NeonSoftGlowThanks
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
+      case 'surpriz-randevu-daveti':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <SoftGlassInvitation
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'classic':
+            return (
+              <RomantikAksamInvitation
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <CleanRomanticPlan
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <HiddenSurpriseGame
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <SoftGlassInvitation
                 recipientName={recipientName}
                 message={message}
                 creatorName={creatorName}

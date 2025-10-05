@@ -36,6 +36,8 @@ import IsTebrigiForm from './is-tebrigi/form';
 import IsTebrigiPreview from './is-tebrigi/preview';
 import RomantikMesajElegantForm from './romantik-mesaj-elegant/form';
 import RomantikMesajElegantPreview from './romantik-mesaj-elegant/preview';
+import SurprizRandevuDavetiForm from './surpriz-randevu-daveti/form';
+import SurprizRandevuDavetiPreview from './surpriz-randevu-daveti/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => React.ReactElement;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => React.ReactElement;
@@ -131,6 +133,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'romantik-mesaj-elegant',
     form: RomantikMesajElegantForm,
     preview: RomantikMesajElegantPreview,
+  },
+  'surpriz-randevu-daveti': {
+    slug: 'surpriz-randevu-daveti',
+    form: SurprizRandevuDavetiForm,
+    preview: SurprizRandevuDavetiPreview,
   },
 };
 
