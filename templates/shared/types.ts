@@ -2419,6 +2419,248 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'dogum-gunu-kutlama': {
+    slug: 'dogum-gunu-kutlama',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Doğum Günü Sahibinin Adı',
+        placeholder: 'Doğum günü kutlanacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Kutlama Mesajınız',
+        placeholder: 'Tüm stillerde kullanılacak ana kutlama mesajınızı yazın',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Doğum günün kutlu olsun! Hayatının en güzel yılına giriyor olman muhteşem. Nice mutlu senelere! 🎂✨'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      },
+      {
+        key: 'pastelTitle',
+        label: 'Modern Pastel - Ana Başlık',
+        placeholder: 'Örn: Doğum Günün Kutlu Olsun 🎉',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Doğum Günün Kutlu Olsun 🎉'
+      },
+      {
+        key: 'pastelSubtitle',
+        label: 'Modern Pastel - Alt Metin',
+        placeholder: 'Kısa tebrik mesajınızı yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Bugün senin günün! Tüm dileklerin gerçek olsun 🎂'
+      },
+      {
+        key: 'pastelButtonLabel',
+        label: 'Modern Pastel - Buton Metni',
+        placeholder: 'Örn: Kutlamayı Başlat 🎂',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Kutlamayı Başlat 🎂'
+      },
+      {
+        key: 'pastelWishText',
+        label: 'Modern Pastel - Dilek Metni',
+        placeholder: 'Buton sonrası görünecek yazı',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Dileğini Tut! ✨'
+      },
+      {
+        key: 'pastelPhotoUrl',
+        label: 'Modern Pastel - Fotoğraf URL',
+        placeholder: 'Doğum günü fotoğrafı URL (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'pastelPhotoHint',
+        label: 'Modern Pastel - Fotoğraf Buton Metni',
+        placeholder: 'Fotoğrafı göster butonu metni',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Özel Anıyı Gör'
+      },
+      {
+        key: 'klasikTitle',
+        label: 'Klasik Altın - Ana Başlık',
+        placeholder: 'Örn: Doğum Günün Kutlu Olsun',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Doğum Günün Kutlu Olsun'
+      },
+      {
+        key: 'klasikSubtitle',
+        label: 'Klasik Altın - Alt Metin',
+        placeholder: 'Kısa tebrik cümlesi',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Bugün senin günün 💫'
+      },
+      {
+        key: 'klasikButtonLabel',
+        label: 'Klasik Altın - Buton Metni',
+        placeholder: 'Örn: Sürprizi Gör ✨',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Sürprizi Gör ✨'
+      },
+      {
+        key: 'klasikModalMessage',
+        label: 'Klasik Altın - Sürpriz Mesajı',
+        placeholder: 'Modal içinde görünecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Nice mutlu senelere! Hayatın hep güzel sürprizlerle dolu olsun. 🎂✨'
+      },
+      {
+        key: 'klasikPhotoUrl',
+        label: 'Klasik Altın - Fotoğraf URL',
+        placeholder: 'Doğum günü fotoğrafı URL (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'klasikPhotoHint',
+        label: 'Klasik Altın - Fotoğraf Buton Metni',
+        placeholder: 'Fotoğrafı göster butonu metni',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Hatırayı Gör'
+      },
+      {
+        key: 'minimalTitle',
+        label: 'Minimalist - Ana Başlık',
+        placeholder: 'Örn: Doğum Günün Kutlu Olsun 🎂',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Doğum Günün Kutlu Olsun 🎂'
+      },
+      {
+        key: 'minimalSubtitle',
+        label: 'Minimalist - Alt Metin',
+        placeholder: 'Kısa tebrik satırı',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Mutlu yıllar dilerim!'
+      },
+      {
+        key: 'minimalButtonLabel',
+        label: 'Minimalist - Buton İkonu',
+        placeholder: 'Örn: 🎈',
+        type: 'input',
+        required: false,
+        maxLength: 10,
+        defaultValue: '🎈'
+      },
+      {
+        key: 'minimalWishText',
+        label: 'Minimalist - Dilek Metni',
+        placeholder: 'Buton sonrası görünecek yazı',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Dileğini tuttun mu?'
+      },
+      {
+        key: 'minimalPhotoUrl',
+        label: 'Minimalist - Fotoğraf URL',
+        placeholder: 'Polaroid fotoğraf URL (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'minimalPhotoHint',
+        label: 'Minimalist - Fotoğraf Buton Metni',
+        placeholder: 'Fotoğrafı göster butonu metni',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Fotoğraf'
+      },
+      {
+        key: 'partyTitle',
+        label: 'Eğlenceli - Ana Başlık',
+        placeholder: 'Örn: Sürprizini Aç 🎁',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Sürprizini Aç 🎁'
+      },
+      {
+        key: 'partySubtitle',
+        label: 'Eğlenceli - İpucu Metni',
+        placeholder: 'Kutunun içindeki sürpriz hakkında ipucu',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Kutunun içinde seni bekleyen bir mesaj var!'
+      },
+      {
+        key: 'partyButtonLabel',
+        label: 'Eğlenceli - Buton Metni',
+        placeholder: 'Örn: Kutuyu Aç 🎉',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Kutuyu Aç 🎉'
+      },
+      {
+        key: 'partyRevealMessage',
+        label: 'Eğlenceli - Sürpriz Mesajı',
+        placeholder: 'Kutu açıldığında görünecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Doğum Günün Kutlu Olsun!'
+      },
+      {
+        key: 'partyPhotoUrl',
+        label: 'Eğlenceli - Fotoğraf URL',
+        placeholder: 'Sürpriz fotoğraf URL (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'partyPhotoHint',
+        label: 'Eğlenceli - Fotoğraf Buton Metni',
+        placeholder: 'Fotoğrafı göster butonu metni',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Sürpriz Fotoğraf'
+      }
+    ]
+  },
   'cikma-teklifi': {
     slug: 'cikma-teklifi',
     fields: [

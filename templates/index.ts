@@ -38,6 +38,8 @@ import RomantikMesajElegantForm from './romantik-mesaj-elegant/form';
 import RomantikMesajElegantPreview from './romantik-mesaj-elegant/preview';
 import SurprizRandevuDavetiForm from './surpriz-randevu-daveti/form';
 import SurprizRandevuDavetiPreview from './surpriz-randevu-daveti/preview';
+import DogumGunuKutlamaForm from './dogum-gunu-kutlama/form';
+import DogumGunuKutlamaPreview from './dogum-gunu-kutlama/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => React.ReactElement;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => React.ReactElement;
@@ -138,6 +140,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'surpriz-randevu-daveti',
     form: SurprizRandevuDavetiForm,
     preview: SurprizRandevuDavetiPreview,
+  },
+  'dogum-gunu-kutlama': {
+    slug: 'dogum-gunu-kutlama',
+    form: DogumGunuKutlamaForm,
+    preview: DogumGunuKutlamaPreview,
   },
 };
 

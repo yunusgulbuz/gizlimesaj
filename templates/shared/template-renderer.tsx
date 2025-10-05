@@ -42,6 +42,10 @@ import SoftGlassInvitation from '../surpriz-randevu-daveti/components/SoftGlassI
 import RomantikAksamInvitation from '../surpriz-randevu-daveti/components/RomantikAksamInvitation';
 import CleanRomanticPlan from '../surpriz-randevu-daveti/components/CleanRomanticPlan';
 import HiddenSurpriseGame from '../surpriz-randevu-daveti/components/HiddenSurpriseGame';
+import PastelGradientCelebration from '../dogum-gunu-kutlama/components/PastelGradientCelebration';
+import ElegantGoldInvitation from '../dogum-gunu-kutlama/components/ElegantGoldInvitation';
+import SimpleJoyCard from '../dogum-gunu-kutlama/components/SimpleJoyCard';
+import InteractivePartyMode from '../dogum-gunu-kutlama/components/InteractivePartyMode';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -610,6 +614,64 @@ export default function TemplateRenderer({
           default:
             return (
               <NeonGlowLove
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
+      case 'dogum-gunu-kutlama':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <PastelGradientCelebration
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'classic':
+            return (
+              <ElegantGoldInvitation
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <SimpleJoyCard
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <InteractivePartyMode
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <PastelGradientCelebration
                 recipientName={recipientName}
                 message={message}
                 creatorName={creatorName}
