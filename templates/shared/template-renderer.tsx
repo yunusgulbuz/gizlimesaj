@@ -11,6 +11,7 @@ import EvlilikTeklifiTemplate from '../evlilik-teklifi-elegant/components/Evlili
 import DogumGunuStandardTemplate from '../dogum-gunu/components/DogumGunuStandardTemplate';
 import DogumGunuFunTemplate from '../dogum-gunu-fun/components/DogumGunuFunTemplate';
 import OzurDilerimClassicTemplate from '../ozur-dilerim-classic/components/OzurDilerimClassicTemplate';
+import AffetBeniSignatureTemplate from '../affet-beni-signature/components/AffetBeniSignatureTemplate';
 import PremiumModernTesekkur from '../tesekkur-adult/components/PremiumModernTesekkur';
 import KlasikElegansTesekkur from '../tesekkur-adult/components/KlasikElegansTesekkur';
 import MinimalistNeonTesekkur from '../tesekkur-adult/components/MinimalistNeonTesekkur';
@@ -128,6 +129,16 @@ export default function TemplateRenderer({
       case 'affet-beni':
       case 'affet-beni-classic':
         return <AffetBeniTemplate
+          recipientName={recipientName}
+          message={message}
+          designStyle={designStyle}
+          creatorName={creatorName}
+          textFields={textFields}
+          isEditable={isEditable}
+          onTextFieldChange={onTextFieldChange}
+        />;
+      case 'affet-beni-signature':
+        return <AffetBeniSignatureTemplate
           recipientName={recipientName}
           message={message}
           designStyle={designStyle}

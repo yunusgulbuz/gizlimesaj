@@ -6,6 +6,8 @@ import AffetBeniForm from './affet-beni/form';
 import AffetBeniPreview from './affet-beni/preview';
 import AffetBeniClassicForm from './affet-beni-classic/form';
 import AffetBeniClassicPreview from './affet-beni-classic/preview';
+import AffetBeniSignatureForm from './affet-beni-signature/form';
+import AffetBeniSignaturePreview from './affet-beni-signature/preview';
 import SeniSeviyorumForm from './seni-seviyorum/form';
 import SeniSeviyorumPreview from './seni-seviyorum/preview';
 import SeniSeviyorumTeenForm from './seni-seviyorum-teen/form';
@@ -50,6 +52,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'affet-beni-classic',
     form: AffetBeniClassicForm,
     preview: AffetBeniClassicPreview,
+  },
+  'affet-beni-signature': {
+    slug: 'affet-beni-signature',
+    form: AffetBeniSignatureForm,
+    preview: AffetBeniSignaturePreview,
   },
   'seni-seviyorum': {
     slug: 'seni-seviyorum',

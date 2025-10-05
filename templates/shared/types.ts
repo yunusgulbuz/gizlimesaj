@@ -723,6 +723,126 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'affet-beni-signature': {
+    slug: 'affet-beni-signature',
+    fields: [
+      {
+        key: 'greetingPrefix',
+        label: 'Hitap Metni',
+        placeholder: 'Sevgili, Canım, Değerlim...',
+        type: 'input',
+        required: false,
+        maxLength: 40,
+        defaultValue: 'Sevgili'
+      },
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 60
+      },
+      {
+        key: 'mainTitle',
+        label: 'Ana Başlık',
+        placeholder: 'Sayfanın ana başlığını yazın',
+        type: 'input',
+        required: true,
+        maxLength: 80,
+        defaultValue: 'Affet Beni'
+      },
+      {
+        key: 'subtitle',
+        label: 'Kısa Spot Mesaj',
+        placeholder: 'Başlığın altında yer alacak etkileyici cümle',
+        type: 'textarea',
+        required: false,
+        maxLength: 180,
+        defaultValue: 'Kalbimdeki ağırlık, senden bir özür dilemeden hafiflemiyor.'
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Özür mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Seni kırdığımın farkındayım ve bu düşünce içimi sızlatıyor. Gözlerine tekrar güvenle bakabilmek için içtenlikle senden af diliyorum.'
+      },
+      {
+        key: 'secondaryMessage',
+        label: 'Destekleyici Mesaj',
+        placeholder: 'Ana mesaja eşlik edecek ek not',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Bir şans daha verirsen kalbini yeniden gülümsetmek için elimden geleni yapacağım.'
+      },
+      {
+        key: 'quoteMessage',
+        label: 'Alıntı / Motto',
+        placeholder: 'Öne çıkarmak istediğiniz kısa alıntı',
+        type: 'input',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Gerçek bağlar, affedildiğimiz anlarda daha da güçlenir.'
+      },
+      {
+        key: 'buttonPrompt',
+        label: 'Buton Öncesi Soru / Not',
+        placeholder: 'Butonların üzerinde yer alacak çağrı metni',
+        type: 'input',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Kalbini yeniden kazanabilmek için bir fırsat verir misin?'
+      },
+      {
+        key: 'buttonAcceptLabel',
+        label: 'Onay Butonu Metni',
+        placeholder: 'Kabul butonunda yazacak metin',
+        type: 'input',
+        required: true,
+        maxLength: 60,
+        defaultValue: 'Kabul Et'
+      },
+      {
+        key: 'buttonRejectLabel',
+        label: 'Reddetme Butonu Metni',
+        placeholder: 'Eğlenceli tasarım için ikinci buton metni',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Henüz Hazır Değilim'
+      },
+      {
+        key: 'footerMessage',
+        label: 'Alt Mesaj',
+        placeholder: 'Sayfanın altında yer alacak kapanış mesajı',
+        type: 'input',
+        required: false,
+        maxLength: 180,
+        defaultValue: 'Sevgiyle bekliyorum... 💗'
+      },
+      {
+        key: 'letterPSS',
+        label: 'P.S. Mesajı',
+        placeholder: 'Klasik tasarımda mektubun altına eklenecek satır',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'P.S. Bu sayfayı hazırlarken her satırda seni düşündüm.'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
+  },
   'evlilik-teklifi-elegant': {
     slug: 'evlilik-teklifi-elegant',
     fields: [
