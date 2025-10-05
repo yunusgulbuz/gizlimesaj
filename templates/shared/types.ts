@@ -2989,6 +2989,135 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         defaultValue: 'Bu mübarek gecede dualarınız kabul olsun.'
       }
     ]
+  },
+  'kandil-tebrigi-premium': {
+    slug: 'kandil-tebrigi-premium',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'creatorName',
+        label: 'Oluşturan Kişi',
+        placeholder: 'Mesajı hazırlayan kişi (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 80
+      },
+      {
+        key: 'luxClassicTitle',
+        label: 'Klasik Altın Başlık',
+        placeholder: 'Örn: Kandiliniz Mübarek Olsun 🌙',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Kandiliniz Mübarek Olsun 🌙'
+      },
+      {
+        key: 'luxClassicMessage',
+        label: 'Klasik Altın Mesaj',
+        placeholder: 'Kısa dua ya da dilek metni yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Bu mübarek gecenin bereketi ve huzuru kalbinizi ışıkla doldursun.'
+      },
+      {
+        key: 'luxClassicBlessing',
+        label: 'Klasik Altın Alt Satır',
+        placeholder: 'Örn: Hilalin ışığında dualarımız buluşsun.',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Hilalin ışığında dualarımız buluşsun.'
+      },
+      {
+        key: 'glowTitle',
+        label: 'Modern Glow Başlık',
+        placeholder: 'Örn: Hayırlı Kandiller ✨',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Hayırlı Kandiller ✨'
+      },
+      {
+        key: 'glowMessage',
+        label: 'Modern Glow Mesajı',
+        placeholder: 'Minimal dua metni ekleyin',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Kalbinizi aydınlatan duaların huzurunu diliyorum.'
+      },
+      {
+        key: 'glowAccent',
+        label: 'Modern Glow Vurgu Metni',
+        placeholder: 'Örn: Altın bir halo gibi çepeçevre saran rahmeti hisset.',
+        type: 'input',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Altın bir halo gibi çepeçevre saran rahmeti hisset.'
+      },
+      {
+        key: 'fenerTitle',
+        label: 'Geleneksel Fener Başlığı',
+        placeholder: 'Örn: Kandiliniz Mübarek Olsun',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Kandiliniz Mübarek Olsun'
+      },
+      {
+        key: 'fenerMessage',
+        label: 'Geleneksel Fener Mesajı',
+        placeholder: 'Geleneksel dua ya da tebrik cümlenizi yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 360,
+        defaultValue: 'Gecenin bereketi ışık saçsın, dualar gönüllere huzur taşısın.'
+      },
+      {
+        key: 'fenerFooter',
+        label: 'Geleneksel Fener Alt Yazısı',
+        placeholder: 'Örn: Fenerlerin sıcak ışığında buluşuyoruz.',
+        type: 'input',
+        required: false,
+        maxLength: 180,
+        defaultValue: 'Fenerlerin sıcak ışığında buluşuyoruz.'
+      },
+      {
+        key: 'royalTitle',
+        label: 'Royal Light Başlık',
+        placeholder: 'Örn: Mübarek Kandiliniz Hayırlara Vesile Olsun 🌟',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Mübarek Kandiliniz Hayırlara Vesile Olsun 🌟'
+      },
+      {
+        key: 'royalMessage',
+        label: 'Royal Light Mesajı',
+        placeholder: 'Zengin ışık anlatımı olan dua ya da dilek yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 360,
+        defaultValue: 'Zümrüt gecenin ışığında dualarınızın kabul olmasını diliyorum.'
+      },
+      {
+        key: 'royalBlessing',
+        label: 'Royal Light Alt Satır',
+        placeholder: 'Örn: Altın ışıkların çevrelediği bu gecede gönlünüz huzurla dolsun.',
+        type: 'input',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Altın ışıkların çevrelediği bu gecede gönlünüz huzurla dolsun.'
+      }
+    ]
   }
 };
 

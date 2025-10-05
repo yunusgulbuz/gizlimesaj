@@ -44,6 +44,8 @@ import DogumGunuKutlamaForm from './dogum-gunu-kutlama/form';
 import DogumGunuKutlamaPreview from './dogum-gunu-kutlama/preview';
 import KandilTebrigiForm from './kandil-tebrigi/form';
 import KandilTebrigiPreview from './kandil-tebrigi/preview';
+import KandilTebrigiPremiumForm from './kandil-tebrigi-premium/form';
+import KandilTebrigiPremiumPreview from './kandil-tebrigi-premium/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => React.ReactElement;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => React.ReactElement;
@@ -159,6 +161,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'kandil-tebrigi',
     form: KandilTebrigiForm,
     preview: KandilTebrigiPreview,
+  },
+  'kandil-tebrigi-premium': {
+    slug: 'kandil-tebrigi-premium',
+    form: KandilTebrigiPremiumForm,
+    preview: KandilTebrigiPremiumPreview,
   },
 };
 

@@ -54,6 +54,10 @@ import KlasikAltinIsikli from '../kandil-tebrigi/components/KlasikAltinIsikli';
 import ModernSoftGlow from '../kandil-tebrigi/components/ModernSoftGlow';
 import MinimalistGeceNur from '../kandil-tebrigi/components/MinimalistGeceNur';
 import SanatsalGoldInk from '../kandil-tebrigi/components/SanatsalGoldInk';
+import AltinZarafetClassic from '../kandil-tebrigi-premium/components/AltinZarafetClassic';
+import GoldenGlowMinimal from '../kandil-tebrigi-premium/components/GoldenGlowMinimal';
+import DesenliFenerIsigi from '../kandil-tebrigi-premium/components/DesenliFenerIsigi';
+import RoyalLightHarmony from '../kandil-tebrigi-premium/components/RoyalLightHarmony';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -802,6 +806,59 @@ export default function TemplateRenderer({
             return (
               <KlasikAltinIsikli
                 recipientName={recipientName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
+      case 'kandil-tebrigi-premium':
+        switch (designStyle) {
+          case 'classic':
+            return (
+              <AltinZarafetClassic
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'modern':
+            return (
+              <GoldenGlowMinimal
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <DesenliFenerIsigi
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <RoyalLightHarmony
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <AltinZarafetClassic
+                recipientName={recipientName}
+                creatorName={creatorName}
                 textFields={textFields}
                 isEditable={isEditable}
                 onTextFieldChange={onTextFieldChange}
