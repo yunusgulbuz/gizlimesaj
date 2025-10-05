@@ -206,6 +206,7 @@ export default function LetterRoseThanks({
                       contentEditable={isEditable}
                       suppressContentEditableWarning
                       onBlur={(event) => handleContentChange('classicPhotoUrl', event.currentTarget.textContent?.trim() || '')}
+                      onInput={(event) => handleContentChange('classicPhotoUrl', event.currentTarget.textContent?.trim() || '')}
                     >
                       {isEditable ? 'Fotoğraf için URL girin' : 'Fotoğraf için URL girilebilir'}
                     </div>
@@ -236,6 +237,7 @@ export default function LetterRoseThanks({
               </div>
 
               <Button
+                type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
                 className="relative mt-6 w-full rounded-full border border-[#d6b9a6] bg-gradient-to-r from-[#f8ede0] to-[#f3dbc5] py-4 text-base font-semibold text-[#6f4538] shadow-[0_12px_30px_rgba(169,126,103,0.25)] transition-all duration-300 hover:shadow-[0_18px_45px_rgba(169,126,103,0.35)] sm:text-lg"
               >

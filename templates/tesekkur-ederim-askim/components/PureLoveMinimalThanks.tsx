@@ -120,6 +120,7 @@ export default function PureLoveMinimalThanks({
 
         <div className="mt-10 flex justify-center">
           <Button
+            type="button"
             onClick={handleReveal}
             className={`h-16 w-16 rounded-full bg-white/80 text-xl shadow-[0_12px_40px_rgba(158,110,190,0.25)] transition-all duration-300 ${
               pulse ? 'scale-110 shadow-[0_20px_55px_rgba(158,110,190,0.4)]' : 'hover:scale-105'

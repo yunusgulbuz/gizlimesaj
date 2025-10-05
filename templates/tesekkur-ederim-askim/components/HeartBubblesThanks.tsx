@@ -188,6 +188,10 @@ export default function HeartBubblesThanks({
                       handleContentChange('funPhotoUrl', value);
                       setShowPhotoEditor(false);
                     }}
+                    onInput={(event) => {
+                      const value = event.currentTarget.textContent?.trim() || '';
+                      handleContentChange('funPhotoUrl', value);
+                    }}
                   >
                     {funPhotoUrl}
                   </div>
@@ -207,6 +211,7 @@ export default function HeartBubblesThanks({
               contentEditable={isEditable}
               suppressContentEditableWarning
               onBlur={(event) => handleContentChange('funPhotoUrl', event.currentTarget.textContent?.trim() || '')}
+              onInput={(event) => handleContentChange('funPhotoUrl', event.currentTarget.textContent?.trim() || '')}
             >
               {isEditable ? 'Fotoğraf için URL ekleyin' : 'Fotoğraf için URL ekleyin'}
             </div>
@@ -215,6 +220,7 @@ export default function HeartBubblesThanks({
 
         <div className="mt-10">
           <Button
+            type="button"
             onClick={handleBurst}
             className={`rounded-full bg-gradient-to-r from-[#ff7ab8] via-[#ff6aa2] to-[#ff5f8a] px-10 py-4 text-base font-semibold text-white shadow-[0_20px_60px_rgba(255,117,168,0.38)] transition-all duration-300 sm:text-lg ${
               burst ? 'scale-105 shadow-[0_25px_80px_rgba(255,117,168,0.45)]' : 'hover:scale-105'

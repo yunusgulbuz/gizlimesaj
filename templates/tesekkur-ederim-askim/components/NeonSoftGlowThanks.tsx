@@ -173,6 +173,10 @@ export default function NeonSoftGlowThanks({
                           handleContentChange('modernPhotoUrl', value);
                           setShowPhotoEditor(false);
                         }}
+                        onInput={(event) => {
+                          const value = event.currentTarget.textContent?.trim() || '';
+                          handleContentChange('modernPhotoUrl', value);
+                        }}
                       >
                         {modernPhotoUrl}
                       </div>
@@ -192,6 +196,7 @@ export default function NeonSoftGlowThanks({
                   contentEditable={isEditable}
                   suppressContentEditableWarning
                   onBlur={(event) => handleContentChange('modernPhotoUrl', event.currentTarget.textContent?.trim() || '')}
+                  onInput={(event) => handleContentChange('modernPhotoUrl', event.currentTarget.textContent?.trim() || '')}
                 >
                   {isEditable ? 'Fotoğraf için URL girin' : 'Profil fotoğrafı eklemek için URL girin'}
                 </div>
@@ -210,6 +215,7 @@ export default function NeonSoftGlowThanks({
             </p>
 
             <Button
+              type="button"
               onClick={() => setShowDrawer((prev) => !prev)}
               className="relative overflow-hidden rounded-full bg-gradient-to-r from-[#a855f7] via-[#7c3aed] to-[#4338ca] px-10 py-4 text-base font-semibold text-white shadow-[0_20px_60px_rgba(124,58,237,0.45)] transition-all duration-300 sm:text-lg"
             >

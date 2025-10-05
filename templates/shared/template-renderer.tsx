@@ -20,6 +20,10 @@ import NeonSoftGlowThanks from '../tesekkur-ederim-askim/components/NeonSoftGlow
 import LetterRoseThanks from '../tesekkur-ederim-askim/components/LetterRoseThanks';
 import PureLoveMinimalThanks from '../tesekkur-ederim-askim/components/PureLoveMinimalThanks';
 import HeartBubblesThanks from '../tesekkur-ederim-askim/components/HeartBubblesThanks';
+import HolographicCelebration from '../mutlu-yillar-celebration/components/HolographicCelebration';
+import GoldenMidnight from '../mutlu-yillar-celebration/components/GoldenMidnight';
+import PureNewBeginning from '../mutlu-yillar-celebration/components/PureNewBeginning';
+import FireworkParty from '../mutlu-yillar-celebration/components/FireworkParty';
 import PremiumModernTemplate from '../mutlu-yillar-fun/components/PremiumModernTemplate';
 import KlasikElegansTemplate from '../mutlu-yillar-fun/components/KlasikElegansTemplate';
 import MinimalistNeonTemplate from '../mutlu-yillar-fun/components/MinimalistNeonTemplate';
@@ -380,6 +384,64 @@ export default function TemplateRenderer({
           designStyle={designStyle as 'modern' | 'classic' | 'minimalist'}
           creatorName={creatorName}
         />;
+      case 'mutlu-yillar-celebration':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <HolographicCelebration
+                recipientName={recipientName}
+                message={textFields?.message || message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'classic':
+            return (
+              <GoldenMidnight
+                recipientName={recipientName}
+                message={textFields?.message || message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <PureNewBeginning
+                recipientName={recipientName}
+                message={textFields?.message || message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <FireworkParty
+                recipientName={recipientName}
+                message={textFields?.message || message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <HolographicCelebration
+                recipientName={recipientName}
+                message={textFields?.message || message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
       case 'mutlu-yillar-fun':
         switch (designStyle) {
           case 'modern':

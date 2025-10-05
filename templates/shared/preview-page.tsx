@@ -146,6 +146,12 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
         recipientName: defaults.recipientName || "Canım Arkadaşım",
         mainMessage: defaults.mainMessage || "Yeni yılın sana sağlık, mutluluk ve başarı getirmesini diliyorum! Bu yıl tüm hayallerin gerçek olsun. Mutlu yıllar! 🎉✨",
       });
+    } else if (template.slug === 'mutlu-yillar-celebration') {
+      setTextFields({
+        ...defaults,
+        recipientName: defaults.recipientName || "Sevgili Dostum",
+        mainMessage: defaults.mainMessage || defaults.message || "Yeni yılın ilk ışıklarıyla umutların parlasın!",
+      });
     } else {
       setTextFields({
         ...defaults,

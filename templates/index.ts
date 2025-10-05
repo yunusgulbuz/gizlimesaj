@@ -24,6 +24,8 @@ import TesekkurAdultForm from './tesekkur-adult/form';
 import TesekkurAdultPreview from './tesekkur-adult/preview';
 import TesekkurEderimAskimForm from './tesekkur-ederim-askim/form';
 import TesekkurEderimAskimPreview from './tesekkur-ederim-askim/preview';
+import MutluYillarCelebrationForm from './mutlu-yillar-celebration/form';
+import MutluYillarCelebrationPreview from './mutlu-yillar-celebration/preview';
 import MutluYillarFunForm from './mutlu-yillar-fun/form';
 import MutluYillarFunPreview from './mutlu-yillar-fun/preview';
 import CikmaTeklifiForm from './cikma-teklifi/form';
@@ -105,6 +107,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'tesekkur-ederim-askim',
     form: TesekkurEderimAskimForm,
     preview: TesekkurEderimAskimPreview,
+  },
+  'mutlu-yillar-celebration': {
+    slug: 'mutlu-yillar-celebration',
+    form: MutluYillarCelebrationForm,
+    preview: MutluYillarCelebrationPreview,
   },
   'mutlu-yillar-fun': {
     slug: 'mutlu-yillar-fun',

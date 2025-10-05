@@ -1275,6 +1275,256 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'mutlu-yillar-celebration': {
+    slug: 'mutlu-yillar-celebration',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'message',
+        label: 'Genel Mesaj',
+        placeholder: 'Yeni yıl mesajınızı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Yeni yılın ilk ışıklarıyla dileklerin gökyüzünde dans etsin. Renkler ve umut dolu bir yıl seni bekliyor! 🎆'
+      },
+      {
+        key: 'creatorName',
+        label: 'İsminiz (opsiyonel)',
+        placeholder: 'Mesajın hazırlayanı olarak isminizi yazabilirsiniz',
+        type: 'input',
+        required: false,
+        maxLength: 60
+      },
+      {
+        key: 'holoTitle',
+        label: 'Modern Holografik Başlık',
+        placeholder: 'Örn. Mutlu Yıllar 🎆',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mutlu Yıllar 🎆'
+      },
+      {
+        key: 'holoSubtitle',
+        label: 'Modern Holografik Alt Metin',
+        placeholder: 'Örn. Yeni yılın ışıkları umutlarını parıldatsın.',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Yeni yılın ışıkları umutlarını parıldatsın.'
+      },
+      {
+        key: 'holoBodyMessage',
+        label: 'Modern Holografik Mesaj',
+        placeholder: 'Modern tasarımdaki ana metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 600,
+        defaultValue: 'Bu yıl gökyüzündeki her yıldız senin için parlasın. Dileklerin holografik ışıklar gibi hayatına yansısın.'
+      },
+      {
+        key: 'holoButtonLabel',
+        label: 'Modern Holografik Buton',
+        placeholder: 'Örn. Yeni Yıla Başla ✨',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Yeni Yıla Başla ✨'
+      },
+      {
+        key: 'holoAfterMessage',
+        label: 'Modern Holografik Son Mesaj',
+        placeholder: 'Buton sonrası görünen mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Harika bir yıl seni bekliyor'
+      },
+      {
+        key: 'holoPhotoUrl',
+        label: 'Modern Holografik Fotoğraf URL',
+        placeholder: 'https://... (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'goldTitle',
+        label: 'Klasik Altın Başlık',
+        placeholder: 'Örn. Yeni Yılın Kutlu Olsun 🥂',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Yeni Yılın Kutlu Olsun 🥂'
+      },
+      {
+        key: 'goldSubtitle',
+        label: 'Klasik Altın Alt Metin',
+        placeholder: 'Örn. Yeni yılın zarif ışıltısı hep seninle olsun.',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Yeni yılın zarif ışıltısı hep seninle olsun.'
+      },
+      {
+        key: 'goldBodyMessage',
+        label: 'Klasik Altın Mesaj',
+        placeholder: 'Klasik tasarımdaki ana metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 600,
+        defaultValue: 'Gece yarısının altın saatinde, tüm dileklerin yıldız tozuyla gerçek olsun. Yeni başlangıçlara birlikte kadeh kaldıralım.'
+      },
+      {
+        key: 'goldButtonLabel',
+        label: 'Klasik Altın Buton',
+        placeholder: 'Örn. Sürprizi Aç 🎁',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Sürprizi Aç 🎁'
+      },
+      {
+        key: 'goldAfterMessage',
+        label: 'Klasik Altın Son Mesaj',
+        placeholder: 'Buton sonrası görünen mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Nice Mutlu Senelere!'
+      },
+      {
+        key: 'goldPhotoUrl',
+        label: 'Klasik Altın Fotoğraf URL',
+        placeholder: 'https://... (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'minimalTitle',
+        label: 'Minimalist Başlık',
+        placeholder: 'Örn. Mutlu Yıllar!',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mutlu Yıllar!'
+      },
+      {
+        key: 'minimalSubtitle',
+        label: 'Minimalist Alt Metin',
+        placeholder: 'Örn. Yeni yıl sana huzur, denge ve taze başlangıçlar getirsin.',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Yeni yıl sana huzur, denge ve taze başlangıçlar getirsin.'
+      },
+      {
+        key: 'minimalBodyMessage',
+        label: 'Minimalist Mesaj',
+        placeholder: 'Minimalist tasarımda gösterilen ana metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 600,
+        defaultValue: 'Geçmişin ağırlığını geride bırakıp, umut dolu bir yılın kapısını aralıyoruz. Her yeni gün, hafif bir nefes ve sıcak bir tebessüm getirsin.'
+      },
+      {
+        key: 'minimalButtonLabel',
+        label: 'Minimalist Buton',
+        placeholder: 'Örn. Yeni Yılı Kutla 🎈',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Yeni Yılı Kutla 🎈'
+      },
+      {
+        key: 'minimalAfterMessage',
+        label: 'Minimalist Son Mesaj',
+        placeholder: 'Buton sonrası görünen mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Yeni bir sayfa başladı ✨'
+      },
+      {
+        key: 'minimalPhotoUrl',
+        label: 'Minimalist Fotoğraf URL',
+        placeholder: 'https://... (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'partyTitle',
+        label: 'Eğlenceli Parti Başlığı',
+        placeholder: 'Örn. Mutlu Yıllar 🎇',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mutlu Yıllar 🎇'
+      },
+      {
+        key: 'partySubtitle',
+        label: 'Eğlenceli Parti Alt Metin',
+        placeholder: 'Örn. Yeni yılın ilk dakikalarında seninle kutlamak bir harika!',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Yeni yılın ilk dakikalarında seninle kutlamak bir harika!'
+      },
+      {
+        key: 'partyBodyMessage',
+        label: 'Eğlenceli Parti Mesajı',
+        placeholder: 'Eğlenceli tasarımdaki ana metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 600,
+        defaultValue: 'Gökyüzü patlayan renklerle doluyor; dileklerin anında ışığa dönüşüyor. Yeni yılın her günü, bu an kadar eğlenceli ve renkli olsun!'
+      },
+      {
+        key: 'partyButtonLabel',
+        label: 'Eğlenceli Parti Butonu',
+        placeholder: 'Örn. Ateşle Gösteriyi 🎆',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Ateşle Gösteriyi 🎆'
+      },
+      {
+        key: 'partyAfterMessage',
+        label: 'Eğlenceli Parti Son Mesajı',
+        placeholder: 'Buton sonrası görünen mesaj',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Harika Bir Yıl Seninle!'
+      },
+      {
+        key: 'partyPhotoUrl',
+        label: 'Eğlenceli Parti Fotoğraf URL',
+        placeholder: 'https://... (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 300
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ]
+  },
   'mutlu-yillar-fun': {
     slug: 'mutlu-yillar-fun',
     fields: [
