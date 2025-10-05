@@ -2958,6 +2958,37 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         maxLength: 200
       }
     ]
+  },
+  'kandil-tebrigi': {
+    slug: 'kandil-tebrigi',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'mainTitle',
+        label: 'Ana Başlık',
+        placeholder: 'Örn: Mübarek Kandiliniz Kutlu Olsun',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Mübarek Kandiliniz Kutlu Olsun'
+      },
+      {
+        key: 'subMessage',
+        label: 'Alt Mesaj / Dua',
+        placeholder: 'Örn: Bu mübarek gecede dualarınız kabul olsun.',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Bu mübarek gecede dualarınız kabul olsun.'
+      }
+    ]
   }
 };
 

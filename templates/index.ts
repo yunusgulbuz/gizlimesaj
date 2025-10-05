@@ -42,6 +42,8 @@ import SurprizRandevuDavetiForm from './surpriz-randevu-daveti/form';
 import SurprizRandevuDavetiPreview from './surpriz-randevu-daveti/preview';
 import DogumGunuKutlamaForm from './dogum-gunu-kutlama/form';
 import DogumGunuKutlamaPreview from './dogum-gunu-kutlama/preview';
+import KandilTebrigiForm from './kandil-tebrigi/form';
+import KandilTebrigiPreview from './kandil-tebrigi/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => React.ReactElement;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => React.ReactElement;
@@ -152,6 +154,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'dogum-gunu-kutlama',
     form: DogumGunuKutlamaForm,
     preview: DogumGunuKutlamaPreview,
+  },
+  'kandil-tebrigi': {
+    slug: 'kandil-tebrigi',
+    form: KandilTebrigiForm,
+    preview: KandilTebrigiPreview,
   },
 };
 

@@ -50,6 +50,10 @@ import PastelGradientCelebration from '../dogum-gunu-kutlama/components/PastelGr
 import ElegantGoldInvitation from '../dogum-gunu-kutlama/components/ElegantGoldInvitation';
 import SimpleJoyCard from '../dogum-gunu-kutlama/components/SimpleJoyCard';
 import InteractivePartyMode from '../dogum-gunu-kutlama/components/InteractivePartyMode';
+import KlasikAltinIsikli from '../kandil-tebrigi/components/KlasikAltinIsikli';
+import ModernSoftGlow from '../kandil-tebrigi/components/ModernSoftGlow';
+import MinimalistGeceNur from '../kandil-tebrigi/components/MinimalistGeceNur';
+import SanatsalGoldInk from '../kandil-tebrigi/components/SanatsalGoldInk';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -756,6 +760,54 @@ export default function TemplateRenderer({
             onTextFieldChange={onTextFieldChange}
           />
         );
+      case 'kandil-tebrigi':
+        switch (designStyle) {
+          case 'classic':
+            return (
+              <KlasikAltinIsikli
+                recipientName={recipientName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'modern':
+            return (
+              <ModernSoftGlow
+                recipientName={recipientName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <MinimalistGeceNur
+                recipientName={recipientName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <SanatsalGoldInk
+                recipientName={recipientName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <KlasikAltinIsikli
+                recipientName={recipientName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
       case 'romantik-mesaj':
         return <RomantikMesajTemplate 
           recipientName={recipientName} 
