@@ -24,7 +24,13 @@ recipientName: 'Sevgili Leyla',
   footerMessage: 'Sevgiyle, Gizli Mesaj',
 };
 
+const TEMPLATE_CARD_DEFAULTS: Partial<Record<string, 'modern' | 'classic' | 'minimalist' | 'eglenceli'>> = {
+  'cuma-tebrigi': 'eglenceli',
+};
+
 function pickDesignStyle(slug: string): 'modern' | 'classic' | 'minimalist' | 'eglenceli' {
+  const exactMatch = TEMPLATE_CARD_DEFAULTS[slug];
+  if (exactMatch) return exactMatch;
   if (slug.includes('classic')) return 'classic';
   if (slug.includes('minimal')) return 'minimalist';
   if (slug.includes('fun') || slug.includes('teen') || slug.includes('eglenceli')) return 'eglenceli';

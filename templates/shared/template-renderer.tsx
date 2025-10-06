@@ -46,6 +46,10 @@ import NeonGlowLove from '../romantik-mesaj-elegant/components/NeonGlowLove';
 import RomanticLetterScene from '../romantik-mesaj-elegant/components/RomanticLetterScene';
 import PureLoveMinimal from '../romantik-mesaj-elegant/components/PureLoveMinimal';
 import HeartAdventureInteractive from '../romantik-mesaj-elegant/components/HeartAdventureInteractive';
+import ClassicGoldenBlessing from '../cuma-tebrigi/components/ClassicGoldenBlessing';
+import ModernGoldHarmony from '../cuma-tebrigi/components/ModernGoldHarmony';
+import EmeraldLightGreeting from '../cuma-tebrigi/components/EmeraldLightGreeting';
+import RoyalSerenityAura from '../cuma-tebrigi/components/RoyalSerenityAura';
 import SoftGlassInvitation from '../surpriz-randevu-daveti/components/SoftGlassInvitation';
 import RomantikAksamInvitation from '../surpriz-randevu-daveti/components/RomantikAksamInvitation';
 import CleanRomanticPlan from '../surpriz-randevu-daveti/components/CleanRomanticPlan';
@@ -265,6 +269,59 @@ export default function TemplateRenderer({
               <NeonSoftGlowThanks
                 recipientName={recipientName}
                 message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
+      case 'cuma-tebrigi':
+        switch (designStyle) {
+          case 'classic':
+            return (
+              <ClassicGoldenBlessing
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'modern':
+            return (
+              <ModernGoldHarmony
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <EmeraldLightGreeting
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <RoyalSerenityAura
+                recipientName={recipientName}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <ClassicGoldenBlessing
+                recipientName={recipientName}
                 creatorName={creatorName}
                 textFields={textFields}
                 isEditable={isEditable}

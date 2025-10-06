@@ -44,6 +44,8 @@ import SurprizRandevuDavetiForm from './surpriz-randevu-daveti/form';
 import SurprizRandevuDavetiPreview from './surpriz-randevu-daveti/preview';
 import DogumGunuKutlamaForm from './dogum-gunu-kutlama/form';
 import DogumGunuKutlamaPreview from './dogum-gunu-kutlama/preview';
+import CumaTebrigiForm from './cuma-tebrigi/form';
+import CumaTebrigiPreview from './cuma-tebrigi/preview';
 import KandilTebrigiForm from './kandil-tebrigi/form';
 import KandilTebrigiPreview from './kandil-tebrigi/preview';
 import KandilTebrigiPremiumForm from './kandil-tebrigi-premium/form';
@@ -163,6 +165,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'dogum-gunu-kutlama',
     form: DogumGunuKutlamaForm,
     preview: DogumGunuKutlamaPreview,
+  },
+  'cuma-tebrigi': {
+    slug: 'cuma-tebrigi',
+    form: CumaTebrigiForm,
+    preview: CumaTebrigiPreview,
   },
   'kandil-tebrigi': {
     slug: 'kandil-tebrigi',

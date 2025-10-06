@@ -1498,6 +1498,126 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'cuma-tebrigi': {
+    slug: 'cuma-tebrigi',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'creatorName',
+        label: 'Oluşturan Kişi',
+        placeholder: 'Mesajı hazırlayan kişi (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 80
+      },
+      {
+        key: 'classicTitle',
+        label: 'Klasik Altın Başlık',
+        placeholder: 'Örn: Hayırlı Cumalar 🌙',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Hayırlı Cumalar 🌙'
+      },
+      {
+        key: 'classicMessage',
+        label: 'Klasik Altın Mesaj',
+        placeholder: 'Örn: Bu mübarek gün kalplerinize huzur, evinize bereket getirsin.',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Bu mübarek gün kalplerinize huzur, evinize bereket getirsin.'
+      },
+      {
+        key: 'modernTitle',
+        label: 'Modern Minimal Başlık',
+        placeholder: 'Örn: Hayırlı Cumalar ✨',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Hayırlı Cumalar ✨'
+      },
+      {
+        key: 'modernMessage',
+        label: 'Modern Minimal Mesaj',
+        placeholder: 'Örn: Cumanız bereket, dualarınız kabul olsun.',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Cumanız bereket, dualarınız kabul olsun.'
+      },
+      {
+        key: 'modernAccent',
+        label: 'Modern Vurgu Satırı',
+        placeholder: 'Örn: Altın bir hafiflik kalplere dolsun.',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Altın ışığın huzuru kalplere dolsun.'
+      },
+      {
+        key: 'emeraldTitle',
+        label: 'Zümrüt Işığı Başlığı',
+        placeholder: 'Örn: Hayırlı Cumalar 🌿',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Hayırlı Cumalar 🌿'
+      },
+      {
+        key: 'emeraldMessage',
+        label: 'Zümrüt Işığı Mesajı',
+        placeholder: 'Örn: Dualarınız kabul, gönlünüz huzurla dolsun.',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Dualarınız kabul, gönlünüz huzurla dolsun.'
+      },
+      {
+        key: 'emeraldBlessing',
+        label: 'Zümrüt Işığı Alt Satırı',
+        placeholder: 'Örn: Zümrüt ışıkların sıcaklığında buluşalım.',
+        type: 'input',
+        required: false,
+        maxLength: 180,
+        defaultValue: 'Zümrüt ışıkların sıcaklığında buluşalım.'
+      },
+      {
+        key: 'royalTitle',
+        label: 'Royal Serenity Başlık',
+        placeholder: 'Örn: Cumanız Mübarek Olsun 🌟',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Cumanız Mübarek Olsun 🌟'
+      },
+      {
+        key: 'royalMessage',
+        label: 'Royal Serenity Mesaj',
+        placeholder: 'Örn: Bu mübarek gün kalbinizi ferahlıkla, evinizi huzurla doldursun.',
+        type: 'textarea',
+        required: false,
+        maxLength: 340,
+        defaultValue: 'Bu mübarek gün kalbinizi ferahlıkla, evinizi huzurla doldursun.'
+      },
+      {
+        key: 'royalBlessing',
+        label: 'Royal Serenity Alt Satır',
+        placeholder: 'Örn: Altın ışıkların rehberliğinde sevgiye kavuşun.',
+        type: 'input',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Altın ışıkların rehberliğinde sevdiklerinizle buluşun.'
+      }
+    ]
+  },
   'mutlu-yillar-celebration': {
     slug: 'mutlu-yillar-celebration',
     fields: [
