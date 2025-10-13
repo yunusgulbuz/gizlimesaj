@@ -26,6 +26,11 @@ recipientName: 'Sevgili Leyla',
 
 const TEMPLATE_CARD_DEFAULTS: Partial<Record<string, 'modern' | 'classic' | 'minimalist' | 'eglenceli'>> = {
   'cuma-tebrigi': 'eglenceli',
+  'sevgililer-gunu-tebrigi': 'classic',
+  'yeni-is-terfi-tebrigi': 'minimalist',
+  'kandil-tebrigi-premium': 'minimalist',
+  'kandil-tebrigi': 'eglenceli',
+  'mutlu-yillar-celebration': 'eglenceli',
 };
 
 function pickDesignStyle(slug: string): 'modern' | 'classic' | 'minimalist' | 'eglenceli' {

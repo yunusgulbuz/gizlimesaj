@@ -3302,6 +3302,365 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'sevgililer-gunu-tebrigi': {
+    slug: 'sevgililer-gunu-tebrigi',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'message',
+        label: 'Ana Mesajınız',
+        placeholder: 'Tüm varyasyonlarda kullanılacak ana duygusal mesajı yazın',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Bu kalp sadece senin için atıyor ve her ritminde adını fısıldıyor. ❤️'
+      },
+      {
+        key: 'creatorName',
+        label: 'Oluşturan Kişi (opsiyonel)',
+        placeholder: 'Mesajı hazırlayan kişi olarak isminizi yazabilirsiniz',
+        type: 'input',
+        required: false,
+        maxLength: 80
+      },
+      {
+        key: 'modernTitle',
+        label: 'Glass Başlık',
+        placeholder: 'Örn. Sevgililer Günün Kutlu Olsun ❤️',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Sevgililer Günün Kutlu Olsun ❤️'
+      },
+      {
+        key: 'modernSubtitle',
+        label: 'Glass Alt Metin',
+        placeholder: 'Örn. Kalbimde her zaman sen varsın.',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Kalbimde her zaman sen varsın.'
+      },
+      {
+        key: 'modernButtonLabel',
+        label: 'Glass Buton Metni',
+        placeholder: 'Örn. Sürprizi Gör 💌',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Sürprizi Gör 💌'
+      },
+      {
+        key: 'modernAfterClickText',
+        label: 'Glass Sürpriz Mesajı',
+        placeholder: 'Butona basıldıktan sonra gösterilecek metni yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Bu kalp sadece senin için atıyor 💓'
+      },
+      {
+        key: 'modernSupportingText',
+        label: 'Glass Alt Vurgu Satırı',
+        placeholder: 'Örn. Adımlarımız aynı ritimde attıkça dünya güzelleşiyor.',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Adımlarımız aynı ritimde attıkça dünya güzelleşiyor.'
+      },
+      {
+        key: 'modernPhotoUrl',
+        label: 'Glass Fotoğraf URL',
+        placeholder: 'Supabase public fotoğraf URL girin (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 220
+      },
+      {
+        key: 'modernPhotoPlaceholder',
+        label: 'Glass Fotoğraf Talimatı',
+        placeholder: 'Fotoğraf alanı boşken gösterilecek talimat metni',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Fotoğraf URLsi ekleyin'
+      },
+      {
+        key: 'modernCreatorLabel',
+        label: 'Glass Oluşturan Etiketi',
+        placeholder: 'Örn. Hazırlayan:',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Hazırlayan:'
+      },
+      {
+        key: 'minimalTitle',
+        label: 'Split Başlık',
+        placeholder: 'Örn. Sevgililer Günün Kutlu Olsun',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Sevgililer Günün Kutlu Olsun'
+      },
+      {
+        key: 'minimalBody',
+        label: 'Split Ana Metin',
+        placeholder: 'Tipografi odaklı ana metni yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 500,
+        defaultValue: 'Seninle yaşam her zamankinden daha anlamlı. Her sabah uyandığımda teşekkür ettiğim ilk şey, hayatımda olman. Tüm yollarımız hep aynı manzaraya çıksın: bize.'
+      },
+      {
+        key: 'minimalSubtitle',
+        label: 'Split Alt Vurgu',
+        placeholder: 'Örn. Birlikte nice güzel yıllara ❤️',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Birlikte nice güzel yıllara ❤️'
+      },
+      {
+        key: 'minimalFooter',
+        label: 'Split Alt Mesaj',
+        placeholder: 'Örn. Kalbimdeki en özel yer hep sana ait.',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Kalbimdeki en özel yer hep sana ait.'
+      },
+      {
+        key: 'minimalToggleLabel',
+        label: 'Split Toggle Etiketi',
+        placeholder: 'Örn. Fotoğraf önizleme',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Fotoğraf önizleme'
+      },
+      {
+        key: 'minimalToggleOnLabel',
+        label: 'Split Toggle Açık Yazısı',
+        placeholder: 'Örn. Açık',
+        type: 'input',
+        required: false,
+        maxLength: 40,
+        defaultValue: 'Açık'
+      },
+      {
+        key: 'minimalToggleOffLabel',
+        label: 'Split Toggle Kapalı Yazısı',
+        placeholder: 'Örn. Kapalı',
+        type: 'input',
+        required: false,
+        maxLength: 40,
+        defaultValue: 'Kapalı'
+      },
+      {
+        key: 'minimalPhotoUrl',
+        label: 'Split Fotoğraf URL',
+        placeholder: 'Supabase public fotoğraf URL girin (opsiyonel)',
+        type: 'input',
+        required: false,
+        maxLength: 220
+      },
+      {
+        key: 'minimalPhotoHelper',
+        label: 'Split Fotoğraf Talimatı',
+        placeholder: 'Fotoğraf alanı boşken gösterilecek metin',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Fotoğraf URLsi ekleyerek fotoğrafı burada gösterebilirsin'
+      },
+      {
+        key: 'minimalCreatorLabel',
+        label: 'Split Oluşturan Etiketi',
+        placeholder: 'Örn. Sevgiyle,',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Sevgiyle,'
+      },
+      {
+        key: 'playfulTitle',
+        label: 'Catch Başlık',
+        placeholder: 'Örn. Seni Seviyorum 💘',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Seni Seviyorum 💘'
+      },
+      {
+        key: 'playfulSubtitle',
+        label: 'Catch Alt Metin',
+        placeholder: 'Örn. Ama yakalarsan söyleyeceğim 😄',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Ama yakalarsan söyleyeceğim 😄'
+      },
+      {
+        key: 'playfulButtonLabel',
+        label: 'Catch Buton Metni',
+        placeholder: 'Örn. Kalbi Yakala ❤️',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Kalbi Yakala ❤️'
+      },
+      {
+        key: 'playfulInstruction',
+        label: 'Catch Talimat Metni',
+        placeholder: 'Oyunu başlatmadan önce gösterilecek açıklama',
+        type: 'textarea',
+        required: false,
+        maxLength: 260,
+        defaultValue: 'Hazır ol! Kalp ekranda zıpladığında yakalamak için dokun.'
+      },
+      {
+        key: 'playfulChasingText',
+        label: 'Catch Takip Metni',
+        placeholder: 'Kalp hareket ederken gösterilecek metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 260,
+        defaultValue: 'Kalp kaçıyor... Parmağını takip et ve yakala! 💞'
+      },
+      {
+        key: 'playfulAfterClickText',
+        label: 'Catch Yakalandı Mesajı',
+        placeholder: 'Kalp yakalandığında gösterilecek metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 260,
+        defaultValue: 'Yakaladın! 💞'
+      },
+      {
+        key: 'playfulBackgroundUrl',
+        label: 'Catch Arka Plan URL',
+        placeholder: 'Opsiyonel arka plan illüstrasyonu için Supabase public URL',
+        type: 'input',
+        required: false,
+        maxLength: 220
+      },
+      {
+        key: 'playfulBackgroundHelper',
+        label: 'Catch Arka Plan Talimatı',
+        placeholder: 'Arka plan görseli ekleme yönergesi',
+        type: 'input',
+        required: false,
+        maxLength: 180,
+        defaultValue: 'Opsiyonel arka plan illüstrasyonu için Fotoğraf URLsi ekle'
+      },
+      {
+        key: 'playfulCreatorLabel',
+        label: 'Catch Oluşturan Etiketi',
+        placeholder: 'Örn. Mesajın sahibi:',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mesajın sahibi:'
+      },
+      {
+        key: 'classicFootnote',
+        label: 'Cinematic Üst Etiket',
+        placeholder: 'Örn. Cinematic Valentine Premiere',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Cinematic Valentine Premiere'
+      },
+      {
+        key: 'classicTitle',
+        label: 'Cinematic Başlık',
+        placeholder: 'Örn. Aşkın Her Haliyle Güzel',
+        type: 'input',
+        required: false,
+        maxLength: 100,
+        defaultValue: 'Aşkın Her Haliyle Güzel'
+      },
+      {
+        key: 'classicSubtitle',
+        label: 'Cinematic Alt Başlık',
+        placeholder: 'Örn. Sevgililer Günün Kutlu Olsun 💫',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Sevgililer Günün Kutlu Olsun 💫'
+      },
+      {
+        key: 'classicNarration',
+        label: 'Cinematic Anlatı Metni',
+        placeholder: 'Sinematik duygu anlatımı ekleyin',
+        type: 'textarea',
+        required: false,
+        maxLength: 500,
+        defaultValue: 'Sen benim hayatımın en güzel sahnesisin. Her karede gülüşün, her diyalogda kalbimizin sesi var. Bu gece yine başrolümüz aşk.'
+      },
+      {
+        key: 'classicExtraText',
+        label: 'Cinematic Ekstra Mesaj',
+        placeholder: 'Örn. Seni her zaman seveceğim.',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Seni her zaman seveceğim.'
+      },
+      {
+        key: 'classicSpotlightLabel',
+        label: 'Cinematic Spotlight Etiketi',
+        placeholder: 'Örn. Spotlight',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Spotlight'
+      },
+      {
+        key: 'classicSpotlightNote',
+        label: 'Cinematic Spotlight Mesajı',
+        placeholder: 'Örn. Kalbimizin perdeleri hep açık kalsın.',
+        type: 'textarea',
+        required: false,
+        maxLength: 280,
+        defaultValue: 'Kalbimizin perdeleri hep açık kalsın.'
+      },
+      {
+        key: 'classicCreatorLabel',
+        label: 'Cinematic Oluşturan Etiketi',
+        placeholder: 'Örn. Sonsuz aşk ile,',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Sonsuz aşk ile,'
+      },
+      {
+        key: 'classicBackgroundUrl',
+        label: 'Cinematic Arka Plan URL',
+        placeholder: 'Supabase valentine_bg bucket public URL girin',
+        type: 'input',
+        required: false,
+        maxLength: 220
+      },
+      {
+        key: 'classicBackgroundHelper',
+        label: 'Cinematic Arka Plan Talimatı',
+        placeholder: 'Arka plan görseli için yönerge ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'valentine_bg klasöründen public Fotoğraf URLsi ekleyin'
+      }
+    ]
+  },
   'kandil-tebrigi': {
     slug: 'kandil-tebrigi',
     fields: [

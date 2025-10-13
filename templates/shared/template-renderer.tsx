@@ -66,6 +66,10 @@ import AltinZarafetClassic from '../kandil-tebrigi-premium/components/AltinZaraf
 import GoldenGlowMinimal from '../kandil-tebrigi-premium/components/GoldenGlowMinimal';
 import DesenliFenerIsigi from '../kandil-tebrigi-premium/components/DesenliFenerIsigi';
 import RoyalLightHarmony from '../kandil-tebrigi-premium/components/RoyalLightHarmony';
+import GlassLoveCard from '../sevgililer-gunu-tebrigi/components/GlassLoveCard';
+import SplitLoveLayout from '../sevgililer-gunu-tebrigi/components/SplitLoveLayout';
+import CatchTheHeart from '../sevgililer-gunu-tebrigi/components/CatchTheHeart';
+import CinematicValentine from '../sevgililer-gunu-tebrigi/components/CinematicValentine';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -267,6 +271,64 @@ export default function TemplateRenderer({
           default:
             return (
               <NeonSoftGlowThanks
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+        }
+      case 'sevgililer-gunu-tebrigi':
+        switch (designStyle) {
+          case 'modern':
+            return (
+              <GlassLoveCard
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'classic':
+            return (
+              <CinematicValentine
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'minimalist':
+            return (
+              <SplitLoveLayout
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          case 'eglenceli':
+            return (
+              <CatchTheHeart
+                recipientName={recipientName}
+                message={message}
+                creatorName={creatorName}
+                textFields={textFields}
+                isEditable={isEditable}
+                onTextFieldChange={onTextFieldChange}
+              />
+            );
+          default:
+            return (
+              <GlassLoveCard
                 recipientName={recipientName}
                 message={message}
                 creatorName={creatorName}
