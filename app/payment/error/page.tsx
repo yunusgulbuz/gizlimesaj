@@ -1,13 +1,15 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { XCircle, Home, RefreshCw } from 'lucide-react';
 
 export default function PaymentErrorPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const reason = searchParams.get('reason') || 'unknown_error';
   const message = searchParams.get('message') || '';
+  const orderId = searchParams.get('order_id');
 
   const getErrorMessage = (reason: string) => {
     switch (reason) {
@@ -23,6 +25,14 @@ export default function PaymentErrorPage() {
         return 'Sunucu hatası oluştu';
       default:
         return 'Bir hata oluştu';
+    }
+  };
+
+  const handleRetry = () => {
+    if (orderId) {
+      router.push(`/payment/${orderId}`);
+    } else {
+      window.history.back();
     }
   };
 
@@ -43,7 +53,7 @@ export default function PaymentErrorPage() {
 
         <div className="space-y-3">
           <button
-            onClick={() => window.history.back()}
+            onClick={handleRetry}
             className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors flex items-center justify-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />

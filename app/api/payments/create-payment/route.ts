@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAuthSupabaseClient } from '@/lib/supabase-auth-server';
 import { checkoutRateLimit } from '@/lib/rateLimit';
 import { generateShortId } from '@/lib/shortid';
 import { createPaynkolayHelper } from '@/lib/payments/paynkolay';
@@ -52,6 +53,14 @@ export async function POST(request: NextRequest) {
     console.log('Extracted template_id:', template_id, 'Type:', typeof template_id);
 
     const supabase = await createServerSupabaseClient();
+    const authSupabase = await createAuthSupabaseClient();
+    const {
+      data: authData,
+    } = await authSupabase.auth.getUser();
+
+    const currentUserId = authData?.user?.id ?? null;
+    const currentUserEmail = authData?.user?.email ?? null;
+    const normalizedBuyerEmail = buyer_email || currentUserEmail || '';
 
     // Handle existing order payment
     if (order_id) {
@@ -70,6 +79,13 @@ export async function POST(request: NextRequest) {
           { error: 'Order not found' },
           { status: 404 }
         );
+      }
+
+      if (!existingOrder.user_id && currentUserId) {
+        await supabase
+          .from('orders')
+          .update({ user_id: currentUserId, buyer_email: existingOrder.buyer_email || normalizedBuyerEmail })
+          .eq('id', existingOrder.id);
       }
 
       if (existingOrder.status !== 'pending') {
@@ -122,13 +138,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate required fields for new orders
-    if (!template_id || !recipient_name || !sender_name || !message || !buyer_email || !duration_id) {
+    if (!template_id || !recipient_name || !sender_name || !message || !normalizedBuyerEmail || !duration_id) {
       console.log('Missing fields validation:', {
         template_id: !!template_id,
         recipient_name: !!recipient_name,
         sender_name: !!sender_name,
         message: !!message,
-        buyer_email: !!buyer_email,
+        buyer_email: !!normalizedBuyerEmail,
         duration_id: !!duration_id
       });
       return NextResponse.json(
@@ -204,13 +220,14 @@ export async function POST(request: NextRequest) {
         short_id: shortId,
         amount: templatePrice,
         total_try: templatePrice, // Add required total_try field (price in Turkish Lira)
-        buyer_email,
+        buyer_email: normalizedBuyerEmail,
         status: 'pending',
         payment_provider: 'paynkolay', // Add required payment_provider field
         created_at: new Date().toISOString(),
         text_fields: text_fields || {},
         design_style: design_style || 'modern',
-        bg_audio_url: bg_audio_url || null
+        bg_audio_url: bg_audio_url || null,
+        user_id: currentUserId
       })
       .select()
       .single();

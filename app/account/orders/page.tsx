@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ShareVisualGenerator } from '@/components/share/share-visual-generator';
 import {
   ShoppingBag,
   Calendar,
@@ -15,6 +16,8 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
+  Copy,
+  Share2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,18 +31,91 @@ interface Order {
   short_id: string | null;
   created_at: string;
   expires_at: string | null;
+  buyer_email?: string | null;
+  message: string;
 }
 
 const statusConfig = {
-  pending: { label: 'Beklemede', icon: Clock, color: 'bg-yellow-100 text-yellow-700' },
-  completed: { label: 'Tamamlandı', icon: CheckCircle2, color: 'bg-green-100 text-green-700' },
-  failed: { label: 'Başarısız', icon: XCircle, color: 'bg-red-100 text-red-700' },
+  pending: { label: 'Beklemede', icon: Clock, pill: 'border-white/30 bg-white/20 text-white' },
+  completed: { label: 'Tamamlandı', icon: CheckCircle2, pill: 'border-white/30 bg-emerald-300/30 text-white' },
+  failed: { label: 'Başarısız', icon: XCircle, pill: 'border-white/30 bg-red-300/30 text-white' },
 };
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareOrder, setShareOrder] = useState<Order | null>(null);
+  const [qrCache, setQrCache] = useState<Record<string, string>>({});
+  const [isShareQrLoading, setIsShareQrLoading] = useState(false);
   const supabase = createClient();
+  const appBaseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://gizlimesaj.com';
+
+  const getMessageUrl = (shortId: string | null) =>
+    shortId ? `${appBaseUrl}/m/${shortId}` : '';
+
+  const copyMessageLink = async (shortId: string | null) => {
+    if (!shortId) {
+      toast.error('Bu sipariş için paylaşılabilir link henüz hazır değil.');
+      return;
+    }
+
+    const link = getMessageUrl(shortId);
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success('Mesaj linki kopyalandı!');
+    } catch (error) {
+      console.error('Copy link error:', error);
+      toast.error('Link kopyalanamadı. Lütfen tekrar deneyin.');
+    }
+  };
+
+  const handleShareVisual = async (order: Order) => {
+    if (!order.short_id) {
+      toast.error('Bu sipariş için paylaşılabilir sayfa henüz hazırlanmadı.');
+      return;
+    }
+
+    setShareOrder(order);
+    setIsShareDialogOpen(true);
+
+    if (qrCache[order.short_id]) {
+      return;
+    }
+
+    setIsShareQrLoading(true);
+
+    try {
+      const link = getMessageUrl(order.short_id);
+      const qrEndpoint = `https://api.qrserver.com/v1/create-qr-code/?size=560x560&data=${encodeURIComponent(link)}&margin=1`;
+      const response = await fetch(qrEndpoint);
+
+      if (!response.ok) {
+        throw new Error('QR kodu alınamadı');
+      }
+
+      const blob = await response.blob();
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === 'string') {
+            resolve(reader.result);
+          } else {
+            reject(new Error('QR kod data URL oluşturulamadı'));
+          }
+        };
+        reader.onerror = () => reject(new Error('QR kod data URL okunamadı'));
+        reader.readAsDataURL(blob);
+      });
+
+      setQrCache((prev) => ({ ...prev, [order.short_id!]: dataUrl }));
+    } catch (error) {
+      console.error('Share visual QR error:', error);
+      toast.error('QR kod hazırlanamadı. Lütfen tekrar deneyin.');
+    } finally {
+      setIsShareQrLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -51,7 +127,7 @@ export default function OrdersPage() {
           return;
         }
 
-        const { data, error } = await supabase
+        const baseQuery = supabase
           .from('orders')
           .select(`
             id,
@@ -62,18 +138,27 @@ export default function OrdersPage() {
             short_id,
             recipient_name,
             sender_name,
+            message,
+            buyer_email,
             templates (
               title,
               slug
             )
-          `)
-          .eq('user_id', user.id)
+          `);
+
+        const filters = [`user_id.eq.${user.id}`];
+        if (user.email) {
+          filters.push(`buyer_email.eq.${user.email}`);
+        }
+
+        const { data, error } = await baseQuery
+          .or(filters.join(','))
           .order('created_at', { ascending: false });
 
         if (error) throw error;
 
         const formattedOrders: Order[] = (data || []).map((order: any) => {
-          const template = order.templates;
+          const template = Array.isArray(order.templates) ? order.templates[0] : order.templates;
 
           return {
             id: order.id,
@@ -85,6 +170,8 @@ export default function OrdersPage() {
             short_id: order.short_id || null,
             created_at: order.created_at,
             expires_at: order.expires_at || null,
+            buyer_email: order.buyer_email || null,
+            message: order.message || '',
           };
         });
 
@@ -135,67 +222,192 @@ export default function OrdersPage() {
       ) : (
         <div className="space-y-4">
           {orders.map((order) => {
-            const StatusIcon = statusConfig[order.status as keyof typeof statusConfig]?.icon || Package;
-            const statusLabel = statusConfig[order.status as keyof typeof statusConfig]?.label || order.status;
-            const statusColor = statusConfig[order.status as keyof typeof statusConfig]?.color || 'bg-gray-100 text-gray-700';
+            const config = statusConfig[order.status as keyof typeof statusConfig];
+            const StatusIcon = config?.icon || Package;
+            const statusLabel = config?.label || order.status;
+            const statusPill = config?.pill || 'border-white/30 bg-white/20 text-white';
+            const messageUrl = getMessageUrl(order.short_id);
+            const hasMessageUrl = Boolean(order.short_id);
+            const formattedCreated = new Date(order.created_at).toLocaleDateString('tr-TR', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric',
+            });
+            const formattedExpires = order.expires_at
+              ? new Date(order.expires_at).toLocaleDateString('tr-TR', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                })
+              : null;
 
             return (
-              <Card key={order.id}>
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{order.template_title}</CardTitle>
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-600">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          {new Date(order.created_at).toLocaleDateString('tr-TR')}
-                        </span>
-                        <span>•</span>
-                        <span>Alıcı: {order.recipient_name}</span>
-                      </div>
-                    </div>
-                    <Badge className={statusColor}>
-                      <StatusIcon className="mr-1 h-3 w-3" />
-                      {statusLabel}
-                    </Badge>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="pt-0">
-                  <div className="flex items-center justify-between border-t pt-4">
+              <Card
+                key={order.id}
+                className="overflow-hidden border-none bg-white/90 shadow-xl shadow-purple-200/50"
+              >
+                <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 px-6 py-5 text-white">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Tutar</p>
-                      <p className="text-lg font-bold text-gray-900">
-                        ₺{parseFloat(order.amount).toFixed(2)}
-                      </p>
-                    </div>
-
-                    {order.status === 'completed' && order.short_id && (
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <Link href={`/m/${order.short_id}`}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Görüntüle
-                          </Link>
-                        </Button>
+                      <CardTitle className="text-lg text-white">{order.template_title}</CardTitle>
+                      <div className="mt-2 flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.35em] text-white/70">
+                        <span className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-white/80" />
+                          {formattedCreated}
+                        </span>
+                        {order.short_id && (
+                          <span>KOD: {order.short_id.toUpperCase()}</span>
+                        )}
                       </div>
-                    )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span
+                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] ${statusPill}`}
+                      >
+                        <StatusIcon className="h-3.5 w-3.5" />
+                        {statusLabel}
+                      </span>
+                      <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold">
+                        ₺{parseFloat(order.amount).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <CardContent className="space-y-6 py-6">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-inner shadow-purple-100/40">
+                      <p className="text-xs uppercase tracking-[0.35em] text-gray-400">Gönderen</p>
+                      <p className="mt-2 font-semibold text-gray-900">{order.sender_name}</p>
+                    </div>
+                    <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-inner shadow-purple-100/40">
+                      <p className="text-xs uppercase tracking-[0.35em] text-gray-400">Alıcı</p>
+                      <p className="mt-2 font-semibold text-gray-900">{order.recipient_name}</p>
+                      {order.buyer_email && (
+                        <p className="mt-1 text-xs text-gray-500">{order.buyer_email}</p>
+                      )}
+                    </div>
+                    <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-inner shadow-purple-100/40">
+                      <p className="text-xs uppercase tracking-[0.35em] text-gray-400">Sipariş tarihi</p>
+                      <p className="mt-2 font-semibold text-gray-900">{formattedCreated}</p>
+                      {formattedExpires && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          Erişim: {formattedExpires} tarihine kadar
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  {order.expires_at && (
-                    <div className="mt-3 rounded-lg bg-gray-50 p-3">
-                      <p className="text-xs text-gray-600">
-                        <Clock className="mr-1 inline h-3 w-3" />
-                        Erişim süresi: {new Date(order.expires_at).toLocaleDateString('tr-TR')} tarihine kadar
+                  {order.message && (
+                    <div className="rounded-2xl border border-dashed border-purple-200 bg-purple-50/60 p-5">
+                      <p className="text-xs uppercase tracking-[0.35em] text-purple-500">
+                        Mesajdan bir kesit
+                      </p>
+                      <p className="mt-3 max-h-24 overflow-y-auto text-sm leading-relaxed text-purple-900/90">
+                        {order.message}
                       </p>
                     </div>
                   )}
+
+                  {hasMessageUrl && (
+                    <div className="rounded-2xl border border-purple-200 bg-purple-50/50 px-4 py-4">
+                      <p className="text-xs uppercase tracking-[0.35em] text-purple-500">
+                        Mesaj linki
+                      </p>
+                      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+                        <span className="flex-1 truncate text-sm font-medium text-purple-900">
+                          {messageUrl}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyMessageLink(order.short_id)}
+                          className="gap-2 text-purple-600 hover:bg-purple-100"
+                        >
+                          <Copy className="h-4 w-4" />
+                          Kopyala
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-3">
+                    <Button
+                      asChild
+                      className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-300/40 disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={!hasMessageUrl || order.status !== 'completed'}
+                    >
+                      <Link href={hasMessageUrl ? `/m/${order.short_id}` : '#'} prefetch={false}>
+                        <Eye className="h-4 w-4" />
+                        Mesajı aç
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="gap-2 border-purple-200 text-purple-600 hover:border-purple-300 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      onClick={() => copyMessageLink(order.short_id)}
+                      disabled={!hasMessageUrl}
+                    >
+                      <Copy className="h-4 w-4" />
+                      Linki kopyala
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="gap-2 text-gray-600 hover:text-purple-600 disabled:cursor-not-allowed disabled:text-gray-400"
+                      onClick={() => handleShareVisual(order)}
+                      disabled={!hasMessageUrl}
+                    >
+                      <Share2 className="h-4 w-4" />
+                      Görsel indir
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             );
           })}
         </div>
       )}
+
+      <Dialog
+        open={isShareDialogOpen}
+        onOpenChange={(open) => {
+          setIsShareDialogOpen(open);
+          if (!open) {
+            setShareOrder(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-3xl border-none bg-white/95 p-0 shadow-2xl shadow-purple-200/60 backdrop-blur-xl sm:max-w-4xl">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="text-2xl font-semibold text-gray-900">
+              Görsel olarak paylaş
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              {shareOrder
+                ? `${shareOrder.recipient_name} için hazırladığın mesajı hikaye ve yatay formatta indir.`
+                : 'Siparişiniz için hikaye formatında görseller oluşturabilirsiniz.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 pb-6">
+            {shareOrder && (
+              <ShareVisualGenerator
+                shortId={shareOrder.short_id!}
+                recipientName={shareOrder.recipient_name}
+                senderName={shareOrder.sender_name}
+                templateTitle={shareOrder.template_title}
+                message={shareOrder.message}
+                pageUrl={shareOrder.short_id ? getMessageUrl(shareOrder.short_id) : appBaseUrl}
+                qrDataUrl={shareOrder.short_id ? qrCache[shareOrder.short_id] : undefined}
+              />
+            )}
+            {isShareQrLoading && (
+              <p className="mt-4 text-center text-xs text-gray-500">
+                QR kod hazırlanıyor...
+              </p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

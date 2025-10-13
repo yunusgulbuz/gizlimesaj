@@ -3,10 +3,23 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle, ExternalLink, Clock, Copy, Check } from 'lucide-react';
+import {
+  CheckCircle,
+  ExternalLink,
+  Clock,
+  Copy,
+  Check,
+  Sparkles,
+  QrCode,
+  Share2,
+  Download,
+  Loader2,
+  XCircle,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { SocialShare } from '@/components/ui/social-share';
+import { ShareVisualGenerator } from '@/components/share/share-visual-generator';
 
 interface PersonalPageData {
   id: string;
@@ -32,11 +45,50 @@ export default function SuccessPage() {
 
   // Get personal page URL safely (only on client side)
   const [personalPageUrl, setPersonalPageUrl] = useState<string>('');
+  const [qrImageUrl, setQrImageUrl] = useState<string>('');
+  const [isDownloadingQR, setIsDownloadingQR] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string>('');
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setPersonalPageUrl(`${window.location.origin}/m/${shortId}`);
-    }
+    if (typeof window === 'undefined') return;
+
+    const url = `${window.location.origin}/m/${shortId}`;
+    setPersonalPageUrl(url);
+    const encodedUrl = encodeURIComponent(url);
+    const remoteQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=560x560&data=${encodedUrl}&margin=1`;
+
+    setQrImageUrl(remoteQrUrl);
+    setQrDataUrl('');
+
+    let isCancelled = false;
+
+    const loadQrDataUrl = async () => {
+      try {
+        const response = await fetch(remoteQrUrl);
+        if (!response.ok) {
+          throw new Error('QR kodu alınamadı');
+        }
+
+        const blob = await response.blob();
+        if (isCancelled) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (!isCancelled && typeof reader.result === 'string') {
+            setQrDataUrl(reader.result);
+          }
+        };
+        reader.readAsDataURL(blob);
+      } catch (qrError) {
+        console.error('QR data URL error:', qrError);
+      }
+    };
+
+    loadQrDataUrl();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [shortId]);
 
   useEffect(() => {
@@ -79,8 +131,9 @@ export default function SuccessPage() {
   }, [shortId]);
 
   const handleCopyUrl = async () => {
+    const urlToCopy = personalPageUrl || `https://gizlimesaj.com/m/${shortId}`;
     try {
-      await navigator.clipboard.writeText(personalPageUrl);
+      await navigator.clipboard.writeText(urlToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -93,147 +146,432 @@ export default function SuccessPage() {
     console.log(`Shared via ${platform}`);
   };
 
+  const handleNativeShare = async () => {
+    const urlToShare = personalPageUrl || `https://gizlimesaj.com/m/${shortId}`;
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: `${pageData?.sender_name || 'Gizli Mesaj'} sana özel bir sürpriz hazırladı`,
+          text: `${pageData?.recipient_name || 'Sevdiğin'} için hazırlanan mesajı hemen keşfet`,
+          url: urlToShare,
+        });
+      } catch (shareError) {
+        console.warn('Native share cancelled or failed:', shareError);
+      }
+    } else {
+      const urlToCopy = urlToShare;
+      try {
+        await navigator.clipboard.writeText(urlToCopy);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (copyError) {
+        console.error('Clipboard copy failed:', copyError);
+      }
+    }
+  };
+
+  const handleDownloadQR = async () => {
+    if (!qrImageUrl && !qrDataUrl) return;
+
+    try {
+      setIsDownloadingQR(true);
+      let dataUrl = qrDataUrl;
+
+      if (!dataUrl && qrImageUrl) {
+        const response = await fetch(qrImageUrl);
+
+        if (!response.ok) {
+          throw new Error('QR kod indirilemedi');
+        }
+
+        const blob = await response.blob();
+        dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+              resolve(reader.result);
+            } else {
+              reject(new Error('QR kod data URL oluşturulamadı'));
+            }
+          };
+          reader.onerror = () => reject(new Error('QR kod data URL okunamadı'));
+          reader.readAsDataURL(blob);
+        });
+
+        setQrDataUrl(dataUrl);
+      }
+
+      if (!dataUrl) {
+        throw new Error('QR kod hazır değil');
+      }
+
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `gizlimesaj-${shortId}-qr.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (downloadError) {
+      console.error('QR download error:', downloadError);
+    } finally {
+      setIsDownloadingQR(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
-        <Card className="max-w-md mx-auto shadow-lg">
-          <CardContent className="text-center pt-8 pb-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Gizli mesajınız hazırlanıyor...
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Ödeme işleminiz tamamlandı. Sayfanız oluşturuluyor.
-            </p>
-            {retryCount > 0 && (
-              <div className="flex items-center justify-center text-sm text-gray-500">
-                <Clock className="w-4 h-4 mr-1" />
-                <span>Deneme {retryCount}/10</span>
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50/60 to-indigo-50">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -left-10 -top-10 h-56 w-56 rounded-full bg-purple-300/30 blur-3xl" />
+          <div className="absolute bottom-[-15%] right-[-10%] h-72 w-72 rounded-full bg-pink-300/25 blur-3xl" />
+        </div>
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16">
+          <Card className="w-full max-w-md border-white/70 bg-white/80 backdrop-blur-xl shadow-2xl shadow-purple-200/60">
+            <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10">
+                <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
               </div>
-            )}
-            <div className="mt-4 text-xs text-gray-400">
-              Bu işlem birkaç saniye sürebilir...
-            </div>
-          </CardContent>
-        </Card>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Mesajınız hazırlanıyor
+              </h3>
+              <p className="max-w-sm text-sm text-gray-500">
+                Ödeme işleminiz tamamlandı. Sürpriz sayfanızı son dokunuşlarla hazırlıyoruz.
+              </p>
+              {retryCount > 0 && (
+                <div className="flex items-center gap-2 rounded-full bg-purple-50 px-4 py-2 text-xs font-medium text-purple-600">
+                  <Clock className="h-4 w-4" />
+                  <span>Kontrol {retryCount}/10</span>
+                </div>
+              )}
+              <span className="text-xs uppercase tracking-[0.2em] text-gray-400">
+                Bu işlem yalnızca birkaç saniye sürer
+              </span>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   if (error || !pageData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-purple-50 flex items-center justify-center p-4">
-        <Card className="max-w-md mx-auto shadow-lg">
-          <CardContent className="text-center pt-8 pb-8">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ExternalLink className="w-8 h-8 text-red-600" />
-            </div>
-            <h3 className="text-xl font-semibold text-red-600 mb-2">Sayfa Bulunamadı</h3>
-            <p className="text-gray-600 mb-6">
-              {error || 'Aradığınız sayfa bulunamadı veya süresi dolmuş olabilir.'}
-            </p>
-            <Link href="/">
-              <Button>Ana Sayfaya Dön</Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-100/50 to-indigo-100">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-[-15%] top-[-10%] h-64 w-64 rounded-full bg-red-200/30 blur-3xl" />
+          <div className="absolute bottom-[-20%] right-[-5%] h-80 w-80 rounded-full bg-purple-200/25 blur-3xl" />
+        </div>
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16">
+          <Card className="w-full max-w-lg border-white/70 bg-white/90 backdrop-blur-xl shadow-2xl shadow-purple-200/60">
+            <CardContent className="space-y-6 py-10 text-center">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-red-100">
+                <XCircle className="h-10 w-10 text-red-500" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-semibold text-gray-900">Sayfa bulunamadı</h3>
+                <p className="text-sm text-gray-600">
+                  {error || 'Aradığınız sayfa bulunamadı veya erişim süresi dolmuş olabilir.'}
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link href="/" className="inline-flex">
+                  <Button className="gap-2">
+                    Ana sayfaya dön
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/contact" className="inline-flex">
+                  <Button variant="outline" className="border-gray-200 bg-white/70 text-gray-700 backdrop-blur-sm hover:bg-white">
+                    Destek ekibiyle iletişime geç
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   const expiresAt = new Date(pageData.expires_at);
-  const daysLeft = Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  const timeRemainingMs = expiresAt.getTime() - Date.now();
+  const remainingDays = Math.max(0, Math.ceil(timeRemainingMs / (1000 * 60 * 60 * 24)));
+  const formattedExpiry = new Intl.DateTimeFormat('tr-TR', { dateStyle: 'long' }).format(expiresAt);
+  const shareTitle = `${pageData.sender_name} sana özel bir mesaj gönderdi!`;
+  const shareDescription = `${pageData.recipient_name} için hazırlanan sürprizi görüntüle.`;
+  const shareUrl = personalPageUrl || `https://gizlimesaj.com/m/${shortId}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4">
-      <div className="max-w-lg mx-auto pt-12">
-        {/* Success Header */}
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <CheckCircle className="w-10 h-10 text-green-600" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            Mesajınız Hazır! 🎉
-          </h1>
-          <p className="text-lg text-gray-600">
-            Artık paylaşabilirsiniz
-          </p>
-        </div>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50/60 to-indigo-50 px-4 pb-20 pt-16">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-20 top-[-10%] h-72 w-72 rounded-full bg-purple-300/30 blur-3xl" />
+        <div className="absolute right-[-15%] top-[-20%] h-80 w-80 rounded-full bg-pink-200/40 blur-3xl" />
+        <div className="absolute bottom-[-25%] left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
+      </div>
 
-        {/* Main Info Card */}
-        <Card className="mb-6 shadow-lg border-0">
-          <CardContent className="pt-6 pb-6">
-            <div className="space-y-4">
-              {/* Sender */}
-              <div className="flex justify-between items-center py-2">
-                <span className="text-gray-500 font-medium">Gönderen</span>
-                <span className="font-semibold text-gray-900">{pageData.sender_name}</span>
-              </div>
-              
-              {/* Duration */}
-              <div className="flex justify-between items-center py-2 border-t border-gray-100">
-                <span className="text-gray-500 font-medium">Süre</span>
-                <span className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-purple-600" />
-                  {daysLeft > 0 ? `${daysLeft} gün kaldı` : 'Süresi dolmuş'}
-                </span>
-              </div>
-              
-              {/* URL */}
-              <div className="border-t border-gray-100 pt-4">
-                <span className="text-gray-500 font-medium block mb-3">Mesaj Linki</span>
-                <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-700 flex-1 truncate">{personalPageUrl}</span>
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8">
+        <header className="text-center">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white/80 shadow-xl shadow-purple-200/60">
+            <CheckCircle className="h-10 w-10 text-purple-600" />
+          </div>
+          <h1 className="mt-6 text-4xl font-bold text-gray-900 sm:text-5xl">
+            Mesajınız hazır! 🎉
+          </h1>
+          <p className="mt-3 text-lg text-gray-600">
+            {pageData.recipient_name} için hazırladığınız sürpriz sayfa yayında.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm font-medium text-gray-700">
+            <span className="flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-sm shadow-purple-200/60">
+              <Sparkles className="h-4 w-4 text-purple-500" />
+              {pageData.template_title}
+            </span>
+            <span className="flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-sm shadow-purple-200/60">
+              <Clock className="h-4 w-4 text-rose-500" />
+              {timeRemainingMs > 0 ? `${remainingDays} gün kaldı` : 'Süre dolmak üzere'}
+            </span>
+            <span className="flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-sm shadow-purple-200/60">
+              <QrCode className="h-4 w-4 text-indigo-500" />
+              {shortId.toUpperCase()}
+            </span>
+          </div>
+        </header>
+
+        <div className="grid gap-6 lg:grid-cols-[1.65fr_1fr]">
+          <div className="space-y-6">
+            <Card className="border-white/70 bg-white/85 backdrop-blur-sm shadow-xl shadow-purple-200/60">
+              <CardHeader className="pb-0">
+                <CardTitle className="text-2xl text-gray-900">Mesaj özeti</CardTitle>
+                <CardDescription className="text-gray-500">
+                  Paylaşmadan önce bilgileri son kez kontrol edin.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6">
+                <dl className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-purple-100 bg-purple-50/60 p-4">
+                    <dt className="text-xs uppercase tracking-[0.25em] text-purple-500">
+                      Gönderen
+                    </dt>
+                    <dd className="mt-2 text-lg font-semibold text-gray-900">
+                      {pageData.sender_name}
+                    </dd>
+                  </div>
+                  <div className="rounded-2xl border border-rose-100 bg-rose-50/60 p-4">
+                    <dt className="text-xs uppercase tracking-[0.25em] text-rose-500">
+                      Alıcı
+                    </dt>
+                    <dd className="mt-2 text-lg font-semibold text-gray-900">
+                      {pageData.recipient_name}
+                    </dd>
+                  </div>
+                  <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4">
+                    <dt className="text-xs uppercase tracking-[0.25em] text-indigo-500">
+                      Şablon
+                    </dt>
+                    <dd className="mt-2 text-sm font-semibold text-gray-900">
+                      {pageData.template_title}
+                    </dd>
+                  </div>
+                  <div className="rounded-2xl border border-gray-200 bg-white/80 p-4">
+                    <dt className="text-xs uppercase tracking-[0.25em] text-gray-400">
+                      Kısa bağlantı kodu
+                    </dt>
+                    <dd className="mt-2 text-sm font-semibold text-gray-900">
+                      {shortId.toUpperCase()}
+                    </dd>
+                  </div>
+                </dl>
+
+                <div className="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-inner shadow-purple-100/40">
+                  <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
+                    Mesajdan bir parça
+                  </p>
+                  <p className="mt-3 max-h-40 overflow-y-auto text-base leading-relaxed text-gray-700">
+                    {pageData.message}
+                  </p>
+                  <p className="mt-4 text-right text-sm font-medium text-gray-500">
+                    — {pageData.sender_name}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-white/70 bg-white/85 backdrop-blur-sm shadow-xl shadow-purple-200/60">
+              <CardHeader className="pb-0">
+                <CardTitle className="text-gray-900">Mesaj bağlantısı</CardTitle>
+                <CardDescription className="text-gray-500">
+                  Linki kopyalayın veya doğrudan paylaşın.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="flex flex-1 flex-col gap-2 rounded-2xl border border-gray-200 bg-white/90 px-4 py-3 text-sm text-gray-700 shadow-inner shadow-purple-100/50">
+                    <span className="truncate">{shareUrl}</span>
+                    <span className="text-xs text-gray-400">Süre: {formattedExpiry}</span>
+                  </div>
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant="outline"
                     onClick={handleCopyUrl}
-                    className="shrink-0"
+                    className="flex w-full items-center justify-center gap-2 border-purple-200 bg-white/90 text-purple-600 hover:border-purple-300 hover:text-purple-700 sm:w-auto"
                   >
                     {copied ? (
-                      <Check className="w-4 h-4 text-green-600" />
+                      <Check className="h-4 w-4" />
                     ) : (
-                      <Copy className="w-4 h-4" />
+                      <Copy className="h-4 w-4" />
                     )}
+                    {copied ? 'Kopyalandı' : 'Linki kopyala'}
                   </Button>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Share Section */}
-        <div className="mb-6">
-          <SocialShare
-            url={personalPageUrl}
-            title={`${pageData.sender_name} sana özel bir mesaj gönderdi!`}
-            description={`${pageData.recipient_name} için hazırlanan özel mesajı görüntüle`}
-            recipientName={pageData.recipient_name}
-            onShare={handleShare}
-          />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Link href={`/m/${shortId}`} className="inline-flex">
+                    <Button className="w-full justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-300/40">
+                      <ExternalLink className="h-4 w-4" />
+                      Sürprizi aç
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-center gap-2 border-purple-200 bg-white/90 text-purple-600 hover:border-purple-300 hover:text-purple-700"
+                    onClick={handleNativeShare}
+                    disabled={!shareUrl}
+                  >
+                    <Share2 className="h-4 w-4" />
+                    Telefona gönder
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="rounded-2xl border border-white/70 bg-white/85 p-1 backdrop-blur-sm shadow-xl shadow-purple-200/60">
+              <SocialShare
+                url={shareUrl}
+                title={shareTitle}
+                description={shareDescription}
+                recipientName={pageData.recipient_name}
+                onShare={handleShare}
+              />
+            </div>
+
+            <div className="rounded-2xl border border-white/70 bg-white/85 p-6 backdrop-blur-sm shadow-xl shadow-purple-200/60">
+              <ShareVisualGenerator
+                shortId={shortId}
+                recipientName={pageData.recipient_name}
+                senderName={pageData.sender_name}
+                templateTitle={pageData.template_title}
+                message={pageData.message}
+                pageUrl={shareUrl}
+                qrDataUrl={qrDataUrl || undefined}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="border-white/70 bg-white/90 backdrop-blur-sm shadow-xl shadow-purple-200/60">
+              <CardHeader className="pb-0">
+                <CardTitle className="flex items-center gap-2 text-gray-900">
+                  <QrCode className="h-5 w-5 text-purple-600" />
+                  Paylaşılabilir QR kod
+                </CardTitle>
+                <CardDescription className="text-gray-500">
+                  Telefon kameraları ile anında açılabilen kare kod.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="rounded-3xl border border-purple-100 bg-white/90 p-4 shadow-inner shadow-purple-100/50">
+                    {qrImageUrl ? (
+                      <img
+                        src={qrImageUrl}
+                        alt="Gizli mesaj için QR kod"
+                        className="h-56 w-56 rounded-2xl bg-white object-contain"
+                      />
+                    ) : (
+                      <div className="flex h-56 w-56 items-center justify-center rounded-2xl bg-purple-50 text-sm text-purple-500">
+                        QR kod hazırlanıyor...
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-xs uppercase tracking-[0.3em] text-gray-400">
+                    Kamerayı yönlendir
+                  </span>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Button
+                    onClick={handleDownloadQR}
+                    disabled={!qrImageUrl || isDownloadingQR}
+                    className="w-full justify-center gap-2 bg-purple-600 text-white shadow-lg shadow-purple-300/50 hover:bg-purple-700"
+                  >
+                    {isDownloadingQR ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4" />
+                    )}
+                    {isDownloadingQR ? 'İndiriliyor...' : 'PNG indir'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-center gap-2 border-purple-200 bg-white/90 text-purple-600 hover:border-purple-300 hover:text-purple-700"
+                    onClick={handleNativeShare}
+                    disabled={!shareUrl}
+                  >
+                    <Share2 className="h-4 w-4" />
+                    Telefondan paylaş
+                  </Button>
+                </div>
+
+                <p className="text-sm leading-relaxed text-gray-500">
+                  QR kodu baskıya göndererek hediyelerinize ekleyin. Okutulduğunda {pageData.recipient_name} doğrudan
+                  mesaj sayfasına yönlendirilir.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-white/70 bg-white/90 backdrop-blur-sm shadow-xl shadow-purple-200/60">
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3 rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-4">
+                  <Clock className="h-10 w-10 text-purple-500" />
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-purple-600">
+                      {timeRemainingMs > 0 ? 'Sürpriziniz yayında' : 'Süre dolmak üzere'}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {timeRemainingMs > 0
+                        ? `${formattedExpiry} tarihine kadar erişilebilir`
+                        : 'Bu sayfayı mümkün olan en kısa sürede paylaşın'}
+                    </p>
+                  </div>
+                </div>
+                <ul className="space-y-3 text-sm text-gray-600">
+                  <li className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-inner shadow-purple-100/40">
+                    • Bağlantıyı WhatsApp, SMS veya e-posta ile paylaşabilirsiniz.
+                  </li>
+                  <li className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-inner shadow-purple-100/40">
+                    • QR kodu fiziksel kartlara ekleyerek deneyimi zenginleştirin.
+                  </li>
+                  <li className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-inner shadow-purple-100/40">
+                    • Hesabınızdaki <strong className="font-semibold text-purple-600">Siparişlerim</strong> sekmesinden bu sayfaya her zaman ulaşabilirsiniz.
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        {/* Preview Button */}
-        <Card className="shadow-lg border-0">
-          <CardContent className="pt-6 pb-6">
-            <div className="text-center">
-              <Link href={`/m/${shortId}`}>
-                <Button 
-                  size="lg" 
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg"
-                >
-                  <ExternalLink className="w-5 h-5 mr-2" />
-                  Sürprizi Görüntüle
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Footer */}
-        <div className="text-center mt-8 text-sm text-gray-500">
-          <Link href="/" className="text-purple-600 hover:underline">
-            Yeni bir mesaj oluştur →
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <Link href="/templates" className="inline-flex">
+            <Button
+              variant="outline"
+              className="gap-2 border-purple-200 bg-white/90 text-purple-600 hover:border-purple-300 hover:text-purple-700"
+            >
+              <Sparkles className="h-4 w-4" />
+              Diğer şablonları keşfet
+            </Button>
+          </Link>
+          <Link href="/" className="inline-flex">
+            <Button variant="ghost" className="text-gray-600 hover:text-purple-600">
+              Yeni bir mesaj oluştur
+            </Button>
           </Link>
         </div>
       </div>

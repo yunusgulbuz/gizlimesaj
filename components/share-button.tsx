@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Share2, Copy, Link, MessageCircle, Twitter, Facebook, Instagram } from 'lucide-react';
+import { Share2, Copy, Link, MessageCircle, Twitter, Facebook, Instagram, Image as ImageIcon } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,9 +15,10 @@ interface ShareButtonProps {
   shortId: string;
   recipientName: string;
   className?: string;
+  onVisualShare?: () => void;
 }
 
-export function ShareButton({ shortId, recipientName, className }: ShareButtonProps) {
+export function ShareButton({ shortId, recipientName, className, onVisualShare }: ShareButtonProps) {
   const [isDarkBackground, setIsDarkBackground] = useState(false);
 
   // Detect background color to adjust button visibility
@@ -115,6 +116,8 @@ export function ShareButton({ shortId, recipientName, className }: ShareButtonPr
     switch (format) {
       case 'copy':
         return <Copy className="w-4 h-4" />;
+      case 'visual':
+        return <ImageIcon className="w-4 h-4" />;
       case 'whatsapp':
         return <MessageCircle className="w-4 h-4" />;
       case 'twitter':
@@ -132,6 +135,7 @@ export function ShareButton({ shortId, recipientName, className }: ShareButtonPr
 
   const shareOptions = [
     { key: 'copy', name: 'Linki Kopyala', action: copyToClipboard },
+    ...(onVisualShare ? [{ key: 'visual', name: 'Görsel olarak indir', action: onVisualShare }] : []),
     { key: 'whatsapp', name: 'WhatsApp\'ta Paylaş', action: shareToWhatsApp },
     { key: 'instagram', name: 'Instagram\'da Paylaş', action: shareToInstagram },
     { key: 'twitter', name: 'Twitter\'da Paylaş', action: shareToTwitter },

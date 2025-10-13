@@ -13,6 +13,8 @@ import { createAnalyticsTracker } from '@/lib/analytics';
 import TemplateRenderer from '@/templates/shared/template-renderer';
 import { getDefaultTextFields } from '@/templates/shared/types';
 import { ShareButton } from '@/components/share-button';
+import { ShareVisualGenerator } from '@/components/share/share-visual-generator';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface PersonalPage {
   id: string;
@@ -50,10 +52,11 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
   const [isExpired, setIsExpired] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [shortId, setShortId] = useState<string>('');
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string>('');
+  const [qrDataUrl, setQrDataUrl] = useState<string>('');
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   
   // Initialize params
   useEffect(() => {
@@ -93,20 +96,46 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
     fetchPersonalPage();
   }, [shortId]);
 
-  // Initialize audio
   useEffect(() => {
-    if (personalPage?.template_bg_audio_url) {
-      const audioElement = new Audio(personalPage.template_bg_audio_url);
-      audioElement.loop = true;
-      audioElement.volume = 0.5;
-      setAudio(audioElement);
+    if (!shortId) return;
+    if (typeof window === 'undefined') return;
 
-      return () => {
-        audioElement.pause();
-        audioElement.src = '';
-      };
-    }
-  }, [personalPage?.template_bg_audio_url]);
+    const url = `${window.location.origin}/m/${shortId}`;
+    setShareUrl(url);
+    const encodedUrl = encodeURIComponent(url);
+    const remoteQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=560x560&data=${encodedUrl}&margin=1`;
+
+    setQrDataUrl('');
+
+    let isCancelled = false;
+
+    const loadQrDataUrl = async () => {
+      try {
+        const response = await fetch(remoteQrUrl);
+        if (!response.ok) {
+          throw new Error('QR kod alınamadı');
+        }
+        const blob = await response.blob();
+        if (isCancelled) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (!isCancelled && typeof reader.result === 'string') {
+            setQrDataUrl(reader.result);
+          }
+        };
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        console.error('QR data URL error:', error);
+      }
+    };
+
+    loadQrDataUrl();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [shortId]);
 
   // Countdown timer
   useEffect(() => {
@@ -140,24 +169,41 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
     return () => clearInterval(timer);
   }, [personalPage]);
 
-  // Audio controls
-  const toggleAudio = () => {
-    if (!audio) return;
+  useEffect(() => {
+    if (!personalPage) return;
 
-    if (isPlaying) {
-      audio.pause();
-    } else {
-      audio.play().catch(console.error);
-    }
-    setIsPlaying(!isPlaying);
-  };
+    const audioUrl = personalPage.text_fields?.musicUrl || personalPage.bg_audio_url;
+    if (!audioUrl) return;
 
-  const toggleMute = () => {
-    if (!audio) return;
-    
-    audio.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
+    let cancelled = false;
+
+    const attemptAutoPlay = () => {
+      const videoElement = document.querySelector('video');
+      const audioElement = document.querySelector('audio');
+      const mediaElement = (videoElement as HTMLMediaElement | null) || (audioElement as HTMLMediaElement | null);
+
+      if (!mediaElement) return;
+
+      mediaElement
+        .play()
+        .then(() => {
+          if (!cancelled) {
+            setIsPlaying(true);
+            setHasUserInteracted(true);
+          }
+        })
+        .catch(() => {
+          // Autoplay mobile tarayıcılarda engellenebilir, kullanıcı etkileşimini bekle.
+        });
+    };
+
+    const timeoutId = window.setTimeout(attemptAutoPlay, 500);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [personalPage]);
 
   if (isLoading) {
     return (
@@ -172,20 +218,29 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
 
   if (!personalPage || !personalPage.is_active) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Heart className="h-8 w-8 text-gray-400" />
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50 flex items-center justify-center px-4">
+        <div className="max-w-lg w-full rounded-3xl bg-white/85 px-8 py-12 text-center shadow-2xl shadow-purple-200/60 backdrop-blur-xl">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 text-purple-600">
+            <Heart className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {personalPage?.template_title ? `${personalPage.template_title} - Mesaj Bulunamadı` : 'Mesaj Bulunamadı'}
+          <h1 className="text-3xl font-bold text-gray-900">
+            Bu sürpriz artık görünür değil
           </h1>
-          <p className="text-gray-600 mb-6">
-            Bu mesaj artık mevcut değil veya süresi dolmuş olabilir.
+          <p className="mt-4 text-sm text-gray-600">
+            Özenle hazırlanmış bu mesajın süresi dolmuş ya da göndericisi tarafından gizlenmiş olabilir. Yeni bir mutluluk hazırlamak istersen birkaç dakikada yeni bir sayfa oluşturabilirsin.
           </p>
-          <Button asChild>
-            <a href="https://gizlimesaj.com">Kendi Mesajını Oluştur</a>
-          </Button>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Button asChild className="bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-300/40">
+              <a href="https://gizlimesaj.com">Yeni mesaj hazırla</a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="border-purple-200 bg-white/80 text-purple-600 hover:border-purple-300 hover:text-purple-700"
+            >
+              <a href="https://gizlimesaj.com/contact">Destek ekibiyle iletişime geç</a>
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -213,7 +268,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
 
   // Handle first user interaction to start audio
   const handleUserInteraction = () => {
-    if (!hasUserInteracted) {
+    if (!hasUserInteracted || !isPlaying) {
       setHasUserInteracted(true);
 
       // Try to start audio/video player
@@ -250,6 +305,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
           shortId={personalPage.short_id}
           recipientName={personalPage.recipient_name}
           className="bg-gray-900/95 text-white border-gray-700/50 hover:bg-gray-900 shadow-lg"
+          onVisualShare={() => setIsShareDialogOpen(true)}
         />
       </div>
 
@@ -264,7 +320,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
               return (
                 <YouTubePlayer
                   videoId={extractVideoId(audioUrl) || undefined}
-                  autoPlay={false}
+                  autoPlay={true}
                   loop={true}
                   className="bg-white/10 backdrop-blur-sm rounded-lg p-2 shadow-lg"
                 />
@@ -273,7 +329,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
               return (
                 <AudioPlayer
                   src={audioUrl}
-                  autoPlay={false}
+                  autoPlay={true}
                   loop={true}
                   className="bg-white/10 backdrop-blur-sm rounded-lg p-2 shadow-lg"
                 />
@@ -315,12 +371,36 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
 
       {/* Footer - birmesajmutluluk Branding */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-gray-900/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
-          <p className="text-xs text-white font-medium">
-            ❤️ birmesajmutluluk ile yapılmıştır
-          </p>
-        </div>
+      <div className="bg-gray-900/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+        <p className="text-xs text-white font-medium">
+          ❤️ birmesajmutluluk ile yapılmıştır
+        </p>
       </div>
+    </div>
+
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent className="max-w-3xl border-none bg-white/95 p-0 shadow-2xl shadow-purple-200/60 backdrop-blur-xl sm:max-w-4xl">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="text-2xl font-semibold text-gray-900">
+              Mesajını görsel olarak paylaş
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Dikey ve yatay PNG şablonlarını indirip hikayelerinde kullanabilirsin.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 pb-6">
+            <ShareVisualGenerator
+              shortId={shortId}
+              recipientName={personalPage.recipient_name}
+              senderName={personalPage.sender_name}
+              templateTitle={personalPage.template_title}
+              message={personalPage.message}
+              pageUrl={shareUrl || `https://gizlimesaj.com/m/${shortId}`}
+              qrDataUrl={qrDataUrl || undefined}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
