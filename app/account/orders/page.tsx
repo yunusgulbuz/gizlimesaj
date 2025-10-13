@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-client';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
@@ -41,9 +41,15 @@ const statusConfig = {
   failed: { label: 'Başarısız', icon: XCircle, pill: 'border-white/30 bg-red-300/30 text-white' },
 };
 
+const PAGE_SIZE = 5;
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [authUser, setAuthUser] = useState<{ id: string; email: string | null } | null>(null);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareOrder, setShareOrder] = useState<Order | null>(null);
   const [qrCache, setQrCache] = useState<Record<string, string>>({});
@@ -117,43 +123,57 @@ export default function OrdersPage() {
     }
   };
 
-  useEffect(() => {
-    const fetchOrders = async () => {
+  const loadOrders = useCallback(
+    async (pageNumber: number, append = false, userOverride?: { id: string; email: string | null }) => {
+      const targetUser = userOverride ?? authUser;
+
+      if (!targetUser) {
+        if (!append) {
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      if (append) {
+        setIsLoadingMore(true);
+      } else {
+        setIsLoading(true);
+      }
+
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const from = (pageNumber - 1) * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
 
-        if (!user) {
-          toast.error('Lütfen giriş yapın');
-          return;
+        const filterExpressions = [`user_id.eq.${targetUser.id}`];
+        if (targetUser.email) {
+          const quotedEmail = targetUser.email.replace(/"/g, '\\"');
+          filterExpressions.push(`buyer_email.eq."${quotedEmail}"`);
         }
 
-        const baseQuery = supabase
+        const { data, error, count } = await supabase
           .from('orders')
-          .select(`
-            id,
-            amount,
-            status,
-            created_at,
-            expires_at,
-            short_id,
-            recipient_name,
-            sender_name,
-            message,
-            buyer_email,
-            templates (
-              title,
-              slug
-            )
-          `);
-
-        const filters = [`user_id.eq.${user.id}`];
-        if (user.email) {
-          filters.push(`buyer_email.eq.${user.email}`);
-        }
-
-        const { data, error } = await baseQuery
-          .or(filters.join(','))
-          .order('created_at', { ascending: false });
+          .select(
+            `
+              id,
+              amount,
+              status,
+              created_at,
+              expires_at,
+              short_id,
+              recipient_name,
+              sender_name,
+              message,
+              buyer_email,
+              templates (
+                title,
+                slug
+              )
+            `,
+            { count: 'exact' }
+          )
+          .or(filterExpressions.join(','))
+          .order('created_at', { ascending: false })
+          .range(from, to);
 
         if (error) throw error;
 
@@ -175,19 +195,66 @@ export default function OrdersPage() {
           };
         });
 
-        setOrders(formattedOrders);
+        setOrders((prev) => {
+          if (!append) {
+            return formattedOrders;
+          }
+
+          const merged = [...prev, ...formattedOrders];
+          const unique = new Map<string, Order>();
+          merged.forEach((item) => unique.set(item.id, item));
+          return Array.from(unique.values());
+        });
+
+        setHasMore(
+          count != null
+            ? to + 1 < count
+            : formattedOrders.length === PAGE_SIZE
+        );
+        setPage(pageNumber);
       } catch (error) {
         console.error('Error fetching orders:', error);
         toast.error('Siparişler yüklenemedi');
       } finally {
+        if (append) {
+          setIsLoadingMore(false);
+        } else {
+          setIsLoading(false);
+        }
+      }
+    },
+    [authUser, supabase]
+  );
+
+  useEffect(() => {
+    if (authUser) {
+      return;
+    }
+
+    const fetchOrders = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          toast.error('Lütfen giriş yapın');
+          setIsLoading(false);
+          return;
+        }
+
+        const authInfo = { id: user.id, email: user.email ?? null };
+        setAuthUser(authInfo);
+        await loadOrders(1, false, authInfo);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+        toast.error('Siparişler yüklenemedi');
         setIsLoading(false);
       }
     };
 
     fetchOrders();
-  }, [supabase]);
+  }, [authUser, supabase, loadOrders]);
 
-  if (isLoading) {
+  if (isLoading && orders.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-rose-600" />
@@ -365,6 +432,28 @@ export default function OrdersPage() {
               </Card>
             );
           })}
+
+          {hasMore && (
+            <div className="flex justify-center pt-2">
+              <Button
+                variant="outline"
+                className="gap-2 border-purple-200 text-purple-600 hover:border-purple-300 hover:text-purple-700"
+                onClick={() => {
+                  void loadOrders(page + 1, true);
+                }}
+                disabled={isLoadingMore}
+              >
+                {isLoadingMore ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Yükleniyor...
+                  </>
+                ) : (
+                  'Daha Fazla Yükle'
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
