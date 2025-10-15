@@ -434,30 +434,59 @@ export default async function HomePage() {
                     <Link href="/pricing">Planları Gör</Link>
                   </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-[12px] text-slate-500 sm:grid-cols-3 sm:gap-3 sm:text-sm">
-                  {quickSteps.map((step) => {
-                    const Icon = step.icon;
-                    return (
-                      <span
-                        key={step.label}
-                        className="inline-flex items-center gap-2 rounded-full border border-rose-100 bg-white/90 px-3 py-2 text-center shadow-sm transition hover:border-rose-200 hover:shadow"
-                      >
-                        <Icon className="h-4 w-4 text-rose-500" />
-                        {step.label}
-                      </span>
-                    );
-                  })}
+                <div className="text-[12px] text-slate-500 sm:text-sm">
+                  <div className="hidden sm:grid sm:grid-cols-3 sm:gap-3">
+                    {quickSteps.map((step) => {
+                      const Icon = step.icon;
+                      return (
+                        <span
+                          key={step.label}
+                          className="inline-flex items-center gap-2 rounded-full border border-rose-100 bg-white/90 px-3 py-2 shadow-sm transition hover:border-rose-200 hover:shadow"
+                        >
+                          <Icon className="h-4 w-4 text-rose-500" />
+                          {step.label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 sm:hidden">
+                    {quickSteps.map((step) => {
+                      const Icon = step.icon;
+                      return (
+                        <span
+                          key={step.label}
+                          className="inline-flex flex-col items-center gap-1 rounded-2xl border border-rose-100 bg-white/90 px-2 py-3 shadow-sm"
+                        >
+                          <Icon className="h-4 w-4 text-rose-500" />
+                          <span className="text-[11px] font-semibold text-slate-600 text-center">{step.label}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-left sm:grid-cols-3 sm:gap-4">
-                  {heroHighlights.map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-2xl border border-white/60 bg-white/90 p-4 shadow-sm shadow-rose-100/50 backdrop-blur"
-                    >
-                      <p className="text-lg font-semibold text-slate-950 sm:text-2xl">{item.label}</p>
-                      <p className="mt-1 text-[11px] text-slate-500 sm:text-sm">{item.description}</p>
-                    </div>
-                  ))}
+                <div className="text-left">
+                  <div className="hidden sm:grid sm:grid-cols-3 sm:gap-4">
+                    {heroHighlights.map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-2xl border border-white/60 bg-white/90 p-4 shadow-sm shadow-rose-100/50 backdrop-blur"
+                      >
+                        <p className="text-lg font-semibold text-slate-950 sm:text-2xl">{item.label}</p>
+                        <p className="mt-1 text-[11px] text-slate-500 sm:text-sm">{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 sm:hidden">
+                    {heroHighlights.map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-2xl border border-white/60 bg-white/90 p-3 text-center shadow-sm shadow-rose-100/50 backdrop-blur"
+                      >
+                        <p className="text-sm font-semibold text-slate-950">{item.label}</p>
+                        <p className="mt-1 text-[10px] text-slate-500">{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -732,20 +761,20 @@ export default async function HomePage() {
 
         {/* CTA */}
         <section className="relative overflow-hidden py-20">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-rose-400 via-purple-400 to-amber-300" />
-          <div className="absolute inset-0 -z-10 opacity-60 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.35),_transparent_60%)]" />
-          <div className="container relative mx-auto px-4 text-center text-white">
-            <div className="mx-auto max-w-3xl">
-              <h2 className="text-3xl font-semibold sm:text-4xl">
+          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-rose-400 via-purple-400 to-amber-300 opacity-90" />
+          <div className="absolute inset-0 -z-10 opacity-70 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.4),_transparent_60%)]" />
+          <div className="container relative mx-auto px-4">
+            <div className="mx-auto max-w-3xl rounded-[32px] border border-white/40 bg-white/90 p-10 text-center text-slate-900 shadow-2xl shadow-rose-500/20 backdrop-blur">
+              <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">
                 Hikayeni bugün paylaş, yarının favori anısı olsun
               </h2>
-              <p className="mt-4 text-base text-white/80 sm:text-lg">
+              <p className="mt-4 text-base text-slate-600 sm:text-lg">
                 50+ trend şablon, sınırsız kişiselleştirme, detaylı görüntüleme istatistikleri ve premium destek ile hayalindeki sürprizi hazırla.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Button
                   size="lg"
-                  className="h-12 gap-2 rounded-full bg-white text-slate-950 shadow-xl shadow-rose-950/20 transition hover:scale-[1.01] hover:bg-white/90"
+                  className="h-12 gap-2 rounded-full bg-gradient-to-r from-rose-500 to-amber-400 px-6 text-white shadow-lg shadow-rose-200/60 transition hover:shadow-xl hover:shadow-rose-200/80"
                   asChild
                 >
                   <Link href="/register">Ücretsiz başla</Link>
@@ -753,7 +782,7 @@ export default async function HomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-12 gap-2 rounded-full border-white bg-white/10 text-white backdrop-blur transition hover:bg-white/20"
+                  className="h-12 gap-2 rounded-full border-rose-200 bg-white px-6 text-rose-600 transition hover:border-rose-300 hover:bg-rose-50"
                   asChild
                 >
                   <Link href="/templates">Trend şablonları incele</Link>
