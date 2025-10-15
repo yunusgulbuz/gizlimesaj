@@ -1,12 +1,13 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { useMemo, useRef, useState } from 'react';
-import { Download, Image as ImageIcon, Loader2, Sparkles } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Download, Image as ImageIcon, Loader2, Sparkles, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-type ShareFormat = 'story' | 'landscape';
+type ShareFormat = 'story' | 'landscape' | 'square';
+type VisualTheme = 'romance' | 'vibrant' | 'midnight';
 
 interface ShareVisualGeneratorProps {
   shortId: string;
@@ -16,6 +17,7 @@ interface ShareVisualGeneratorProps {
   message: string;
   pageUrl: string;
   qrDataUrl?: string;
+  templateAudience?: string | string[];
 }
 
 const formatConfig: Record<
@@ -34,6 +36,136 @@ const formatConfig: Record<
     label: 'Yatay Paylaşım',
     hint: 'WhatsApp, Web Banner, E-posta',
   },
+  square: {
+    width: 1080,
+    height: 1080,
+    label: 'Kare Gönderi',
+    hint: 'Instagram Akışı, Facebook, Pinterest',
+  },
+};
+
+const themeConfig: Record<
+  VisualTheme,
+  {
+    label: string;
+    description: string;
+    gradient: string;
+    glowColors: [string, string, string];
+  }
+> = {
+  romance: {
+    label: 'Romantik Parıltı',
+    description: 'Leylak & pembe tonlarında yumuşak geçiş',
+    gradient: 'linear-gradient(135deg, #D946EF 0%, #F06190 45%, #FBCFE8 100%)',
+    glowColors: ['rgba(255,210,245,0.28)', 'rgba(255,164,212,0.26)', 'rgba(255,237,213,0.25)'],
+  },
+  vibrant: {
+    label: 'Enerjik Işık',
+    description: 'Mor ve fuşya geçişli parlak görünüm',
+    gradient: 'linear-gradient(135deg, #352C8A 0%, #7C56ED 55%, #F970B5 100%)',
+    glowColors: ['rgba(190,167,255,0.25)', 'rgba(255,205,245,0.28)', 'rgba(255,221,179,0.24)'],
+  },
+  midnight: {
+    label: 'Gece Işıltısı',
+    description: 'Lacivert ve mor tonlarında sahne etkisi',
+    gradient: 'linear-gradient(135deg, #0F172A 0%, #312E81 45%, #7C3AED 100%)',
+    glowColors: ['rgba(79,70,229,0.24)', 'rgba(99,102,241,0.22)', 'rgba(129,140,248,0.2)'],
+  },
+};
+
+type AudienceCopy = {
+  headline: string;
+  subheadline: string;
+  highlight?: string;
+  messageIntro: string;
+  ctaLine: string;
+};
+
+const audienceCopyMap: Record<string, AudienceCopy> = {
+  romantic: {
+    headline: 'Kalpten Gelen Sürpriz',
+    subheadline: '{{sender}} → {{recipient}} için kalpler çarpıyor',
+    highlight: 'Aşk Dokunuşu',
+    messageIntro: 'Kalbini ısıtacak satırlar:',
+    ctaLine: 'Mutluluğu paylaş, aşkı çoğalt 💞',
+  },
+  friendship: {
+    headline: 'En Yakın Arkadaşına Sürpriz',
+    subheadline: '{{sender}} ve {{recipient}} arasında kahkaha garantili not',
+    highlight: 'Dostluk Parıltısı',
+    messageIntro: 'Beraber gülmeye hazır mısınız?',
+    ctaLine: 'Anınızı paylaş, dostluğu taçlandır 🌟',
+  },
+  family: {
+    headline: 'Ailenden Gelen Sıcaklık',
+    subheadline: '{{recipient}} için aile sıcaklığı taşıyan dijital sürpriz',
+    highlight: 'Aile Bağı',
+    messageIntro: 'Sıcacık bir mesaj seni bekliyor:',
+    ctaLine: 'Mutluluğu paylaş, aile bağını güçlendir 🏡',
+  },
+  professional: {
+    headline: 'Ekip Arkadaşına Teşekkür',
+    subheadline: '{{sender}} → {{recipient}} için ilham veren geri bildirim',
+    highlight: 'Takdir Notu',
+    messageIntro: 'Motivasyon dolu satırlar:',
+    ctaLine: 'Başarıyı paylaş, ekibi motive et 💼',
+  },
+  birthday: {
+    headline: 'Doğum Gününe Özel Sürpriz',
+    subheadline: '{{recipient}} için kutlama enerjisiyle dolu not',
+    highlight: 'Birthday Vibes',
+    messageIntro: 'Dilek mumlarını hazırla:',
+    ctaLine: 'Kutlamayı paylaş, mutluluğu yay 🎂',
+  },
+  celebration: {
+    headline: 'Kutlamayı Parlatan Not',
+    subheadline: '{{recipient}} için mutlulukla parlayan sürpriz',
+    highlight: 'Kutlama Anı',
+    messageIntro: 'Bu satırlar yüz güldürüyor:',
+    ctaLine: 'Kutlamayı paylaş, enerjiyi çoğalt 🎉',
+  },
+  fun: {
+    headline: 'Enerjisi Tavan Bir Sürpriz',
+    subheadline: '{{sender}} → {{recipient}} için eğlence garantili mesaj',
+    highlight: 'Fun Mode On',
+    messageIntro: 'Hazır mısın, eğlence başlıyor:',
+    ctaLine: 'Gülüşleri paylaş, enerjiyi yükselt ⚡️',
+  },
+  teen: {
+    headline: 'Genç Ruhun Sürprizi',
+    subheadline: '{{recipient}} için trend dolu bir dijital hediye',
+    highlight: 'Trend Alert',
+    messageIntro: 'Kalp atışını hızlandıracak satırlar:',
+    ctaLine: 'Story\'de paylaş, tüm ekibi haberdar et 💬',
+  },
+  adult: {
+    headline: 'Zarif ve Özenli Bir Jest',
+    subheadline: '{{sender}} → {{recipient}} için unutulmaz sürpriz',
+    highlight: 'Elegant Touch',
+    messageIntro: 'İçten duygularla dolu cümle:',
+    ctaLine: 'Mutluluğu paylaş, anı ölümsüzleştir ✨',
+  },
+  classic: {
+    headline: 'Klasik Şıklıkta Bir Mesaj',
+    subheadline: '{{recipient}} için zarafet taşıyan satırlar',
+    highlight: 'Zarafet Notu',
+    messageIntro: 'Her satırı özenle seçildi:',
+    ctaLine: 'Zarafeti paylaş, romantizmi çoğalt 🌹',
+  },
+  elegant: {
+    headline: 'Şık Bir Dijital Sürpriz',
+    subheadline: '{{sender}} → {{recipient}} için sofistike dokunuş',
+    highlight: 'Elegant Vibes',
+    messageIntro: 'İncelikle yazılmış satırlar:',
+    ctaLine: 'Şıklığı paylaş, iz bırak ✨',
+  },
+  default: {
+    headline: 'Unutulmaz Bir Sürpriz',
+    subheadline: '{{sender}} → {{recipient}} için dijital mutluluk',
+    highlight: 'Mutluluk Anı',
+    messageIntro: 'Seni gülümsetecek satırlar:',
+    ctaLine: 'Mutluluğu paylaş, anıları çoğalt ✨',
+  },
 };
 
 export function ShareVisualGenerator({
@@ -44,16 +176,25 @@ export function ShareVisualGenerator({
   message,
   pageUrl,
   qrDataUrl,
+  templateAudience,
 }: ShareVisualGeneratorProps) {
   const [selectedFormat, setSelectedFormat] = useState<ShareFormat>('story');
+  const [selectedTheme, setSelectedTheme] = useState<VisualTheme>(() => {
+    const primaryAudience = extractPrimaryAudience(templateAudience);
+    return audienceToTheme(primaryAudience);
+  });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [hasManualThemeSelection, setHasManualThemeSelection] = useState(false);
 
   const storyRef = useRef<HTMLDivElement>(null);
   const landscapeRef = useRef<HTMLDivElement>(null);
+  const squareRef = useRef<HTMLDivElement>(null);
 
   const formatRefs: Record<ShareFormat, React.RefObject<HTMLDivElement>> = {
     story: storyRef,
     landscape: landscapeRef,
+    square: squareRef,
   };
 
   const formattedUrl = useMemo(() => {
@@ -65,13 +206,45 @@ export function ShareVisualGenerator({
     }
   }, [pageUrl]);
 
+  const primaryAudience = extractPrimaryAudience(templateAudience);
+  const copyTemplate = audienceCopyMap[primaryAudience] ?? audienceCopyMap.default;
+
+  useEffect(() => {
+    if (!hasManualThemeSelection) {
+      setSelectedTheme(audienceToTheme(primaryAudience));
+    }
+  }, [primaryAudience, hasManualThemeSelection]);
+
+  useEffect(() => {
+    setHasManualThemeSelection(false);
+  }, [shortId]);
+
+  const handleThemeSelection = (themeKey: VisualTheme) => {
+    setHasManualThemeSelection(true);
+    setSelectedTheme(themeKey);
+  };
+
+  const applyCopyTemplate = (text: string) =>
+    text
+      .replace(/{{recipient}}/gi, recipientName)
+      .replace(/{{sender}}/gi, senderName)
+      .replace(/{{templateTitle}}/gi, templateTitle);
+
+  const copy = {
+    headline: applyCopyTemplate(copyTemplate.headline),
+    subheadline: applyCopyTemplate(copyTemplate.subheadline),
+    highlight: applyCopyTemplate(copyTemplate.highlight ?? templateTitle),
+    messageIntro: applyCopyTemplate(copyTemplate.messageIntro),
+    ctaLine: applyCopyTemplate(copyTemplate.ctaLine),
+  };
+
   const getTruncatedMessage = (text: string, format: ShareFormat) => {
     const limit = format === 'story' ? 220 : 180;
     if (text.length <= limit) return text;
     return `${text.slice(0, limit).trim()}…`;
   };
 
-  const renderVisualContent = (format: ShareFormat) => {
+  const renderVisualContent = (format: ShareFormat, theme: VisualTheme) => {
     const { width, height } = formatConfig[format];
     const isStory = format === 'story';
     const truncatedMessage = getTruncatedMessage(message, format);
@@ -80,9 +253,10 @@ export function ShareVisualGenerator({
     const messageStyle = { fontSize: isStory ? '42px' : '36px' };
     const signatureStyle = { fontSize: isStory ? '28px' : '24px' };
     const padding = isStory ? '88px' : '72px';
+    const themeStyles = themeConfig[theme];
 
     const gradientStyle: CSSProperties = {
-      background: 'linear-gradient(135deg, #352C8A 0%, #7C56ED 55%, #F970B5 100%)',
+      background: themeStyles.gradient,
       color: '#FFFFFF',
       borderRadius: '54px',
       padding,
@@ -105,9 +279,9 @@ export function ShareVisualGenerator({
               position: 'absolute',
               left: '-24%',
               top: '-20%',
-              width: '25%',
-              height: '25%',
-              backgroundColor: translucent(0.15),
+              width: '24%',
+              height: '24%',
+              backgroundColor: themeStyles.glowColors[0],
               borderRadius: '9999px',
               filter: 'blur(60px)',
             }}
@@ -116,10 +290,10 @@ export function ShareVisualGenerator({
             style={{
               position: 'absolute',
               right: '-12%',
-              top: '35%',
-              width: '28%',
-              height: '28%',
-              backgroundColor: 'rgba(250,205,255,0.2)',
+              top: '32%',
+              width: '26%',
+              height: '26%',
+              backgroundColor: themeStyles.glowColors[1],
               borderRadius: '9999px',
               filter: 'blur(60px)',
             }}
@@ -127,11 +301,11 @@ export function ShareVisualGenerator({
           <div
             style={{
               position: 'absolute',
-              left: '25%',
+              left: '28%',
               bottom: '-12%',
               width: '35%',
               height: '35%',
-              backgroundColor: 'rgba(255,215,163,0.2)',
+              backgroundColor: themeStyles.glowColors[2],
               borderRadius: '9999px',
               filter: 'blur(60px)',
             }}
@@ -165,9 +339,22 @@ export function ShareVisualGenerator({
                     color: translucent(0.6),
                   }}
                 >
-                  gizlimesaj.com
+                  birmesajmutluluk.com
                 </p>
-                <p style={{ ...headingStyle, fontWeight: 600, marginTop: '8px' }}>Sürpriz Mesaj</p>
+                <p style={{ ...headingStyle, fontWeight: 600, marginTop: '8px', lineHeight: 1.1 }}>
+                  {copy.headline}
+                </p>
+                <p
+                  style={{
+                    marginTop: '12px',
+                    fontSize: isStory ? '26px' : '22px',
+                    fontWeight: 500,
+                    lineHeight: 1.35,
+                    color: translucent(0.75),
+                  }}
+                >
+                  {copy.subheadline}
+                </p>
               </div>
             </div>
             <div
@@ -183,7 +370,7 @@ export function ShareVisualGenerator({
                 backdropFilter: 'blur(12px)',
               }}
             >
-              {templateTitle}
+              {copy.highlight || templateTitle}
             </div>
           </div>
 
@@ -197,6 +384,18 @@ export function ShareVisualGenerator({
               backdropFilter: 'blur(12px)',
             }}
           >
+            <p
+              style={{
+                fontSize: isStory ? '24px' : '20px',
+                fontWeight: 600,
+                letterSpacing: '0.05em',
+                color: translucent(0.75),
+                textTransform: 'none',
+                marginBottom: '16px',
+              }}
+            >
+              {copy.messageIntro}
+            </p>
             <p
               style={{
                 fontSize: '14px',
@@ -258,6 +457,16 @@ export function ShareVisualGenerator({
             <p style={{ marginTop: '8px', fontSize: '16px', color: translucent(0.7) }}>
               Kodu: {shortId.toUpperCase()}
             </p>
+            <p
+              style={{
+                marginTop: '18px',
+                fontSize: '20px',
+                fontWeight: 600,
+                color: translucent(0.88),
+              }}
+            >
+              {copy.ctaLine}
+            </p>
           </div>
           {qrDataUrl ? (
             <img
@@ -300,9 +509,9 @@ export function ShareVisualGenerator({
     );
   };
 
-  const renderPreview = (format: ShareFormat) => {
+  const renderPreview = (format: ShareFormat, theme: VisualTheme) => {
     const { width, height } = formatConfig[format];
-    const previewScale = format === 'story' ? 0.22 : 0.2;
+    const previewScale = format === 'story' ? 0.22 : format === 'square' ? 0.24 : 0.2;
     const previewWidth = width * previewScale;
     const previewHeight = height * previewScale;
 
@@ -319,7 +528,7 @@ export function ShareVisualGenerator({
             height,
           }}
         >
-          {renderVisualContent(format)}
+          {renderVisualContent(format, theme)}
         </div>
       </div>
     );
@@ -341,7 +550,7 @@ export function ShareVisualGenerator({
       const dataUrl = canvas.toDataURL('image/png', 1);
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `gizlimesaj-${shortId}-${format}.png`;
+      link.download = `gizlimesaj-${shortId}-${format}-${selectedTheme}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -353,13 +562,50 @@ export function ShareVisualGenerator({
   };
 
   const { label, hint, width, height } = formatConfig[selectedFormat];
+  const theme = themeConfig[selectedTheme];
+
+  const handleShareImage = async (format: ShareFormat) => {
+    const ref = formatRefs[format].current;
+    if (!ref || typeof navigator === 'undefined' || !('share' in navigator)) return generateImage(format);
+
+    setIsSharing(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(ref, {
+        backgroundColor: null,
+        scale: 1,
+        useCORS: true,
+        logging: false,
+      });
+      const dataUrl = canvas.toDataURL('image/png', 0.95);
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `gizlimesaj-${shortId}-${selectedFormat}-${selectedTheme}.png`, {
+        type: 'image/png',
+        lastModified: Date.now(),
+      });
+
+      if ('share' in navigator && typeof navigator.share === 'function') {
+        await navigator.share({
+          files: [file],
+          title: copy.headline,
+          text: `${copy.subheadline} • ${formattedUrl}`,
+        });
+      }
+    } catch (error) {
+      console.error('Share image failed:', error);
+      await generateImage(format);
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   return (
     <div className="relative space-y-6">
       <div>
         <p className="text-sm font-semibold text-gray-800">Görsel olarak paylaş</p>
         <p className="text-xs text-gray-500">
-          Dikey ve yatay PNG şablonlarıyla mesajınızı daha etkileyici paylaşın.
+          Kare, dikey ve yatay PNG şablonları ile mesajınızı farklı sosyal ağ formatlarında öne çıkarın.
         </p>
       </div>
 
@@ -382,27 +628,68 @@ export function ShareVisualGenerator({
         ))}
       </div>
 
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">
+          Stil Seçimi
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {(Object.entries(themeConfig) as [VisualTheme, typeof themeConfig[keyof typeof themeConfig]][]).map(
+            ([themeKey, themeValue]) => (
+              <button
+                key={themeKey}
+                type="button"
+                onClick={() => handleThemeSelection(themeKey)}
+                className={cn(
+                  'flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors backdrop-blur-sm',
+                  selectedTheme === themeKey
+                    ? 'border-purple-300 bg-purple-100/80 text-purple-700 shadow-sm'
+                    : 'border-gray-200 bg-white/80 text-gray-600 hover:border-purple-200 hover:text-purple-600'
+                )}
+              >
+                <span
+                  className="h-4 w-4 rounded-full border border-white/50 shadow-sm"
+                  style={{ background: themeValue.gradient }}
+                />
+                <span className="font-medium">{themeValue.label}</span>
+              </button>
+            )
+          )}
+        </div>
+        <p className="text-xs text-gray-500">{theme.description}</p>
+      </div>
+
       <div className="rounded-3xl border border-white/70 bg-white/90 p-6 backdrop-blur-sm shadow-xl shadow-purple-200/60">
         <div className="flex flex-col items-center gap-6">
-          {renderPreview(selectedFormat)}
+          {renderPreview(selectedFormat, selectedTheme)}
           <div className="text-center">
             <p className="text-sm font-semibold text-gray-700">{label}</p>
             <p className="text-xs text-gray-500">
               {hint} • {width} × {height}px
             </p>
           </div>
-          <Button
-            onClick={() => generateImage(selectedFormat)}
-            disabled={isGenerating}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-200/50 hover:from-purple-700 hover:to-pink-700"
-          >
-            {isGenerating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4" />
-            )}
-            {isGenerating ? 'Görsel hazırlanıyor...' : `${label} PNG indir`}
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button
+              onClick={() => generateImage(selectedFormat)}
+              disabled={isGenerating}
+              className="flex flex-1 items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-200/50 hover:from-purple-700 hover:to-pink-700"
+            >
+              {isGenerating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              {isGenerating ? 'Görsel hazırlanıyor...' : `${label} PNG indir`}
+            </Button>
+            <Button
+              onClick={() => handleShareImage(selectedFormat)}
+              variant="outline"
+              disabled={isGenerating || isSharing}
+              className="flex flex-1 items-center justify-center gap-2 border-purple-200 bg-white/80 text-purple-600 hover:border-purple-300 hover:text-purple-700"
+            >
+              {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
+              {isSharing ? 'Paylaşıma hazırlanıyor...' : 'Cihazdan paylaş'}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -415,7 +702,7 @@ export function ShareVisualGenerator({
             height: formatConfig.story.height,
           }}
         >
-          {renderVisualContent('story')}
+          {renderVisualContent('story', selectedTheme)}
         </div>
         <div
           ref={landscapeRef}
@@ -424,9 +711,50 @@ export function ShareVisualGenerator({
             height: formatConfig.landscape.height,
           }}
         >
-          {renderVisualContent('landscape')}
+          {renderVisualContent('landscape', selectedTheme)}
+        </div>
+        <div
+          ref={squareRef}
+          style={{
+            width: formatConfig.square.width,
+            height: formatConfig.square.height,
+          }}
+        >
+          {renderVisualContent('square', selectedTheme)}
         </div>
       </div>
     </div>
   );
+}
+
+function extractPrimaryAudience(audience?: string | string[] | null): string {
+  if (!audience) return 'default';
+  if (Array.isArray(audience)) {
+    return audience[0]?.toLowerCase() || 'default';
+  }
+  return audience.toLowerCase();
+}
+
+function audienceToTheme(audience?: string): VisualTheme {
+  switch (audience) {
+    case 'romantic':
+    case 'family':
+    case 'elegant':
+    case 'classic':
+    case 'engagement':
+    case 'proposal':
+    case 'anniversary':
+      return 'romance';
+    case 'professional':
+    case 'gratitude':
+      return 'midnight';
+    case 'fun':
+    case 'teen':
+    case 'birthday':
+    case 'celebration':
+    case 'friendship':
+      return 'vibrant';
+    default:
+      return 'vibrant';
+  }
 }

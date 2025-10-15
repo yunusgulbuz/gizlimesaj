@@ -231,14 +231,14 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button asChild className="bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-300/40">
-              <a href="https://gizlimesaj.com">Yeni mesaj hazırla</a>
+              <a href="https://birmesajmutluluk.com">Yeni mesaj hazırla</a>
             </Button>
             <Button
               asChild
               variant="outline"
               className="border-purple-200 bg-white/80 text-purple-600 hover:border-purple-300 hover:text-purple-700"
             >
-              <a href="https://gizlimesaj.com/contact">Destek ekibiyle iletişime geç</a>
+              <a href="https://birmesajmutluluk.com/contact">Destek ekibiyle iletişime geç</a>
             </Button>
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
             yeni mesajlar oluşturmaya devam edebilirsin!
           </p>
           <Button asChild>
-            <a href="https://gizlimesaj.com">Yeni Mesaj Oluştur</a>
+            <a href="https://birmesajmutluluk.com">Yeni Mesaj Oluştur</a>
           </Button>
         </div>
       </div>
@@ -394,8 +394,9 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
               recipientName={personalPage.recipient_name}
               senderName={personalPage.sender_name}
               templateTitle={personalPage.template_title}
+              templateAudience={personalPage.template_audience}
               message={personalPage.message}
-              pageUrl={shareUrl || `https://gizlimesaj.com/m/${shortId}`}
+              pageUrl={shareUrl || `https://birmesajmutluluk.com/m/${shortId}`}
               qrDataUrl={qrDataUrl || undefined}
             />
           </div>

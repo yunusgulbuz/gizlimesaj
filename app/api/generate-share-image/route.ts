@@ -220,7 +220,7 @@ function generateShareImageSVG({
             fill="${primaryColor}" 
             font-family="Arial, sans-serif" 
             font-size="${isStory ? 20 : 16}">
-        gizlimesaj.com/m/${url.split('/').pop()}
+        birmesajmutluluk.com/m/${url.split('/').pop()}
       </text>
       
       <!-- Decorative Elements -->

@@ -29,7 +29,7 @@ interface PersonalPageData {
   message: string;
   template_title: string;
   template_slug: string;
-  template_audience: string;
+  template_audience: string | string[];
   expires_at: string;
   is_active: boolean;
 }
@@ -131,7 +131,7 @@ export default function SuccessPage() {
   }, [shortId]);
 
   const handleCopyUrl = async () => {
-    const urlToCopy = personalPageUrl || `https://gizlimesaj.com/m/${shortId}`;
+    const urlToCopy = personalPageUrl || `https://birmesajmutluluk.com/m/${shortId}`;
     try {
       await navigator.clipboard.writeText(urlToCopy);
       setCopied(true);
@@ -147,7 +147,7 @@ export default function SuccessPage() {
   };
 
   const handleNativeShare = async () => {
-    const urlToShare = personalPageUrl || `https://gizlimesaj.com/m/${shortId}`;
+    const urlToShare = personalPageUrl || `https://birmesajmutluluk.com/m/${shortId}`;
 
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
@@ -299,7 +299,7 @@ export default function SuccessPage() {
   const formattedExpiry = new Intl.DateTimeFormat('tr-TR', { dateStyle: 'long' }).format(expiresAt);
   const shareTitle = `${pageData.sender_name} sana özel bir mesaj gönderdi!`;
   const shareDescription = `${pageData.recipient_name} için hazırlanan sürprizi görüntüle.`;
-  const shareUrl = personalPageUrl || `https://gizlimesaj.com/m/${shortId}`;
+  const shareUrl = personalPageUrl || `https://birmesajmutluluk.com/m/${shortId}`;
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50/60 to-indigo-50 px-4 pb-20 pt-16">
@@ -458,6 +458,7 @@ export default function SuccessPage() {
                 recipientName={pageData.recipient_name}
                 senderName={pageData.sender_name}
                 templateTitle={pageData.template_title}
+                templateAudience={pageData.template_audience}
                 message={pageData.message}
                 pageUrl={shareUrl}
                 qrDataUrl={qrDataUrl || undefined}
