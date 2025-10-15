@@ -8,15 +8,18 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import TemplateCardPreview from "@/app/templates/_components/template-card-preview-client";
 import { FavoriteButton } from "@/components/favorite-button";
 import {
-  Heart,
-  Sparkles,
-  Wand2,
-  Share2,
-  ShieldCheck,
   ArrowRight,
-  CheckCircle2,
-  Eye,
+  BadgeCheck,
+  Heart,
+  PartyPopper,
+  PlayCircle,
+  ShieldCheck,
+  Sparkles,
   Star,
+  Users,
+  Wand2,
+  Clock3,
+  Share2,
 } from "lucide-react";
 
 interface FeaturedTemplate {
@@ -52,28 +55,96 @@ async function getCategories(): Promise<string[]> {
   return Array.from(allCategories).sort();
 }
 
-const features = [
+const heroHighlights = [
   {
-    icon: Wand2,
-    title: "Kolay Kişiselleştirme",
-    description: "Şablonu seçin, mesajınızı yazın, müzik ekleyin",
+    label: "120K+",
+    description: "Paylaşılan dijital mutluluk notu",
   },
   {
-    icon: Share2,
-    title: "Anında Paylaşım",
-    description: "Link ile hemen paylaşın, WhatsApp/Instagram uyumlu",
+    label: "%98",
+    description: "Memnuniyet puanı",
   },
   {
-    icon: ShieldCheck,
-    title: "Güvenli ve Özel",
-    description: "Süreli erişim, sadece seçtiğiniz kişi görebilir",
+    label: "45 sn",
+    description: "Ortalama hazırlama süresi",
   },
 ];
 
-const steps = [
-  { number: "1", text: "Şablon Seç" },
-  { number: "2", text: "Kişiselleştir" },
-  { number: "3", text: "Paylaş" },
+const features = [
+  {
+    icon: Wand2,
+    title: "Akıllı kişiselleştirme",
+    description: "Mesajınıza uygun renk, müzik ve efekt önerileriyle tasarımı hızlandırır.",
+    accent: "from-rose-500/80 via-rose-400/60 to-purple-500/60",
+  },
+  {
+    icon: PlayCircle,
+    title: "Canlı önizleme",
+    description: "Hazırladığınız sürprizi gerçek zamanlı görerek detayları anında düzenleyin.",
+    accent: "from-indigo-500/80 via-sky-400/70 to-cyan-400/50",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Özel paylaşımlar",
+    description: "Şifreli ve süreli linkler ile sürprizleriniz sadece seçtiğiniz kişilerde kalsın.",
+    accent: "from-emerald-500/70 via-teal-400/60 to-emerald-400/40",
+  },
+  {
+    icon: PartyPopper,
+    title: "Trend şablonlar",
+    description: "2025 tasarım trendlerine göre her ay güncellenen koleksiyonlara erişin.",
+    accent: "from-amber-500/80 via-orange-400/70 to-pink-500/60",
+  },
+];
+
+const quickSteps = [
+  { label: "Şablon seç", icon: Sparkles },
+  { label: "Mesajını özelleştir", icon: Wand2 },
+  { label: "Linki paylaş", icon: Share2 },
+];
+
+const creationJourney = [
+  {
+    icon: Sparkles,
+    title: "Şablonunu seç",
+    description: "Trend temalar, sezonsal koleksiyonlar ve popüler sürprizler tek yerde.",
+  },
+  {
+    icon: Wand2,
+    title: "Duygularını şekillendir",
+    description: "Metin, fotoğraf, video ve müzik ekleyerek benzersiz deneyimler oluştur.",
+  },
+  {
+    icon: Clock3,
+    title: "Zamanlamayı ayarla",
+    description: "Süreli erişim, ileri tarihli açılış ve özel davet akışlarını planla.",
+  },
+  {
+    icon: Share2,
+    title: "Anında mutlu et",
+    description: "Şifreli linklerle WhatsApp, Instagram veya QR üzerinden paylaş.",
+  },
+];
+
+const testimonials = [
+  {
+    quote:
+      "Uzun mesafe ilişkimizde özel günleri kutlamak artık çok daha yaratıcı. Animasyonlar ve zaman ayarlı açılış herkesi şaşırtıyor.",
+    name: "Ezgi & Mert",
+    role: "Berlin · İstanbul",
+  },
+  {
+    quote:
+      "Ürün lansmanında ekibe teşekkür etmek için kullandık. Kurumsal kimliğe uyum sağlayan şablonlarla dakikalar içinde hazırdı.",
+    name: "Selin A.",
+    role: "Marka Yöneticisi, Kolektif House",
+  },
+  {
+    quote:
+      "Anneler günü kampanyasında influencer işbirliklerine özel sürpriz sayfaları hazırladık. %35 daha yüksek etkileşim aldık.",
+    name: "Onur K.",
+    role: "Ajans Kurucusu, Creativehub",
+  },
 ];
 
 async function getFeaturedTemplates(): Promise<FeaturedTemplate[]> {
@@ -218,29 +289,54 @@ export default async function HomePage() {
     getCategories(),
   ]);
 
+  const heroTemplate = featuredTemplates[0];
+  const heroPreviewData = heroTemplate
+    ? {
+        id: heroTemplate.id,
+        slug: heroTemplate.slug,
+        title: heroTemplate.title,
+        audience: heroTemplate.audience,
+        bg_audio_url: null,
+      }
+    : null;
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-white text-slate-900">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-rose-100/70 bg-white/90 backdrop-blur-xl">
         <div className="container mx-auto px-4">
           <nav className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 via-purple-500 to-indigo-500 shadow-lg shadow-purple-500/20">
                 <Heart className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-900">birmesajmutluluk</span>
+              <span className="text-lg font-semibold tracking-tight text-slate-900">
+                birmesajmutluluk
+              </span>
             </Link>
             <div className="flex items-center gap-6">
-              <Link href="/templates" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+              <Link
+                href="/templates"
+                className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
+              >
                 Sürprizler
               </Link>
-              <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+              <Link
+                href="/pricing"
+                className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
+              >
                 Planlar
               </Link>
-              <Link href="/about" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+              <Link
+                href="/about"
+                className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
+              >
                 Hakkımızda
               </Link>
-              <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+              <Link
+                href="/contact"
+                className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
+              >
                 İletişim
               </Link>
               <div className="hidden md:block">
@@ -254,188 +350,341 @@ export default async function HomePage() {
 
       <main>
         {/* Hero Section */}
-        <section className="border-b border-gray-100 bg-gradient-to-b from-rose-50/50 to-white py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-3xl text-center">
-              <Badge className="mb-6 bg-rose-100 text-rose-700 hover:bg-rose-100">
-                <Sparkles className="mr-1 h-3 w-3" />
-                Özel günleriniz için dijital hediyeler
-              </Badge>
-              <h1 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
-                Sevdiklerinize Unutulmaz
-                <br />
-                <span className="bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent">
-                  Dijital Sürprizler
-                </span>
-              </h1>
-              <p className="mb-8 text-lg text-gray-600 md:text-xl">
-                Kişiselleştirilmiş mesaj sayfaları, müzik ve animasyonlarla duygularınızı paylaşın.
-                <br className="hidden md:block" />
-                Dakikalar içinde hazır, sonsuza kadar unutulmaz.
-              </p>
-
-              {/* Quick Steps */}
-              <div className="flex items-center justify-center gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-0">
-                {steps.map((step, index) => (
-                  <div key={step.number} className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-rose-100 text-xs sm:text-sm font-semibold text-rose-700">
-                      {step.number}
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">{step.text}</span>
-                    {index < steps.length - 1 && (
-                      <ArrowRight className="w-3 sm:w-4 text-gray-400 shrink-0" />
-                    )}
+        <section className="relative overflow-hidden border-b border-rose-100/60 bg-gradient-to-br from-white via-rose-50 to-sky-50">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(244,114,182,0.18),_transparent_55%)]" />
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_right,_rgba(56,189,248,0.18),_transparent_60%)]" />
+          <div className="container relative mx-auto px-4 py-12 sm:py-16 lg:py-20">
+            <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-center">
+              {/* Preview & trust cues (desktop emphasis) */}
+              <div className="relative hidden lg:block lg:order-2">
+                <div className="absolute -left-10 top-6 hidden h-40 w-40 rounded-full bg-rose-200/40 blur-3xl lg:block" />
+                <div className="absolute -right-10 bottom-10 hidden h-48 w-48 rounded-full bg-sky-200/50 blur-3xl lg:block" />
+                <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-[28px] border border-white/70 bg-white/85 p-5 shadow-2xl shadow-rose-200/60 backdrop-blur-xl">
+                  <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-emerald-50 px-3 py-1 text-emerald-600">
+                      <BadgeCheck className="h-4 w-4" />
+                      Yeni koleksiyon
+                    </span>
+                    <span className="inline-flex items-center gap-2 text-slate-500">
+                      <Users className="h-4 w-4 text-rose-400" />
+                      2.4k canlı izleme
+                    </span>
                   </div>
+                  {heroPreviewData ? (
+                    <Link href={`/templates/${heroTemplate.slug}/preview`} className="group mt-5 block">
+                      <div className="relative overflow-hidden rounded-2xl border border-white/70 bg-white">
+                        <div className="aspect-[4/3]">
+                          <TemplateCardPreview template={heroPreviewData} />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-rose-400/20 via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+                        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-sm font-medium text-slate-700">
+                          <span className="inline-flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-rose-400" />
+                            Canlı önizleme
+                          </span>
+                          <ArrowRight className="h-4 w-4 text-rose-400 transition group-hover:translate-x-1" />
+                        </div>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="mt-5 rounded-2xl border border-dashed border-rose-200 bg-white/70 p-8 text-sm text-slate-500">
+                      Yeni şablonlar yükleniyor...
+                    </div>
+                  )}
+                  <div className="mt-5 rounded-2xl border border-rose-100 bg-rose-50/80 p-4 text-xs leading-relaxed text-slate-600 sm:text-sm">
+                    <p className="font-medium text-slate-900">2025 Sonbahar Koleksiyonu</p>
+                    <p className="mt-2">
+                      Mevsimsel renk paletleri, 3D partikül animasyonları ve yüksek çözünürlükte görsel alanlarıyla güncellenen trend şablonlar.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Messaging & merchandising */}
+              <div className="flex flex-col gap-6 lg:order-1">
+                <span className="inline-flex items-center gap-2 rounded-full border border-rose-200/80 bg-white/70 px-4 py-1.5 text-xs font-medium uppercase tracking-wide text-rose-600 shadow-sm backdrop-blur">
+                  <Sparkles className="h-4 w-4 text-rose-500" />
+                  2025 trend dijital sürpriz deneyimi
+                </span>
+                <div className="flex flex-col gap-2">
+                  <h1 className="text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl lg:text-[3rem]">
+                    Dijital hediyelerle
+                    <span className="block bg-gradient-to-r from-rose-500 via-purple-500 to-amber-400 bg-clip-text text-transparent">
+                      duygularını saniyede sat
+                    </span>
+                  </h1>
+                  <p className="text-base text-slate-600 sm:text-lg">
+                    Sevdiklerinizi mutlu edecek, satışa hazır dijital sürpriz sayfalarını dakikalar içinde oluşturun. Özel günlere uygun yüzlerce tasarım ile dönüşümlerinizi artırın.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Button
+                    size="lg"
+                    className="h-11 gap-2 rounded-full bg-gradient-to-r from-rose-500 to-amber-400 px-6 text-white shadow-lg shadow-rose-200/60 transition hover:shadow-xl hover:shadow-rose-200/80"
+                    asChild
+                  >
+                    <Link href="/templates">Hemen Başla</Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-11 gap-2 rounded-full border-rose-200/80 bg-white/90 px-6 text-rose-600 backdrop-blur transition hover:border-rose-300 hover:bg-white"
+                    asChild
+                  >
+                    <Link href="/pricing">Planları Gör</Link>
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-[12px] text-slate-500 sm:grid-cols-3 sm:gap-3 sm:text-sm">
+                  {quickSteps.map((step) => {
+                    const Icon = step.icon;
+                    return (
+                      <span
+                        key={step.label}
+                        className="inline-flex items-center gap-2 rounded-full border border-rose-100 bg-white/90 px-3 py-2 text-center shadow-sm transition hover:border-rose-200 hover:shadow"
+                      >
+                        <Icon className="h-4 w-4 text-rose-500" />
+                        {step.label}
+                      </span>
+                    );
+                  })}
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-left sm:grid-cols-3 sm:gap-4">
+                  {heroHighlights.map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-2xl border border-white/60 bg-white/90 p-4 shadow-sm shadow-rose-100/50 backdrop-blur"
+                    >
+                      <p className="text-lg font-semibold text-slate-950 sm:text-2xl">{item.label}</p>
+                      <p className="mt-1 text-[11px] text-slate-500 sm:text-sm">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Templates */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Popüler şablonlar</h2>
+                <p className="mt-3 text-base text-slate-600">
+                  En çok paylaşılan ve en yüksek geri bildirim alan dijital sürprizler. Satışa özel kampanyaları kaçırmayın.
+                </p>
+              </div>
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-11 rounded-full border-rose-200 bg-white px-6 text-sm font-semibold text-rose-600 transition hover:border-rose-300 hover:bg-rose-50"
+                asChild
+              >
+                <Link href="/templates">
+                  Tümünü gör
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+
+            {featuredTemplates.length > 0 ? (
+              <div className="mt-10 grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+                {featuredTemplates.map((template) => {
+                  const previewData = {
+                    id: template.id,
+                    slug: template.slug,
+                    title: template.title,
+                    audience: template.audience,
+                    bg_audio_url: null,
+                  };
+
+                  const discount =
+                    template.oldPrice && template.price
+                      ? Math.round(
+                          (1 - parseFloat(template.price) / parseFloat(template.oldPrice)) * 100
+                        )
+                      : null;
+
+                  return (
+                    <Card
+                      key={template.id}
+                      className="group relative h-full overflow-hidden rounded-3xl border border-rose-100 bg-white p-0 shadow-lg shadow-rose-100/70 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-200/80"
+                    >
+                      <Link href={`/templates/${template.slug}/preview`}>
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-3xl rounded-b-none border-b border-rose-100 bg-rose-50/40">
+                          <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
+                            <TemplateCardPreview template={previewData} />
+                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-rose-500/10 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                          <div className="absolute left-4 top-4 flex gap-2">
+                            {discount && discount > 0 && (
+                              <Badge className="border border-emerald-100 bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                                -{discount}%
+                              </Badge>
+                            )}
+                            {template.totalOrders > 0 && (
+                              <Badge className="border border-rose-100 bg-white/80 px-2.5 py-1 text-xs font-semibold text-rose-600 shadow-sm">
+                                Popüler
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="absolute right-4 top-4 z-10">
+                            <FavoriteButton
+                              templateId={template.id}
+                              iconOnly
+                              size="sm"
+                              className="bg-white/80 text-rose-500 shadow-sm transition hover:bg-white"
+                            />
+                          </div>
+                        </div>
+                      </Link>
+
+                      <CardContent className="flex h-full flex-col gap-5 p-6">
+                        <div className="space-y-3">
+                          <Link href={`/templates/${template.slug}/preview`}>
+                            <h3 className="text-lg font-semibold leading-tight text-slate-950 transition hover:text-rose-500">
+                              {template.title}
+                            </h3>
+                          </Link>
+
+                          {template.avgRating && template.ratingCount > 0 && (
+                            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                              <div className="flex items-center gap-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`h-3.5 w-3.5 ${
+                                      i < Math.floor(template.avgRating || 0)
+                                        ? "fill-amber-400 text-amber-400"
+                                        : "text-slate-200"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-slate-600">{template.avgRating.toFixed(1)}</span>
+                              <span className="text-slate-400">({template.ratingCount})</span>
+                            </div>
+                          )}
+
+                          <div className="flex items-baseline gap-2">
+                            {template.price && (
+                              <>
+                                <span className="text-2xl font-bold text-slate-950">
+                                  {String(template.price).includes('.') ? (
+                                    <>
+                                      ₺{String(template.price).split('.')[0]}
+                                      <span className="text-lg font-semibold text-slate-500">
+                                        .{String(template.price).split('.')[1]}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    `₺${template.price}`
+                                  )}
+                                </span>
+                                {template.oldPrice && (
+                                  <span className="text-sm text-slate-400 line-through">
+                                    ₺{template.oldPrice}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="mt-auto flex items-center justify-between border-t border-rose-100 pt-4">
+                          <Link
+                            href={`/templates/${template.slug}/preview`}
+                            className="inline-flex items-center gap-2 text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                          >
+                            Detayları gör
+                            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                          </Link>
+                          <Link
+                            href={`/templates/${template.slug}/preview`}
+                            className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 transition hover:border-rose-300 hover:bg-rose-100"
+                          >
+                            Satın al
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-12 rounded-3xl border border-dashed border-rose-200 bg-white/80 p-8 text-center text-sm text-slate-500">
+                Popüler şablonlar güncelleniyor. Birkaç dakika içinde tekrar kontrol edin.
+              </div>
+            )}
+          </div>
+        </section>
+
+
+        {/* Categories */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="rounded-[32px] border border-rose-100 bg-white p-8 shadow-lg shadow-rose-100/50">
+              <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+                <div>
+                  <h3 className="text-2xl font-semibold text-slate-950">Popüler kategoriler</h3>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Yaklaşan özel günler, ilişki türleri ve temalar için hızlı filtreler.
+                  </p>
+                </div>
+                <Link
+                  href="/templates"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                >
+                  Tüm koleksiyonu keşfet
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <div className="mt-6 flex flex-wrap justify-center gap-2 sm:justify-start">
+                <Link href="/templates">
+                  <Badge className="whitespace-nowrap rounded-full border border-rose-100 bg-rose-50 px-4 py-2 text-xs font-medium uppercase tracking-wide text-rose-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-100">
+                    ✨ Tümü
+                  </Badge>
+                </Link>
+                {categories.slice(0, 10).map((category) => (
+                  <Link key={category} href={`/templates?category=${encodeURIComponent(category)}`}>
+                    <Badge className="whitespace-nowrap rounded-full border border-rose-100 bg-white px-4 py-2 text-xs font-medium text-slate-600 transition hover:border-rose-200 hover:bg-rose-50">
+                      {category}
+                    </Badge>
+                  </Link>
                 ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Featured Products */}
-        <section className="py-6">
+
+        {/* Journey */}
+        <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className="mb-10 flex items-end justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900">Popüler Hediyeler</h2>
-                <p className="mt-2 text-gray-600">En çok tercih edilen dijital hediyeler</p>
-              </div>
-              <Button variant="ghost" className="text-rose-600 hover:text-rose-700" asChild>
-                <Link href="/templates">
-                  Tümünü Gör
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+            <div className="max-w-2xl">
+              <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Hikayen nasıl akıyor?</h2>
+              <p className="mt-3 text-base text-slate-600">
+                Duygudan paylaşıma kadar her adım, sürprizini olağanüstü hale getirmek için yeniden tasarlandı.
+              </p>
             </div>
-
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {featuredTemplates.map((template) => {
-                const previewData = {
-                  id: template.id,
-                  slug: template.slug,
-                  title: template.title,
-                  audience: template.audience,
-                  bg_audio_url: null,
-                };
-
-                const discount = template.oldPrice && template.price
-                  ? Math.round((1 - parseFloat(template.price) / parseFloat(template.oldPrice)) * 100)
-                  : null;
-
+            <div className="mt-12 grid gap-6 lg:grid-cols-4">
+              {creationJourney.map((step, index) => {
+                const Icon = step.icon;
                 return (
-                  <div key={template.id}>
-                    <Card className="group relative h-full overflow-hidden rounded-2xl border-0 bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-xl hover:ring-gray-200">
-                      {/* Preview Container */}
-                      <Link href={`/templates/${template.slug}/preview`}>
-                        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-                          <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
-                            <TemplateCardPreview template={previewData} />
-                          </div>
-
-                          {/* Badges */}
-                          <div className="absolute left-4 top-4 flex gap-2">
-                            {discount && discount > 0 && (
-                              <Badge className="bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
-                                -{discount}%
-                              </Badge>
-                            )}
-                            {template.totalOrders > 0 && (
-                              <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
-                                Popüler
-                              </Badge>
-                            )}
-                          </div>
-
-                          {/* Favorite Button */}
-                          <div className="absolute right-4 top-4 z-10">
-                            <FavoriteButton
-                              templateId={template.id}
-                              iconOnly
-                              size="sm"
-                              className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-sm"
-                            />
-                          </div>
-
-                          {/* Overlay Gradient */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                        </div>
-                      </Link>
-
-                      {/* Content */}
-                      <CardContent className="p-4">
-                        {/* Title */}
-                        <Link href={`/templates/${template.slug}/preview`}>
-                          <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-rose-600 transition-colors duration-200 mb-3">
-                            {template.title}
-                          </h3>
-                        </Link>
-
-                        {/* Rating */}
-                        {template.avgRating && template.ratingCount > 0 && (
-                          <div className="flex items-center gap-1 mb-2">
-                            <div className="flex items-center gap-0.5">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-3.5 w-3.5 ${
-                                    i < Math.floor(template.avgRating || 0)
-                                      ? "fill-yellow-400 text-yellow-400"
-                                      : "text-gray-300"
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                            <span className="text-xs font-medium text-gray-600">
-                              {template.avgRating.toFixed(1)}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              ({template.ratingCount})
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Pricing */}
-                        <div className="flex items-baseline gap-2 mb-4">
-                          {template.price && (
-                            <>
-                              <span className="text-2xl font-black text-gray-900">
-                                {String(template.price).includes('.') ? (
-                                  <>
-                                    ₺{String(template.price).split('.')[0]}
-                                    <span className="text-lg font-bold">.{String(template.price).split('.')[1]}</span>
-                                  </>
-                                ) : (
-                                  `₺${template.price}`
-                                )}
-                              </span>
-                              {template.oldPrice && (
-                                <span className="text-sm text-gray-400 line-through font-medium">
-                                  ₺{template.oldPrice}
-                                </span>
-                              )}
-                            </>
-                          )}
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
-                          <Link
-                            href={`/templates/${template.slug}/preview`}
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                          >
-                            <Eye className="h-4 w-4" />
-                            İncele
-                          </Link>
-                          <Link
-                            href={`/templates/${template.slug}/preview`}
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] group"
-                          >
-                            Satın Al
-                            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
+                  <div
+                    key={step.title}
+                    className="group relative flex h-full flex-col gap-6 rounded-3xl border border-rose-100 bg-white p-6 shadow-lg shadow-rose-100/40 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  >
+                    <span className="text-sm font-semibold uppercase tracking-wide text-rose-500/80">
+                      0{index + 1}
+                    </span>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-slate-950">{step.title}</h3>
+                      <p className="text-sm text-slate-600">{step.description}</p>
+                    </div>
                   </div>
                 );
               })}
@@ -443,119 +692,141 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* CTA Buttons */}
-        <div className="ml-2 mr-2 mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Button size="lg" className="bg-rose-600 hover:bg-rose-700" asChild>
-                <Link href="/templates">
-                  Tümünü Keşfet
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-            
-        {/* Categories */}
-        <section className="border-b border-gray-100 bg-white py-6">
+        {/* Testimonials */}
+        <section className="relative py-20 bg-gradient-to-br from-rose-50 via-white to-sky-50">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(244,114,182,0.25),_transparent_60%)] opacity-70" />
           <div className="container mx-auto px-4">
-            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-              <Link href="/templates">
-                <Badge className="whitespace-nowrap bg-gray-100 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200 md:px-4 md:text-sm">
-                  ✨ Tümü
-                </Badge>
-              </Link>
-              {categories.slice(0, 8).map((category) => (
-                <Link key={category} href={`/templates?category=${encodeURIComponent(category)}`}>
-                  <Badge className="whitespace-nowrap bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 hover:bg-rose-100 md:px-4 md:text-sm">
-                    {category}
-                  </Badge>
-                </Link>
+            <div className="max-w-2xl">
+              <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Gerçek hikayeler</h2>
+              <p className="mt-3 text-base text-slate-600">
+                Birmesajmutluluk ile hazırlanan dijital sürprizler, kilometreleri yakınlaştırıyor ve iş birliklerini unutulmaz kılıyor.
+              </p>
+            </div>
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.name}
+                  className="flex h-full flex-col gap-6 rounded-3xl border border-rose-100 bg-white p-8 shadow-lg shadow-rose-100/40"
+                >
+                  <p className="text-lg font-medium leading-relaxed text-slate-900">
+                    “{testimonial.quote}”
+                  </p>
+                  <div>
+                    <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full border border-rose-100 bg-rose-50 text-xs uppercase tracking-wide text-rose-500">
+                        {testimonial.name
+                          .split(" ")
+                          .map((part) => part[0])
+                          .join("")
+                          .slice(0, 2)}
+                      </span>
+                      {testimonial.name}
+                    </span>
+                    <p className="mt-2 text-sm text-slate-500">{testimonial.role}</p>
+                  </div>
+                </div>
               ))}
-            </div>
-
-            
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="border-y border-gray-100 bg-gray-50 py-16">
-          <div className="container mx-auto px-4">
-            <div className="grid gap-8 md:grid-cols-3">
-              {features.map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <div key={feature.title} className="flex gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-rose-100">
-                      <Icon className="h-6 w-6 text-rose-600" />
-                    </div>
-                    <div>
-                      <h3 className="mb-1 font-semibold text-gray-900">{feature.title}</h3>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-r from-rose-600 to-purple-600 py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
-              İlk Dijital Hediyenizi Oluşturun
-            </h2>
-            <p className="mb-8 text-lg text-white/90">
-              50+ hazır şablon, sınırsız kişiselleştirme seçeneği
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Button size="lg" className="bg-white text-rose-600 hover:bg-gray-100" asChild>
-                <Link href="/templates">Hemen Başla</Link>
-              </Button>
-              <Button size="lg" variant="outline" className="bg-white text-rose-600 hover:bg-gray-100" asChild>
-                <Link href="/pricing">Paketleri Gör</Link>
-              </Button>
+        <section className="relative overflow-hidden py-20">
+          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-rose-400 via-purple-400 to-amber-300" />
+          <div className="absolute inset-0 -z-10 opacity-60 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.35),_transparent_60%)]" />
+          <div className="container relative mx-auto px-4 text-center text-white">
+            <div className="mx-auto max-w-3xl">
+              <h2 className="text-3xl font-semibold sm:text-4xl">
+                Hikayeni bugün paylaş, yarının favori anısı olsun
+              </h2>
+              <p className="mt-4 text-base text-white/80 sm:text-lg">
+                50+ trend şablon, sınırsız kişiselleştirme, detaylı görüntüleme istatistikleri ve premium destek ile hayalindeki sürprizi hazırla.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <Button
+                  size="lg"
+                  className="h-12 gap-2 rounded-full bg-white text-slate-950 shadow-xl shadow-rose-950/20 transition hover:scale-[1.01] hover:bg-white/90"
+                  asChild
+                >
+                  <Link href="/register">Ücretsiz başla</Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 gap-2 rounded-full border-white bg-white/10 text-white backdrop-blur transition hover:bg-white/20"
+                  asChild
+                >
+                  <Link href="/templates">Trend şablonları incele</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
+
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white py-12">
+      <footer className="border-t border-rose-100 bg-white py-12">
         <div className="container mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-4">
+          <div className="grid gap-10 md:grid-cols-4">
             <div>
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
+              <div className="mb-5 flex items-center gap-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 via-purple-500 to-indigo-500 shadow-lg shadow-purple-500/20">
                   <Heart className="h-4 w-4 text-white" />
                 </div>
-                <span className="font-bold text-gray-900">birmesajmutluluk</span>
+                <span className="text-lg font-semibold text-slate-950">birmesajmutluluk</span>
               </div>
-              <p className="text-sm text-gray-600">
-                Sevdiklerinize özel dijital mesajlar ve hediyeler oluşturun.
+              <p className="text-sm text-slate-600">
+                Sevdiklerinize özel dijital mesajlar, zamanlamalı açılışlar ve paylaşılan her anı anlamlandıran deneyimler.
               </p>
             </div>
             <div>
-              <h4 className="mb-4 font-semibold text-gray-900">Ürün</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/templates" className="hover:text-rose-600">Sürprizler</Link></li>
-                <li><Link href="/pricing" className="hover:text-rose-600">Fiyatlandırma</Link></li>
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Ürün</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>
+                  <Link href="/templates" className="transition hover:text-rose-500">
+                    Sürprizler
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="transition hover:text-rose-500">
+                    Fiyatlandırma
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
-              <h4 className="mb-4 font-semibold text-gray-900">Şirket</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/about" className="hover:text-rose-600">Hakkımızda</Link></li>
-                <li><Link href="/contact" className="hover:text-rose-600">İletişim</Link></li>
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Şirket</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>
+                  <Link href="/about" className="transition hover:text-rose-500">
+                    Hakkımızda
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="transition hover:text-rose-500">
+                    İletişim
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
-              <h4 className="mb-4 font-semibold text-gray-900">Yasal</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/privacy" className="hover:text-rose-600">Gizlilik Politikası</Link></li>
-                <li><Link href="/terms" className="hover:text-rose-600">Kullanım Şartları</Link></li>
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Yasal</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>
+                  <Link href="/privacy" className="transition hover:text-rose-500">
+                    Gizlilik Politikası
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="transition hover:text-rose-500">
+                    Kullanım Şartları
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
-          <div className="mt-8 border-t border-gray-200 pt-8 text-center text-sm text-gray-600">
+          <div className="mt-10 border-t border-rose-100 pt-6 text-center text-sm text-slate-500">
             © {new Date().getFullYear()} birmesajmutluluk. Tüm hakları saklıdır.
           </div>
         </div>
