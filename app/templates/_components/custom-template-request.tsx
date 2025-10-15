@@ -96,26 +96,24 @@ export default function CustomTemplateRequest() {
   }, []);
 
   return (
-    <section id="custom-template-request" className="bg-white py-16 mt-16">
+    <section id="custom-template-request" className="relative overflow-hidden border-y border-rose-100 bg-white py-20">
       <div className="container mx-auto px-4">
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center">
-          <div className="space-y-4">
-            <span className="inline-flex items-center gap-2 rounded-full bg-pink-100 px-4 py-2 text-sm font-semibold text-pink-600">
-              <Sparkles className="h-4 w-4" />
+        <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-5 text-slate-900">
+            <span className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-rose-600">
+              <Sparkles className="h-4 w-4 text-rose-500" />
               Özel Tasarım Talebi
             </span>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+            <h2 className="text-3xl font-bold lg:text-4xl">
               Aradığınız şablonu bulamadınız mı?
             </h2>
-            <p className="text-gray-600 text-lg leading-relaxed">
-              Takımımız, iş ortaklarınıza, arkadaşlarınıza ya da şirketinizin özel
-              kampanyalarına uygun tamamen kişiselleştirilmiş şablonlar hazırlayabilir.
-              İhtiyaçlarınızı paylaşın, sizin için benzersiz bir deneyim tasarlayalım.
+            <p className="text-base leading-relaxed text-slate-600">
+              Takımımız, iş ortaklarınıza, arkadaşlarınıza ya da şirketinizin özel kampanyalarına uygun tamamen kişiselleştirilmiş şablonlar hazırlayabilir. İhtiyaçlarınızı paylaşın, sizin için benzersiz bir deneyim tasarlayalım.
             </p>
-            <ul className="grid gap-2 text-sm text-gray-500 sm:grid-cols-2">
+            <ul className="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                Kurumsal marka kimliğine uygun tasarımlar
+                Kurumsal kimliğe uygun tasarımlar
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
@@ -130,17 +128,17 @@ export default function CustomTemplateRequest() {
                 48 saat içinde ilk taslak teslimi
               </li>
             </ul>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-slate-500">
               <p>
-                Canlı destek isterseniz{' '}
+                Canlı destek isterseniz{" "}
                 <a
                   href="https://wa.me/905555555555"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-pink-600 hover:text-pink-700"
+                  className="font-semibold text-rose-600 transition hover:text-rose-700"
                 >
                   WhatsApp üzerinden
-                </a>{' '}
+                </a>{" "}
                 bize ulaşabilirsiniz.
               </p>
             </div>
@@ -149,7 +147,7 @@ export default function CustomTemplateRequest() {
           <div className="flex justify-center lg:justify-end">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="lg" className="px-10 py-6 text-lg shadow-lg shadow-pink-200">
+                <Button size="lg" className="h-12 rounded-full border border-rose-200 bg-rose-50 px-10 text-base font-semibold text-rose-600 transition hover:border-rose-300 hover:bg-rose-100">
                   Özel Şablon İste
                 </Button>
               </DialogTrigger>
@@ -214,14 +212,14 @@ export default function CustomTemplateRequest() {
                       rows={5}
                       required
                     />
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-slate-400">
                       Daha hızlı dönüş için talebinizi olabildiğince detaylandırın.
                     </p>
                   </div>
                   <Button type="submit" className="w-full" disabled={isDisabled || isSubmitting}>
                     {isSubmitting ? 'Talebiniz hazırlanıyor...' : 'Talebi Gönder'}
                   </Button>
-                  <p className="text-xs text-gray-400 text-center">
+                  <p className="text-xs text-slate-400 text-center">
                     Talebiniz güvenli bir şekilde kaydedilir ve en kısa sürede size dönüş yapılır.
                   </p>
                 </form>

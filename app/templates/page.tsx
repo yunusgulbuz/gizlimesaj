@@ -366,41 +366,43 @@ export default async function TemplatesPage({
         <section className="container mx-auto px-4 py-8">
           <div className="rounded-[32px] border border-rose-100 bg-white/90 p-6 shadow-sm shadow-rose-100/60 backdrop-blur">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <SearchForm />
-              <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="h-11 gap-2 rounded-full border-rose-200 bg-white text-slate-600 hover:border-rose-300 hover:bg-rose-50"
-                    >
-                      Sırala: {sortBy === "popular" ? "Popüler" : sortBy === "newest" ? "En Yeni" : sortBy === "price-low" ? "Fiyat ↑" : "Fiyat ↓"}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="rounded-2xl border border-rose-100 bg-white shadow-lg">
-                    <DropdownMenuItem asChild>
-                      <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=newest`}>
-                        En Yeni
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=popular`}>
-                        Popüler
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-low`}>
-                        Fiyat (Düşük → Yüksek)
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-high`}>
-                        Fiyat (Yüksek → Düşük)
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <SearchForm />
+                <div className="flex justify-end sm:ml-auto">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="h-11 gap-2 rounded-full border-rose-200 bg-white text-slate-600 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600"
+                      >
+                        Sırala: {sortBy === "popular" ? "Popüler" : sortBy === "newest" ? "En Yeni" : sortBy === "price-low" ? "Fiyat ↑" : "Fiyat ↓"}
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="rounded-2xl border border-rose-100 bg-white shadow-lg">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=newest`}>
+                          En Yeni
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=popular`}>
+                          Popüler
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-low`}>
+                          Fiyat (Düşük → Yüksek)
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-high`}>
+                          Fiyat (Yüksek → Düşük)
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </div>
 
@@ -444,7 +446,7 @@ export default async function TemplatesPage({
           )}
 
           {paginatedTemplates.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-rose-200 bg-white/80 p-12 text-center text-slate-500">
+            <div className="rounded-2xl border border-dashed border-rose-200 bg-gradient-to-br from-rose-50 via-white to-sky-50 p-12 text-center text-slate-500">
               {searchQuery ? `"${searchQuery}" için sonuç bulunamadı.` : "Seçtiğiniz kategoride şu an birmesajmutluluk şablonu bulunmuyor. Başka bir kategori deneyin ya da özel istekte bulunun."}
             </div>
           ) : (
@@ -462,7 +464,7 @@ export default async function TemplatesPage({
                   const discount = calculateDiscountPercentage(template.shortestPrice, template.shortestOldPrice);
 
                   return (
-                    <div
+                    <Card
                       key={template.id}
                       className="group relative h-full overflow-hidden rounded-3xl border border-rose-100 bg-white p-0 shadow-lg shadow-rose-100/70 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-200/80"
                     >
@@ -497,7 +499,7 @@ export default async function TemplatesPage({
                         </div>
                       </Link>
 
-                      <div className="flex h-full flex-col gap-5 p-6">
+                      <CardContent className="flex h-full flex-col gap-5 p-6">
                         <div className="space-y-3">
                           <Link href={`/templates/${template.slug}/preview`}>
                             <h3 className="text-lg font-semibold leading-tight text-slate-950 transition hover:text-rose-500">
@@ -527,7 +529,18 @@ export default async function TemplatesPage({
                           <div className="flex items-baseline gap-2">
                             {template.shortestPrice && (
                               <>
-                                <span className="text-2xl font-bold text-slate-950">₺{template.shortestPrice}</span>
+                                <span className="text-2xl font-bold text-slate-950">
+                                  {String(template.shortestPrice).includes('.') ? (
+                                    <>
+                                      ₺{String(template.shortestPrice).split('.')[0]}
+                                      <span className="text-lg font-semibold text-slate-500">
+                                        .{String(template.shortestPrice).split('.')[1]}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    `₺${template.shortestPrice}`
+                                  )}
+                                </span>
                                 {template.shortestOldPrice && (
                                   <span className="text-sm text-slate-400 line-through">₺{template.shortestOldPrice}</span>
                                 )}
@@ -551,8 +564,8 @@ export default async function TemplatesPage({
                             Satın al
                           </Link>
                         </div>
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   );
                 })}
               </div>
@@ -622,18 +635,18 @@ export default async function TemplatesPage({
         </section>
 
         <section className="container mx-auto px-4 pb-20">
-          <Card className="rounded-[32px] border border-rose-100 bg-white/95 text-slate-900 shadow-lg shadow-rose-100/50">
+          <Card className="rounded-[32px] border-none bg-gradient-to-br from-rose-500 via-purple-500 to-indigo-500 text-white shadow-2xl shadow-rose-400/40">
             <CardContent className="flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
               <div className="space-y-3">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-rose-500/80">Kişiye Özel Şablon</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/70">Kişiye Özel Şablon</p>
                 <h2 className="text-2xl font-semibold md:text-3xl">
                   Hayalindeki birmesajmutluluk şablonu yok mu?
                 </h2>
-                <p className="max-w-xl text-sm text-slate-600">
+                <p className="max-w-xl text-sm text-white/80">
                   Tasarım ekibimize birkaç satırda fikrini anlat, sadece sana özel bir birmesajmutluluk sahnesi oluşturalım.
                 </p>
               </div>
-              <CustomTemplateRequestCta className="h-12 gap-2 rounded-full border border-rose-200 bg-rose-50 px-6 text-base font-semibold text-rose-600 transition hover:border-rose-300 hover:bg-rose-100" />
+              <CustomTemplateRequestCta className="h-12 gap-2 rounded-full border border-white/40 bg-white/20 px-6 text-base font-semibold text-white transition hover:border-white/60 hover:bg-white/30" />
             </CardContent>
           </Card>
         </section>
@@ -642,10 +655,10 @@ export default async function TemplatesPage({
 
         <section className="bg-white/80 py-16">
           <div className="container mx-auto flex flex-col items-center gap-4 px-4 text-center">
-            <h2 className="text-3xl font-semibold text-gray-900 md:text-4xl">
+            <h2 className="text-3xl font-semibold text-slate-950 md:text-4xl">
               İlk birmesajmutluluk'un için hazır mısın?
             </h2>
-            <p className="max-w-2xl text-base text-gray-600">
+            <p className="max-w-2xl text-base text-slate-600">
               Ücretsiz kaydol, şablonu seç, dakikalar içinde duygularını anlatan dijital sürprizini yayına al.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">

@@ -30,12 +30,12 @@ export default function SearchForm() {
 
   return (
     <form onSubmit={handleSearch} className="relative flex-1 max-w-md">
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
       <Input
         type="search"
         placeholder="Şablon ara..."
         defaultValue={searchParams.get("search") || ""}
-        className="pl-10"
+        className="rounded-full border-rose-100 bg-white/95 pl-10 focus-visible:ring-rose-300"
         name="search"
         disabled={isPending}
       />
