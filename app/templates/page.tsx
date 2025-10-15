@@ -1,28 +1,14 @@
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Heart,
-  Sparkles,
-  Music2,
-  ShieldCheck,
-  Palette,
-  Filter,
-  Users,
-  Timer,
-  MessageCircle,
   Star,
-  Eye,
   ArrowRight,
-  Search,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -33,7 +19,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { generateMetadata } from "@/lib/seo";
 import CustomTemplateRequest from "./_components/custom-template-request";
@@ -92,30 +77,6 @@ type TemplateWithMeta = Template & {
   allPricing: Map<number, { price: string; oldPrice: string | null }>;
   stats?: TemplateStatMapEntry;
 };
-
-interface HeroHighlight {
-  label: string;
-  description: string;
-  icon: LucideIcon;
-}
-
-const heroHighlights: HeroHighlight[] = [
-  {
-    label: "Zengin Kütüphane",
-    description: "50'den fazla tema ve sürekli güncellenen içerik",
-    icon: Palette,
-  },
-  {
-    label: "Duyguyu Yükselten Sahne",
-    description: "Animasyonlu geçişler ve fonda sizin seçtiğiniz müzik",
-    icon: Music2,
-  },
-  {
-    label: "Güvenli Paylaşım",
-    description: "Şifre koruması ve süreli erişim seçenekleri",
-    icon: ShieldCheck,
-  },
-];
 
 // Fetch categories from database
 async function getCategories(): Promise<string[]> {
@@ -319,7 +280,7 @@ export default async function TemplatesPage({
   });
 
   const activeCategory = (params?.category || "all") as string;
-  const sortBy = (params?.sort || "newest") as string;
+  const sortBy = (params?.sort || "popular") as string;
   const searchQuery = (params?.search || "").toLowerCase().trim();
   const currentPage = parseInt(params?.page || "1", 10);
   const itemsPerPage = 12;
@@ -368,33 +329,27 @@ export default async function TemplatesPage({
   const paginatedTemplates = filteredTemplates.slice(startIndex, endIndex);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 top-20 h-80 w-80 rounded-full bg-rose-200/60 blur-3xl" />
-        <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-purple-200/50 blur-3xl" />
-        <div className="absolute left-1/2 bottom-10 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-200/40 blur-3xl" />
-      </div>
-
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-white text-slate-900">
+      <header className="sticky top-0 z-50 border-b border-rose-100/70 bg-white/90 backdrop-blur">
         <div className="container mx-auto px-4">
           <nav className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 via-purple-500 to-indigo-500 shadow-lg shadow-purple-500/20">
                 <Heart className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-900">birmesajmutluluk</span>
+              <span className="text-lg font-semibold tracking-tight text-slate-900">birmesajmutluluk</span>
             </Link>
             <div className="flex items-center gap-6">
-              <Link href="/templates" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+              <Link href="/templates" className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block">
                 Sürprizler
               </Link>
-              <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+              <Link href="/pricing" className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block">
                 Planlar
               </Link>
-              <Link href="/about" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+              <Link href="/about" className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block">
                 Hakkımızda
               </Link>
-              <Link href="/contact" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
+              <Link href="/contact" className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block">
                 İletişim
               </Link>
               <div className="hidden md:block">
@@ -408,72 +363,72 @@ export default async function TemplatesPage({
 
       <main className="relative z-10">
         {/* Filters Section */}
-        <section className="container mx-auto px-4 py-6">
-          <div className="space-y-4">
-            {/* Search and Sort */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              {/* Search Input */}
+        <section className="container mx-auto px-4 py-8">
+          <div className="rounded-[32px] border border-rose-100 bg-white/90 p-6 shadow-sm shadow-rose-100/60 backdrop-blur">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <SearchForm />
-
-              {/* Sort Dropdown */}
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    Sırala: {sortBy === "newest" ? "En Yeni" : sortBy === "popular" ? "Popüler" : sortBy === "price-low" ? "Fiyat ↑" : "Fiyat ↓"}
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=newest`}>
-                      En Yeni
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=popular`}>
-                      Popüler
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-low`}>
-                      Fiyat (Düşük → Yüksek)
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-high`}>
-                      Fiyat (Yüksek → Düşük)
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="h-11 gap-2 rounded-full border-rose-200 bg-white text-slate-600 hover:border-rose-300 hover:bg-rose-50"
+                    >
+                      Sırala: {sortBy === "popular" ? "Popüler" : sortBy === "newest" ? "En Yeni" : sortBy === "price-low" ? "Fiyat ↑" : "Fiyat ↓"}
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="rounded-2xl border border-rose-100 bg-white shadow-lg">
+                    <DropdownMenuItem asChild>
+                      <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=newest`}>
+                        En Yeni
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=popular`}>
+                        Popüler
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-low`}>
+                        Fiyat (Düşük → Yüksek)
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}sort=price-high`}>
+                        Fiyat (Yüksek → Düşük)
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
 
-            {/* Category Filters */}
-            <div className="flex w-full gap-2 overflow-x-auto pb-2">
-              <Button
-                asChild
-                size="sm"
-                variant={activeCategory === "all" ? "default" : "outline"}
-                className="shrink-0 gap-2 rounded-full"
+            <div className="mt-5 flex w-full gap-2 overflow-x-auto pb-2">
+              <Link
+                href={`/templates?${sortBy !== "popular" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}` : ""}`}
+                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium whitespace-nowrap transition hover:border-rose-300 hover:bg-rose-50 ${
+                  activeCategory === "all"
+                    ? "border-rose-300 bg-rose-100 text-rose-700"
+                    : "border-rose-100 bg-white text-slate-600"
+                }`}
               >
-                <Link href={`/templates?${sortBy !== "newest" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}` : ""}`}>
-                  Tümü
-                </Link>
-              </Button>
+                Tümü
+              </Link>
               {categories.map((category) => {
                 const isActive = activeCategory === category;
                 return (
-                  <Button
+                  <Link
                     key={category}
-                    asChild
-                    size="sm"
-                    variant={isActive ? "default" : "outline"}
-                    className="shrink-0 rounded-full capitalize"
+                    href={`/templates?category=${encodeURIComponent(category)}${sortBy !== "popular" ? `&sort=${sortBy}` : ""}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ""}`}
+                    className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium capitalize whitespace-nowrap transition hover:border-rose-300 hover:bg-rose-50 ${
+                      isActive
+                        ? "border-rose-300 bg-rose-100 text-rose-700"
+                        : "border-rose-100 bg-white text-slate-600"
+                    }`}
                   >
-                    <Link href={`/templates?category=${encodeURIComponent(category)}${sortBy !== "newest" ? `&sort=${sortBy}` : ""}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ""}`}>
-                      {category}
-                    </Link>
-                  </Button>
+                    {category}
+                  </Link>
                 );
               })}
             </div>
@@ -483,147 +438,124 @@ export default async function TemplatesPage({
         <section className="container mx-auto px-4 pb-12">
           {/* Results Info */}
           {totalItems > 0 && (
-            <div className="mb-4 text-sm text-gray-600">
+            <div className="mb-4 text-sm text-slate-500">
               {totalItems} şablon bulundu {searchQuery && `"${searchQuery}" için`}
             </div>
           )}
 
           {paginatedTemplates.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-rose-200 bg-white/70 p-12 text-center text-gray-600">
+            <div className="rounded-2xl border border-dashed border-rose-200 bg-white/80 p-12 text-center text-slate-500">
               {searchQuery ? `"${searchQuery}" için sonuç bulunamadı.` : "Seçtiğiniz kategoride şu an birmesajmutluluk şablonu bulunmuyor. Başka bir kategori deneyin ya da özel istekte bulunun."}
             </div>
           ) : (
             <>
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
                 {paginatedTemplates.map((template) => {
-                const previewData = {
-                  id: template.id,
-                  slug: template.slug,
-                  title: template.title,
-                  audience: template.audience,
-                  bg_audio_url: template.bg_audio_url,
-                };
+                  const previewData = {
+                    id: template.id,
+                    slug: template.slug,
+                    title: template.title,
+                    audience: template.audience,
+                    bg_audio_url: template.bg_audio_url,
+                  };
 
-                const discount = calculateDiscountPercentage(template.shortestPrice, template.shortestOldPrice);
+                  const discount = calculateDiscountPercentage(template.shortestPrice, template.shortestOldPrice);
 
-                return (
-                  <div key={template.id}>
-                    <Card className="group relative h-full overflow-hidden rounded-2xl border-0 bg-white shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-xl hover:ring-gray-200">
-                      {/* Preview Container */}
+                  return (
+                    <div
+                      key={template.id}
+                      className="group relative h-full overflow-hidden rounded-3xl border border-rose-100 bg-white p-0 shadow-lg shadow-rose-100/70 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-200/80"
+                    >
                       <Link href={`/templates/${template.slug}/preview`}>
-                        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-3xl rounded-b-none border-b border-rose-100 bg-rose-50/40">
                           <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
                             <TemplateCardPreview template={previewData} />
                           </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-rose-500/10 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-                          {/* Badges */}
                           <div className="absolute left-4 top-4 flex gap-2">
                             {discount && discount > 0 && (
-                              <Badge className="bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                              <Badge className="border border-emerald-100 bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
                                 -{discount}%
                               </Badge>
                             )}
-                            {template.stats && template.stats.totalRatings > 5 && (
-                              <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                            {template.stats && template.stats.totalRatings > 10 && (
+                              <Badge className="border border-rose-100 bg-white/80 px-2.5 py-1 text-xs font-semibold text-rose-600 shadow-sm backdrop-blur">
                                 Popüler
                               </Badge>
                             )}
                           </div>
 
-                          {/* Favorite Button */}
                           <div className="absolute right-4 top-4 z-10">
                             <FavoriteButton
                               templateId={template.id}
                               iconOnly
                               size="sm"
-                              className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-sm"
+                              className="bg-white/80 text-rose-500 shadow-sm transition hover:bg-white"
                             />
                           </div>
-
-                          {/* Overlay Gradient */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                         </div>
                       </Link>
 
-                      {/* Content */}
-                      <CardContent className="p-4">
-                        {/* Title */}
-                        <Link href={`/templates/${template.slug}/preview`}>
-                          <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-tight group-hover:text-rose-600 transition-colors duration-200 mb-3">
-                            {template.title}
-                          </h3>
-                        </Link>
+                      <div className="flex h-full flex-col gap-5 p-6">
+                        <div className="space-y-3">
+                          <Link href={`/templates/${template.slug}/preview`}>
+                            <h3 className="text-lg font-semibold leading-tight text-slate-950 transition hover:text-rose-500">
+                              {template.title}
+                            </h3>
+                          </Link>
 
-                        {/* Rating */}
-                        {template.stats && template.stats.totalRatings > 0 && (
-                          <div className="flex items-center gap-1 mb-2">
-                            <div className="flex items-center gap-0.5">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-3.5 w-3.5 ${
-                                    i < Math.floor(template.stats?.averageRating || 0)
-                                      ? "fill-yellow-400 text-yellow-400"
-                                      : "text-gray-300"
-                                  }`}
-                                />
-                              ))}
+                          {template.stats && template.stats.totalRatings > 0 && (
+                            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                              <div className="flex items-center gap-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`h-3.5 w-3.5 ${
+                                      i < Math.floor(template.stats?.averageRating || 0)
+                                        ? "fill-amber-400 text-amber-400"
+                                        : "text-slate-200"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-slate-600">{template.stats.averageRating.toFixed(1)}</span>
+                              <span className="text-slate-400">({template.stats.totalRatings})</span>
                             </div>
-                            <span className="text-xs font-medium text-gray-600">
-                              {template.stats.averageRating.toFixed(1)}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              ({template.stats.totalRatings})
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Pricing */}
-                        <div className="flex items-baseline gap-2 mb-4">
-                          {template.shortestPrice && (
-                            <>
-                              <span className="text-2xl font-black text-gray-900">
-                                {String(template.shortestPrice).includes('.') ? (
-                                  <>
-                                    ₺{String(template.shortestPrice).split('.')[0]}
-                                    <span className="text-lg font-bold">.{String(template.shortestPrice).split('.')[1]}</span>
-                                  </>
-                                ) : (
-                                  `₺${template.shortestPrice}`
-                                )}
-                              </span>
-                              {template.shortestOldPrice && (
-                                <span className="text-sm text-gray-400 line-through font-medium">
-                                  ₺{template.shortestOldPrice}
-                                </span>
-                              )}
-                            </>
                           )}
+
+                          <div className="flex items-baseline gap-2">
+                            {template.shortestPrice && (
+                              <>
+                                <span className="text-2xl font-bold text-slate-950">₺{template.shortestPrice}</span>
+                                {template.shortestOldPrice && (
+                                  <span className="text-sm text-slate-400 line-through">₺{template.shortestOldPrice}</span>
+                                )}
+                              </>
+                            )}
+                          </div>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
+                        <div className="mt-auto flex items-center justify-between border-t border-rose-100 pt-4">
                           <Link
                             href={`/templates/${template.slug}/preview`}
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                            className="inline-flex items-center gap-2 text-sm font-medium text-rose-600 transition hover:text-rose-700"
                           >
-                            <Eye className="h-4 w-4" />
-                            İncele
+                            Detayları gör
+                            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                           </Link>
                           <Link
                             href={`/templates/${template.slug}/preview`}
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] group"
+                            className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 transition hover:border-rose-300 hover:bg-rose-100"
                           >
-                            Satın Al
-                            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                            Satın al
                           </Link>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                );
-              })}
-            </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
@@ -631,7 +563,7 @@ export default async function TemplatesPage({
                 {/* Previous Button */}
                 {currentPage > 1 ? (
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "newest" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${currentPage - 1}`}>
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "popular" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${currentPage - 1}`}>
                       <ChevronLeft className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -659,14 +591,14 @@ export default async function TemplatesPage({
                         {page === currentPage ? (
                           <span>{page}</span>
                         ) : (
-                          <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "newest" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${page}`}>
+                          <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "popular" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${page}`}>
                             {page}
                           </Link>
                         )}
                       </Button>
                     );
                   } else if (page === currentPage - 2 || page === currentPage + 2) {
-                    return <span key={page} className="px-2 text-gray-400">...</span>;
+                    return <span key={page} className="px-2 text-slate-400">...</span>;
                   }
                   return null;
                 })}
@@ -674,7 +606,7 @@ export default async function TemplatesPage({
                 {/* Next Button */}
                 {currentPage < totalPages ? (
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "newest" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${currentPage + 1}`}>
+                    <Link href={`/templates?${activeCategory !== "all" ? `category=${encodeURIComponent(activeCategory)}&` : ""}${sortBy !== "popular" ? `sort=${sortBy}&` : ""}${searchQuery ? `search=${encodeURIComponent(searchQuery)}&` : ""}page=${currentPage + 1}`}>
                       <ChevronRight className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -690,18 +622,18 @@ export default async function TemplatesPage({
         </section>
 
         <section className="container mx-auto px-4 pb-20">
-          <Card className="border-none bg-gradient-to-r from-rose-500 via-purple-500 to-indigo-500 text-white shadow-xl">
-            <CardContent className="flex flex-col gap-4 p-8 md:flex-row md:items-center md:justify-between">
+          <Card className="rounded-[32px] border border-rose-100 bg-white/95 text-slate-900 shadow-lg shadow-rose-100/50">
+            <CardContent className="flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
               <div className="space-y-3">
-                <p className="text-sm uppercase tracking-[0.2em] text-white/75">Kişiye Özel Şablon</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-rose-500/80">Kişiye Özel Şablon</p>
                 <h2 className="text-2xl font-semibold md:text-3xl">
                   Hayalindeki birmesajmutluluk şablonu yok mu?
                 </h2>
-                <p className="max-w-xl text-sm text-white/85">
+                <p className="max-w-xl text-sm text-slate-600">
                   Tasarım ekibimize birkaç satırda fikrini anlat, sadece sana özel bir birmesajmutluluk sahnesi oluşturalım.
                 </p>
               </div>
-              <CustomTemplateRequestCta className="h-12 gap-2 px-6 text-base" />
+              <CustomTemplateRequestCta className="h-12 gap-2 rounded-full border border-rose-200 bg-rose-50 px-6 text-base font-semibold text-rose-600 transition hover:border-rose-300 hover:bg-rose-100" />
             </CardContent>
           </Card>
         </section>

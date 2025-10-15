@@ -91,14 +91,14 @@ const features = [
   },
   {
     icon: PartyPopper,
-    title: "Trend şablonlar",
+    title: "Trend sürprizler",
     description: "2025 tasarım trendlerine göre her ay güncellenen koleksiyonlara erişin.",
     accent: "from-amber-500/80 via-orange-400/70 to-pink-500/60",
   },
 ];
 
 const quickSteps = [
-  { label: "Şablon seç", icon: Sparkles },
+  { label: "Sürpriz seç", icon: Sparkles },
   { label: "Mesajını özelleştir", icon: Wand2 },
   { label: "Linki paylaş", icon: Share2 },
 ];
@@ -106,7 +106,7 @@ const quickSteps = [
 const creationJourney = [
   {
     icon: Sparkles,
-    title: "Şablonunu seç",
+    title: "Sürprizini seç",
     description: "Trend temalar, sezonsal koleksiyonlar ve popüler sürprizler tek yerde.",
   },
   {
@@ -135,7 +135,7 @@ const testimonials = [
   },
   {
     quote:
-      "Ürün lansmanında ekibe teşekkür etmek için kullandık. Kurumsal kimliğe uyum sağlayan şablonlarla dakikalar içinde hazırdı.",
+      "Ürün lansmanında ekibe teşekkür etmek için kullandık. Kurumsal kimliğe uyum sağlayan sürprizlerle dakikalar içinde hazırdı.",
     name: "Selin A.",
     role: "Marka Yöneticisi, Kolektif House",
   },
@@ -388,13 +388,13 @@ export default async function HomePage() {
                     </Link>
                   ) : (
                     <div className="mt-5 rounded-2xl border border-dashed border-rose-200 bg-white/70 p-8 text-sm text-slate-500">
-                      Yeni şablonlar yükleniyor...
+                      Yeni sürprizler yükleniyor...
                     </div>
                   )}
                   <div className="mt-5 rounded-2xl border border-rose-100 bg-rose-50/80 p-4 text-xs leading-relaxed text-slate-600 sm:text-sm">
                     <p className="font-medium text-slate-900">2025 Sonbahar Koleksiyonu</p>
                     <p className="mt-2">
-                      Mevsimsel renk paletleri, 3D partikül animasyonları ve yüksek çözünürlükte görsel alanlarıyla güncellenen trend şablonlar.
+                      Mevsimsel renk paletleri, 3D partikül animasyonları ve yüksek çözünürlükte görsel alanlarıyla güncellenen trend sürprizler.
                     </p>
                   </div>
                 </div>
@@ -410,11 +410,11 @@ export default async function HomePage() {
                   <h1 className="text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl lg:text-[3rem]">
                     Dijital hediyelerle
                     <span className="block bg-gradient-to-r from-rose-500 via-purple-500 to-amber-400 bg-clip-text text-transparent">
-                      duygularını saniyede sat
+                      duygularını 45 saniyede ifade et
                     </span>
                   </h1>
                   <p className="text-base text-slate-600 sm:text-lg">
-                    Sevdiklerinizi mutlu edecek, satışa hazır dijital sürpriz sayfalarını dakikalar içinde oluşturun. Özel günlere uygun yüzlerce tasarım ile dönüşümlerinizi artırın.
+                    Saniyeler içinde hazır, sonsuza kadar unutulmaz. Sevdiklerinizi mutlu edecek, satışa hazır dijital sürpriz sayfalarını saniyeler içinde oluşturun.
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -498,7 +498,7 @@ export default async function HomePage() {
           <div className="container mx-auto px-4">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-2xl">
-                <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Popüler şablonlar</h2>
+                <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Popüler sürprizler</h2>
                 <p className="mt-3 text-base text-slate-600">
                   En çok paylaşılan ve en yüksek geri bildirim alan dijital sürprizler. Satışa özel kampanyaları kaçırmayın.
                 </p>
@@ -642,7 +642,7 @@ export default async function HomePage() {
               </div>
             ) : (
               <div className="mt-12 rounded-3xl border border-dashed border-rose-200 bg-white/80 p-8 text-center text-sm text-slate-500">
-                Popüler şablonlar güncelleniyor. Birkaç dakika içinde tekrar kontrol edin.
+                Popüler sürprizler güncelleniyor. Birkaç dakika içinde tekrar kontrol edin.
               </div>
             )}
           </div>
@@ -688,7 +688,8 @@ export default async function HomePage() {
 
 
         {/* Journey */}
-        <section className="py-20">
+        <section className="relative py-20 bg-gradient-to-br from-white via-rose-50 to-white">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_rgba(244,114,182,0.18),_transparent_60%)] opacity-60" />
           <div className="container mx-auto px-4">
             <div className="max-w-2xl">
               <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Hikayen nasıl akıyor?</h2>
@@ -769,7 +770,7 @@ export default async function HomePage() {
                 Hikayeni bugün paylaş, yarının favori anısı olsun
               </h2>
               <p className="mt-4 text-base text-slate-600 sm:text-lg">
-                50+ trend şablon, sınırsız kişiselleştirme, detaylı görüntüleme istatistikleri ve premium destek ile hayalindeki sürprizi hazırla.
+                50+ trend sürpriz, sınırsız kişiselleştirme, detaylı görüntüleme istatistikleri ve premium destek ile hayalindeki sürprizi hazırla.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Button
@@ -785,7 +786,7 @@ export default async function HomePage() {
                   className="h-12 gap-2 rounded-full border-rose-200 bg-white px-6 text-rose-600 transition hover:border-rose-300 hover:bg-rose-50"
                   asChild
                 >
-                  <Link href="/templates">Trend şablonları incele</Link>
+                  <Link href="/templates">Trend sürprizleri incele</Link>
                 </Button>
               </div>
             </div>
