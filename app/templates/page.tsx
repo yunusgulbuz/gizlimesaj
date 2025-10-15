@@ -212,12 +212,20 @@ async function getTemplateStats(): Promise<Record<string, TemplateStatMapEntry>>
 }
 
 function formatPrice(price: string | null | undefined): string | null {
-  if (!price) return null;
+  if (price == null) return null;
 
-  const numPrice = parseFloat(price);
+  const normalized = price.toString().trim();
+  if (!normalized) return null;
+
+  const sanitized = normalized.replace(',', '.');
+  const numPrice = Number(sanitized);
   if (Number.isNaN(numPrice)) return null;
 
-  return numPrice.toFixed(0);
+  if (!sanitized.includes('.')) {
+    return Math.round(numPrice).toString();
+  }
+
+  return sanitized.replace(/\.$/, '');
 }
 
 function calculateDiscountPercentage(currentPrice: string | null, oldPrice: string | null): number | null {
