@@ -1,12 +1,9 @@
-'use client';
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import HeaderAuthButton from "@/components/auth/header-auth-button";
 import { MobileDrawerMenu } from "@/components/mobile-drawer-menu";
-import { createClient } from "@/lib/supabase-client";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import {
   Heart,
   Users,
@@ -69,28 +66,14 @@ const team = [
   },
 ];
 
-export default function AboutPage() {
-  const [user, setUser] = useState<any>(null);
-  const supabase = createClient();
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-
-    getUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+export default async function AboutPage() {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
         <div className="container mx-auto px-4">
           <nav className="flex h-16 items-center justify-between">
@@ -116,14 +99,13 @@ export default function AboutPage() {
               <div className="hidden md:block">
                 <HeaderAuthButton />
               </div>
-              <MobileDrawerMenu user={user} />
+              <MobileDrawerMenu user={user ?? undefined} />
             </div>
           </nav>
         </div>
       </header>
 
       <main>
-        {/* Hero Section */}
         <section className="border-b border-gray-100 bg-gradient-to-b from-rose-50/50 to-white py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-3xl text-center">
@@ -143,7 +125,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Stats Section */}
         <section className="border-b border-gray-100 bg-white py-16">
           <div className="container mx-auto px-4">
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -161,7 +142,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Story Section */}
         <section className="border-b border-gray-100 py-16">
           <div className="container mx-auto px-4">
             <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
@@ -169,29 +149,33 @@ export default function AboutPage() {
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
                   <Target className="h-6 w-6 text-white" />
                 </div>
-                <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">
-                  Hikayemiz
-                </h2>
+                <h2 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">Hikayemiz</h2>
                 <div className="space-y-4 text-gray-600">
                   <p>
-                    birmesajmutluluk, sevdiklerine özel anlar yaratmak isteyen ancak bunu
-                    ifade etmekte zorlanan insanlar için doğdu. Bazen kelimeler yetmiyor,
-                    bazen bir kartpostal çok sıradan kalıyor.
+                    birmesajmutluluk, sevdiklerine özel anlar yaratmak isteyen ancak bunu ifade etmekte zorlanan insanlar için doğdu. Bazen kelimeler yetmiyor, bazen bir kartpostal çok sıradan kalıyor.
                   </p>
                   <p>
-                    Biz de dedik ki: "Ya dijital dünyanın sınırsız olanaklarını,
-                    duyguların samimiyetiyle birleştirirsek?"
+                    Biz de dedik ki: "Ya dijital dünyanın sınırsız olanaklarını, duyguların samimiyetiyle birleştirirsek?"
                   </p>
                   <p>
-                    İşte böyle başladı birmesajmutluluk'un hikayesi. Bugün binlerce kişi,
-                    sevdiklerine özel anlar yaşatmak için platformumuzu kullanıyor.
+                    İşte böyle başladı birmesajmutluluk'un hikayesi. Bugün binlerce kişi, sevdiklerine özel anlar yaşatmak için platformumuzu kullanıyor.
                   </p>
                 </div>
               </div>
               <div className="relative">
                 <div className="aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 to-purple-100 p-8">
-                  <div className="flex h-full items-center justify-center">
-                    <Heart className="h-48 w-48 text-rose-500/20" />
+                  <div className="grid h-full place-items-center rounded-xl border border-dashed border-rose-200 bg-white/80 text-center text-gray-700">
+                    <div className="space-y-4">
+                      <span className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-1 text-sm font-medium text-rose-600">
+                        Dijital Mutluluk Tasarımı
+                      </span>
+                      <p className="text-lg font-semibold text-gray-900">
+                        "Duygularınızı dijitalde daha anlamlı hale getiriyoruz."
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Sevdikleriniz için özel hazırlanan şablonlar, kişiselleştirilmiş mesajlar ve unutulmaz deneyimler.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -199,20 +183,17 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Mission & Vision */}
-        <section className="border-b border-gray-100 bg-gray-50 py-16">
+        <section className="border-b border-gray-100 bg-white py-16">
           <div className="container mx-auto px-4">
-            <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2">
+            <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
               <Card className="border-0 shadow-sm">
                 <CardContent className="p-8">
                   <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-rose-100">
-                    <Target className="h-6 w-6 text-rose-600" />
+                    <Heart className="h-6 w-6 text-rose-600" />
                   </div>
                   <h3 className="mb-4 text-2xl font-bold text-gray-900">Misyonumuz</h3>
                   <p className="text-gray-600">
-                    İnsanların sevdiklerine özel, anlamlı ve unutulmaz anlar yaşatmasını
-                    sağlamak. Dijital dünyanın sunduğu sınırsız olanakları, duygusal
-                    bağların gücüyle birleştirmek.
+                    İnsanların sevdiklerine özel, anlamlı ve unutulmaz anlar yaşatmasını sağlamak. Dijital dünyanın sunduğu sınırsız olanakları, duygusal bağların gücüyle birleştirmek.
                   </p>
                 </CardContent>
               </Card>
@@ -224,8 +205,7 @@ export default function AboutPage() {
                   </div>
                   <h3 className="mb-4 text-2xl font-bold text-gray-900">Vizyonumuz</h3>
                   <p className="text-gray-600">
-                    Türkiye'nin en sevilen dijital hediye platformu olmak. Her özel günde,
-                    her kutlamada, her sürprizde akla gelen ilk isim birmesajmutluluk olmalı.
+                    Türkiye'nin en sevilen dijital hediye platformu olmak. Her özel günde, her kutlamada, her sürprizde akla gelen ilk isim birmesajmutluluk olmalı.
                   </p>
                 </CardContent>
               </Card>
@@ -233,16 +213,11 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Values Section */}
         <section className="border-b border-gray-100 py-16">
           <div className="container mx-auto px-4">
             <div className="mb-12 text-center">
-              <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-                Değerlerimiz
-              </h2>
-              <p className="text-lg text-gray-600">
-                Bizi biz yapan ve her kararımıza yön veren değerler
-              </p>
+              <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">Değerlerimiz</h2>
+              <p className="text-lg text-gray-600">Bizi biz yapan ve her kararımıza yön veren değerler</p>
             </div>
 
             <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -253,9 +228,7 @@ export default function AboutPage() {
                     <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-100 to-purple-100">
                       <Icon className="h-8 w-8 text-rose-600" />
                     </div>
-                    <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                      {value.title}
-                    </h3>
+                    <h3 className="mb-2 text-lg font-semibold text-gray-900">{value.title}</h3>
                     <p className="text-sm text-gray-600">{value.description}</p>
                   </div>
                 );
@@ -264,16 +237,11 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Team Section */}
         <section className="border-b border-gray-100 bg-gray-50 py-16">
           <div className="container mx-auto px-4">
             <div className="mb-12 text-center">
-              <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-                Ekibimiz
-              </h2>
-              <p className="text-lg text-gray-600">
-                birmesajmutluluk'u hayata geçiren tutkulu ekip
-              </p>
+              <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">Ekibimiz</h2>
+              <p className="text-lg text-gray-600">birmesajmutluluk'u hayata geçiren tutkulu ekip</p>
             </div>
 
             <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
@@ -285,12 +253,8 @@ export default function AboutPage() {
                       <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
                         <Icon className="h-6 w-6 text-white" />
                       </div>
-                      <h3 className="mb-1 text-xl font-semibold text-gray-900">
-                        {member.name}
-                      </h3>
-                      <p className="mb-3 text-sm font-medium text-rose-600">
-                        {member.role}
-                      </p>
+                      <h3 className="mb-1 text-xl font-semibold text-gray-900">{member.name}</h3>
+                      <p className="mb-3 text-sm font-medium text-rose-600">{member.role}</p>
                       <p className="text-sm text-gray-600">{member.description}</p>
                     </CardContent>
                   </Card>
@@ -300,20 +264,20 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* CTA */}
         <section className="bg-gradient-to-r from-rose-600 to-purple-600 py-16">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
-              Hadi Başlayalım!
-            </h2>
-            <p className="mb-8 text-lg text-white/90">
-              Sevdiklerinize özel bir mesaj oluşturun, onları mutlu edin
-            </p>
+            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Hadi Başlayalım!</h2>
+            <p className="mb-8 text-lg text-white/90">Sevdiklerinize özel bir mesaj oluşturun, onları mutlu edin</p>
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Button size="lg" className="bg-white text-rose-600 hover:bg-gray-100" asChild>
                 <Link href="/templates">Sürprizleri Keşfet</Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white/10" asChild>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white bg-transparent text-white hover:bg-white/10"
+                asChild
+              >
                 <Link href="/contact">Bize Ulaşın</Link>
               </Button>
             </div>
@@ -321,7 +285,6 @@ export default function AboutPage() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-gray-200 bg-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-4">
@@ -339,22 +302,46 @@ export default function AboutPage() {
             <div>
               <h4 className="mb-4 font-semibold text-gray-900">Ürün</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/templates" className="hover:text-rose-600">Sürprizler</Link></li>
-                <li><Link href="/pricing" className="hover:text-rose-600">Fiyatlandırma</Link></li>
+                <li>
+                  <Link href="/templates" className="hover:text-rose-600">
+                    Sürprizler
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="hover:text-rose-600">
+                    Fiyatlandırma
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="mb-4 font-semibold text-gray-900">Şirket</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/about" className="hover:text-rose-600">Hakkımızda</Link></li>
-                <li><Link href="/contact" className="hover:text-rose-600">İletişim</Link></li>
+                <li>
+                  <Link href="/about" className="hover:text-rose-600">
+                    Hakkımızda
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-rose-600">
+                    İletişim
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="mb-4 font-semibold text-gray-900">Yasal</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/privacy" className="hover:text-rose-600">Gizlilik Politikası</Link></li>
-                <li><Link href="/terms" className="hover:text-rose-600">Kullanım Şartları</Link></li>
+                <li>
+                  <Link href="/privacy" className="hover:text-rose-600">
+                    Gizlilik Politikası
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="hover:text-rose-600">
+                    Kullanım Şartları
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
