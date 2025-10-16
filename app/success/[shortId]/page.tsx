@@ -18,8 +18,10 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SocialShare } from '@/components/ui/social-share';
 import { ShareVisualGenerator } from '@/components/share/share-visual-generator';
+import { Image as ImageIcon } from 'lucide-react';
 
 interface PersonalPageData {
   id: string;
@@ -42,6 +44,7 @@ export default function SuccessPage() {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [isVisualDialogOpen, setIsVisualDialogOpen] = useState(false);
 
   // Get personal page URL safely (only on client side)
   const [personalPageUrl, setPersonalPageUrl] = useState<string>('');
@@ -302,22 +305,23 @@ export default function SuccessPage() {
   const shareUrl = personalPageUrl || `https://birmesajmutluluk.com/m/${shortId}`;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50/60 to-indigo-50 px-4 pb-20 pt-12 sm:px-6 sm:pt-16">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-20 top-[-10%] h-72 w-72 rounded-full bg-purple-300/30 blur-3xl" />
-        <div className="absolute right-[-15%] top-[-20%] h-80 w-80 rounded-full bg-pink-200/40 blur-3xl" />
-        <div className="absolute bottom-[-25%] left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
-      </div>
+    <>
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50/60 to-indigo-50 px-4 pb-20 pt-12 sm:px-6 sm:pt-16">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -left-20 top-[-10%] h-72 w-72 rounded-full bg-purple-300/30 blur-3xl" />
+          <div className="absolute right-[-15%] top-[-20%] h-80 w-80 rounded-full bg-pink-200/40 blur-3xl" />
+          <div className="absolute bottom-[-25%] left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
+        </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8">
+        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white/80 shadow-xl shadow-purple-200/60">
             <CheckCircle className="h-10 w-10 text-purple-600" />
           </div>
-          <h1 className="mt-6 text-4xl font-bold text-gray-900 sm:text-5xl">
+          <h1 className="mt-6 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">
             Mesajınız hazır! 🎉
           </h1>
-          <p className="mt-3 text-lg text-gray-600">
+          <p className="mt-3 text-base text-gray-600 sm:text-lg">
             {pageData.recipient_name} için hazırladığınız sürpriz sayfa yayında.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm font-medium text-gray-700">
@@ -336,158 +340,49 @@ export default function SuccessPage() {
           </div>
         </header>
 
-        <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[1.65fr_1fr]">
-          <div className="space-y-6">
-            <Card className="border-white/70 bg-white/85 backdrop-blur-sm shadow-xl shadow-purple-200/60">
-              <CardHeader className="pb-0">
-                <CardTitle className="text-2xl text-gray-900">Mesaj özeti</CardTitle>
-                <CardDescription className="text-gray-500">
-                  Paylaşmadan önce bilgileri son kez kontrol edin.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-5 pt-6 sm:space-y-6">
-                <dl className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-purple-100 bg-purple-50/60 p-4 sm:p-5">
-                    <dt className="text-xs uppercase tracking-[0.25em] text-purple-500">
-                      Gönderen
-                    </dt>
-                    <dd className="mt-2 text-lg font-semibold text-gray-900">
-                      {pageData.sender_name}
-                    </dd>
-                  </div>
-                  <div className="rounded-2xl border border-rose-100 bg-rose-50/60 p-4 sm:p-5">
-                    <dt className="text-xs uppercase tracking-[0.25em] text-rose-500">
-                      Alıcı
-                    </dt>
-                    <dd className="mt-2 text-lg font-semibold text-gray-900">
-                      {pageData.recipient_name}
-                    </dd>
-                  </div>
-                  <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 sm:p-5">
-                    <dt className="text-xs uppercase tracking-[0.25em] text-indigo-500">
-                      Şablon
-                    </dt>
-                    <dd className="mt-2 text-sm font-semibold text-gray-900">
-                      {pageData.template_title}
-                    </dd>
-                  </div>
-                  <div className="rounded-2xl border border-gray-200 bg-white/80 p-4 sm:p-5">
-                    <dt className="text-xs uppercase tracking-[0.25em] text-gray-400">
-                      Kısa bağlantı kodu
-                    </dt>
-                    <dd className="mt-2 text-sm font-semibold text-gray-900">
-                      {shortId.toUpperCase()}
-                    </dd>
-                  </div>
-                </dl>
+        <div className="mx-auto w-full max-w-4xl space-y-6">
+          <div className="rounded-2xl border border-white/70 bg-white/85 backdrop-blur-sm shadow-xl shadow-purple-200/60 overflow-hidden">
+            <SocialShare
+              url={shareUrl}
+              title={shareTitle}
+              description={shareDescription}
+              recipientName={pageData.recipient_name}
+              onShare={handleShare}
+            />
 
-                <div className="rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-inner shadow-purple-100/40">
-                  <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
-                    Mesajdan bir parça
-                  </p>
-                  <p className="mt-3 max-h-40 overflow-y-auto text-base leading-relaxed text-gray-700">
-                    {pageData.message}
-                  </p>
-                  <p className="mt-4 text-right text-sm font-medium text-gray-500">
-                    — {pageData.sender_name}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-white/70 bg-white/85 backdrop-blur-sm shadow-xl shadow-purple-200/60">
-              <CardHeader className="pb-0">
-                <CardTitle className="text-gray-900">Mesaj bağlantısı</CardTitle>
-                <CardDescription className="text-gray-500">
-                  Linki kopyalayın veya doğrudan paylaşın.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6 pt-6">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="flex flex-1 flex-col gap-2 rounded-2xl border border-gray-200 bg-white/90 px-4 py-3 text-sm text-gray-700 shadow-inner shadow-purple-100/50">
-                    <span className="truncate">{shareUrl}</span>
-                    <span className="text-xs text-gray-400">Süre: {formattedExpiry}</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={handleCopyUrl}
-                    className="flex w-full items-center justify-center gap-2 border-purple-200 bg-white/90 text-purple-600 hover:border-purple-300 hover:text-purple-700 sm:w-auto"
-                  >
-                    {copied ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                    {copied ? 'Kopyalandı' : 'Linki kopyala'}
-                  </Button>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Link href={`/m/${shortId}`} className="inline-flex">
-                    <Button className="w-full justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-300/40">
-                      <ExternalLink className="h-4 w-4" />
-                      Sürprizi aç
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-center gap-2 border-purple-200 bg-white/90 text-purple-600 hover:border-purple-300 hover:text-purple-700"
-                    onClick={handleNativeShare}
-                    disabled={!shareUrl}
-                  >
-                    <Share2 className="h-4 w-4" />
-                    Telefona gönder
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="rounded-2xl border border-white/70 bg-white/85 p-1 backdrop-blur-sm shadow-xl shadow-purple-200/60">
-              <SocialShare
-                url={shareUrl}
-                title={shareTitle}
-                description={shareDescription}
-                recipientName={pageData.recipient_name}
-                onShare={handleShare}
-              />
-            </div>
-
-            <div className="rounded-2xl border border-white/70 bg-white/85 p-5 sm:p-6 backdrop-blur-sm shadow-xl shadow-purple-200/60">
-              <ShareVisualGenerator
-                shortId={shortId}
-                recipientName={pageData.recipient_name}
-                senderName={pageData.sender_name}
-                templateTitle={pageData.template_title}
-                templateAudience={pageData.template_audience}
-                message={pageData.message}
-                pageUrl={shareUrl}
-                qrDataUrl={qrDataUrl || undefined}
-              />
+            <div className="border-t border-gray-100 p-4">
+              <Button
+                onClick={() => setIsVisualDialogOpen(true)}
+                className="w-full justify-center gap-2 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white shadow-xl shadow-purple-300/50 hover:from-purple-700 hover:via-pink-700 hover:to-rose-700 py-6 text-base font-semibold animate-pulse hover:animate-none transition-all"
+              >
+                <ImageIcon className="h-5 w-5" />
+                Görsel Olarak Paylaş
+                <Sparkles className="h-5 w-5" />
+              </Button>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <Card className="border-white/70 bg-white/90 backdrop-blur-sm shadow-xl shadow-purple-200/60">
-              <CardHeader className="pb-0">
-                <CardTitle className="flex items-center gap-2 text-gray-900">
-                  <QrCode className="h-5 w-5 text-purple-600" />
-                  Paylaşılabilir QR kod
-                </CardTitle>
-                <CardDescription className="text-gray-500">
-                  Telefon kameraları ile anında açılabilen kare kod.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-5 pt-6 sm:space-y-6">
+          <Card className="border-white/70 bg-white/90 backdrop-blur-sm shadow-xl shadow-purple-200/60">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl text-gray-900">
+                <QrCode className="h-5 w-5 text-purple-600" />
+                Paylaşılabilir QR kod
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm text-gray-500">
+                Telefon kameraları ile anında açılabilen kare kod.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-4 sm:space-y-5 sm:pt-5">
                 <div className="flex flex-col items-center gap-4">
-                  <div className="rounded-3xl border border-purple-100 bg-white/90 p-4 shadow-inner shadow-purple-100/50">
+                  <div className="rounded-3xl border border-purple-100 bg-white/90 p-3 sm:p-4 shadow-inner shadow-purple-100/50">
                     {qrImageUrl ? (
                       <img
                         src={qrImageUrl}
                         alt="Gizli mesaj için QR kod"
-                        className="h-56 w-56 rounded-2xl bg-white object-contain"
+                        className="h-48 w-48 sm:h-56 sm:w-56 rounded-2xl bg-white object-contain"
                       />
                     ) : (
-                      <div className="flex h-56 w-56 items-center justify-center rounded-2xl bg-purple-50 text-sm text-purple-500">
+                      <div className="flex h-48 w-48 sm:h-56 sm:w-56 items-center justify-center rounded-2xl bg-purple-50 text-sm text-purple-500">
                         QR kod hazırlanıyor...
                       </div>
                     )}
@@ -497,11 +392,11 @@ export default function SuccessPage() {
                   </span>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-2 sm:gap-3 sm:grid-cols-2">
                   <Button
                     onClick={handleDownloadQR}
                     disabled={!qrImageUrl || isDownloadingQR}
-                    className="w-full justify-center gap-2 bg-purple-600 text-white shadow-lg shadow-purple-300/50 hover:bg-purple-700"
+                    className="w-full justify-center gap-2 bg-purple-600 text-white shadow-lg shadow-purple-300/50 hover:bg-purple-700 text-sm sm:text-base py-2 sm:py-3"
                   >
                     {isDownloadingQR ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -512,7 +407,7 @@ export default function SuccessPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full justify-center gap-2 border-purple-200 bg-white/90 text-purple-600 hover:border-purple-300 hover:text-purple-700"
+                    className="w-full justify-center gap-2 border-purple-200 bg-white/90 text-purple-600 hover:border-purple-300 hover:text-purple-700 text-sm sm:text-base py-2 sm:py-3"
                     onClick={handleNativeShare}
                     disabled={!shareUrl}
                   >
@@ -521,42 +416,15 @@ export default function SuccessPage() {
                   </Button>
                 </div>
 
-                <p className="text-sm leading-relaxed text-gray-500">
+                <p className="text-xs sm:text-sm leading-relaxed text-gray-500">
                   QR kodu baskıya göndererek hediyelerinize ekleyin. Okutulduğunda {pageData.recipient_name} doğrudan
                   mesaj sayfasına yönlendirilir.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-white/70 bg-white/90 backdrop-blur-sm shadow-xl shadow-purple-200/60">
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3 rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-4">
-                  <Clock className="h-10 w-10 text-purple-500" />
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-purple-600">
-                      {timeRemainingMs > 0 ? 'Sürpriziniz yayında' : 'Süre dolmak üzere'}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      {timeRemainingMs > 0
-                        ? `${formattedExpiry} tarihine kadar erişilebilir`
-                        : 'Bu sayfayı mümkün olan en kısa sürede paylaşın'}
-                    </p>
-                  </div>
-                </div>
-                <ul className="space-y-3 text-sm text-gray-600">
-                  <li className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-inner shadow-purple-100/40">
-                    • Bağlantıyı WhatsApp, SMS veya e-posta ile paylaşabilirsiniz.
-                  </li>
-                  <li className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-inner shadow-purple-100/40">
-                    • QR kodu fiziksel kartlara ekleyerek deneyimi zenginleştirin.
-                  </li>
-                  <li className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-inner shadow-purple-100/40">
-                    • Hesabınızdaki <strong className="font-semibold text-purple-600">Siparişlerim</strong> sekmesinden bu sayfaya her zaman ulaşabilirsiniz.
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
           </div>
+
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -576,6 +444,26 @@ export default function SuccessPage() {
           </Link>
         </div>
       </div>
-    </div>
+
+      <Dialog open={isVisualDialogOpen} onOpenChange={setIsVisualDialogOpen}>
+        <DialogContent className="w-full h-[100dvh] sm:h-auto sm:w-[95vw] max-w-none sm:max-w-7xl max-h-[95vh] overflow-y-auto px-3 pt-3 pb-3 sm:px-6 sm:pt-6 sm:pb-6 m-0 sm:m-4 rounded-none sm:rounded-lg">
+          <DialogHeader className="pb-3 sm:pb-4">
+            <DialogTitle className="text-lg sm:text-2xl font-bold text-gray-900">Görsel Olarak Paylaş</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <ShareVisualGenerator
+              shortId={shortId}
+              recipientName={pageData.recipient_name}
+              senderName={pageData.sender_name}
+              templateTitle={pageData.template_title}
+              templateAudience={pageData.template_audience}
+              message={pageData.message}
+              pageUrl={shareUrl}
+              qrDataUrl={qrDataUrl || undefined}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

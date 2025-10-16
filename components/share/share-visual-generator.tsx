@@ -1324,11 +1324,11 @@ const audienceCopyMap: Record<string, AudienceCopy> = {
     ctaLine: "Şıklığı paylaş, kalıcı iz bırak ✨",
   },
   default: {
-    headline: "Yeni Nesil Sürpriz",
+    headline: "Dijital Sürpriz",
     subheadline: "{{sender}} → {{recipient}} için dijital mutluluk dalgası",
     highlight: "Holo Highlight",
     messageIntro: "Mutluluk yayan satırlar:",
-    ctaLine: "Paylaş, mood'u yükselt ✨",
+    ctaLine: "Hikayene ekle, mutluluğu çoğalt ✨",
   },
 };
 
@@ -1554,7 +1554,7 @@ export function ShareVisualGenerator({
                     color: subtitle,
                   }}
                 >
-                  gizlimesaj.com
+                  birmesajmutluluk.com
                 </p>
                 <p
                   style={{
@@ -1640,6 +1640,7 @@ export function ShareVisualGenerator({
                 marginTop: '32px',
                 lineHeight: 1.18,
                 color: foreground,
+                textAlign: 'center',
               }}
             >
               "{truncatedMessage}"
@@ -1691,7 +1692,7 @@ export function ShareVisualGenerator({
                 fontSize: '22px',
                 fontWeight: 600,
                 letterSpacing: '0.32em',
-                textTransform: 'uppercase',
+                textTransform: 'lowercase',
                 color: foreground,
               }}
             >
@@ -1914,8 +1915,15 @@ export function ShareVisualGenerator({
       const { image } = await response.json();
 
       // Base64'ten blob'a çevir
-      const imageResponse = await fetch(image);
-      const blob = await imageResponse.blob();
+      const base64Data = image.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/png' });
+
       const file = new File([blob], `gizlimesaj-${shortId}-${format}-${selectedTheme}.png`, {
         type: 'image/png',
         lastModified: Date.now(),
@@ -1937,7 +1945,7 @@ export function ShareVisualGenerator({
   };
 
   return (
-    <div className="relative space-y-6">
+    <div className="relative space-y-4 sm:space-y-6">
       <div>
         <p className="text-sm font-semibold text-gray-800">Görsel olarak paylaş</p>
         <p className="text-xs text-gray-500">
@@ -1952,62 +1960,16 @@ export function ShareVisualGenerator({
             type="button"
             onClick={() => setSelectedFormat(format)}
             className={cn(
-              'flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors',
+              'flex items-center gap-1.5 sm:gap-2 rounded-full border px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-all active:scale-95',
               format === selectedFormat
-                ? 'border-purple-300 bg-purple-100/80 text-purple-700 shadow-sm'
-                : 'border-gray-200 bg-white/80 text-gray-600 hover:border-purple-200 hover:text-purple-600'
+                ? 'border-purple-400 bg-purple-100/90 text-purple-700 shadow-md ring-2 ring-purple-200/50'
+                : 'border-gray-200 bg-white/80 text-gray-600 hover:border-purple-200 hover:text-purple-600 hover:shadow-sm'
             )}
           >
-            <ImageIcon className="h-4 w-4" />
+            <ImageIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             {formatConfig[format].label}
           </button>
         ))}
-      </div>
-
-      <div className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">
-          Stil Seçimi
-        </p>
-        <div className="space-y-4">
-          {themeGroups.map((group) => (
-            <div key={group.title} className="space-y-2">
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gray-500">
-                  {group.title}
-                </p>
-                {group.description && (
-                  <span className="text-[11px] text-gray-400">{group.description}</span>
-                )}
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory">
-                {group.themes.map((themeKey) => {
-                  const themeValue = themeConfig[themeKey];
-                  if (!themeValue) return null;
-                  return (
-                    <button
-                      key={themeKey}
-                      type="button"
-                      onClick={() => handleThemeSelection(themeKey)}
-                      className={cn(
-                        'flex min-w-[152px] snap-start items-center gap-2 rounded-2xl border px-4 py-3 text-sm transition-colors backdrop-blur-sm',
-                        selectedTheme === themeKey
-                          ? 'border-purple-300 bg-purple-100/80 text-purple-700 shadow-sm'
-                          : 'border-gray-200 bg-white/80 text-gray-600 hover:border-purple-200 hover:text-purple-600'
-                      )}
-                    >
-                      <span
-                        className="h-4 w-4 flex-none rounded-full border border-white/50 shadow-sm"
-                        style={{ background: themeValue.gradient }}
-                      />
-                      <span className="flex-1 text-left font-medium">{themeValue.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-gray-500">{theme.description}</p>
       </div>
 
       <div className="rounded-3xl border border-white/70 bg-white/90 p-4 shadow-xl shadow-purple-200/60 backdrop-blur-sm sm:p-6">
@@ -2045,8 +2007,54 @@ export function ShareVisualGenerator({
         </div>
       </div>
 
+      <div className="space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">
+          Stil Seçimi
+        </p>
+        <div className="space-y-4">
+          {themeGroups.map((group) => (
+            <div key={group.title} className="space-y-2">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gray-500">
+                  {group.title}
+                </p>
+                {group.description && (
+                  <span className="text-[11px] text-gray-400">{group.description}</span>
+                )}
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-hide">
+                {group.themes.map((themeKey) => {
+                  const themeValue = themeConfig[themeKey];
+                  if (!themeValue) return null;
+                  return (
+                    <button
+                      key={themeKey}
+                      type="button"
+                      onClick={() => handleThemeSelection(themeKey)}
+                      className={cn(
+                        'flex min-w-[130px] sm:min-w-[152px] snap-start items-center gap-2 rounded-xl sm:rounded-2xl border px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm transition-all backdrop-blur-sm active:scale-95',
+                        selectedTheme === themeKey
+                          ? 'border-purple-400 bg-purple-100/90 text-purple-700 shadow-md ring-2 ring-purple-200/50'
+                          : 'border-gray-200 bg-white/80 text-gray-600 hover:border-purple-200 hover:text-purple-600 hover:shadow-sm'
+                      )}
+                    >
+                      <span
+                        className="h-4 w-4 sm:h-5 sm:w-5 flex-none rounded-full border border-white/50 shadow-sm"
+                        style={{ background: themeValue.gradient }}
+                      />
+                      <span className="flex-1 text-left font-medium truncate">{themeValue.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-gray-500">{theme.description}</p>
+      </div>
+
       {/* Off-screen full resolution canvases */}
-      <div className="pointer-events-none fixed left-0 top-0 -z-50 flex gap-8 opacity-0">
+      <div className="pointer-events-none fixed left-[-9999px] top-0 -z-50 flex gap-8 opacity-0 invisible">
         <div
           ref={storyRef}
           style={{

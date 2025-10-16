@@ -14,7 +14,7 @@ import TemplateRenderer from '@/templates/shared/template-renderer';
 import { getDefaultTextFields } from '@/templates/shared/types';
 import { ShareButton } from '@/components/share-button';
 import { ShareVisualGenerator } from '@/components/share/share-visual-generator';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface PersonalPage {
   id: string;
@@ -379,16 +379,11 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
     </div>
 
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="max-w-3xl border-none bg-white/95 p-0 shadow-2xl shadow-purple-200/60 backdrop-blur-xl sm:max-w-4xl">
-          <DialogHeader className="px-6 pt-6">
-            <DialogTitle className="text-2xl font-semibold text-gray-900">
-              Mesajını görsel olarak paylaş
-            </DialogTitle>
-            <DialogDescription className="text-gray-500">
-              Dikey ve yatay PNG şablonlarını indirip hikayelerinde kullanabilirsin.
-            </DialogDescription>
+        <DialogContent className="w-full h-[100dvh] sm:h-auto sm:w-[95vw] max-w-none sm:max-w-7xl max-h-[95vh] overflow-y-auto px-3 pt-3 pb-3 sm:px-6 sm:pt-6 sm:pb-6 m-0 sm:m-4 rounded-none sm:rounded-lg">
+          <DialogHeader className="pb-3 sm:pb-4">
+            <DialogTitle className="text-lg sm:text-2xl font-bold text-gray-900">Görsel Olarak Paylaş</DialogTitle>
           </DialogHeader>
-          <div className="px-6 pb-6">
+          <div className="flex-1 min-h-0 overflow-y-auto">
             <ShareVisualGenerator
               shortId={shortId}
               recipientName={personalPage.recipient_name}

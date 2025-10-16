@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Share2, Copy, Link, MessageCircle, Twitter, Facebook, Instagram, Image as ImageIcon } from 'lucide-react';
+import { Share2, Copy, Link, MessageCircle, Twitter, Facebook, Instagram, Image as ImageIcon, Sparkles } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 
@@ -133,15 +134,7 @@ export function ShareButton({ shortId, recipientName, className, onVisualShare }
     }
   };
 
-  const shareOptions = [
-    { key: 'copy', name: 'Linki Kopyala', action: copyToClipboard },
-    ...(onVisualShare ? [{ key: 'visual', name: 'Görsel olarak indir', action: onVisualShare }] : []),
-    { key: 'whatsapp', name: 'WhatsApp\'ta Paylaş', action: shareToWhatsApp },
-    { key: 'instagram', name: 'Instagram\'da Paylaş', action: shareToInstagram },
-    { key: 'twitter', name: 'Twitter\'da Paylaş', action: shareToTwitter },
-    { key: 'facebook', name: 'Facebook\'ta Paylaş', action: shareToFacebook },
-    ...(typeof navigator !== 'undefined' && 'share' in navigator ? [{ key: 'native', name: 'Diğer Uygulamalar', action: shareViaWebAPI }] : [])
-  ];
+  const [showUrlOptions, setShowUrlOptions] = useState(false);
 
   return (
     <DropdownMenu>
@@ -158,17 +151,100 @@ export function ShareButton({ shortId, recipientName, className, onVisualShare }
           <span className="font-medium">Paylaş</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        {shareOptions.map((option) => (
-          <DropdownMenuItem
-            key={option.key}
-            onClick={option.action}
-            className="gap-2 cursor-pointer"
-          >
-            {getFormatIcon(option.key)}
-            <span>{option.name}</span>
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent align="end" className="w-64">
+        {!showUrlOptions ? (
+          <>
+            {onVisualShare && (
+              <DropdownMenuItem
+                onClick={onVisualShare}
+                className="gap-3 cursor-pointer py-3 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 border border-purple-200 rounded-md mb-2"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-600">
+                  <ImageIcon className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-900 flex items-center gap-1.5">
+                    Görsel olarak paylaş
+                    <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                  </div>
+                  <div className="text-xs text-gray-600">Sosyal medya için görseller</div>
+                </div>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setShowUrlOptions(true);
+              }}
+              className="gap-3 cursor-pointer py-3"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                <Link className="w-5 h-5 text-gray-700" />
+              </div>
+              <div className="flex-1">
+                <div className="font-semibold text-gray-900">URL olarak paylaş</div>
+                <div className="text-xs text-gray-600">Link ile paylaş</div>
+              </div>
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setShowUrlOptions(false);
+              }}
+              className="gap-2 cursor-pointer text-gray-600 mb-2"
+            >
+              <span>← Geri</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={copyToClipboard}
+              className="gap-2 cursor-pointer"
+            >
+              <Copy className="w-4 h-4" />
+              <span>Linki Kopyala</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={shareToWhatsApp}
+              className="gap-2 cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>WhatsApp'ta Paylaş</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={shareToInstagram}
+              className="gap-2 cursor-pointer"
+            >
+              <Instagram className="w-4 h-4" />
+              <span>Instagram'da Paylaş</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={shareToTwitter}
+              className="gap-2 cursor-pointer"
+            >
+              <Twitter className="w-4 h-4" />
+              <span>Twitter'da Paylaş</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={shareToFacebook}
+              className="gap-2 cursor-pointer"
+            >
+              <Facebook className="w-4 h-4" />
+              <span>Facebook'ta Paylaş</span>
+            </DropdownMenuItem>
+            {typeof navigator !== 'undefined' && 'share' in navigator && (
+              <DropdownMenuItem
+                onClick={shareViaWebAPI}
+                className="gap-2 cursor-pointer"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Diğer Uygulamalar</span>
+              </DropdownMenuItem>
+            )}
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
