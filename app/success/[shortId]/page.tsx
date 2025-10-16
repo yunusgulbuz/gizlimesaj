@@ -302,7 +302,7 @@ export default function SuccessPage() {
   const shareUrl = personalPageUrl || `https://birmesajmutluluk.com/m/${shortId}`;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50/60 to-indigo-50 px-4 pb-20 pt-16">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50/60 to-indigo-50 px-4 pb-20 pt-12 sm:px-6 sm:pt-16">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-20 top-[-10%] h-72 w-72 rounded-full bg-purple-300/30 blur-3xl" />
         <div className="absolute right-[-15%] top-[-20%] h-80 w-80 rounded-full bg-pink-200/40 blur-3xl" />
@@ -336,7 +336,7 @@ export default function SuccessPage() {
           </div>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-[1.65fr_1fr]">
+        <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[1.65fr_1fr]">
           <div className="space-y-6">
             <Card className="border-white/70 bg-white/85 backdrop-blur-sm shadow-xl shadow-purple-200/60">
               <CardHeader className="pb-0">
@@ -345,9 +345,9 @@ export default function SuccessPage() {
                   Paylaşmadan önce bilgileri son kez kontrol edin.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6 pt-6">
+              <CardContent className="space-y-5 pt-6 sm:space-y-6">
                 <dl className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-purple-100 bg-purple-50/60 p-4">
+                  <div className="rounded-2xl border border-purple-100 bg-purple-50/60 p-4 sm:p-5">
                     <dt className="text-xs uppercase tracking-[0.25em] text-purple-500">
                       Gönderen
                     </dt>
@@ -355,7 +355,7 @@ export default function SuccessPage() {
                       {pageData.sender_name}
                     </dd>
                   </div>
-                  <div className="rounded-2xl border border-rose-100 bg-rose-50/60 p-4">
+                  <div className="rounded-2xl border border-rose-100 bg-rose-50/60 p-4 sm:p-5">
                     <dt className="text-xs uppercase tracking-[0.25em] text-rose-500">
                       Alıcı
                     </dt>
@@ -363,7 +363,7 @@ export default function SuccessPage() {
                       {pageData.recipient_name}
                     </dd>
                   </div>
-                  <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4">
+                  <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 sm:p-5">
                     <dt className="text-xs uppercase tracking-[0.25em] text-indigo-500">
                       Şablon
                     </dt>
@@ -371,7 +371,7 @@ export default function SuccessPage() {
                       {pageData.template_title}
                     </dd>
                   </div>
-                  <div className="rounded-2xl border border-gray-200 bg-white/80 p-4">
+                  <div className="rounded-2xl border border-gray-200 bg-white/80 p-4 sm:p-5">
                     <dt className="text-xs uppercase tracking-[0.25em] text-gray-400">
                       Kısa bağlantı kodu
                     </dt>
@@ -452,7 +452,7 @@ export default function SuccessPage() {
               />
             </div>
 
-            <div className="rounded-2xl border border-white/70 bg-white/85 p-6 backdrop-blur-sm shadow-xl shadow-purple-200/60">
+            <div className="rounded-2xl border border-white/70 bg-white/85 p-5 sm:p-6 backdrop-blur-sm shadow-xl shadow-purple-200/60">
               <ShareVisualGenerator
                 shortId={shortId}
                 recipientName={pageData.recipient_name}
@@ -477,7 +477,7 @@ export default function SuccessPage() {
                   Telefon kameraları ile anında açılabilen kare kod.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6 pt-6">
+              <CardContent className="space-y-5 pt-6 sm:space-y-6">
                 <div className="flex flex-col items-center gap-4">
                   <div className="rounded-3xl border border-purple-100 bg-white/90 p-4 shadow-inner shadow-purple-100/50">
                     {qrImageUrl ? (
