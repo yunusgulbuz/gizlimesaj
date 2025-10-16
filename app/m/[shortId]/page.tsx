@@ -307,7 +307,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
 
   return (
     <div
-      className="min-h-screen relative overflow-hidden"
+      className="min-h-[100dvh] relative overflow-x-hidden"
       onClick={handleUserInteraction}
     >
       {/* Share Button */}
@@ -358,7 +358,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
       )}
 
       {/* Full Screen Template Renderer */}
-      <div className="w-full h-screen">
+      <div className="w-full min-h-[100dvh]">
         <TemplateRenderer
           template={{
             id: personalPage.id,
