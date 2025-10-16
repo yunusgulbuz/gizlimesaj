@@ -1408,7 +1408,7 @@ export function ShareVisualGenerator({
     return `${text.slice(0, limit).trim()}…`;
   };
 
-  const renderVisualContent = (format: ShareFormat, theme: VisualTheme) => {
+  const renderVisualContent = (format: ShareFormat, theme: VisualTheme, isOffscreen = false) => {
     const { width, height } = formatConfig[format];
     const themeStyles = themeConfig[theme];
     const isStory = format === 'story';
@@ -1422,13 +1422,34 @@ export function ShareVisualGenerator({
     const blockPadding = isStory ? '56px' : '48px';
     const footerPadding = isStory ? '48px 64px' : '44px 58px';
 
-    const accentGlass = hexToRgba(themeStyles.accent, 0.22);
-    const highlightGlass = hexToRgba(themeStyles.highlight, 0.18);
-    const qrBorder = hexToRgba(themeStyles.highlight, 0.35);
+    // For offscreen rendering, use more opaque backgrounds since backdrop-filter is not supported by html2canvas
+    const accentGlass = hexToRgba(themeStyles.accent, isOffscreen ? 0.65 : 0.22);
+    const highlightGlass = hexToRgba(themeStyles.highlight, isOffscreen ? 0.55 : 0.18);
+    const qrBorder = hexToRgba(themeStyles.highlight, isOffscreen ? 0.5 : 0.35);
+
+    // Enhance border colors for offscreen rendering
+    const glassBorder = isOffscreen ? increaseOpacity(themeStyles.glassBorder, 1.4) : themeStyles.glassBorder;
+    const panelBorder = isOffscreen ? increaseOpacity(themeStyles.panelBorder, 1.3) : themeStyles.panelBorder;
+
+    // Enhance text colors for better contrast in offscreen rendering
+    const foreground = isOffscreen ? increaseOpacity(themeStyles.foreground, 1.05) : themeStyles.foreground;
+    const subtitle = isOffscreen ? increaseOpacity(themeStyles.subtitle, 1.15) : themeStyles.subtitle;
+
+    // Override glassTint and panelTint for offscreen rendering
+    const glassTint = isOffscreen ? increaseOpacity(themeStyles.glassTint, 3.5) : themeStyles.glassTint;
+    const panelTint = isOffscreen ? increaseOpacity(themeStyles.panelTint, 2.8) : themeStyles.panelTint;
+
+    // Enhanced shadows for offscreen rendering (html2canvas renders shadows MUCH lighter - need aggressive values)
+    const iconShadow = isOffscreen ? '0 25px 50px rgba(13,16,35,0.75), 0 10px 20px rgba(13,16,35,0.4)' : '0 25px 50px rgba(13,16,35,0.25)';
+    const badgeShadow = isOffscreen ? '0 18px 36px rgba(12,18,35,0.75), 0 8px 16px rgba(12,18,35,0.4)' : '0 18px 36px rgba(12,18,35,0.25)';
+    const cardShadow = isOffscreen ? '0 30px 60px rgba(15,16,38,0.8), 0 12px 24px rgba(15,16,38,0.5)' : '0 30px 60px rgba(15,16,38,0.28)';
+    const footerShadow = isOffscreen ? '0 24px 65px rgba(7,11,29,0.85), 0 10px 26px rgba(7,11,29,0.5)' : '0 24px 65px rgba(7,11,29,0.32)';
+    const qrShadow = isOffscreen ? '0 32px 55px rgba(9,13,28,0.95), 0 14px 22px rgba(9,13,28,0.6)' : '0 32px 55px rgba(9,13,28,0.45)';
+    const ctaShadow = isOffscreen ? '0 22px 40px rgba(11,17,32,0.8), 0 9px 16px rgba(11,17,32,0.5)' : '0 22px 40px rgba(11,17,32,0.28)';
 
     const gradientStyle: CSSProperties = {
       background: themeStyles.gradient,
-      color: themeStyles.foreground,
+      color: foreground,
       borderRadius: '54px',
       padding,
       width,
@@ -1443,34 +1464,42 @@ export function ShareVisualGenerator({
     return (
       <div style={gradientStyle}>
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-          {themeStyles.glowLayers.map((layer, index) => (
-            <div
-              key={`glow-${theme}-${index}`}
-              style={{
-                position: 'absolute',
-                width: layer.width,
-                height: layer.height,
-                top: layer.top,
-                right: layer.right,
-                bottom: layer.bottom,
-                left: layer.left,
-                background: layer.background,
-                filter: layer.blur,
-                opacity: layer.opacity ?? 1,
-                transform: layer.rotate ? `rotate(${layer.rotate})` : undefined,
-                borderRadius: '9999px',
-              }}
-            />
-          ))}
+          {themeStyles.glowLayers.map((layer, index) => {
+            // Increase glow opacity significantly for offscreen rendering (html2canvas renders lighter)
+            const glowOpacity = isOffscreen
+              ? Math.min((layer.opacity ?? 1) * 2, 1)
+              : (layer.opacity ?? 1);
+
+            return (
+              <div
+                key={`glow-${theme}-${index}`}
+                style={{
+                  position: 'absolute',
+                  width: layer.width,
+                  height: layer.height,
+                  top: layer.top,
+                  right: layer.right,
+                  bottom: layer.bottom,
+                  left: layer.left,
+                  background: layer.background,
+                  filter: layer.blur,
+                  opacity: glowOpacity,
+                  transform: layer.rotate ? `rotate(${layer.rotate})` : undefined,
+                  borderRadius: '9999px',
+                }}
+              />
+            );
+          })}
           {themeStyles.pattern && (
             <div
               style={{
                 position: 'absolute',
                 inset: 0,
-                opacity: themeStyles.pattern.opacity,
+                opacity: isOffscreen ? themeStyles.pattern.opacity * 3 : themeStyles.pattern.opacity,
                 backgroundImage: themeStyles.pattern.backgroundImage,
                 backgroundSize: themeStyles.pattern.backgroundSize,
                 backgroundRepeat: 'repeat',
+                filter: isOffscreen ? 'contrast(1.3) brightness(1.1) saturate(1.2)' : undefined,
               }}
             />
           )}
@@ -1479,10 +1508,11 @@ export function ShareVisualGenerator({
               style={{
                 position: 'absolute',
                 inset: 0,
-                opacity: themeStyles.grain.opacity,
+                opacity: isOffscreen ? themeStyles.grain.opacity * 2.5 : themeStyles.grain.opacity,
                 backgroundImage: 'radial-gradient(rgba(255,255,255,0.28) 1px, transparent 1px)',
                 backgroundSize: themeStyles.grain.size,
                 backgroundRepeat: 'repeat',
+                filter: isOffscreen ? 'contrast(1.2) brightness(1.15)' : undefined,
               }}
             />
           )}
@@ -1504,12 +1534,12 @@ export function ShareVisualGenerator({
                   height: '84px',
                   borderRadius: '28px',
                   background: accentGlass,
-                  border: `1px solid ${themeStyles.glassBorder}`,
+                  border: `1px solid ${glassBorder}`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backdropFilter: 'blur(18px)',
-                  boxShadow: '0 25px 50px rgba(13,16,35,0.25)',
+                  backdropFilter: isOffscreen ? undefined : 'blur(18px)',
+                  boxShadow: iconShadow,
                 }}
               >
                 <Sparkles style={{ width: '42px', height: '42px', color: themeStyles.highlight }} />
@@ -1521,7 +1551,7 @@ export function ShareVisualGenerator({
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5em',
-                    color: themeStyles.subtitle,
+                    color: subtitle,
                   }}
                 >
                   gizlimesaj.com
@@ -1532,7 +1562,7 @@ export function ShareVisualGenerator({
                     fontWeight: 700,
                     marginTop: '12px',
                     lineHeight: 1.05,
-                    color: themeStyles.foreground,
+                    color: foreground,
                   }}
                 >
                   {copy.headline}
@@ -1542,7 +1572,7 @@ export function ShareVisualGenerator({
                     marginTop: '14px',
                     fontSize: subheadlineFontSize,
                     lineHeight: 1.35,
-                    color: themeStyles.subtitle,
+                    color: subtitle,
                     maxWidth: format === 'landscape' ? '540px' : '460px',
                   }}
                 >
@@ -1561,8 +1591,8 @@ export function ShareVisualGenerator({
                 textTransform: 'uppercase',
                 letterSpacing: '0.35em',
                 color: '#0B1120',
-                backdropFilter: 'blur(14px)',
-                boxShadow: '0 18px 36px rgba(12,18,35,0.25)',
+                backdropFilter: isOffscreen ? undefined : 'blur(14px)',
+                boxShadow: badgeShadow,
                 whiteSpace: 'nowrap',
               }}
             >
@@ -1574,11 +1604,11 @@ export function ShareVisualGenerator({
             style={{
               position: 'relative',
               borderRadius: '40px',
-              border: `1px solid ${themeStyles.glassBorder}`,
-              background: themeStyles.glassTint,
+              border: `1px solid ${glassBorder}`,
+              background: glassTint,
               padding: blockPadding,
-              backdropFilter: 'blur(24px)',
-              boxShadow: '0 30px 60px rgba(15,16,38,0.28)',
+              backdropFilter: isOffscreen ? undefined : 'blur(24px)',
+              boxShadow: cardShadow,
             }}
           >
             <p
@@ -1586,7 +1616,7 @@ export function ShareVisualGenerator({
                 fontSize: subheadlineFontSize,
                 fontWeight: 600,
                 letterSpacing: '0.08em',
-                color: themeStyles.subtitle,
+                color: subtitle,
                 textTransform: 'none',
               }}
             >
@@ -1598,7 +1628,7 @@ export function ShareVisualGenerator({
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.5em',
-                color: hexToRgba(themeStyles.foreground, 0.7),
+                color: hexToRgba(foreground, 0.7),
                 marginTop: '18px',
               }}
             >
@@ -1609,10 +1639,10 @@ export function ShareVisualGenerator({
                 fontSize: messageFontSize,
                 marginTop: '32px',
                 lineHeight: 1.18,
-                color: themeStyles.foreground,
+                color: foreground,
               }}
             >
-              “{truncatedMessage}”
+              "{truncatedMessage}"
             </p>
             <p
               style={{
@@ -1620,7 +1650,7 @@ export function ShareVisualGenerator({
                 marginTop: '48px',
                 textAlign: 'right',
                 fontWeight: 600,
-                color: hexToRgba(themeStyles.foreground, 0.68),
+                color: hexToRgba(foreground, 0.68),
               }}
             >
               — {senderName}
@@ -1636,11 +1666,11 @@ export function ShareVisualGenerator({
             alignItems: 'center',
             justifyContent: 'space-between',
             borderRadius: '42px',
-            border: `1px solid ${themeStyles.panelBorder}`,
-            background: themeStyles.panelTint,
+            border: `1px solid ${panelBorder}`,
+            background: panelTint,
             padding: footerPadding,
-            backdropFilter: 'blur(24px)',
-            boxShadow: '0 24px 65px rgba(7,11,29,0.32)',
+            backdropFilter: isOffscreen ? undefined : 'blur(24px)',
+            boxShadow: footerShadow,
           }}
         >
           <div style={{ maxWidth: '60%' }}>
@@ -1650,7 +1680,7 @@ export function ShareVisualGenerator({
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.45em',
-                color: themeStyles.subtitle,
+                color: subtitle,
               }}
             >
               Hemen tara
@@ -1662,7 +1692,7 @@ export function ShareVisualGenerator({
                 fontWeight: 600,
                 letterSpacing: '0.32em',
                 textTransform: 'uppercase',
-                color: themeStyles.foreground,
+                color: foreground,
               }}
             >
               {formattedUrl}
@@ -1671,7 +1701,7 @@ export function ShareVisualGenerator({
               style={{
                 marginTop: '10px',
                 fontSize: '18px',
-                color: hexToRgba(themeStyles.foreground, 0.72),
+                color: hexToRgba(foreground, 0.72),
               }}
             >
               Kodu: {shortId.toUpperCase()}
@@ -1689,7 +1719,7 @@ export function ShareVisualGenerator({
                 fontWeight: 700,
                 fontSize: '20px',
                 letterSpacing: '0.04em',
-                boxShadow: '0 22px 40px rgba(11,17,32,0.28)',
+                boxShadow: ctaShadow,
               }}
             >
               <Sparkles style={{ width: '22px', height: '22px', color: '#0B1120' }} />
@@ -1706,9 +1736,9 @@ export function ShareVisualGenerator({
                 height: '208px',
                 borderRadius: '36px',
                 border: `1px solid ${qrBorder}`,
-                backgroundColor: 'rgba(255,255,255,0.96)',
+                backgroundColor: isOffscreen ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.96)',
                 padding: '26px',
-                boxShadow: '0 32px 55px rgba(9,13,28,0.45)',
+                boxShadow: qrShadow,
               }}
             />
           ) : (
@@ -1768,22 +1798,62 @@ export function ShareVisualGenerator({
 
     setIsGenerating(true);
     try {
-      const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(ref, {
-        backgroundColor: null,
-        scale: 1,
-        useCORS: true,
-        logging: false,
+      // Wait for DOM to update
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Get HTML content
+      const htmlContent = ref.outerHTML;
+      const { width, height } = formatConfig[format];
+
+      // Inline styles ve gerekli CSS'leri HTML'e ekle
+      const fullHtml = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+            </style>
+          </head>
+          <body>
+            ${htmlContent}
+          </body>
+        </html>
+      `;
+
+      console.log('Sending HTML to server for rendering...');
+
+      // Server-side rendering API'sine gönder
+      const response = await fetch('/api/render-html-to-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          html: fullHtml,
+          width,
+          height,
+        }),
       });
-      const dataUrl = canvas.toDataURL('image/png', 1);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.details || 'Failed to generate image');
+      }
+
+      const { image } = await response.json();
+
+      // İndir
       const link = document.createElement('a');
-      link.href = dataUrl;
+      link.href = image;
       link.download = `gizlimesaj-${shortId}-${format}-${selectedTheme}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
       console.error('Share image generation failed:', error);
+      alert('Görsel oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
     } finally {
       setIsGenerating(false);
     }
@@ -1798,17 +1868,55 @@ export function ShareVisualGenerator({
 
     setIsSharing(true);
     try {
-      const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(ref, {
-        backgroundColor: null,
-        scale: 1,
-        useCORS: true,
-        logging: false,
+      // Wait for DOM to update
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Get HTML content
+      const htmlContent = ref.outerHTML;
+      const { width, height } = formatConfig[format];
+
+      // Inline styles ve gerekli CSS'leri HTML'e ekle
+      const fullHtml = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+            </style>
+          </head>
+          <body>
+            ${htmlContent}
+          </body>
+        </html>
+      `;
+
+      console.log('Sending HTML to server for rendering (share)...');
+
+      // Server-side rendering API'sine gönder
+      const response = await fetch('/api/render-html-to-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          html: fullHtml,
+          width,
+          height,
+        }),
       });
-      const dataUrl = canvas.toDataURL('image/png', 0.95);
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
-      const file = new File([blob], `gizlimesaj-${shortId}-${selectedFormat}-${selectedTheme}.png`, {
+
+      if (!response.ok) {
+        throw new Error('Failed to generate image');
+      }
+
+      const { image } = await response.json();
+
+      // Base64'ten blob'a çevir
+      const imageResponse = await fetch(image);
+      const blob = await imageResponse.blob();
+      const file = new File([blob], `gizlimesaj-${shortId}-${format}-${selectedTheme}.png`, {
         type: 'image/png',
         lastModified: Date.now(),
       });
@@ -1938,7 +2046,7 @@ export function ShareVisualGenerator({
       </div>
 
       {/* Off-screen full resolution canvases */}
-      <div className="pointer-events-none absolute -left-[9999px] top-0 flex gap-8">
+      <div className="pointer-events-none fixed left-0 top-0 -z-50 flex gap-8 opacity-0">
         <div
           ref={storyRef}
           style={{
@@ -1946,7 +2054,7 @@ export function ShareVisualGenerator({
             height: formatConfig.story.height,
           }}
         >
-          {renderVisualContent('story', selectedTheme)}
+          {renderVisualContent('story', selectedTheme, false)}
         </div>
         <div
           ref={landscapeRef}
@@ -1955,7 +2063,7 @@ export function ShareVisualGenerator({
             height: formatConfig.landscape.height,
           }}
         >
-          {renderVisualContent('landscape', selectedTheme)}
+          {renderVisualContent('landscape', selectedTheme, false)}
         </div>
         <div
           ref={squareRef}
@@ -1964,7 +2072,7 @@ export function ShareVisualGenerator({
             height: formatConfig.square.height,
           }}
         >
-          {renderVisualContent('square', selectedTheme)}
+          {renderVisualContent('square', selectedTheme, false)}
         </div>
       </div>
     </div>
@@ -2066,6 +2174,18 @@ function audienceToTheme(audience?: string): VisualTheme {
     default:
       return 'aurora-bloom';
   }
+}
+
+function increaseOpacity(rgba: string, multiplier: number): string {
+  // Extract rgba values from string like "rgba(255,255,255,0.12)"
+  const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+  if (!match) return rgba;
+
+  const [, r, g, b, a] = match;
+  const alpha = parseFloat(a || '1');
+  const newAlpha = Math.min(alpha * multiplier, 1); // Cap at 1.0
+
+  return `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
 }
 
 function hexToRgba(hex: string, alpha: number): string {
