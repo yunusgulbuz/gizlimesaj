@@ -57,6 +57,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
   const [shareUrl, setShareUrl] = useState<string>('');
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [showAutoplayNotice, setShowAutoplayNotice] = useState(false);
   
   // Initialize params
   useEffect(() => {
@@ -190,10 +191,13 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
           if (!cancelled) {
             setIsPlaying(true);
             setHasUserInteracted(true);
+            setShowAutoplayNotice(false);
           }
         })
         .catch(() => {
-          // Autoplay mobile tarayıcılarda engellenebilir, kullanıcı etkileşimini bekle.
+          if (!cancelled) {
+            setShowAutoplayNotice(true);
+          }
         });
     };
 
@@ -204,6 +208,12 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
       window.clearTimeout(timeoutId);
     };
   }, [personalPage]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      setShowAutoplayNotice(false);
+    }
+  }, [isPlaying]);
 
   if (isLoading) {
     return (
@@ -270,6 +280,7 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
   const handleUserInteraction = () => {
     if (!hasUserInteracted || !isPlaying) {
       setHasUserInteracted(true);
+      setShowAutoplayNotice(false);
 
       // Try to start audio/video player
       const audioUrl = personalPage.text_fields?.musicUrl || personalPage.bg_audio_url;
@@ -282,11 +293,11 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
 
           if (videoElement) {
             videoElement.play().catch(() => {
-              // Ignore error - user might need to click again
+              setShowAutoplayNotice(true);
             });
           } else if (audioElement) {
             audioElement.play().catch(() => {
-              // Ignore error - user might need to click again
+              setShowAutoplayNotice(true);
             });
           }
         }, 100);
@@ -308,6 +319,12 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
           onVisualShare={() => setIsShareDialogOpen(true)}
         />
       </div>
+
+      {showAutoplayNotice && (
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 transform rounded-full bg-black/80 px-4 py-2 text-xs font-medium text-white shadow-lg sm:text-sm">
+          Müziğin başlaması için ekrana dokunun
+        </div>
+      )}
 
       {/* Audio Player - YouTube or Regular Audio */}
       {(personalPage.bg_audio_url || personalPage.text_fields?.musicUrl) && (

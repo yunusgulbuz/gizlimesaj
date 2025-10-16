@@ -21,6 +21,7 @@ interface YouTubePlayerInstance {
   unMute: () => void;
   mute: () => void;
   setVolume: (volume: number) => void;
+  getPlayerState?: () => number;
 }
 
 interface YouTubePlayerState {
@@ -94,7 +95,13 @@ export function YouTubePlayer({
   const [player, setPlayer] = useState<YouTubePlayerInstance | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
+  const autoUnmuteAttempted = useRef(false);
+  const volumeRef = useRef(volume);
   const playerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    volumeRef.current = volume;
+  }, [volume]);
 
   const initializePlayer = useCallback(() => {
     if (!videoId || !playerRef.current) {
@@ -127,19 +134,63 @@ export function YouTubePlayer({
       events: {
         onReady: (event: { target: YouTubePlayerInstance }) => {
           console.log('YouTube Player: onReady event triggered');
+          autoUnmuteAttempted.current = false;
           setIsReady(true);
           setPlayer(event.target);
+
+          try {
+            event.target.setVolume(volumeRef.current);
+          } catch (error) {
+            console.error('YouTube Player volume prime error:', error);
+          }
+
+          const iframe = playerRef.current?.querySelector('iframe');
+          if (iframe) {
+            const existingAllow = iframe.getAttribute('allow') ?? '';
+            const permissions = new Set(
+              existingAllow
+                .split(';')
+                .map(permission => permission.trim())
+                .filter(Boolean)
+            );
+            permissions.add('autoplay');
+            permissions.add('encrypted-media');
+            iframe.setAttribute('allow', Array.from(permissions).join('; '));
+          }
+
           if (autoPlay) {
-            event.target.playVideo();
-            setIsPlaying(true);
+            try {
+              event.target.mute();
+              setIsMuted(true);
+              event.target.playVideo();
+              setIsPlaying(true);
+            } catch (error) {
+              console.error('YouTube Player autoplay error:', error);
+            }
           }
           onReady?.();
         },
-        onStateChange: (event: { data: number }) => {
+        onStateChange: (event: { data: number; target: YouTubePlayerInstance }) => {
           const state = event.data;
           const windowWithYT = window as Window & { YT?: YouTubeAPI };
           if (state === windowWithYT.YT?.PlayerState.PLAYING) {
             setIsPlaying(true);
+            if (autoPlay && !autoUnmuteAttempted.current) {
+              const unmute = () => {
+                try {
+                  event.target.unMute();
+                  event.target.setVolume(volumeRef.current);
+                  setIsMuted(false);
+                } catch (error) {
+                  console.error('YouTube Player unmute error:', error);
+                } finally {
+                  autoUnmuteAttempted.current = true;
+                }
+              };
+
+              // Delay unmute slightly to avoid autoplay restrictions
+              window.setTimeout(unmute, 400);
+            }
           } else if (state === windowWithYT.YT?.PlayerState.PAUSED || 
                      state === windowWithYT.YT?.PlayerState.ENDED) {
             setIsPlaying(false);
@@ -209,6 +260,44 @@ export function YouTubePlayer({
       window.removeEventListener('scroll', handleUserInteraction);
     };
   }, [autoPlay, player, isReady, isPlaying, userInteracted]);
+
+  useEffect(() => {
+    if (!autoPlay || !player || !isReady) return;
+    const windowWithYT = window as Window & { YT?: YouTubeAPI };
+    if (!windowWithYT.YT?.PlayerState) return;
+    const playingStates = new Set([
+      windowWithYT.YT?.PlayerState.PLAYING,
+      windowWithYT.YT?.PlayerState.BUFFERING
+    ]);
+
+    let retryId: number | null = null;
+
+    const attemptPlay = () => {
+      try {
+        player.mute();
+        player.setVolume(volumeRef.current);
+        player.playVideo();
+      } catch (error) {
+        console.error('YouTube Player retry autoplay error:', error);
+      }
+    };
+
+    const ensurePlaying = () => {
+      const state = player.getPlayerState?.();
+      if (!playingStates.has(state ?? windowWithYT.YT?.PlayerState.UNSTARTED ?? -1)) {
+        attemptPlay();
+        retryId = window.setTimeout(ensurePlaying, 800);
+      }
+    };
+
+    ensurePlaying();
+
+    return () => {
+      if (retryId) {
+        window.clearTimeout(retryId);
+      }
+    };
+  }, [autoPlay, player, isReady]);
 
   const togglePlay = () => {
     if (!player || !isReady) return;
@@ -300,7 +389,17 @@ export function YouTubePlayer({
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       {/* Gizli YouTube Player */}
-      <div ref={playerRef} style={{ display: 'none' }} />
+      <div
+        ref={playerRef}
+        style={{
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+          opacity: 0,
+          pointerEvents: 'none'
+        }}
+      />
       
       {/* Müzik İkonu */}
       <div className="flex items-center space-x-1">
