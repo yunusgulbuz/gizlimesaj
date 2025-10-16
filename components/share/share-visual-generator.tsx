@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Download, Image as ImageIcon, Loader2, Sparkles, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 type ShareFormat = 'story' | 'landscape' | 'square';
 type VisualTheme =
@@ -1865,83 +1866,119 @@ export function ShareVisualGenerator({
 
   const handleShareImage = async (format: ShareFormat) => {
     const ref = formatRefs[format].current;
-    if (!ref || typeof navigator === 'undefined' || !('share' in navigator)) return generateImage(format);
+    if (!ref || typeof navigator === 'undefined' || !('share' in navigator)) {
+      toast.info('Paylaşım özelliği bu cihazda desteklenmiyor. Görsel indiriliyor...');
+      return generateImage(format);
+    }
 
     setIsSharing(true);
-    try {
-      // Wait for DOM to update
-      await new Promise(resolve => setTimeout(resolve, 200));
 
-      // Get HTML content
-      const htmlContent = ref.outerHTML;
-      const { width, height } = formatConfig[format];
+    // Loading toast'ı göster
+    const loadingToast = toast.loading('Görsel hazırlanıyor ve paylaşıma açılıyor...');
 
-      // Inline styles ve gerekli CSS'leri HTML'e ekle
-      const fullHtml = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <style>
-              * { margin: 0; padding: 0; box-sizing: border-box; }
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
-            </style>
-          </head>
-          <body>
-            ${htmlContent}
-          </body>
-        </html>
-      `;
+    const sharePromise = async () => {
+      try {
+        // Wait for DOM to update
+        await new Promise(resolve => setTimeout(resolve, 200));
 
-      console.log('Sending HTML to server for rendering (share)...');
+        // Get HTML content
+        const htmlContent = ref.outerHTML;
+        const { width, height } = formatConfig[format];
 
-      // Server-side rendering API'sine gönder
-      const response = await fetch('/api/render-html-to-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          html: fullHtml,
-          width,
-          height,
-        }),
+        // Inline styles ve gerekli CSS'leri HTML'e ekle
+        const fullHtml = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="UTF-8">
+              <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+              </style>
+            </head>
+            <body>
+              ${htmlContent}
+            </body>
+          </html>
+        `;
+
+        // Timeout ile sunucu isteği (60 saniye)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+        try {
+          // Server-side rendering API'sine gönder
+          const response = await fetch('/api/render-html-to-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              html: fullHtml,
+              width,
+              height,
+            }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            const errorText = await response.text().catch(() => '');
+            throw new Error(errorText || 'Görsel oluşturulamadı');
+          }
+
+          const { image } = await response.json();
+
+          // Base64'ten blob'a çevir
+          const base64Data = image.split(',')[1];
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'image/png' });
+
+          const file = new File([blob], `gizlimesaj-${shortId}-${format}-${selectedTheme}.png`, {
+            type: 'image/png',
+            lastModified: Date.now(),
+          });
+
+          if ('share' in navigator && typeof navigator.share === 'function') {
+            await navigator.share({
+              files: [file],
+              title: copy.headline,
+              text: `${copy.subheadline} • ${formattedUrl}`,
+            });
+          }
+        } catch (fetchError: any) {
+          clearTimeout(timeoutId);
+          if (fetchError.name === 'AbortError') {
+            throw new Error('İşlem zaman aşımına uğradı. Lütfen tekrar deneyin.');
+          }
+          throw fetchError;
+        }
+      } catch (error: any) {
+        console.error('Share image failed:', error);
+        throw error;
+      }
+    };
+
+    sharePromise()
+      .then(() => {
+        toast.dismiss(loadingToast);
+        toast.success('Görsel başarıyla paylaşıldı!');
+      })
+      .catch((err) => {
+        toast.dismiss(loadingToast);
+        // Hata durumunda otomatik olarak indirme başlat
+        toast.error(`Paylaşım başarısız: ${err?.message || 'Bilinmeyen hata'}. Görsel indiriliyor...`);
+        setTimeout(() => generateImage(format), 500);
+      })
+      .finally(() => {
+        setIsSharing(false);
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate image');
-      }
-
-      const { image } = await response.json();
-
-      // Base64'ten blob'a çevir
-      const base64Data = image.split(',')[1];
-      const byteCharacters = atob(base64Data);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'image/png' });
-
-      const file = new File([blob], `gizlimesaj-${shortId}-${format}-${selectedTheme}.png`, {
-        type: 'image/png',
-        lastModified: Date.now(),
-      });
-
-      if ('share' in navigator && typeof navigator.share === 'function') {
-        await navigator.share({
-          files: [file],
-          title: copy.headline,
-          text: `${copy.subheadline} • ${formattedUrl}`,
-        });
-      }
-    } catch (error) {
-      console.error('Share image failed:', error);
-      await generateImage(format);
-    } finally {
-      setIsSharing(false);
-    }
   };
 
   return (
@@ -2001,7 +2038,7 @@ export function ShareVisualGenerator({
               className="flex flex-1 items-center justify-center gap-2 border-purple-200 bg-white/80 text-purple-600 hover:border-purple-300 hover:text-purple-700"
             >
               {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
-              {isSharing ? 'Paylaşıma hazırlanıyor...' : 'Cihazdan paylaş'}
+              {isSharing ? 'Paylaşıma hazırlanıyor...' : 'Paylaş'}
             </Button>
           </div>
         </div>
