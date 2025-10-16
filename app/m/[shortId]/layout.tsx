@@ -56,7 +56,7 @@ export async function generateMetadata({
 
   if (!personalPageData || !personalPageData.is_active) {
     return {
-      title: 'Mesaj Bulunamadı',
+      title: 'birmesajmutluluk',
       description: 'Bu mesaj artık mevcut değil.',
     };
   }

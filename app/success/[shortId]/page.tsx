@@ -15,6 +15,7 @@ import {
   Download,
   Loader2,
   XCircle,
+  Eye,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -101,7 +102,7 @@ export default function SuccessPage() {
 
     const fetchPageData = async () => {
       try {
-        const response = await fetch(`/api/personal-pages/${shortId}`);
+        const response = await fetch(`/api/personal-pages/${shortId}?checkOwner=true`);
         if (!response.ok) {
           if (response.status === 404 && currentRetryCount < maxRetries) {
             // Page might not be created yet, retry after delay
@@ -110,14 +111,20 @@ export default function SuccessPage() {
             setTimeout(fetchPageData, retryDelay);
             return;
           }
+          if (response.status === 401) {
+            throw new Error('Bu sayfayı görüntülemek için giriş yapmalısınız');
+          }
+          if (response.status === 403) {
+            throw new Error('Bu sayfayı görüntüleme yetkiniz yok');
+          }
           throw new Error('Sayfa bulunamadı');
         }
         const data = await response.json();
         setPageData(data);
         setLoading(false);
       } catch (err) {
-        if (currentRetryCount < maxRetries) {
-          // Retry on error (network issues, etc.)
+        if (currentRetryCount < maxRetries && !(err instanceof Error && (err.message.includes('yetkiniz') || err.message.includes('giriş')))) {
+          // Retry on error (network issues, etc.) but not on auth errors
           currentRetryCount++;
           setRetryCount(currentRetryCount);
           setTimeout(fetchPageData, retryDelay);
@@ -258,6 +265,7 @@ export default function SuccessPage() {
   }
 
   if (error || !pageData) {
+    const isAuthError = error?.includes('yetkiniz') || error?.includes('giriş');
     return (
       <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-purple-100/50 to-indigo-100">
         <div className="pointer-events-none absolute inset-0">
@@ -271,18 +279,29 @@ export default function SuccessPage() {
                 <XCircle className="h-10 w-10 text-red-500" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-semibold text-gray-900">Sayfa bulunamadı</h3>
+                <h3 className="text-2xl font-semibold text-gray-900">
+                  {isAuthError ? 'Erişim Engellendi' : 'Sayfa bulunamadı'}
+                </h3>
                 <p className="text-sm text-gray-600">
                   {error || 'Aradığınız sayfa bulunamadı veya erişim süresi dolmuş olabilir.'}
                 </p>
               </div>
               <div className="flex flex-wrap justify-center gap-3">
-                <Link href="/" className="inline-flex">
-                  <Button className="gap-2">
-                    Ana sayfaya dön
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </Link>
+                {isAuthError ? (
+                  <Link href="/login" className="inline-flex">
+                    <Button className="gap-2">
+                      Giriş Yap
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/" className="inline-flex">
+                    <Button className="gap-2">
+                      Ana sayfaya dön
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                )}
                 <Link href="/contact" className="inline-flex">
                   <Button variant="outline" className="border-gray-200 bg-white/70 text-gray-700 backdrop-blur-sm hover:bg-white">
                     Destek ekibiyle iletişime geç
@@ -341,6 +360,18 @@ export default function SuccessPage() {
         </header>
 
         <div className="mx-auto w-full max-w-4xl space-y-6">
+          <div className="flex justify-center">
+            <Link href={`/m/${shortId}`} target="_blank">
+              <Button
+                variant="outline"
+                className="gap-2 border-gray-300 bg-white/90 text-gray-700 hover:bg-white hover:border-gray-400"
+              >
+                <Eye className="h-4 w-4" />
+                Sürprizi Gör
+              </Button>
+            </Link>
+          </div>
+
           <div className="rounded-2xl border border-white/70 bg-white/85 backdrop-blur-sm shadow-xl shadow-purple-200/60 overflow-hidden">
             <SocialShare
               url={shareUrl}

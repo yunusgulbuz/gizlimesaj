@@ -26,6 +26,10 @@ export async function GET(
 
     const { shortId } = await params;
 
+    // Check if this is a request from success page (owner verification needed)
+    const { searchParams } = new URL(request.url);
+    const checkOwner = searchParams.get('checkOwner') === 'true';
+
     // Validate short ID format
     if (!isValidShortId(shortId)) {
       return NextResponse.json(
@@ -49,6 +53,7 @@ export async function GET(
           bg_audio_url
         ),
         orders!inner (
+          user_id,
           text_fields,
           design_style,
           bg_audio_url
@@ -71,6 +76,26 @@ export async function GET(
         { error: 'Personal page not found' },
         { status: 404 }
       );
+    }
+
+    // If checkOwner is true, verify that the current user is the owner
+    if (checkOwner) {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        return NextResponse.json(
+          { error: 'Unauthorized - Authentication required' },
+          { status: 401 }
+        );
+      }
+
+      const orderUserId = personalPage.orders?.user_id;
+      if (!orderUserId || orderUserId !== user.id) {
+        return NextResponse.json(
+          { error: 'Forbidden - You do not have permission to view this page' },
+          { status: 403 }
+        );
+      }
     }
 
     const page = personalPage;
