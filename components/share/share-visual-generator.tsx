@@ -1349,7 +1349,6 @@ export function ShareVisualGenerator({
     return audienceToTheme(primaryAudience);
   });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
   const [hasManualThemeSelection, setHasManualThemeSelection] = useState(false);
 
   const storyRef = useRef<HTMLDivElement>(null);
@@ -1865,120 +1864,9 @@ export function ShareVisualGenerator({
   const theme = themeConfig[selectedTheme] ?? themeConfig['aurora-bloom'];
 
   const handleShareImage = async (format: ShareFormat) => {
-    const ref = formatRefs[format].current;
-    if (!ref || typeof navigator === 'undefined' || !('share' in navigator)) {
-      toast.info('Paylaşım özelliği bu cihazda desteklenmiyor. Görsel indiriliyor...');
-      return generateImage(format);
-    }
-
-    setIsSharing(true);
-
-    // Loading toast'ı göster
-    const loadingToast = toast.loading('Görsel hazırlanıyor ve paylaşıma açılıyor...');
-
-    const sharePromise = async () => {
-      try {
-        // Wait for DOM to update
-        await new Promise(resolve => setTimeout(resolve, 200));
-
-        // Get HTML content
-        const htmlContent = ref.outerHTML;
-        const { width, height } = formatConfig[format];
-
-        // Inline styles ve gerekli CSS'leri HTML'e ekle
-        const fullHtml = `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <meta charset="UTF-8">
-              <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
-              </style>
-            </head>
-            <body>
-              ${htmlContent}
-            </body>
-          </html>
-        `;
-
-        // Timeout ile sunucu isteği (60 saniye)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-        try {
-          // Server-side rendering API'sine gönder
-          const response = await fetch('/api/render-html-to-image', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              html: fullHtml,
-              width,
-              height,
-            }),
-            signal: controller.signal,
-          });
-
-          clearTimeout(timeoutId);
-
-          if (!response.ok) {
-            const errorText = await response.text().catch(() => '');
-            throw new Error(errorText || 'Görsel oluşturulamadı');
-          }
-
-          const { image } = await response.json();
-
-          // Base64'ten blob'a çevir
-          const base64Data = image.split(',')[1];
-          const byteCharacters = atob(base64Data);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'image/png' });
-
-          const file = new File([blob], `gizlimesaj-${shortId}-${format}-${selectedTheme}.png`, {
-            type: 'image/png',
-            lastModified: Date.now(),
-          });
-
-          if ('share' in navigator && typeof navigator.share === 'function') {
-            await navigator.share({
-              files: [file],
-              title: copy.headline,
-              text: `${copy.subheadline} • ${formattedUrl}`,
-            });
-          }
-        } catch (fetchError: any) {
-          clearTimeout(timeoutId);
-          if (fetchError.name === 'AbortError') {
-            throw new Error('İşlem zaman aşımına uğradı. Lütfen tekrar deneyin.');
-          }
-          throw fetchError;
-        }
-      } catch (error: any) {
-        console.error('Share image failed:', error);
-        throw error;
-      }
-    };
-
-    sharePromise()
-      .then(() => {
-        toast.dismiss(loadingToast);
-        toast.success('Görsel başarıyla paylaşıldı!');
-      })
-      .catch((err) => {
-        toast.dismiss(loadingToast);
-        // Hata durumunda otomatik olarak indirme başlat
-        toast.error(`Paylaşım başarısız: ${err?.message || 'Bilinmeyen hata'}. Görsel indiriliyor...`);
-        setTimeout(() => generateImage(format), 500);
-      })
-      .finally(() => {
-        setIsSharing(false);
-      });
+    // Paylaşım için görseli indir - kullanıcı cihazından paylaşabilir
+    toast.info('Görsel indiriliyor. İndirdikten sonra cihazınızdan paylaşabilirsiniz.');
+    await generateImage(format);
   };
 
   return (
@@ -2020,7 +1908,7 @@ export function ShareVisualGenerator({
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button
-              onClick={() => generateImage(selectedFormat)}
+              onClick={() => handleShareImage(selectedFormat)}
               disabled={isGenerating}
               className="flex flex-1 items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-200/50 hover:from-purple-700 hover:to-pink-700"
             >
@@ -2029,16 +1917,7 @@ export function ShareVisualGenerator({
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              {isGenerating ? 'Görsel hazırlanıyor...' : `${label} PNG indir`}
-            </Button>
-            <Button
-              onClick={() => handleShareImage(selectedFormat)}
-              variant="outline"
-              disabled={isGenerating || isSharing}
-              className="flex flex-1 items-center justify-center gap-2 border-purple-200 bg-white/80 text-purple-600 hover:border-purple-300 hover:text-purple-700"
-            >
-              {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
-              {isSharing ? 'Paylaşıma hazırlanıyor...' : 'Paylaş'}
+              {isGenerating ? 'Görsel hazırlanıyor...' : `${label} PNG İndir`}
             </Button>
           </div>
         </div>
