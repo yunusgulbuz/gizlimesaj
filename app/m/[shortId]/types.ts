@@ -22,6 +22,5 @@ export interface PersonalPageData {
   expires_at: string;
   special_date: string | null;
   is_active: boolean;
-  duration_days?: number;
   share_preview_meta?: PersonalPageShareMeta | null;
 }

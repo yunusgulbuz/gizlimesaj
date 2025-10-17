@@ -16,7 +16,6 @@ interface SupabasePersonalPage {
   bg_audio_url: string | null;
   design_style: PersonalPageData['design_style'] | null;
   expires_at: string;
-  duration_days: number | null;
   special_date: string | null;
   is_active: boolean;
   share_preview_meta: PersonalPageData['share_preview_meta'];
@@ -53,18 +52,17 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
         bg_audio_url,
         design_style,
         expires_at,
-        duration_days,
         special_date,
         is_active,
         share_preview_meta,
-        templates (
+        templates!personal_pages_template_id_fkey (
           title,
           slug,
           audience,
           preview_url,
           bg_audio_url
         ),
-        orders (
+        orders!personal_pages_order_id_fkey (
           text_fields,
           design_style,
           bg_audio_url
@@ -72,49 +70,59 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
       `
     )
     .eq('short_id', shortId)
-    .single<SupabasePersonalPage>();
+    .eq('is_active', true)
+    .single();
 
   if (error || !data) {
-    console.error('Personal page fetch error', error);
+    console.error('Personal page fetch error:', {
+      error,
+      errorMessage: error?.message,
+      errorDetails: error?.details,
+      errorHint: error?.hint,
+      errorCode: error?.code,
+      hasData: !!data,
+      shortId
+    });
     return null;
   }
 
-  const template = data.templates;
-  const order = data.orders;
+  const typedData = data as unknown as SupabasePersonalPage;
+
+  const template = typedData.templates;
+  const order = typedData.orders;
 
   return {
-    id: data.id,
-    short_id: data.short_id,
-    recipient_name: data.recipient_name,
-    sender_name: data.sender_name,
-    message: data.message,
+    id: typedData.id,
+    short_id: typedData.short_id,
+    recipient_name: typedData.recipient_name,
+    sender_name: typedData.sender_name,
+    message: typedData.message,
     template_title: template?.title || 'Gizli Mesaj',
     template_slug: template?.slug || 'default',
     template_audience: template?.audience || [],
     template_preview_url: template?.preview_url || null,
     template_bg_audio_url:
-      order?.bg_audio_url || data.bg_audio_url || template?.bg_audio_url || null,
-    bg_audio_url: data.bg_audio_url,
-    design_style: (order?.design_style || data.design_style || 'modern') as PersonalPageData['design_style'],
+      order?.bg_audio_url || typedData.bg_audio_url || template?.bg_audio_url || null,
+    bg_audio_url: typedData.bg_audio_url,
+    design_style: (order?.design_style || typedData.design_style || 'modern') as PersonalPageData['design_style'],
     text_fields: {
-      ...(data.text_fields || {}),
+      ...(typedData.text_fields || {}),
       ...(order?.text_fields || {}),
     },
-    expires_at: data.expires_at,
-    special_date: data.special_date,
-    is_active: data.is_active,
-    duration_days: data.duration_days ?? undefined,
-    share_preview_meta: data.share_preview_meta || null,
+    expires_at: typedData.expires_at,
+    special_date: typedData.special_date,
+    is_active: typedData.is_active,
+    share_preview_meta: typedData.share_preview_meta || null,
   };
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: { shortId: string };
+  params: Promise<{ shortId: string }>;
 }): Promise<Metadata> {
   unstable_noStore();
-  const { shortId } = params;
+  const { shortId } = await params;
   const personalPage = await fetchPersonalPage(shortId);
 
   if (!personalPage || !personalPage.is_active) {
@@ -180,7 +188,7 @@ export async function generateMetadata({
 
   return generatePersonalPageMetadata(
     personalPage.recipient_name,
-    personalPage.duration_days ?? 0,
+    7,
     personalPage.template_title,
     personalPage.template_preview_url || undefined
   );
@@ -189,10 +197,10 @@ export async function generateMetadata({
 export default async function PersonalMessagePage({
   params,
 }: {
-  params: { shortId: string };
+  params: Promise<{ shortId: string }>;
 }) {
   unstable_noStore();
-  const { shortId } = params;
+  const { shortId } = await params;
   const personalPage = await fetchPersonalPage(shortId);
 
   if (!personalPage) {

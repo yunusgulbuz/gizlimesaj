@@ -21,6 +21,14 @@ interface ShareButtonProps {
 
 export function ShareButton({ shortId, recipientName, className, onVisualShare }: ShareButtonProps) {
   const [isDarkBackground, setIsDarkBackground] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+
+  // Initialize shareUrl on client-side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setShareUrl(`${window.location.origin}/m/${shortId}`);
+    }
+  }, [shortId]);
 
   // Detect background color to adjust button visibility
   useEffect(() => {
@@ -28,14 +36,14 @@ export function ShareButton({ shortId, recipientName, className, onVisualShare }
       const body = document.body;
       const computedStyle = window.getComputedStyle(body);
       const backgroundColor = computedStyle.backgroundColor;
-      
+
       // Convert RGB to luminance to determine if background is dark
       const rgb = backgroundColor.match(/\d+/g);
       if (rgb && rgb.length >= 3) {
         const r = parseInt(rgb[0]);
         const g = parseInt(rgb[1]);
         const b = parseInt(rgb[2]);
-        
+
         // Calculate relative luminance
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
         setIsDarkBackground(luminance < 0.5);
@@ -43,19 +51,17 @@ export function ShareButton({ shortId, recipientName, className, onVisualShare }
     };
 
     detectBackgroundColor();
-    
+
     // Re-check when the page loads or changes
     const observer = new MutationObserver(detectBackgroundColor);
-    observer.observe(document.body, { 
-      attributes: true, 
+    observer.observe(document.body, {
+      attributes: true,
       attributeFilter: ['class', 'style'],
-      subtree: true 
+      subtree: true
     });
 
     return () => observer.disconnect();
   }, []);
-
-  const shareUrl = `${window.location.origin}/m/${shortId}`;
 
   const copyToClipboard = async () => {
     try {
