@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SocialShare } from '@/components/ui/social-share';
 import { ShareVisualGenerator } from '@/components/share/share-visual-generator';
+import { SharePreviewCustomizer } from '@/components/share-preview-customizer';
 import { Image as ImageIcon } from 'lucide-react';
 
 interface PersonalPageData {
@@ -453,6 +454,15 @@ export default function SuccessPage() {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Share Preview Customizer */}
+            <SharePreviewCustomizer
+              shortId={shortId}
+              shareUrl={shareUrl}
+              defaultTitle={shareTitle}
+              defaultDescription={shareDescription}
+              defaultSiteName="birmesajmutluluk"
+            />
 
           </div>
 
