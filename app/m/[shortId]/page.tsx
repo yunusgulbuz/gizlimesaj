@@ -388,11 +388,13 @@ export default function PersonalMessagePage({ params }: { params: Promise<{ shor
 
       {/* Footer - birmesajmutluluk Branding */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-      <div className="bg-gray-900/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
-        <p className="text-xs text-white font-medium">
-          ❤️ birmesajmutluluk ile yapılmıştır
-        </p>
-      </div>
+      <a href="https://birmesajmutluluk.com" className="block">
+        <div className="bg-gray-900/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg cursor-pointer hover:bg-gray-800/95 transition-colors">
+          <p className="text-xs text-white font-medium">
+            ❤️ birmesajmutluluk ile yapılmıştır
+          </p>
+        </div>
+      </a>
     </div>
 
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>

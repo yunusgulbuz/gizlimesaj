@@ -42,10 +42,25 @@ export default function ContactForm() {
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Bir hata oluştu');
+      }
 
       toast.success('Mesajınız başarıyla gönderildi! En kısa sürede size dönüş yapacağız.');
       setFormData(initialState);
+    } catch (error) {
+      console.error('Contact form error:', error);
+      toast.error(error instanceof Error ? error.message : 'Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
     } finally {
       setIsSubmitting(false);
     }
