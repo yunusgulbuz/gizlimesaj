@@ -10,11 +10,11 @@ interface PersonalPageData {
   template_preview_url: string | null;
   duration_days: number;
   is_active: boolean;
-  text_fields?: {
-    sharePreviewTitle?: string;
-    sharePreviewDescription?: string;
-    sharePreviewSiteName?: string;
-    sharePreviewImage?: string;
+  share_preview_meta?: {
+    title?: string;
+    description?: string;
+    siteName?: string;
+    image?: string;
   };
 }
 
@@ -29,7 +29,7 @@ async function getPersonalPageData(shortId: string): Promise<PersonalPageData | 
       recipient_name,
       duration_days,
       is_active,
-      text_fields,
+      share_preview_meta,
       templates!inner (
         title,
         preview_url
@@ -50,7 +50,7 @@ async function getPersonalPageData(shortId: string): Promise<PersonalPageData | 
     template_preview_url: (data.templates as any)?.preview_url || null,
     duration_days: data.duration_days,
     is_active: data.is_active,
-    text_fields: data.text_fields || {}
+    share_preview_meta: data.share_preview_meta || {}
   };
 }
 
@@ -70,10 +70,10 @@ export async function generateMetadata({
   }
 
   // Check if custom share preview is set
-  const customTitle = personalPageData.text_fields?.sharePreviewTitle;
-  const customDescription = personalPageData.text_fields?.sharePreviewDescription;
-  const customSiteName = personalPageData.text_fields?.sharePreviewSiteName;
-  const customImage = personalPageData.text_fields?.sharePreviewImage;
+  const customTitle = personalPageData.share_preview_meta?.title;
+  const customDescription = personalPageData.share_preview_meta?.description;
+  const customSiteName = personalPageData.share_preview_meta?.siteName;
+  const customImage = personalPageData.share_preview_meta?.image;
 
   // If custom preview data exists, use it
   if (customTitle && customDescription) {

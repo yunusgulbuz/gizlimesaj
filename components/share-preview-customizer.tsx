@@ -46,14 +46,14 @@ export function SharePreviewCustomizer({
         const response = await fetch(`/api/personal-pages/${shortId}`);
         if (response.ok) {
           const data = await response.json();
-          if (data.text_fields?.sharePreviewTitle) {
-            setTitle(data.text_fields.sharePreviewTitle);
-            setDescription(data.text_fields.sharePreviewDescription || defaultDescription);
-            setSiteName(data.text_fields.sharePreviewSiteName || defaultSiteName);
-            setImage(data.text_fields.sharePreviewImage || '');
-            setSelectedCategory(data.text_fields.sharePreviewCategory || '');
-            setSelectedPresetId(data.text_fields.sharePreviewPresetId || '');
-            setIsCustom(!!data.text_fields.sharePreviewCustom);
+          if (data.share_preview_meta?.title) {
+            setTitle(data.share_preview_meta.title);
+            setDescription(data.share_preview_meta.description || defaultDescription);
+            setSiteName(data.share_preview_meta.siteName || defaultSiteName);
+            setImage(data.share_preview_meta.image || '');
+            setSelectedCategory(data.share_preview_meta.category || '');
+            setSelectedPresetId(data.share_preview_meta.presetId || '');
+            setIsCustom(!!data.share_preview_meta.isCustom);
           }
         }
       } catch (error) {

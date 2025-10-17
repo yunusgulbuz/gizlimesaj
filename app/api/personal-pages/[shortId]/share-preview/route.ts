@@ -12,7 +12,7 @@ export async function PATCH(
     // Get the personal page
     const { data: personalPage, error: pageError } = await supabase
       .from('personal_pages')
-      .select('id, order_id, text_fields')
+      .select('id, order_id, share_preview_meta')
       .eq('short_id', shortId)
       .single();
 
@@ -63,28 +63,41 @@ export async function PATCH(
       );
     }
 
-    // Update the text_fields with new share preview data
-    const updatedTextFields = {
-      ...(personalPage.text_fields || {}),
-      sharePreviewTitle,
-      sharePreviewDescription,
-      sharePreviewSiteName,
-      sharePreviewImage,
-      sharePreviewCategory,
-      sharePreviewPresetId,
-      sharePreviewCustom
+    // Update the share_preview_meta with new data
+    const sharePreviewMeta = {
+      title: sharePreviewTitle,
+      description: sharePreviewDescription,
+      siteName: sharePreviewSiteName,
+      image: sharePreviewImage,
+      category: sharePreviewCategory,
+      presetId: sharePreviewPresetId,
+      isCustom: sharePreviewCustom,
+      updatedAt: new Date().toISOString()
     };
 
-    // Update the personal page
-    const { error: updateError } = await supabase
+    console.log('📝 Updating personal page:', {
+      id: personalPage.id,
+      shortId,
+      oldMeta: personalPage.share_preview_meta,
+      newMeta: sharePreviewMeta
+    });
+
+    // Update ONLY the share_preview_meta column
+    const { data: updateData, error: updateError } = await supabase
       .from('personal_pages')
-      .update({ text_fields: updatedTextFields })
-      .eq('id', personalPage.id);
+      .update({ share_preview_meta: sharePreviewMeta })
+      .eq('id', personalPage.id)
+      .select();
+
+    console.log('💾 Update result:', {
+      data: updateData,
+      error: updateError
+    });
 
     if (updateError) {
-      console.error('Failed to update personal page:', updateError);
+      console.error('❌ Failed to update personal page:', updateError);
       return NextResponse.json(
-        { error: 'Failed to update share preview settings' },
+        { error: 'Failed to update share preview settings', details: updateError.message },
         { status: 500 }
       );
     }

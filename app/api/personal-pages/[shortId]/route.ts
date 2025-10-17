@@ -138,6 +138,7 @@ export async function GET(
         ...personalPage.text_fields,
         ...order?.text_fields
       },
+      share_preview_meta: personalPage.share_preview_meta || null,
       expires_at: personalPage.expires_at,
       special_date: personalPage.special_date,
       is_active: personalPage.is_active
