@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { SharePreviewCard } from '@/components/share-preview-card';
 import { sharePreviewPresets, categories, getPresetsByCategory, getPresetById, type SharePreviewPreset } from '@/lib/share-preview-presets';
-import { Loader2, Check, Sparkles } from 'lucide-react';
+import { Loader2, Check, Sparkles, ExternalLink, RefreshCw } from 'lucide-react';
 
 interface SharePreviewCustomizerProps {
   shortId: string;
@@ -309,9 +309,49 @@ export function SharePreviewCustomizer({
         </Button>
 
         {isSaved && (
-          <p className="text-center text-sm text-green-600 font-medium">
-            Paylaşım önizleme ayarları başarıyla kaydedildi!
-          </p>
+          <div className="space-y-3">
+            <p className="text-center text-sm text-green-600 font-medium">
+              Paylaşım önizleme ayarları başarıyla kaydedildi!
+            </p>
+
+            {/* Cache Warning and Tools */}
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 space-y-3">
+              <div className="flex items-start gap-2">
+                <RefreshCw className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="space-y-2 flex-1">
+                  <p className="text-sm font-medium text-amber-900">
+                    Önemli: WhatsApp Cache Temizliği
+                  </p>
+                  <p className="text-xs text-amber-800 leading-relaxed">
+                    WhatsApp ve sosyal medya platformları URL'leri cache'ler. Değişikliklerin görünmesi için cache'i temizlemeniz gerekir:
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Button
+                  onClick={() => {
+                    const debugUrl = `https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(shareUrl)}`;
+                    window.open(debugUrl, '_blank');
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-start gap-2 border-amber-300 bg-white text-amber-900 hover:bg-amber-50"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Facebook/WhatsApp Cache Temizle
+                </Button>
+
+                <p className="text-xs text-amber-700">
+                  1. Yukarıdaki butona tıklayın
+                  <br />
+                  2. Açılan sayfada "Scrape Again" butonuna tıklayın
+                  <br />
+                  3. Birkaç saniye bekleyin, sonra WhatsApp'ta tekrar paylaşın
+                </p>
+              </div>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>
