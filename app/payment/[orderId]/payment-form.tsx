@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CreditCard, Lock, AlertCircle, Loader2 } from 'lucide-react';
 import { PaynkolayFormData } from '@/lib/payments/paynkolay';
+import { PayTRPaymentForm, PayTRPaymentLoading } from '@/components/ui/paytr-payment-form';
 
 interface PaymentFormProps {
   order: {
@@ -21,6 +22,8 @@ interface PaymentResponse {
   order_id: string;
   payment_form_data?: PaynkolayFormData;
   payment_url?: string;
+  payment_token?: string; // PayTR iframe token
+  payment_type?: 'iframe' | 'form'; // PayTR uses iframe, Paynkolay uses form
   amount: number;
   short_id: string;
   error?: string;
@@ -90,12 +93,14 @@ export default function PaymentForm({ order }: PaymentFormProps) {
         </div>
       )}
 
-      {isLoading && (
-        <div className="text-center py-4">
-          <p className="text-sm text-gray-600">Lütfen bekleyin...</p>
-        </div>
+      {isLoading && <PayTRPaymentLoading />}
+
+      {/* PayTR iFrame Payment */}
+      {!isLoading && paymentData && paymentData.payment_type === 'iframe' && paymentData.payment_token && (
+        <PayTRPaymentForm token={paymentData.payment_token} />
       )}
 
+      {/* Paynkolay Form Payment (backup) */}
       {!isLoading && paymentData && paymentData.payment_form_data && paymentData.payment_url && (
         <>
           {/* Hidden form for Paynkolay */}
@@ -119,7 +124,7 @@ export default function PaymentForm({ order }: PaymentFormProps) {
             {paymentData.payment_form_data.hashDataV2 && (
               <input type="hidden" name="hashDataV2" value={paymentData.payment_form_data.hashDataV2} />
             )}
-            
+
             {paymentData.payment_form_data.language && (
               <input type="hidden" name="language" value={paymentData.payment_form_data.language} />
             )}

@@ -4,6 +4,7 @@ import { createAuthSupabaseClient } from '@/lib/supabase-auth-server';
 import { checkoutRateLimit } from '@/lib/rateLimit';
 import { generateShortId } from '@/lib/shortid';
 import { createPaynkolayHelper } from '@/lib/payments/paynkolay';
+import { createPayTRHelper } from '@/lib/payments/paytr';
 import type { TemplateTextFields } from '@/templates/shared/types';
 
 interface PaymentRequest {
@@ -95,41 +96,92 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Initialize Paynkolay payment for existing order
+      // Initialize payment for existing order
+      const paymentProvider = process.env.PAYMENT_PROVIDER || 'paytr';
+
       try {
-        const paynkolayHelper = createPaynkolayHelper();
-        const clientRefCode = `ORDER_${existingOrder.id}_${Date.now()}`;
-        
-        const paymentFormData = paynkolayHelper.createPaymentFormData({
-          amount: parseFloat(existingOrder.total_try),
-          clientRefCode,
-          customerKey: existingOrder.id.toString(),
-          merchantCustomerNo: existingOrder.id.toString(),
-          cardHolderIP: request.headers.get('x-forwarded-for') || 
-                       request.headers.get('x-real-ip') || 
-                       '127.0.0.1'
-        });
+        if (paymentProvider === 'paytr') {
+          // PayTR payment initialization
+          const paytrHelper = createPayTRHelper();
+          const merchantOid = `ORDER_${existingOrder.id}_${Date.now()}`;
 
-        // Update order with payment reference
-        await supabase
-          .from('orders')
-          .update({ 
-            payment_reference: clientRefCode,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existingOrder.id);
+          const tokenResponse = await paytrHelper.getPaymentToken({
+            amount: parseFloat(existingOrder.total_try),
+            merchantOid,
+            userEmail: existingOrder.buyer_email || normalizedBuyerEmail,
+            userName: existingOrder.sender_name || '',
+            userPhone: '05555555555', // Default for test
+            basketItems: [
+              {
+                name: `Sipariş #${existingOrder.short_id}`,
+                price: parseFloat(existingOrder.total_try).toFixed(2),
+                quantity: 1
+              }
+            ],
+            userIp: request.headers.get('x-forwarded-for') ||
+                   request.headers.get('x-real-ip') ||
+                   '127.0.0.1'
+          });
 
-        return NextResponse.json({
-           success: true,
-           order_id: existingOrder.id,
-           payment_form_data: paymentFormData,
-           payment_url: process.env.PAYNKOLAY_BASE_URL!,
-           amount: parseFloat(existingOrder.total_try),
-           short_id: existingOrder.short_id
-         });
+          if (tokenResponse.status === 'success' && tokenResponse.token) {
+            // Update order with payment reference
+            await supabase
+              .from('orders')
+              .update({
+                payment_reference: merchantOid,
+                payment_provider: 'paytr',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', existingOrder.id);
+
+            return NextResponse.json({
+              success: true,
+              order_id: existingOrder.id,
+              payment_token: tokenResponse.token,
+              payment_type: 'iframe',
+              amount: parseFloat(existingOrder.total_try),
+              short_id: existingOrder.short_id
+            });
+          } else {
+            throw new Error(tokenResponse.reason || 'Failed to get payment token');
+          }
+        } else {
+          // Paynkolay payment initialization (backup)
+          const paynkolayHelper = createPaynkolayHelper();
+          const clientRefCode = `ORDER_${existingOrder.id}_${Date.now()}`;
+
+          const paymentFormData = paynkolayHelper.createPaymentFormData({
+            amount: parseFloat(existingOrder.total_try),
+            clientRefCode,
+            customerKey: existingOrder.id.toString(),
+            merchantCustomerNo: existingOrder.id.toString(),
+            cardHolderIP: request.headers.get('x-forwarded-for') ||
+                         request.headers.get('x-real-ip') ||
+                         '127.0.0.1'
+          });
+
+          // Update order with payment reference
+          await supabase
+            .from('orders')
+            .update({
+              payment_reference: clientRefCode,
+              payment_provider: 'paynkolay',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingOrder.id);
+
+          return NextResponse.json({
+            success: true,
+            order_id: existingOrder.id,
+            payment_form_data: paymentFormData,
+            payment_url: process.env.PAYNKOLAY_BASE_URL!,
+            amount: parseFloat(existingOrder.total_try),
+            short_id: existingOrder.short_id
+          });
+        }
 
       } catch (error) {
-        console.error('Paynkolay payment initialization error:', error);
+        console.error('Payment initialization error:', error);
         return NextResponse.json(
           { error: 'Payment initialization failed' },
           { status: 500 }
@@ -240,46 +292,96 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize Paynkolay payment
+    // Initialize payment
+    const paymentProvider = process.env.PAYMENT_PROVIDER || 'paytr';
+
     try {
-      const paynkolayHelper = createPaynkolayHelper();
-      const clientRefCode = `ORDER_${order.id}_${Date.now()}`;
-      
-      const paymentFormData = paynkolayHelper.createPaymentFormData({
-        amount: templatePrice,
-        clientRefCode,
-        customerKey: order.id.toString(),
-        merchantCustomerNo: order.id.toString(),
-        cardHolderIP: request.headers.get('x-forwarded-for') || 
-                     request.headers.get('x-real-ip') || 
-                     '127.0.0.1'
-      });
+      if (paymentProvider === 'paytr') {
+        // PayTR payment initialization
+        const paytrHelper = createPayTRHelper();
+        const merchantOid = `ORDER_${order.id}_${Date.now()}`;
 
-      // Update order with payment reference and provider
-      await supabase
-        .from('orders')
-        .update({ 
-          payment_reference: clientRefCode,
-          payment_provider: 'paynkolay',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', order.id);
+        const tokenResponse = await paytrHelper.getPaymentToken({
+          amount: templatePrice,
+          merchantOid,
+          userEmail: normalizedBuyerEmail,
+          userName: sender_name,
+          userPhone: '05555555555', // Default for test
+          basketItems: [
+            {
+              name: `Sipariş #${shortId}`,
+              price: templatePrice.toFixed(2),
+              quantity: 1
+            }
+          ],
+          userIp: request.headers.get('x-forwarded-for') ||
+                 request.headers.get('x-real-ip') ||
+                 '127.0.0.1'
+        });
 
-      return NextResponse.json({
-        success: true,
-        order_id: order.id,
-        payment_form_data: paymentFormData,
-        payment_url: process.env.PAYNKOLAY_BASE_URL!,
-        amount: templatePrice,
-        short_id: shortId
-      });
+        if (tokenResponse.status === 'success' && tokenResponse.token) {
+          // Update order with payment reference and provider
+          await supabase
+            .from('orders')
+            .update({
+              payment_reference: merchantOid,
+              payment_provider: 'paytr',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', order.id);
 
-    } catch (paynkolayError) {
-      console.error('Paynkolay initialization error:', paynkolayError);
-      
-      // Fallback to demo payment URL if Paynkolay fails
+          return NextResponse.json({
+            success: true,
+            order_id: order.id,
+            payment_token: tokenResponse.token,
+            payment_type: 'iframe',
+            amount: templatePrice,
+            short_id: shortId
+          });
+        } else {
+          throw new Error(tokenResponse.reason || 'Failed to get payment token');
+        }
+      } else {
+        // Paynkolay payment initialization (backup)
+        const paynkolayHelper = createPaynkolayHelper();
+        const clientRefCode = `ORDER_${order.id}_${Date.now()}`;
+
+        const paymentFormData = paynkolayHelper.createPaymentFormData({
+          amount: templatePrice,
+          clientRefCode,
+          customerKey: order.id.toString(),
+          merchantCustomerNo: order.id.toString(),
+          cardHolderIP: request.headers.get('x-forwarded-for') ||
+                       request.headers.get('x-real-ip') ||
+                       '127.0.0.1'
+        });
+
+        // Update order with payment reference and provider
+        await supabase
+          .from('orders')
+          .update({
+            payment_reference: clientRefCode,
+            payment_provider: 'paynkolay',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', order.id);
+
+        return NextResponse.json({
+          success: true,
+          order_id: order.id,
+          payment_form_data: paymentFormData,
+          payment_url: process.env.PAYNKOLAY_BASE_URL!,
+          amount: templatePrice,
+          short_id: shortId
+        });
+      }
+
+    } catch (paymentError) {
+      console.error('Payment initialization error:', paymentError);
+
+      // Fallback to demo payment URL if payment provider fails
       const paymentUrl = `${process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000'}/payment/${order.id}`;
-      
+
       return NextResponse.json({
         success: true,
         order_id: order.id,
