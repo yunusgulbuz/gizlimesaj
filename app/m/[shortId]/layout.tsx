@@ -78,8 +78,18 @@ export async function generateMetadata({
   const customSiteName = personalPageData.share_preview_meta?.siteName;
   const customImage = personalPageData.share_preview_meta?.image;
 
+  console.log('🔍 Meta Debug:', {
+    shortId,
+    share_preview_meta: personalPageData.share_preview_meta,
+    customTitle,
+    customDescription,
+    hasCustomData: !!(customTitle && customDescription)
+  });
+
   // If custom preview data exists, use it
   if (customTitle && customDescription) {
+    console.log('✅ Using CUSTOM meta tags');
+
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://birmesajmutluluk.com';
     const fullUrl = `${siteUrl}/m/${shortId}`;
     const imageUrl = customImage || personalPageData.template_preview_url || `${siteUrl}/og-image.jpg`;
@@ -129,6 +139,7 @@ export async function generateMetadata({
   }
 
   // Otherwise, use default metadata
+  console.log('⚠️ Using DEFAULT meta tags');
   return generatePersonalPageMetadata(
     personalPageData.recipient_name,
     personalPageData.duration_days,
