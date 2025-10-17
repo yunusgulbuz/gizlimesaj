@@ -85,6 +85,7 @@ export async function generateMetadata({
     return {
       title: customTitle,
       description: customDescription,
+      metadataBase: new URL(siteUrl),
       openGraph: {
         title: customTitle,
         description: customDescription,
@@ -99,7 +100,7 @@ export async function generateMetadata({
           },
         ],
         locale: 'tr_TR',
-        type: 'article',
+        type: 'website',
       },
       twitter: {
         card: 'summary_large_image',

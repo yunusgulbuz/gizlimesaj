@@ -15,18 +15,19 @@ export function generateMetadata({
   url,
   type = 'website'
 }: SEOProps = {}): Metadata {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gizlimesaj.com'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://birmesajmutluluk.com'
   const fullUrl = url ? `${siteUrl}${url}` : siteUrl
   const fullImageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`
 
   return {
     title,
     description,
+    metadataBase: new URL(siteUrl),
     openGraph: {
       title,
       description,
       url: fullUrl,
-      siteName: 'Gizli Mesaj - Özel Dijital Hediyeler',
+      siteName: 'birmesajmutluluk - Özel Dijital Hediyeler',
       images: [
         {
           url: fullImageUrl,

@@ -9,19 +9,6 @@ export async function PATCH(
     const { shortId } = await params;
     const supabase = await createServerSupabaseClient();
 
-    // Get the current user
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized - Please login' },
-        { status: 401 }
-      );
-    }
-
     // Get the personal page
     const { data: personalPage, error: pageError } = await supabase
       .from('personal_pages')
@@ -36,19 +23,25 @@ export async function PATCH(
       );
     }
 
-    // Check if the user owns this page (through the order)
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .select('user_id')
-      .eq('id', personalPage.order_id)
-      .single();
+    // Optional: Check if the user owns this page (only if logged in)
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (orderError || !order || order.user_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden - You do not own this page' },
-        { status: 403 }
-      );
+    if (user) {
+      // User is logged in, verify ownership
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .select('user_id')
+        .eq('id', personalPage.order_id)
+        .single();
+
+      if (!orderError && order && order.user_id !== user.id) {
+        return NextResponse.json(
+          { error: 'Forbidden - You do not own this page' },
+          { status: 403 }
+        );
+      }
     }
+    // If user is not logged in, allow update (for users accessing from success page without login)
 
     // Parse the request body
     const body = await request.json();

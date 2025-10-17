@@ -82,6 +82,14 @@ export function SharePreviewCustomizer({
     setIsSaving(true);
     setIsSaved(false);
 
+    console.log('🚀 Saving preview settings...', {
+      shortId,
+      title,
+      description,
+      siteName,
+      image
+    });
+
     try {
       const response = await fetch(`/api/personal-pages/${shortId}/share-preview`, {
         method: 'PATCH',
@@ -99,9 +107,20 @@ export function SharePreviewCustomizer({
         }),
       });
 
+      console.log('📡 API Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to save preview settings');
+        const errorData = await response.json();
+        console.error('❌ API Error:', errorData);
+        throw new Error(errorData.error || 'Failed to save preview settings');
       }
+
+      const data = await response.json();
+      console.log('✅ Success:', data);
 
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
@@ -110,8 +129,8 @@ export function SharePreviewCustomizer({
         onSave();
       }
     } catch (error) {
-      console.error('Failed to save preview settings:', error);
-      alert('Ayarlar kaydedilemedi. Lütfen tekrar deneyin.');
+      console.error('❌ Failed to save preview settings:', error);
+      alert(`Ayarlar kaydedilemedi: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
     } finally {
       setIsSaving(false);
     }

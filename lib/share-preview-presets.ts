@@ -18,8 +18,7 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     icon: '📱',
     title: 'iPhone 17 Pro Max Çekilişi - Hemen Katıl!',
     description: 'Yeni nesil iPhone 17 Pro Max kazanma şansını kaçırma! Şimdi katıl, şansını dene.',
-    siteName: 'Çekiliş Kampanyası',
-    image: '/presets/iphone-giveaway.jpg'
+    siteName: 'Çekiliş Kampanyası'
   },
   {
     id: 'tech-macbook',
@@ -28,8 +27,7 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     icon: '💻',
     title: 'MacBook Pro Çekilişi - Sınırlı Süre!',
     description: 'MacBook Pro kazanmak için tek yapman gereken linke tıklamak. Hemen katıl!',
-    siteName: 'Çekiliş Kampanyası',
-    image: '/presets/macbook-giveaway.jpg'
+    siteName: 'Çekiliş Kampanyası'
   },
   {
     id: 'tech-airpods',
@@ -38,8 +36,7 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     icon: '🎧',
     title: 'AirPods Pro Hediye Çekilişi',
     description: 'Ücretsiz AirPods Pro kazanma fırsatı! Katılım tamamen bedava.',
-    siteName: 'Çekiliş Kampanyası',
-    image: '/presets/airpods-giveaway.jpg'
+    siteName: 'Çekiliş Kampanyası'
   },
 
   // Hediye/Sürpriz Kampanyaları
@@ -51,7 +48,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Doğum Günü Süprizi - Sana Özel Hediye!',
     description: 'Senin için hazırladığım özel doğum günü sürprizini görmek için hemen tıkla!',
     siteName: 'Özel Hediye',
-    image: '/presets/birthday-surprise.jpg'
   },
   {
     id: 'gift-romantic',
@@ -61,7 +57,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Sana Özel Romantik Sürpriz Var!',
     description: 'Senin için hazırladığım özel mesajı ve hediyeyi görmek için linke tıkla.',
     siteName: 'Romantik Sürpriz',
-    image: '/presets/romantic-gift.jpg'
   },
   {
     id: 'gift-proposal',
@@ -71,7 +66,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Çok Özel Bir Sürprizim Var!',
     description: 'Hayatımızın en özel anına hazır mısın? Hemen linke tıkla!',
     siteName: 'Özel Anlar',
-    image: '/presets/proposal.jpg'
   },
 
   // Etkinlik Duyuruları
@@ -83,7 +77,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Özel Parti Davetiyesi - Mutlaka Gel!',
     description: 'Senin için düzenlediğimiz özel partiye davetlisin. Detaylar için tıkla!',
     siteName: 'Etkinlik Davetiyesi',
-    image: '/presets/party-invitation.jpg'
   },
   {
     id: 'event-concert',
@@ -93,7 +86,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Konser Biletini Aldım - Birlikte Gidelim!',
     description: 'Senin için konser bileti aldım! Detayları öğrenmek için tıkla.',
     siteName: 'Konser Daveti',
-    image: '/presets/concert.jpg'
   },
   {
     id: 'event-wedding',
@@ -103,7 +95,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Düğün Davetiyemiz - Mutluluğumuza Ortak Ol!',
     description: 'Hayatımızın en özel gününde yanımızda olmanı istiyoruz. Davetiye için tıkla!',
     siteName: 'Düğün Davetiyesi',
-    image: '/presets/wedding.jpg'
   },
 
   // Özel Günler
@@ -115,7 +106,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Sevgililer Günü Sürprizi - Sadece Senin İçin!',
     description: 'Bu Sevgililer Günü\'nde senin için hazırladığım özel mesajı gör!',
     siteName: 'Sevgililer Günü',
-    image: '/presets/valentine.jpg'
   },
   {
     id: 'special-anniversary',
@@ -125,7 +115,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Mutlu Yıldönümümüz Aşkım!',
     description: 'Birlikte geçirdiğimiz bu güzel yıl için hazırladığım özel mesajı gör.',
     siteName: 'Yıldönümü Kutlaması',
-    image: '/presets/anniversary.jpg'
   },
   {
     id: 'special-mothers-day',
@@ -135,7 +124,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Anneler Günü Kutlu Olsun Anneciğim!',
     description: 'Senin için hazırladığım özel Anneler Günü mesajını görmek için tıkla.',
     siteName: 'Anneler Günü',
-    image: '/presets/mothers-day.jpg'
   },
 
   // Ürün/Link Paylaşımı
@@ -147,7 +135,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: '%50 İndirim Fırsatı - Kaçırma!',
     description: 'Sınırlı süreliğine özel indirim kodu! Hemen alışverişe başla.',
     siteName: 'Özel Kampanya',
-    image: '/presets/discount.jpg'
   },
   {
     id: 'product-exclusive',
@@ -157,7 +144,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Özel Ürün İncelemesi - İzle!',
     description: 'Bu harika ürünü mutlaka incelemelisin. Detaylar içeride!',
     siteName: 'Ürün İncelemesi',
-    image: '/presets/product.jpg'
   },
   {
     id: 'product-gift-card',
@@ -167,7 +153,6 @@ export const sharePreviewPresets: SharePreviewPreset[] = [
     title: 'Hediye Çeki Kazandın!',
     description: 'Tebrikler! Senin için özel hediye çeki hazırlandı. Hemen kullan!',
     siteName: 'Hediye Çeki',
-    image: '/presets/gift-card.jpg'
   }
 ];
 
