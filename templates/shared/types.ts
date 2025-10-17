@@ -3302,6 +3302,81 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'saka-yaptim': {
+    slug: 'saka-yaptim',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50
+      },
+      {
+        key: 'title',
+        label: 'Ana Başlık (Tüm Stiller)',
+        placeholder: 'Şaka Yaptım!',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Şaka Yaptım!'
+      },
+      {
+        key: 'subtitle',
+        label: 'Alt Başlık / Açıklama',
+        placeholder: 'Korktun mu yoksa? 😅',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Korktun mu yoksa? 😅'
+      },
+      {
+        key: 'button_text',
+        label: 'Buton Metni',
+        placeholder: 'Gerçekten mi? 😳',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Gerçekten mi? 😳'
+      },
+      {
+        key: 'afterClick_text',
+        label: 'Buton Sonrası Mesaj',
+        placeholder: 'Tabii ki değil, gül biraz!',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Tabii ki değil, gül biraz!'
+      },
+      {
+        key: 'hint_text',
+        label: 'Neon Stil İpucu Metni',
+        placeholder: 'Neon mod aktif, kahkahalar başlasın!',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Neon mod aktif, kahkahalar başlasın!'
+      },
+      {
+        key: 'image_url',
+        label: 'Fotoğraf URL (Meme Stil)',
+        placeholder: "Fotoğraf URL'sini girin",
+        type: 'input',
+        required: false,
+        maxLength: 220
+      },
+      {
+        key: 'image_alt',
+        label: 'Fotoğraf Alternatif Metni',
+        placeholder: 'Komik tepki fotoğrafı',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Komik tepki fotoğrafı'
+      }
+    ]
+  },
   'sevgililer-gunu-tebrigi': {
     slug: 'sevgililer-gunu-tebrigi',
     fields: [

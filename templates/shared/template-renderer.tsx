@@ -70,6 +70,7 @@ import GlassLoveCard from '../sevgililer-gunu-tebrigi/components/GlassLoveCard';
 import SplitLoveLayout from '../sevgililer-gunu-tebrigi/components/SplitLoveLayout';
 import CatchTheHeart from '../sevgililer-gunu-tebrigi/components/CatchTheHeart';
 import CinematicValentine from '../sevgililer-gunu-tebrigi/components/CinematicValentine';
+import SakaYaptimTemplate from '../saka-yaptim/components/SakaYaptimTemplate';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -338,6 +339,19 @@ export default function TemplateRenderer({
               />
             );
         }
+      case 'saka-yaptim':
+        return (
+          <SakaYaptimTemplate
+            recipientName={recipientName}
+            message={message}
+            designStyle={designStyle}
+            creatorName={creatorName}
+            textFields={textFields}
+            isEditable={isEditable}
+            onTextFieldChange={onTextFieldChange}
+            shortId={shortId}
+          />
+        );
       case 'cuma-tebrigi':
         switch (designStyle) {
           case 'classic':

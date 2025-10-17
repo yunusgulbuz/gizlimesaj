@@ -52,6 +52,8 @@ import KandilTebrigiPremiumForm from './kandil-tebrigi-premium/form';
 import KandilTebrigiPremiumPreview from './kandil-tebrigi-premium/preview';
 import SevgililerGunuTebrigiForm from './sevgililer-gunu-tebrigi/form';
 import SevgililerGunuTebrigiPreview from './sevgililer-gunu-tebrigi/preview';
+import SakaYaptimForm from './saka-yaptim/form';
+import SakaYaptimPreview from './saka-yaptim/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => React.ReactElement;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => React.ReactElement;
@@ -187,6 +189,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'sevgililer-gunu-tebrigi',
     form: SevgililerGunuTebrigiForm,
     preview: SevgililerGunuTebrigiPreview,
+  },
+  'saka-yaptim': {
+    slug: 'saka-yaptim',
+    form: SakaYaptimForm,
+    preview: SakaYaptimPreview,
   },
 };
 

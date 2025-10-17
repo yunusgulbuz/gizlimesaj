@@ -31,6 +31,7 @@ const TEMPLATE_CARD_DEFAULTS: Partial<Record<string, 'modern' | 'classic' | 'min
   'kandil-tebrigi-premium': 'minimalist',
   'kandil-tebrigi': 'eglenceli',
   'mutlu-yillar-celebration': 'eglenceli',
+  'saka-yaptim': 'classic',
 };
 
 function pickDesignStyle(slug: string): 'modern' | 'classic' | 'minimalist' | 'eglenceli' {
