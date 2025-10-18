@@ -666,6 +666,235 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ],
   },
+  'mezuniyet-tebrigi': {
+    slug: 'mezuniyet-tebrigi',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Tebrik Edilecek Kişi',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 60,
+        defaultValue: 'Sevgili Mezun'
+      },
+      {
+        key: 'modernHeadline',
+        label: 'Modern Stil Başlığı',
+        placeholder: 'Örn. Tebrikler Mezun! 🎓',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Tebrikler Mezun! 🎓'
+      },
+      {
+        key: 'modernSubtitle',
+        label: 'Modern Stil Alt Metni',
+        placeholder: 'Örn. Yeni bir sayfa seni bekliyor.',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Yeni bir sayfa seni bekliyor.'
+      },
+      {
+        key: 'modernBody',
+        label: 'Modern Stil Mesajı',
+        placeholder: 'Portre odaklı modern tasarımda öne çıkacak mesajınızı yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 500,
+        defaultValue: 'Bugün emeklerinin taçlandığı büyük gün. Gelecek planlarında seni bekleyen tüm başarılar için heyecanlıyız!'
+      },
+      {
+        key: 'modernPhotoUrl',
+        label: 'Modern Stil Fotoğraf URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1400&q=80'
+      },
+      {
+        key: 'minimalistHeadline',
+        label: 'Minimal Stil Başlığı',
+        placeholder: 'Örn. Gurur Duyuyoruz 👏',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Gurur Duyuyoruz 👏'
+      },
+      {
+        key: 'minimalistSubtitle',
+        label: 'Minimal Stil Alt Metni',
+        placeholder: 'Örn. Başarıların daim olsun.',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Başarıların daim olsun.'
+      },
+      {
+        key: 'minimalistMessage',
+        label: 'Minimal Stil Mesajı',
+        placeholder: 'Mozaik tasarım altında kısa bir mesaj paylaşın',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Bu an, hayallerine giden yolda attığın cesur adımların bir yansıması. Yolculuğunda yanında olmaktan mutluluk duyuyoruz.'
+      },
+      {
+        key: 'minimalistPhoto1Url',
+        label: 'Minimal Stil Fotoğraf 1 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        key: 'minimalistPhoto2Url',
+        label: 'Minimal Stil Fotoğraf 2 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        key: 'minimalistPhoto3Url',
+        label: 'Minimal Stil Fotoğraf 3 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        key: 'minimalistPhoto4Url',
+        label: 'Minimal Stil Fotoğraf 4 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        key: 'minimalistPhoto5Url',
+        label: 'Minimal Stil Fotoğraf 5 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        key: 'minimalistPhoto6Url',
+        label: 'Minimal Stil Fotoğraf 6 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        key: 'artHeadline',
+        label: 'Sanatsal Stil Başlığı',
+        placeholder: 'Örn. Mezun Oldun! 🌟',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Mezun Oldun! 🌟'
+      },
+      {
+        key: 'artSubtitle',
+        label: 'Sanatsal Stil Alt Metni',
+        placeholder: 'Örn. Yeni yolculuğunda başarılar.',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Yeni yolculuğunda başarılar.'
+      },
+      {
+        key: 'artBody',
+        label: 'Sanatsal Stil Mesajı',
+        placeholder: 'Kolaj tasarımda kullanılacak kısa mesajınızı paylaşın',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Birlikte gülüp hayaller kurduğumuz tüm anılar şimdi yeni bir başlangıca dönüşüyor. Yolu ışıkla dolu olsun!'
+      },
+      {
+        key: 'artPhoto1Url',
+        label: 'Sanatsal Stil Fotoğraf 1 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1449452198679-05c7fd30f416?auto=format&fit=crop&w=900&q=80'
+      },
+      {
+        key: 'artPhoto2Url',
+        label: 'Sanatsal Stil Fotoğraf 2 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80'
+      },
+      {
+        key: 'artPhoto3Url',
+        label: 'Sanatsal Stil Fotoğraf 3 URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://images.unsplash.com/photo-1455732063391-5f50f0c031c0?auto=format&fit=crop&w=900&q=80'
+      },
+      {
+        key: 'premiumHeadline',
+        label: 'Premium Stil Başlığı',
+        placeholder: 'Örn. Gelecek Senin Ellerinde 🎓',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Gelecek Senin Ellerinde 🎓'
+      },
+      {
+        key: 'premiumSubtitle',
+        label: 'Premium Stil Alt Metni',
+        placeholder: 'Örn. Işığın hiç sönmesin.',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Işığın hiç sönmesin.'
+      },
+      {
+        key: 'premiumMessage',
+        label: 'Premium Stil Mesajı',
+        placeholder: 'Cinematik tasarımda kullanılacak kısa mesajınızı paylaşın',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Bugün, yılların emeğinin sahne aldığı büyük final. Işığınla dünyayı aydınlatmaya devam et!'
+      },
+      {
+        key: 'premiumPhotoUrl',
+        label: 'Premium Stil Fotoğraf URL',
+        placeholder: 'https://... biçiminde bir fotoğraf bağlantısı ekleyin',
+        type: 'input',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'https://static.artguru.ai/_next/static/media/PC_after_01.9f053e7c.webp'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      }
+    ],
+  },
   'yeni-is-terfi-tebrigi': {
     slug: 'yeni-is-terfi-tebrigi',
     fields: [

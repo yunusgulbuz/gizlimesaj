@@ -136,6 +136,25 @@ const yeniIsTerfiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
   eglenceli: ['creativeHeadline', 'creativeSubheadline', 'creativeNote', 'profilePhotoUrl', 'themePhotoUrl']
 };
 
+const mezuniyetCommonFields = ['recipientName', 'musicUrl'] as const;
+
+const mezuniyetDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+  modern: ['modernHeadline', 'modernSubtitle', 'modernBody', 'modernPhotoUrl'],
+  minimalist: [
+    'minimalistHeadline',
+    'minimalistSubtitle',
+    'minimalistMessage',
+    'minimalistPhoto1Url',
+    'minimalistPhoto2Url',
+    'minimalistPhoto3Url',
+    'minimalistPhoto4Url',
+    'minimalistPhoto5Url',
+    'minimalistPhoto6Url'
+  ],
+  classic: ['premiumHeadline', 'premiumSubtitle', 'premiumMessage', 'premiumPhotoUrl'],
+  eglenceli: ['artHeadline', 'artSubtitle', 'artBody', 'artPhoto1Url', 'artPhoto2Url', 'artPhoto3Url']
+};
+
 interface TemplateFormPageProps {
   template: Template;
   durations: Duration[];
@@ -238,6 +257,14 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       const allowedKeys = new Set<string>([
         ...yeniIsTerfiCommonFields,
         ...(yeniIsTerfiDesignFieldMap[selectedDesignStyle] ?? [])
+      ]);
+      return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+    }
+
+    if (template.slug === 'mezuniyet-tebrigi') {
+      const allowedKeys = new Set<string>([
+        ...mezuniyetCommonFields,
+        ...(mezuniyetDesignFieldMap[selectedDesignStyle] ?? [])
       ]);
       return templateConfig.fields.filter(field => allowedKeys.has(field.key));
     }

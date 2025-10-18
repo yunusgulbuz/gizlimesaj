@@ -71,6 +71,7 @@ import SplitLoveLayout from '../sevgililer-gunu-tebrigi/components/SplitLoveLayo
 import CatchTheHeart from '../sevgililer-gunu-tebrigi/components/CatchTheHeart';
 import CinematicValentine from '../sevgililer-gunu-tebrigi/components/CinematicValentine';
 import SakaYaptimTemplate from '../saka-yaptim/components/SakaYaptimTemplate';
+import MezuniyetTebrigiTemplate from '../mezuniyet-tebrigi/components/MezuniyetTebrigiTemplate';
 import type { TemplateTextFields } from './types';
 
 interface TemplateRendererProps {
@@ -772,6 +773,18 @@ export default function TemplateRenderer({
               />
             );
         }
+      case 'mezuniyet-tebrigi':
+        return (
+          <MezuniyetTebrigiTemplate
+            recipientName={recipientName}
+            message={message}
+            designStyle={designStyle}
+            creatorName={creatorName}
+            textFields={textFields}
+            isEditable={isEditable}
+            onTextFieldChange={onTextFieldChange}
+          />
+        );
       case 'yeni-is-terfi-tebrigi':
         switch (designStyle) {
           case 'modern':

@@ -54,6 +54,8 @@ import SevgililerGunuTebrigiForm from './sevgililer-gunu-tebrigi/form';
 import SevgililerGunuTebrigiPreview from './sevgililer-gunu-tebrigi/preview';
 import SakaYaptimForm from './saka-yaptim/form';
 import SakaYaptimPreview from './saka-yaptim/preview';
+import MezuniyetTebrigiForm from './mezuniyet-tebrigi/form';
+import MezuniyetTebrigiPreview from './mezuniyet-tebrigi/preview';
 
 export type TemplateFormComponent = (props: TemplateFormPageProps) => React.ReactElement;
 export type TemplatePreviewComponent = (props: TemplatePreviewPageProps) => React.ReactElement;
@@ -194,6 +196,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'saka-yaptim',
     form: SakaYaptimForm,
     preview: SakaYaptimPreview,
+  },
+  'mezuniyet-tebrigi': {
+    slug: 'mezuniyet-tebrigi',
+    form: MezuniyetTebrigiForm,
+    preview: MezuniyetTebrigiPreview,
   },
 };
 
