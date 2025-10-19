@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getTemplateEntry } from '@/templates';
+import AITemplatePreview from './ai-template-preview';
 
 interface Template {
   id: string;
@@ -14,7 +15,7 @@ interface Template {
 
 async function getTemplate(slug: string): Promise<Template | null> {
   const supabase = await createServerSupabaseClient();
-  
+
   const { data: template, error } = await supabase
     .from('templates')
     .select('*')
@@ -29,10 +30,43 @@ async function getTemplate(slug: string): Promise<Template | null> {
   return template;
 }
 
+async function getDurations() {
+  const supabase = await createServerSupabaseClient();
+
+  const { data: durations } = await supabase
+    .from('durations')
+    .select('id, label, days')
+    .eq('is_active', true)
+    .order('days', { ascending: true });
+
+  return durations || [];
+}
+
+async function getTemplatePricing(templateId: string) {
+  const supabase = await createServerSupabaseClient();
+
+  const { data: pricing } = await supabase
+    .from('template_pricing')
+    .select('*')
+    .eq('template_id', templateId)
+    .eq('is_active', true);
+
+  return pricing || [];
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+
+  // Check if it's an AI template
+  if (slug.startsWith('ai-')) {
+    return {
+      title: 'AI Şablon Önizleme - Tam Ekran | Gizli Mesaj',
+      description: 'Yapay zeka ile oluşturulan şablonun tam ekran önizlemesi',
+    };
+  }
+
   const template = await getTemplate(slug);
-  
+
   if (!template) {
     return {
       title: 'Şablon Bulunamadı',
@@ -47,6 +81,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function TemplatePreviewPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+
+  // Check if it's an AI-generated template
+  if (slug.startsWith('ai-')) {
+    return <AITemplatePreview slug={slug} />;
+  }
+
+  // Regular template handling
   const templateEntry = getTemplateEntry(slug);
 
   if (!templateEntry) {
@@ -59,27 +100,16 @@ export default async function TemplatePreviewPage({ params }: { params: Promise<
     notFound();
   }
 
-  // Get durations and pricing
-  const supabase = await createServerSupabaseClient();
-
-  const { data: durations } = await supabase
-    .from('durations')
-    .select('*')
-    .order('days', { ascending: true });
-
-  const { data: templatePricing } = await supabase
-    .from('template_pricing')
-    .select('*')
-    .eq('template_id', template.id)
-    .eq('is_active', true);
+  const durations = await getDurations();
+  const templatePricing = await getTemplatePricing(template.id);
 
   const PreviewComponent = templateEntry.preview;
 
   return (
     <PreviewComponent
       template={template}
-      durations={durations || []}
-      templatePricing={templatePricing || []}
+      durations={durations}
+      templatePricing={templatePricing}
     />
   );
 }

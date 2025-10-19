@@ -417,21 +417,34 @@ export default async function HomePage() {
                     Saniyeler içinde hazır, sonsuza kadar unutulmaz. Sevdiklerinizi mutlu edecek, satışa hazır dijital sürpriz sayfalarını saniyeler içinde oluşturun.
                   </p>
                 </div>
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <Button
+                      size="lg"
+                      className="h-11 gap-2 rounded-full bg-gradient-to-r from-rose-500 to-amber-400 px-6 text-white shadow-lg shadow-rose-200/60 transition hover:shadow-xl hover:shadow-rose-200/80"
+                      asChild
+                    >
+                      <Link href="/templates">Hemen Başla</Link>
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="h-11 gap-2 rounded-full border-rose-200/80 bg-white/90 px-6 text-rose-600 backdrop-blur transition hover:border-rose-300 hover:bg-white"
+                      asChild
+                    >
+                      <Link href="/pricing">Planları Gör</Link>
+                    </Button>
+                  </div>
+                  {/* AI Template Creator CTA */}
                   <Button
                     size="lg"
-                    className="h-11 gap-2 rounded-full bg-gradient-to-r from-rose-500 to-amber-400 px-6 text-white shadow-lg shadow-rose-200/60 transition hover:shadow-xl hover:shadow-rose-200/80"
+                    className="h-11 gap-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 px-6 text-white shadow-lg shadow-purple-200/60 transition hover:shadow-xl hover:shadow-purple-200/80"
                     asChild
                   >
-                    <Link href="/templates">Hemen Başla</Link>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-11 gap-2 rounded-full border-rose-200/80 bg-white/90 px-6 text-rose-600 backdrop-blur transition hover:border-rose-300 hover:bg-white"
-                    asChild
-                  >
-                    <Link href="/pricing">Planları Gör</Link>
+                    <Link href="/ai-template-creator">
+                      <Sparkles className="h-4 w-4" />
+                      Yapay Zeka ile Sürpriz Oluştur
+                    </Link>
                   </Button>
                 </div>
                 <div className="text-[12px] text-slate-500 sm:text-sm">
