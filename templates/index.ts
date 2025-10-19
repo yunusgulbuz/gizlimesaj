@@ -40,6 +40,8 @@ import YeniIsTerfiTebrigiForm from './yeni-is-terfi-tebrigi/form';
 import YeniIsTerfiTebrigiPreview from './yeni-is-terfi-tebrigi/preview';
 import RomantikMesajElegantForm from './romantik-mesaj-elegant/form';
 import RomantikMesajElegantPreview from './romantik-mesaj-elegant/preview';
+import EglenceliOyunluMesajlarForm from './eglenceli-oyunlu-mesajlar/form';
+import EglenceliOyunluMesajlarPreview from './eglenceli-oyunlu-mesajlar/preview';
 import SurprizRandevuDavetiForm from './surpriz-randevu-daveti/form';
 import SurprizRandevuDavetiPreview from './surpriz-randevu-daveti/preview';
 import DogumGunuKutlamaForm from './dogum-gunu-kutlama/form';
@@ -161,6 +163,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'romantik-mesaj-elegant',
     form: RomantikMesajElegantForm,
     preview: RomantikMesajElegantPreview,
+  },
+  'eglenceli-oyunlu-mesajlar': {
+    slug: 'eglenceli-oyunlu-mesajlar',
+    form: EglenceliOyunluMesajlarForm,
+    preview: EglenceliOyunluMesajlarPreview,
   },
   'surpriz-randevu-daveti': {
     slug: 'surpriz-randevu-daveti',

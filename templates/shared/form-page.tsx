@@ -71,7 +71,14 @@ const getCategoryBadgeClass = (category?: string, index?: number) => {
   return 'rounded-full border border-gray-200/80 bg-white/80 px-3 py-1 text-[0.7rem] font-medium text-gray-600 shadow-sm backdrop-blur-sm';
 };
 
-const designStyles = {
+interface DesignStyleMeta {
+  label: string;
+  description: string;
+  color: string;
+  preview: string;
+}
+
+const baseDesignStyles: Record<'modern' | 'classic' | 'minimalist' | 'eglenceli', DesignStyleMeta> = {
   modern: {
     label: "Modern",
     description: "Temiz çizgiler ve minimalist yaklaşım",
@@ -98,11 +105,42 @@ const designStyles = {
   }
 };
 
+type DesignStyleKey = keyof typeof baseDesignStyles;
+
+const designStyleOverrides: Record<string, Record<DesignStyleKey, DesignStyleMeta>> = {
+  'eglenceli-oyunlu-mesajlar': {
+    modern: {
+      label: "Baloncuk Mesaj Oyunu",
+      description: "Baloncuklara dokun, gizli kelimeleri ortaya çıkar",
+      color: "bg-sky-100 text-sky-800",
+      preview: "🎈"
+    },
+    classic: {
+      label: "Kazı Kazan Mesajı",
+      description: "Kazı katmanını aç ve sürpriz mesajı gör",
+      color: "bg-amber-100 text-amber-800",
+      preview: "🪄"
+    },
+    minimalist: {
+      label: "Quiz Macerası",
+      description: "Soruları cevapla ve final mesajını keşfet",
+      color: "bg-cyan-100 text-cyan-800",
+      preview: "❓"
+    },
+    eglenceli: {
+      label: "Puzzle Love",
+      description: "Puzzle parçalarını tamamla ve mesajı oku",
+      color: "bg-fuchsia-100 text-fuchsia-800",
+      preview: "💞"
+    }
+  }
+};
+
 const DEFAULT_PREVIEW_MESSAGE = 'Bu bir örnek mesajdır. Kendi mesajınızı yazarak nasıl görüneceğini görebilirsiniz.';
 
 const yilDonumuCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as const;
 
-const yilDonumuDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+const yilDonumuDesignFieldMap: Record<DesignStyleKey, string[]> = {
   modern: ['headlineMessage', 'timelineIntro', 'timelineEvents', 'timelineCta', 'timelineClosing', 'timelineFinalMessage'],
   classic: ['hatiraHeadline', 'hatiraSubtitle', 'hatiraLetter', 'hatiraMemories', 'hatiraBackgroundUrl', 'hatiraButtonLabel'],
   minimalist: ['minimalistTitle', 'minimalistSubtitle', 'minimalistLockMessage', 'minimalistRevealMessage', 'minimalistHighlights', 'minimalistFooter'],
@@ -111,7 +149,7 @@ const yilDonumuDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
 
 const yilDonumuLuxeCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as const;
 
-const yilDonumuLuxeDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+const yilDonumuLuxeDesignFieldMap: Record<DesignStyleKey, string[]> = {
   modern: ['glassHeading', 'glassSubheading', 'glassBody', 'glassButtonLabel', 'glassLightNote', 'glassPhotoInitial', 'glassPhotoUrl'],
   classic: ['timelineHeading', 'timelineIntro', 'timelineEntries', 'timelineButtonLabel', 'timelineOutroHeading', 'timelineOutroMessage'],
   minimalist: ['minimalHeading', 'minimalMessage', 'minimalDateLabel', 'minimalButtonLabel', 'minimalFooter', 'minimalCelebrationBadge', 'minimalCelebrationTitle', 'minimalCelebrationSubtitle', 'minimalPhotoUrl'],
@@ -120,7 +158,7 @@ const yilDonumuLuxeDesignFieldMap: Record<keyof typeof designStyles, string[]> =
 
 const isTebrigiCommonFields = ['recipientName', 'mainMessage', 'newPosition', 'companyName', 'musicUrl'] as const;
 
-const isTebrigiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+const isTebrigiDesignFieldMap: Record<DesignStyleKey, string[]> = {
   modern: ['highlightMessage', 'highlightOne', 'highlightTwo', 'ctaLabel', 'ctaUrl', 'secondaryCtaLabel'],
   classic: ['certificateTitle', 'certificateSubtitle', 'footerMessage', 'downloadLabel'],
   minimalist: ['minimalTitle', 'supplementMessage', 'messageButtonLabel', 'messageButtonUrl', 'startDate'],
@@ -129,7 +167,7 @@ const isTebrigiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
 
 const yeniIsTerfiCommonFields = ['recipientName', 'positionTitle', 'companyName', 'eventDate'] as const;
 
-const yeniIsTerfiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+const yeniIsTerfiDesignFieldMap: Record<DesignStyleKey, string[]> = {
   modern: ['heroPhotoUrl', 'modernTitle', 'modernSubtitle', 'modernMessage', 'modernSecondary', 'optionalQuote'],
   classic: ['heroPhotoUrl', 'premiumTitle', 'premiumMessage', 'premiumHighlight', 'premiumFooter'],
   minimalist: ['minimalTitle', 'minimalMessage', 'minimalFooter', 'minimalLogoText', 'minimalPhotoUrl'],
@@ -138,7 +176,7 @@ const yeniIsTerfiDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
 
 const mezuniyetCommonFields = ['recipientName', 'musicUrl'] as const;
 
-const mezuniyetDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
+const mezuniyetDesignFieldMap: Record<DesignStyleKey, string[]> = {
   modern: ['modernHeadline', 'modernSubtitle', 'modernBody', 'modernPhotoUrl'],
   minimalist: [
     'minimalistHeadline',
@@ -155,6 +193,40 @@ const mezuniyetDesignFieldMap: Record<keyof typeof designStyles, string[]> = {
   eglenceli: ['artHeadline', 'artSubtitle', 'artBody', 'artPhoto1Url', 'artPhoto2Url', 'artPhoto3Url']
 };
 
+const eglenceliOyunluCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as const;
+
+const eglenceliOyunluDesignFieldMap: Record<DesignStyleKey, string[]> = {
+  modern: ['bubbleHeadline', 'bubbleSubtitle', 'bubbleWords', 'bubbleCompletionText', 'bubbleHint'],
+  classic: ['scratchHeadline', 'scratchSubtitle', 'scratchHiddenMessage', 'scratchCompletionText', 'scratchConfettiNote', 'scratchHint'],
+  minimalist: [
+    'quizHeadline',
+    'quizSubtitle',
+    'quizQuestion1',
+    'quizOptions1',
+    'quizAnswer1',
+    'quizQuestion2',
+    'quizOptions2',
+    'quizAnswer2',
+    'quizQuestion3',
+    'quizOptions3',
+    'quizAnswer3',
+    'quizCompletionTitle',
+    'quizSuccessMessage',
+    'quizTryAgainMessage',
+    'quizRetryButtonLabel',
+    'quizScoreLabel'
+  ],
+  eglenceli: [
+    'puzzleHeadline',
+    'puzzleSubtitle',
+    'puzzlePhotoUrl',
+    'puzzleCompletionTitle',
+    'puzzleCompletionMessage',
+    'puzzleHint',
+    'puzzleResetLabel'
+  ]
+};
+
 interface TemplateFormPageProps {
   template: Template;
   durations: Duration[];
@@ -165,7 +237,7 @@ interface TemplateFormPageProps {
 export type { TemplateFormPageProps };
 
 export default function TemplateFormPage({ template, durations, templatePricing, isPreview = false }: TemplateFormPageProps) {
-  const [selectedDesignStyle, setSelectedDesignStyle] = useState<keyof typeof designStyles>('modern');
+  const [selectedDesignStyle, setSelectedDesignStyle] = useState<DesignStyleKey>('modern');
   const [selectedDuration, setSelectedDuration] = useState<string>('');
   const [creatorName, setCreatorName] = useState(isPreview ? 'Örnek Oluşturan' : '');
   const [specialDate, setSpecialDate] = useState('');
@@ -177,6 +249,10 @@ export default function TemplateFormPage({ template, durations, templatePricing,
   const [userRatingValue, setUserRatingValue] = useState<number | null>(null);
   const [commentCount, setCommentCount] = useState<number | null>(null);
   const commentsSectionRef = useRef<HTMLDivElement | null>(null);
+  const availableDesignStyles = useMemo<Record<DesignStyleKey, DesignStyleMeta>>(
+    () => designStyleOverrides[template.slug] ?? baseDesignStyles,
+    [template.slug]
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -265,6 +341,14 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       const allowedKeys = new Set<string>([
         ...mezuniyetCommonFields,
         ...(mezuniyetDesignFieldMap[selectedDesignStyle] ?? [])
+      ]);
+      return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+    }
+
+    if (template.slug === 'eglenceli-oyunlu-mesajlar') {
+      const allowedKeys = new Set<string>([
+        ...eglenceliOyunluCommonFields,
+        ...(eglenceliOyunluDesignFieldMap[selectedDesignStyle] ?? [])
       ]);
       return templateConfig.fields.filter(field => allowedKeys.has(field.key));
     }
@@ -478,7 +562,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
             <div className="space-y-3">
               <Label>Tasarım Stili *</Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {Object.entries(designStyles).map(([key, style]) => (
+                {Object.entries(availableDesignStyles).map(([key, style]) => (
                   <div key={key} className="relative">
                     <input
                       type="radio"
@@ -486,7 +570,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
                       name="designStyle"
                       value={key}
                       checked={selectedDesignStyle === key}
-                      onChange={(e) => setSelectedDesignStyle(e.target.value as keyof typeof designStyles)}
+                      onChange={(e) => setSelectedDesignStyle(e.target.value as DesignStyleKey)}
                       className="sr-only"
                     />
                     <label
@@ -559,7 +643,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
               </div>
               <div className="flex justify-between text-sm">
                 <span>Tasarım Stili:</span>
-                <span>{designStyles[selectedDesignStyle].label}</span>
+                <span>{availableDesignStyles[selectedDesignStyle].label}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Süre:</span>

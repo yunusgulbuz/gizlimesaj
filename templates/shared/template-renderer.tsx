@@ -54,6 +54,7 @@ import SoftGlassInvitation from '../surpriz-randevu-daveti/components/SoftGlassI
 import RomantikAksamInvitation from '../surpriz-randevu-daveti/components/RomantikAksamInvitation';
 import CleanRomanticPlan from '../surpriz-randevu-daveti/components/CleanRomanticPlan';
 import HiddenSurpriseGame from '../surpriz-randevu-daveti/components/HiddenSurpriseGame';
+import EglenceliOyunluMesajlarTemplate from '../eglenceli-oyunlu-mesajlar/components/EglenceliOyunluMesajlarTemplate';
 import PastelGradientCelebration from '../dogum-gunu-kutlama/components/PastelGradientCelebration';
 import ElegantGoldInvitation from '../dogum-gunu-kutlama/components/ElegantGoldInvitation';
 import SimpleJoyCard from '../dogum-gunu-kutlama/components/SimpleJoyCard';
@@ -896,6 +897,18 @@ export default function TemplateRenderer({
               />
             );
         }
+      case 'eglenceli-oyunlu-mesajlar':
+        return (
+          <EglenceliOyunluMesajlarTemplate
+            recipientName={recipientName}
+            message={message}
+            designStyle={designStyle}
+            creatorName={creatorName}
+            textFields={textFields}
+            isEditable={isEditable}
+            onTextFieldChange={onTextFieldChange}
+          />
+        );
       case 'dogum-gunu-kutlama':
         switch (designStyle) {
           case 'modern':

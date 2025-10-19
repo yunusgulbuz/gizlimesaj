@@ -67,6 +67,352 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'eglenceli-oyunlu-mesajlar': {
+    slug: 'eglenceli-oyunlu-mesajlar',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 50,
+        defaultValue: 'Aşkım'
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Tüm mini oyunlarda kullanılabilecek genel mesaj',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Bu mini oyun tamamen sana özel. Her adımda seni mutlu edecek yeni bir sürpriz saklı. 💌'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      },
+      {
+        key: 'bubbleHeadline',
+        label: 'Baloncuk Başlığı',
+        placeholder: 'Örn. Mesajı Yakala! 🎈',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Mesajı Yakala! 🎈'
+      },
+      {
+        key: 'bubbleSubtitle',
+        label: 'Baloncuk Alt Metni',
+        placeholder: 'Baloncuklara dokun, mesajı keşfet...',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Baloncuklara dokun, mesajı keşfet ve kelimeleri birleştir!'
+      },
+      {
+        key: 'bubbleWords',
+        label: 'Baloncuk İçerikleri',
+        placeholder: 'Her satıra bir kelime veya emoji yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Sen\nbenim\noyun\narkadaşımsın\nher\nan\n🎮'
+      },
+      {
+        key: 'bubbleCompletionText',
+        label: 'Baloncuk Final Mesajı',
+        placeholder: 'Tüm baloncuklar açıldığında gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Gizli cümle ortaya çıktı! Bu kelimeler sadece sana ait. ✨'
+      },
+      {
+        key: 'bubbleHint',
+        label: 'Baloncuk İpucu',
+        placeholder: 'Örn. Her baloncukta bir kelime saklı.',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Her baloncukta bir kelime saklı. Tümünü açmayı dene!'
+      },
+      {
+        key: 'scratchHeadline',
+        label: 'Kazı Kazan Başlığı',
+        placeholder: 'Örn. Sürpriz Mesajı Kazı 🎁',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Sürpriz Mesajı Kazı 🎁'
+      },
+      {
+        key: 'scratchSubtitle',
+        label: 'Kazı Kazan Alt Metni',
+        placeholder: 'Kazı alanı için kısa açıklama yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Gri katmanı parmağınla kazı ve alttaki mesajı ortaya çıkar.'
+      },
+      {
+        key: 'scratchHiddenMessage',
+        label: 'Kazı Kazan Gizli Mesajı',
+        placeholder: 'Kazındıktan sonra görünecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 400,
+        defaultValue: 'Hazırsan bu akşam mini oyun maratonu ve sıcak çikolata seni bekliyor! ☕️🎮'
+      },
+      {
+        key: 'scratchCompletionText',
+        label: 'Kazı Kazan Final Metni',
+        placeholder: 'Kazı tamamlandığında gösterilecek metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Kazınan her piksel bizi eğlenceli sürprize yaklaştırdı!'
+      },
+      {
+        key: 'scratchConfettiNote',
+        label: 'Kazı Kazan Kutlama Notu',
+        placeholder: 'Konfeti sonrası gösterilecek not',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Şimdi mesajı oku ve buluştuğumuzda kutlamaya devam edelim. 🎉'
+      },
+      {
+        key: 'scratchHint',
+        label: 'Kazı Kazan İpucu',
+        placeholder: 'Örn. Ekranın her yerini hafifçe kazı.',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Ekranın her yerini hafifçe kazı; tamamlandığında konfeti yağacak.'
+      },
+      {
+        key: 'scratchResetLabel',
+        label: 'Kazı Kazan Yenile Butonu',
+        placeholder: 'Örn. Yeniden Kazı',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Yeniden Kazı'
+      },
+      {
+        key: 'quizHeadline',
+        label: 'Quiz Başlığı',
+        placeholder: 'Örn. Bakalım Beni Ne Kadar Tanıyorsun? 💭',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Bakalım Beni Ne Kadar Tanıyorsun? 💭'
+      },
+      {
+        key: 'quizSubtitle',
+        label: 'Quiz Alt Metni',
+        placeholder: 'Quiz için kısa açıklama',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Soruları cevapla, puan topla ve final sürprizini keşfet.'
+      },
+      {
+        key: 'quizQuestion1',
+        label: '1. Soru',
+        placeholder: 'Favori gece aktivitem nedir?',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Favori gece aktivitem nedir?'
+      },
+      {
+        key: 'quizOptions1',
+        label: '1. Soru Şıklar',
+        placeholder: 'Her satıra bir seçenek yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Cozy film gecesi\nGece yürüyüşü\nMini oyun turnuvası\nSonsuz sohbet'
+      },
+      {
+        key: 'quizAnswer1',
+        label: '1. Soru Doğru Şık',
+        placeholder: 'Doğru seçeneğin numarası (1-4)',
+        type: 'input',
+        required: false,
+        maxLength: 2,
+        defaultValue: '3'
+      },
+      {
+        key: 'quizQuestion2',
+        label: '2. Soru',
+        placeholder: 'İkinci soruyu yazın',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'En çok hangi emojiyi sana gönderiyorum?'
+      },
+      {
+        key: 'quizOptions2',
+        label: '2. Soru Şıklar',
+        placeholder: 'Her satıra bir emoji veya seçenek yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: '💕\n🎮\n🌙\n🔥'
+      },
+      {
+        key: 'quizAnswer2',
+        label: '2. Soru Doğru Şık',
+        placeholder: 'Doğru seçeneğin numarası (1-4)',
+        type: 'input',
+        required: false,
+        maxLength: 2,
+        defaultValue: '1'
+      },
+      {
+        key: 'quizQuestion3',
+        label: '3. Soru',
+        placeholder: 'Üçüncü soruyu yazın',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Sürpriz planım nerede?'
+      },
+      {
+        key: 'quizOptions3',
+        label: '3. Soru Şıklar',
+        placeholder: 'Her satıra bir seçenek yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Evde\nŞehir ışıklarında\nArkadaşlarımızla\nRastgele seç'
+      },
+      {
+        key: 'quizAnswer3',
+        label: '3. Soru Doğru Şık',
+        placeholder: 'Doğru seçeneğin numarası (1-4)',
+        type: 'input',
+        required: false,
+        maxLength: 2,
+        defaultValue: '2'
+      },
+      {
+        key: 'quizCompletionTitle',
+        label: 'Quiz Final Başlığı',
+        placeholder: 'Örn. Tebrikler! 💫',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Tebrikler! 💫'
+      },
+      {
+        key: 'quizSuccessMessage',
+        label: 'Quiz Başarı Mesajı',
+        placeholder: 'Tüm cevaplar doğruysa gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Sen beni çok iyi tanıyorsun 💕'
+      },
+      {
+        key: 'quizTryAgainMessage',
+        label: 'Quiz Tekrar Mesajı',
+        placeholder: 'Yeniden deneme mesajı',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Olmadı mı? Tekrar dene, birlikte eğleniyoruz! 😄'
+      },
+      {
+        key: 'quizRetryButtonLabel',
+        label: 'Quiz Tekrar Butonu',
+        placeholder: 'Örn. Yeniden Başla',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Yeniden Başla'
+      },
+      {
+        key: 'quizScoreLabel',
+        label: 'Quiz Puan Etiketi',
+        placeholder: 'Örn. Toplam Puan',
+        type: 'input',
+        required: false,
+        maxLength: 60,
+        defaultValue: 'Toplam Puan'
+      },
+      {
+        key: 'puzzleHeadline',
+        label: 'Puzzle Başlığı',
+        placeholder: 'Örn. Beni Birleştir 💞',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Beni Birleştir 💞'
+      },
+      {
+        key: 'puzzleSubtitle',
+        label: 'Puzzle Alt Metni',
+        placeholder: 'Puzzle için kısa açıklama yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Parçaları doğru yerleştir, kalpten gelen mesajı açığa çıkar.'
+      },
+      {
+        key: 'puzzlePhotoUrl',
+        label: 'Puzzle Fotoğraf URL',
+        placeholder: 'https://... şeklinde görsel bağlantısı',
+        type: 'input',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=900&q=80'
+      },
+      {
+        key: 'puzzleCompletionTitle',
+        label: 'Puzzle Final Başlığı',
+        placeholder: 'Puzzle tamamlandığında gösterilecek başlık',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Puzzle Tamamlandı! 💞'
+      },
+      {
+        key: 'puzzleCompletionMessage',
+        label: 'Puzzle Final Mesajı',
+        placeholder: 'Puzzle tamamlandığında gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'İşte sakladığım mesaj: Kalbim seninle tamamlanıyor. 💖'
+      },
+      {
+        key: 'puzzleHint',
+        label: 'Puzzle İpucu',
+        placeholder: 'Örn. Parçaları seçip yer değiştirerek tamamla.',
+        type: 'textarea',
+        required: false,
+        maxLength: 200,
+        defaultValue: 'Parçayı seç ve başka bir parça ile yer değiştir. Her hamle seni finale götürüyor!'
+      },
+      {
+        key: 'puzzleResetLabel',
+        label: 'Puzzle Yenile Butonu',
+        placeholder: 'Örn. Karıştır ve Yeniden Başla',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Karıştır ve Yeniden Başla'
+      }
+    ]
+  },
   'affet-beni': {
     slug: 'affet-beni',
     fields: [
