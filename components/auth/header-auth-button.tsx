@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase-client';
-import { User, LogOut, Loader2 } from 'lucide-react';
+import { User, LogOut, Loader2, Sparkles } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,6 +99,12 @@ export default function HeaderAuthButton() {
         <DropdownMenuItem asChild>
           <Link href="/account/favorites" className="cursor-pointer">
             Favorilerim
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/my-ai-templates" className="cursor-pointer">
+            <Sparkles className="mr-2 h-4 w-4" />
+            AI Tasarımlarım
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

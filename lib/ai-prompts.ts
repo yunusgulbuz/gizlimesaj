@@ -72,6 +72,12 @@ IMPORTANT REQUIREMENTS:
 8. Include appropriate spacing and padding
 9. The template must work in a div container (not a full page)
 
+CRITICAL SECURITY RULES:
+🚫 NEVER use JavaScript event handlers (onClick, onLoad, onMouseOver, etc.)
+🚫 NEVER include <script> tags or javascript: protocol in links
+✅ Use ONLY CSS animations (Tailwind animate-bounce, animate-pulse, animate-spin, @keyframes, transitions)
+✅ Generate pure static HTML with Tailwind CSS classes only
+
 EDITABLE ELEMENTS (VERY IMPORTANT):
 You MUST make ALL text content editable by wrapping them with data-editable attributes.
 Examples:
@@ -86,7 +92,7 @@ Examples:
 Make EVERY text element editable except:
 - Decorative emojis/icons that are not part of the message
 - Background/design elements
-- The creator name (it will be added automatically)
+- The creator name (it will be added automatically and is NOT editable)
 
 STRUCTURE:
 - Minimum height: min-h-screen
@@ -98,6 +104,8 @@ STRUCTURE:
   <div class="text-center mb-8">
     <p class="text-sm opacity-70" data-creator-name>Hazırlayan: {{CREATOR_NAME}}</p>
   </div>
+  CRITICAL: The creator name element MUST have data-creator-name attribute (not data-editable!)
+  This element should NOT be editable by users.
 
 COLOR SCHEME METADATA:
 After the HTML, include a JSON comment with editable color classes:
@@ -124,13 +132,121 @@ USER REQUEST:
 ${userPrompt}
 
 Generate a beautiful, responsive HTML template that fulfills this request. Remember to:
-- Use ONLY TailwindCSS classes
+- Use ONLY TailwindCSS classes (no JavaScript event handlers)
 - Make it responsive and mobile-friendly
-- Include smooth animations
-- Add data-editable attributes to recipient name, main message, and footer
+- Include smooth CSS animations only
+- Add data-editable attributes to all text content
 - Include the COLOR_SCHEME JSON comment
+- Generate REAL CONTENT in Turkish - NOT placeholders like {{TITLE}}, {{MESSAGE}}, {{RECIPIENT}}
+- Create contextual example text based on category and user's request
+- Only use {{CREATOR_NAME}} placeholder (for system to inject creator name)
+
+CONTENT EXAMPLES BY CATEGORY:
+- Romantic: "Sevgilim", "Seni Çok Seviyorum", "Sen hayatımın anlamısın..."
+- Birthday: "Canım Dostum", "Mutlu Yıllar!", "Bu özel günde sana en güzel dileklerimi gönderiyorum..."
+- Apology: "Değerli Dostum", "Özür Dilerim", "Sana verdiğim acı için çok üzgünüm..."
+- Thank You: "Sevgili Arkadaşım", "Teşekkür Ederim", "Yardımların için sana ne kadar minnettar olduğumu..."
 
 Generate the complete HTML now:`;
+}
+
+/**
+ * Generate prompt using a base template
+ * This maintains the structure and animations of premium templates
+ */
+export function generatePromptWithBase(
+  baseTemplateStructure: string,
+  category: string,
+  userPrompt: string
+): string {
+  const categoryPrompt = CATEGORY_PROMPTS[category] || CATEGORY_PROMPTS['romantic'];
+
+  return `You are creating a premium HTML template using the base template as INSPIRATION. Your task is to create a unique design that matches the user's vision while maintaining the same level of quality and sophistication.
+
+BASE TEMPLATE (Use as inspiration for style level and quality):
+${baseTemplateStructure}
+
+${categoryPrompt}
+
+DESIGN APPROACH - Use Base Template as Inspiration:
+
+1. **STYLE LEVEL**: Match the overall sophistication level (elegant/playful/modern/romantic) from the base template
+2. **QUALITY STANDARDS**: Maintain high-quality animations, modern effects, and responsive design standards
+3. **CREATIVE FREEDOM**: Freely adapt layout, colors, fonts, animations, and visual elements to match user's vision
+4. **ANIMATION QUALITY**: Use smooth, professional animations (you can change types: floating→bouncing, fade→slide, petal fall→star twinkle, etc.)
+5. **MODERN EFFECTS**: Use contemporary web effects (gradients, backdrop-blur, shadows, particles, parallax) but customize them based on user's request
+6. **RESPONSIVE DESIGN**: Ensure mobile-first, fully responsive design with proper spacing
+7. **REAL CONTENT**: Generate real, contextual example content - NEVER use {{PLACEHOLDER}} syntax
+
+WHAT YOU CAN FREELY MODIFY:
+✅ **Layout Structure**: Change from grid to flex, adjust element positioning, add/remove sections
+✅ **Colors & Gradients**: Completely change color palette based on user's theme
+✅ **Fonts**: Change font families, sizes, weights to match desired tone
+✅ **Animation Types**: Change animation styles (keep quality high: smooth transitions, professional keyframes)
+✅ **Decorative Elements**: Add/modify/replace elements (if base has petals, you can use stars, hearts, confetti, etc.)
+✅ **Background Patterns**: Create different backgrounds (gradients, shapes, particles)
+✅ **Element Sizes**: Adjust spacing, padding, margins, element dimensions
+✅ **Visual Effects**: Modify blur amounts, shadow styles, opacity levels
+
+WHAT YOU MUST KEEP:
+🔒 **data-editable attributes**: All text content must have data-editable attributes
+🔒 **{{CREATOR_NAME}} placeholder**: Include creator name section with data-creator-name attribute
+   IMPORTANT: Creator name element structure MUST be:
+   <p class="..." data-creator-name>Hazırlayan: {{CREATOR_NAME}}</p>
+   DO NOT add data-editable to this element! Only data-creator-name attribute.
+🔒 **Responsive design**: Mobile-first approach, works on all screen sizes
+🔒 **High quality**: Maintain smooth animations and professional appearance
+🔒 **Overall style level**: Keep the sophistication level (if base is elegant, result should be elegant)
+
+CONTENT GENERATION RULES:
+📝 **NO PLACEHOLDERS**: NEVER use {{TITLE}}, {{MESSAGE}}, {{RECIPIENT}}, {{FOOTER}} or similar placeholders
+📝 **REAL EXAMPLES**: Generate real, contextual text content based on category and user's prompt
+📝 **CATEGORY-APPROPRIATE**: Match content tone to category (romantic=loving, birthday=celebratory, apology=sincere, etc.)
+📝 **TURKISH LANGUAGE**: Write all content in Turkish (except {{CREATOR_NAME}} which is a system placeholder)
+
+CRITICAL SECURITY RULES:
+🚫 **NO JavaScript**: NEVER use event handlers (onClick, onLoad, onMouseOver, etc.) or inline JavaScript
+🚫 **NO Script Tags**: Never include <script> tags or javascript: protocol
+✅ **CSS Animations ONLY**: Use ONLY CSS animations (Tailwind animate-bounce, animate-pulse, animate-spin, @keyframes, transitions)
+✅ **Static HTML**: Generate pure HTML with Tailwind CSS classes only
+
+EXAMPLES OF USER-DRIVEN CHANGES WITH REAL CONTENT:
+
+1. **Romantic Category** + "Uzay temalı mesaj":
+   - Recipient: "Sevgilim" or "Canım Aşkım"
+   - Title: "Sen Benim Yıldızımsın"
+   - Main Message: "Seni ilk gördüğüm günden beri hayatım bir galaksi kadar genişledi. Sen benim parlak yıldızımsın, karanlık gecelerimde bana ışık tutuyorsun."
+   - Footer: "Sonsuzluğa kadar seninle olmak isteyen birinden 💫"
+   - Design: Replace petals with twinkling stars, dark blue/purple gradients, constellation patterns
+
+2. **Birthday Category** + "Renkli kutlama":
+   - Recipient: "Canım Kardeşim"
+   - Title: "Mutlu Yıllar!"
+   - Main Message: "Bu özel günde sana en güzel dileklerimi gönderiyorum. Yeni yaşın renkli anılarla, neşeyle ve mutlulukla dolu olsun!"
+   - Footer: "Seni çok seven kardeşinden 🎉"
+   - Design: Vibrant colors, confetti animations, bouncy effects
+
+3. **Apology Category** + "Özür dilemek istiyorum":
+   - Recipient: "Değerli Dostum"
+   - Title: "Özür Dilerim"
+   - Main Message: "Sana verdiğim acı için çok üzgünüm. Yaptığım hatayı fark ettim ve bunun bir daha tekrarlanmaması için elimden geleni yapacağım."
+   - Footer: "Affını dileyen arkadaşından 🙏"
+   - Design: Soft pastels, calming animations, gentle effects
+
+USER REQUEST:
+${userPrompt}
+
+Now create a unique, premium HTML template that fulfills this request.
+
+IMPORTANT REMINDERS:
+✅ Use the base template as inspiration for quality level, but freely adapt all visual aspects
+✅ Generate REAL CONTENT in Turkish - not placeholders like {{TITLE}} or {{MESSAGE}}
+✅ Create contextual example text based on the category and user's request
+✅ Only use {{CREATOR_NAME}} placeholder (for the system to inject creator name)
+✅ Make all text elements have data-editable attributes
+✅ Use pure HTML + Tailwind CSS (no JavaScript event handlers)
+
+Return ONLY the HTML code - no explanations, no markdown blocks.`;
 }
 
 export function extractColorScheme(html: string): Record<string, string> {

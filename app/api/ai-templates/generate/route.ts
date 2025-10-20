@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { generatePrompt, extractColorScheme } from '@/lib/ai-prompts';
+import { generatePrompt, generatePromptWithBase, extractColorScheme } from '@/lib/ai-prompts';
 import { sanitizeHTML, validateHTML, extractEditableFields } from '@/lib/sanitize-html';
+import { getBaseTemplate } from '@/lib/ai-template-bases';
+import { canUseAI, useAICredit, getUserCredits } from '@/lib/credit-helpers';
 
 // Increase API route timeout to 5 minutes for AI generation
 export const maxDuration = 300; // 5 minutes
@@ -12,9 +14,6 @@ export const dynamic = 'force-dynamic';
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-// Rate limiting: max 5 generations per user per day
-const RATE_LIMIT_PER_DAY = 5;
 
 function generateSlug(userId: string, title: string): string {
   // Get first 8 characters of user ID
@@ -35,25 +34,7 @@ function generateSlug(userId: string, title: string): string {
   return `ai-${userPrefix}-${titleSlug}-${timestamp}`;
 }
 
-async function checkRateLimit(userId: string): Promise<boolean> {
-  const supabase = await createServerSupabaseClient();
-
-  // Get templates created in last 24 hours
-  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
-  const { count, error } = await supabase
-    .from('ai_generated_templates')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', userId)
-    .gte('created_at', oneDayAgo);
-
-  if (error) {
-    console.error('Rate limit check error:', error);
-    return false;
-  }
-
-  return (count || 0) < RATE_LIMIT_PER_DAY;
-}
+// REMOVED: Old rate limit function - now using subscription-based limits
 
 export async function POST(request: NextRequest) {
   try {
@@ -68,18 +49,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check rate limit
-    const canGenerate = await checkRateLimit(user.id);
-    if (!canGenerate) {
+    // Check AI credit balance
+    const creditCheck = await canUseAI(user.id);
+    if (!creditCheck.allowed) {
       return NextResponse.json(
-        { error: `You have reached your daily limit of ${RATE_LIMIT_PER_DAY} AI template generations. Please try again tomorrow.` },
+        { error: creditCheck.reason, needCredits: true },
         { status: 429 }
       );
     }
 
     // Parse request body
     const body = await request.json();
-    const { title, category, userPrompt } = body;
+    const { title, category, userPrompt, templateBaseId } = body;
 
     // Validate inputs
     if (!title || typeof title !== 'string' || title.trim().length < 3) {
@@ -127,8 +108,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate the AI prompt
-    const fullPrompt = generatePrompt(category, userPrompt);
+    // Generate the AI prompt (with or without base template)
+    let fullPrompt: string;
+
+    if (templateBaseId) {
+      // Use base template approach
+      const baseTemplate = getBaseTemplate(templateBaseId);
+
+      if (!baseTemplate) {
+        return NextResponse.json(
+          { error: 'Selected template style not found.' },
+          { status: 400 }
+        );
+      }
+
+      console.log('Using base template:', baseTemplate.name);
+      fullPrompt = generatePromptWithBase(baseTemplate.structure, category, userPrompt);
+    } else {
+      // Fallback to old method (generate from scratch)
+      fullPrompt = generatePrompt(category, userPrompt);
+    }
 
     // Call OpenAI API
     console.log('Calling OpenAI API for user:', user.id);
@@ -176,9 +175,11 @@ export async function POST(request: NextRequest) {
         category,
         user_prompt: userPrompt.trim(),
         template_code: sanitizedHTML,
+        status: 'draft', // Mark as draft (takes up a slot)
         metadata: {
           colorScheme,
           editableFields,
+          templateBaseId: templateBaseId || null, // Store which base was used
           recipientName: 'Sevgilim',
           mainMessage: 'Bu özel mesaj senin için yapay zeka tarafından oluşturuldu.',
           footerMessage: 'Seni düşünen birinden ❤️',
@@ -196,6 +197,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use 1 AI credit
+    const creditResult = await useAICredit(user.id, template.id, 'AI template oluşturma');
+
+    if (!creditResult.success) {
+      console.error('Failed to deduct credit after generation');
+    }
+
     // Return success response
     return NextResponse.json({
       success: true,
@@ -205,6 +213,7 @@ export async function POST(request: NextRequest) {
         title: template.title,
         category: template.category,
       },
+      remainingCredits: creditResult.remainingCredits,
       message: 'AI template generated successfully!',
     });
 
@@ -233,7 +242,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET endpoint to check user's remaining generations
+// GET endpoint to check user's remaining AI credits
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -246,31 +255,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get templates created in last 24 hours
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
-    const { count, error } = await supabase
-      .from('ai_generated_templates')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .gte('created_at', oneDayAgo);
-
-    if (error) {
-      console.error('Error checking generations:', error);
-      return NextResponse.json(
-        { error: 'Failed to check generations' },
-        { status: 500 }
-      );
-    }
-
-    const used = count || 0;
-    const remaining = Math.max(0, RATE_LIMIT_PER_DAY - used);
+    // Get user's credit balance
+    const credits = await getUserCredits(user.id);
 
     return NextResponse.json({
-      limit: RATE_LIMIT_PER_DAY,
-      used,
-      remaining,
-      canGenerate: remaining > 0,
+      totalCredits: credits.totalCredits,
+      usedCredits: credits.usedCredits,
+      remainingCredits: credits.remainingCredits,
+      canGenerate: credits.canUseAI,
     });
 
   } catch (error) {

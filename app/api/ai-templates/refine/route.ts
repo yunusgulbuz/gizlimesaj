@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { sanitizeHTML, validateHTML, extractEditableFields } from '@/lib/sanitize-html';
 import { extractColorScheme } from '@/lib/ai-prompts';
+import { canUseAI, useAICredit } from '@/lib/credit-helpers';
 
 // Increase API route timeout to 5 minutes for AI refinement
 export const maxDuration = 300; // 5 minutes
@@ -23,6 +24,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized. Please login to refine AI templates.' },
         { status: 401 }
+      );
+    }
+
+    // Check AI credit balance
+    const creditCheck = await canUseAI(user.id);
+    if (!creditCheck.allowed) {
+      return NextResponse.json(
+        { error: creditCheck.reason, needCredits: true },
+        { status: 429 }
       );
     }
 
@@ -76,8 +86,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build refinement prompt
-    const refinementPrompt = `You are refining an existing HTML template. Here is the current template:
+    // Build refinement prompt with flexible approach
+    const refinementPrompt = `You are refining an existing premium HTML template. The user wants to make changes to improve or customize the design. You have creative freedom to make significant changes based on their request.
 
 <current-template>
 ${template.template_code}
@@ -86,15 +96,48 @@ ${template.template_code}
 User's refinement request:
 ${refinePrompt.trim()}
 
-Please modify the template according to the user's request. Keep the same overall structure and editable fields (data-editable attributes). Only change what was specifically requested.
+REFINEMENT APPROACH - Creative Freedom with Quality Standards:
 
-IMPORTANT REQUIREMENTS:
-1. Use ONLY HTML and TailwindCSS classes - NO external CSS files or <style> tags
-2. Keep all existing data-editable attributes
-3. Maintain the same structure and editable fields
-4. Apply only the specific changes requested
-5. The template must work in a div container (not a full page)
-6. Include the COLOR_SCHEME JSON comment at the end
+1. **UNDERSTAND THE REQUEST**: Analyze what the user wants (color change, layout adjustment, animation change, complete redesign, etc.)
+2. **QUALITY STANDARDS**: Maintain high-quality animations, modern effects, and responsive design
+3. **CREATIVE FREEDOM**: Feel free to make significant changes to layout, colors, animations, and visual elements
+4. **USER'S VISION**: Prioritize the user's specific request over preserving the original design
+
+WHAT YOU CAN FREELY MODIFY:
+✅ **Layout & Structure**: Change element positioning, adjust grid/flex layouts, add/remove sections
+✅ **Colors & Gradients**: Completely change color palettes and gradient schemes
+✅ **Fonts & Typography**: Modify font families, sizes, weights, line heights
+✅ **Animations**: Change animation types, speeds, and effects (floating→bouncing, fade→slide, etc.)
+✅ **Decorative Elements**: Add/modify/replace decorative elements (petals→stars, hearts→confetti, etc.)
+✅ **Background**: Change background patterns, gradients, or effects
+✅ **Visual Effects**: Adjust blur, shadows, opacity, borders
+✅ **Element Sizes**: Change spacing, padding, margins, element dimensions
+
+WHAT YOU MUST KEEP:
+🔒 **data-editable attributes**: Preserve all data-editable attributes on text content
+🔒 **{{CREATOR_NAME}} placeholder**: Keep the creator name element with data-creator-name attribute
+   IMPORTANT: Creator name element MUST be:
+   <p class="..." data-creator-name>Hazırlayan: {{CREATOR_NAME}}</p>
+   DO NOT add data-editable to this element! It should remain non-editable.
+🔒 **Responsive design**: Maintain mobile-first responsive design
+🔒 **High quality**: Keep animations smooth and design professional
+🔒 **Content**: Don't change the actual text content unless specifically requested
+
+CRITICAL SECURITY RULES:
+🚫 **NO JavaScript**: NEVER use event handlers (onClick, onLoad, onMouseOver, etc.) or inline JavaScript
+🚫 **NO Script Tags**: Never include <script> tags or javascript: protocol
+✅ **CSS Animations ONLY**: Use ONLY CSS animations (Tailwind animate-bounce, animate-pulse, animate-spin, @keyframes, transitions)
+✅ **Static HTML**: Generate pure HTML with Tailwind CSS classes only
+
+EXAMPLES OF REFINEMENT REQUESTS:
+- "Make it more colorful" → Change color palette to vibrant colors, add more gradient effects
+- "Change animation to bouncing" → Replace current animations with bounce effects
+- "Make it minimalist" → Simplify layout, remove decorative elements, use neutral colors
+- "Add stars instead of hearts" → Replace heart elements with star shapes and animations
+- "Dark theme" → Change to dark background with light text
+- "More spacing" → Increase padding and margins throughout
+
+IMPORTANT: If the user's request is substantial (like "completely redesign" or "change theme"), feel free to make major changes while keeping the quality high and preserving the core mechanics (data-editable, responsive design).
 
 RETURN ONLY THE MODIFIED HTML CODE - no explanations, no markdown code blocks, just the raw HTML.`;
 
@@ -156,6 +199,13 @@ RETURN ONLY THE MODIFIED HTML CODE - no explanations, no markdown code blocks, j
       );
     }
 
+    // Use 1 AI credit
+    const creditResult = await useAICredit(user.id, updatedTemplate.id, 'AI template düzenleme');
+
+    if (!creditResult.success) {
+      console.error('Failed to deduct credit after refinement');
+    }
+
     // Return success response
     return NextResponse.json({
       success: true,
@@ -166,6 +216,7 @@ RETURN ONLY THE MODIFIED HTML CODE - no explanations, no markdown code blocks, j
         template_code: updatedTemplate.template_code,
         metadata: updatedTemplate.metadata,
       },
+      remainingCredits: creditResult.remainingCredits,
       message: 'Template refined successfully!',
     });
 

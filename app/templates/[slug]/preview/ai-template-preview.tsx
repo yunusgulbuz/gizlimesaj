@@ -3,7 +3,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ShoppingCart, Loader2, Palette, Save, Wand2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ArrowLeft, ShoppingCart, Loader2, Palette, Save, Wand2, ChevronDown, ChevronUp, Music } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { createClient } from '@/lib/supabase-client';
 import AITemplateRenderer from '@/components/ai-template-renderer';
 import { DurationSelectionDialog } from '@/components/DurationSelectionDialog';
@@ -48,6 +51,7 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
   const [refinePrompt, setRefinePrompt] = useState('');
   const [isRefining, setIsRefining] = useState(false);
   const [refineProgress, setRefineProgress] = useState(0);
+  const [isMusicInputOpen, setIsMusicInputOpen] = useState(false);
 
   // Load user and template data
   useEffect(() => {
@@ -121,6 +125,10 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
     setMetadata(newMetadata);
   };
 
+  const handleMusicUrlChange = (url: string) => {
+    setMetadata({ ...metadata, musicUrl: url });
+  };
+
   const handleSaveMetadata = async () => {
     if (!template) return;
 
@@ -181,7 +189,7 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Şablon iyileştirilemedi');
+        throw new Error(error.error || 'Şablon düzenlenemedi');
       }
 
       const result = await response.json();
@@ -196,7 +204,7 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
         setMetadata(result.template.metadata);
         setRefinePrompt('');
         setShowRefinePanel(false);
-        alert('✨ Şablon başarıyla iyileştirildi!');
+        alert('✨ Şablon başarıyla düzenlendi!');
       }
     } catch (err: any) {
       clearInterval(progressInterval);
@@ -205,7 +213,7 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
       if (err.name === 'AbortError') {
         alert('İşlem zaman aşımına uğradı. Lütfen tekrar deneyin.');
       } else {
-        alert(err.message || 'Şablon iyileştirilemedi. Lütfen tekrar deneyin.');
+        alert(err.message || 'Şablon düzenlenemedi. Lütfen tekrar deneyin.');
       }
     } finally {
       clearInterval(progressInterval);
@@ -335,7 +343,7 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
                 disabled={isRefining}
               >
                 <Wand2 className="w-4 h-4" />
-                <span className="hidden sm:inline">İyileştir</span>
+                <span className="hidden sm:inline">Düzenle</span>
                 {showRefinePanel ? <ChevronUp className="w-3 h-3 ml-1" /> : <ChevronDown className="w-3 h-3 ml-1" />}
               </Button>
 
@@ -384,6 +392,49 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
         </div>
       </div>
 
+      {/* Music Input Panel */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Collapsible open={isMusicInputOpen} onOpenChange={setIsMusicInputOpen} className="border-t border-gray-100">
+            <div className="py-2.5">
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm" className="w-full justify-between hover:bg-gray-50/50 transition-colors">
+                  <div className="flex items-center gap-2.5">
+                    <Music className={`w-4 h-4 ${metadata.musicUrl ? 'text-rose-500' : 'text-gray-400'}`} />
+                    <span className={`text-sm ${metadata.musicUrl ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+                      {metadata.musicUrl ? 'Müzik Eklendi ✓' : 'Müzik Ekle (İsteğe Bağlı)'}
+                    </span>
+                  </div>
+                  {isMusicInputOpen ? (
+                    <ChevronUp className="w-4 h-4 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-3 pb-2 px-1">
+                <div className="space-y-2">
+                  <Label htmlFor="music-url" className="text-xs text-gray-600">
+                    YouTube Video Linki
+                  </Label>
+                  <Input
+                    id="music-url"
+                    type="url"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    value={metadata.musicUrl || ''}
+                    onChange={(e) => handleMusicUrlChange(e.target.value)}
+                    className="text-sm"
+                  />
+                  <p className="text-xs text-gray-500">
+                    Mesajınıza arka plan müziği ekleyin
+                  </p>
+                </div>
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
+        </div>
+      </div>
+
       {/* Refine Panel */}
       {showRefinePanel && (
         <div className="bg-white border-b shadow-lg">
@@ -394,7 +445,7 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                       <Wand2 className="w-5 h-5 text-purple-600" />
-                      Şablonu İyileştir
+                      Şablonu Düzenle
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
                       Yapmak istediğiniz değişiklikleri açıklayın (örn: "renkleri daha canlı yap", "daha fazla animasyon ekle")
@@ -437,12 +488,12 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
                       {isRefining ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          İyileştiriliyor...
+                          Düzenleniyor...
                         </>
                       ) : (
                         <>
                           <Wand2 className="w-4 h-4 mr-2" />
-                          İyileştir
+                          Düzenle
                         </>
                       )}
                     </Button>

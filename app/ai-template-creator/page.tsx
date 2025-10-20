@@ -19,9 +19,11 @@ import {
   MessageCircle,
   Star,
   Gift,
-  UserCheck
+  UserCheck,
+  List
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
+import { getTemplatesByCategory, type BaseTemplate } from '@/lib/ai-template-bases';
 
 interface Category {
   id: string;
@@ -87,12 +89,13 @@ export default function AITemplateCreator() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
   const [user, setUser] = useState<any>(null);
-  const [remainingGenerations, setRemainingGenerations] = useState<number | null>(null);
+  const [remainingCredits, setRemainingCredits] = useState<number | null>(null);
 
   const supabase = createClient();
 
@@ -105,11 +108,11 @@ export default function AITemplateCreator() {
       } else {
         setUser(user);
 
-        // Check remaining generations
+        // Check remaining AI credits
         const response = await fetch('/api/ai-templates/generate');
         if (response.ok) {
           const data = await response.json();
-          setRemainingGenerations(data.remaining);
+          setRemainingCredits(data.remainingCredits);
         }
       }
     };
@@ -120,8 +123,15 @@ export default function AITemplateCreator() {
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setError('');
-    // Kategoriye tıklayınca direkt prompt adımına geç
+    // Kategoriye tıklayınca template seçim adımına geç
     setStep(2);
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplateId(templateId);
+    setError('');
+    // Template seçildikten sonra prompt adımına geç
+    setStep(3);
   };
 
   const handleNextStep = () => {
@@ -129,7 +139,11 @@ export default function AITemplateCreator() {
       setError('Lütfen bir kategori seçin');
       return;
     }
-    if (step === 2 && (!prompt.trim() || prompt.length < 10)) {
+    if (step === 2 && !selectedTemplateId) {
+      setError('Lütfen bir template stili seçin');
+      return;
+    }
+    if (step === 3 && (!prompt.trim() || prompt.length < 10)) {
       setError('Lütfen en az 10 karakter uzunluğunda bir açıklama girin');
       return;
     }
@@ -177,6 +191,7 @@ export default function AITemplateCreator() {
           title: autoTitle,
           category: selectedCategory,
           userPrompt: prompt,
+          templateBaseId: selectedTemplateId,
         }),
         signal: controller.signal,
       });
@@ -189,6 +204,11 @@ export default function AITemplateCreator() {
         console.error('API Error Response:', data);
         console.error('Status:', response.status);
         throw new Error(data.error || 'Şablon oluşturulamadı');
+      }
+
+      // Update remaining credits
+      if (data.remainingCredits !== undefined) {
+        setRemainingCredits(data.remainingCredits);
       }
 
       // Complete progress and redirect
@@ -234,17 +254,28 @@ export default function AITemplateCreator() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className="mb-4"
-          >
-            <Link href="/">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Ana Sayfaya Dön
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2 mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+            >
+              <Link href="/">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Ana Sayfaya Dön
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+            >
+              <Link href="/my-ai-templates">
+                <List className="h-4 w-4 mr-2" />
+                Tasarımlarım
+              </Link>
+            </Button>
+          </div>
 
           <div className="flex items-center gap-3 mb-2">
             <Sparkles className="h-8 w-8 text-purple-600" />
@@ -255,17 +286,20 @@ export default function AITemplateCreator() {
           <p className="text-gray-600">
             Birkaç adımda, yapay zeka tarafından size özel tasarlanmış şablon oluşturun
           </p>
-          {remainingGenerations !== null && (
-            <Badge variant="outline" className="mt-2">
-              Kalan oluşturma hakkı: {remainingGenerations}/5
+          {remainingCredits !== null && (
+            <Badge
+              variant="outline"
+              className={`mt-2 ${remainingCredits === 0 ? 'bg-red-50 text-red-700 border-red-300' : 'bg-purple-50 text-purple-700 border-purple-300'}`}
+            >
+              💎 Kalan AI Kredisi: {remainingCredits}
             </Badge>
           )}
         </div>
 
         {/* Progress Steps */}
         <div className="mb-8">
-          <div className="flex items-center justify-center max-w-md mx-auto">
-            {[1, 2].map((stepNum) => (
+          <div className="flex items-center justify-center max-w-3xl mx-auto">
+            {[1, 2, 3].map((stepNum) => (
               <div key={stepNum} className="flex items-center">
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
@@ -276,9 +310,9 @@ export default function AITemplateCreator() {
                 >
                   {stepNum}
                 </div>
-                {stepNum < 2 && (
+                {stepNum < 3 && (
                   <div
-                    className={`h-1 w-24 sm:w-32 mx-2 transition-colors ${
+                    className={`h-1 w-16 sm:w-24 mx-2 transition-colors ${
                       step > stepNum ? 'bg-purple-600' : 'bg-gray-200'
                     }`}
                   />
@@ -286,9 +320,10 @@ export default function AITemplateCreator() {
               </div>
             ))}
           </div>
-          <div className="flex justify-between max-w-md mx-auto mt-2 text-xs sm:text-sm text-gray-600">
-            <span className="text-center flex-1">Kategori Seç</span>
-            <span className="text-center flex-1">Mesajını Tarif Et</span>
+          <div className="flex justify-between max-w-3xl mx-auto mt-2 text-xs sm:text-sm text-gray-600">
+            <span className="text-center flex-1">Kategori</span>
+            <span className="text-center flex-1">Stil</span>
+            <span className="text-center flex-1">Mesaj</span>
           </div>
         </div>
 
@@ -332,8 +367,88 @@ export default function AITemplateCreator() {
           </Card>
         )}
 
-        {/* Step 2: Prompt Input */}
+        {/* Step 2: Template Style Selection */}
         {step === 2 && (
+          <Card className="border-none bg-white/90 backdrop-blur shadow-xl">
+            <CardHeader>
+              <CardTitle>Template Stili Seçin</CardTitle>
+              <CardDescription>
+                Şablonunuzun genel tasarım stilini seçin. Seçtiğiniz stil üzerine mesajınız eklene
+
+cek.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {selectedCategoryData && (
+                <div className="mb-6 p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600">Seçilen kategori:</p>
+                  <Badge className={`mt-1 ${selectedCategoryData.color}`}>
+                    {selectedCategoryData.name}
+                  </Badge>
+                </div>
+              )}
+
+              {/* Template cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {getTemplatesByCategory(selectedCategory).map((template) => (
+                  <button
+                    key={template.id}
+                    onClick={() => handleTemplateSelect(template.id)}
+                    className={`group relative p-4 rounded-xl border-2 transition-all hover:shadow-lg text-left ${
+                      selectedTemplateId === template.id
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-purple-300'
+                    }`}
+                  >
+                    {/* Thumbnail placeholder */}
+                    <div className="relative mb-3 aspect-[4/3] rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                      <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                        <Sparkles className="h-12 w-12" />
+                      </div>
+                      {/* Selected indicator */}
+                      {selectedTemplateId === template.id && (
+                        <div className="absolute top-2 right-2 bg-purple-600 text-white rounded-full p-1.5">
+                          <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Template info */}
+                    <h3 className="font-semibold text-base mb-1">{template.name}</h3>
+                    <p className="text-sm text-gray-600 line-clamp-2">{template.description}</p>
+
+                    {/* Style guide */}
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      <p className="text-xs text-gray-500">{template.styleGuide}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-6 flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={handlePreviousStep}
+                  disabled={isGenerating}
+                >
+                  Geri
+                </Button>
+                <Button
+                  onClick={() => selectedTemplateId && setStep(3)}
+                  disabled={!selectedTemplateId}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                >
+                  Devam Et
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 3: Prompt Input */}
+        {step === 3 && (
           <Card className="border-none bg-white/90 backdrop-blur shadow-xl">
             <CardHeader>
               <CardTitle>Mesajınızı Tarif Edin</CardTitle>
@@ -342,14 +457,22 @@ export default function AITemplateCreator() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {selectedCategoryData && (
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600">Seçilen kategori:</p>
-                  <Badge className={`mt-1 ${selectedCategoryData.color}`}>
-                    {selectedCategoryData.name}
-                  </Badge>
+              {/* Selected info */}
+              <div className="mb-6 p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+                <p className="text-sm font-medium text-purple-900 mb-2">Seçimleriniz:</p>
+                <div className="flex flex-wrap gap-2">
+                  {selectedCategoryData && (
+                    <Badge className={selectedCategoryData.color}>
+                      {selectedCategoryData.name}
+                    </Badge>
+                  )}
+                  {selectedTemplateId && (
+                    <Badge variant="outline" className="bg-white">
+                      {getTemplatesByCategory(selectedCategory).find(t => t.id === selectedTemplateId)?.name}
+                    </Badge>
+                  )}
                 </div>
-              )}
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="prompt">Açıklama *</Label>

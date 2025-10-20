@@ -72,7 +72,12 @@ export default function AITemplateRenderer({
       }
     };
 
-    const editableElements = contentRef.current.querySelectorAll('[data-editable]');
+    // Get all editable elements EXCEPT data-creator-name elements
+    const allElements = contentRef.current.querySelectorAll('[data-editable]');
+    const editableElements = Array.from(allElements).filter(
+      (el) => !el.hasAttribute('data-creator-name')
+    );
+
     editableElements.forEach((el) => {
       el.addEventListener('blur', handleInput);
       if (isEditable) {
