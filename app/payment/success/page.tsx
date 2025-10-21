@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, Copy, Share2, ExternalLink, Loader2 } from 'lucide-react';
-import { createBrowserSupabaseClient } from '@/lib/supabase-client';
+import { createClient } from '@/lib/supabase-client';
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
@@ -27,15 +27,10 @@ export default function PaymentSuccessPage() {
         return;
       }
 
-      const supabase = createBrowserSupabaseClient();
+      const supabase = createClient();
 
-      // Poll for order completion (max 30 seconds)
-      const maxAttempts = 30;
-      let attempts = 0;
-
-      const pollInterval = setInterval(async () => {
-        attempts++;
-
+      // First, try to fetch the order immediately
+      const fetchOrder = async () => {
         try {
           const { data: order, error: orderError } = await supabase
             .from('orders')
@@ -45,31 +40,45 @@ export default function PaymentSuccessPage() {
 
           if (orderError) {
             console.error('Order fetch error:', orderError);
-            if (attempts >= maxAttempts) {
-              clearInterval(pollInterval);
-              setError('Sipariş bilgileri alınırken bir hata oluştu');
-              setLoading(false);
-            }
-            return;
+            return null;
           }
 
-          if (order && order.status === 'completed' && order.short_id) {
-            clearInterval(pollInterval);
-            setShortId(order.short_id);
-            setOrderId(order.id);
-            setLoading(false);
-          } else if (attempts >= maxAttempts) {
-            clearInterval(pollInterval);
-            setError('Sipariş işlemi tamamlanamadı. Lütfen müşteri hizmetleri ile iletişime geçin.');
-            setLoading(false);
-          }
+          return order;
         } catch (err) {
-          console.error('Polling error:', err);
-          if (attempts >= maxAttempts) {
-            clearInterval(pollInterval);
-            setError('Bir hata oluştu. Lütfen sayfayı yenileyin.');
-            setLoading(false);
-          }
+          console.error('Fetch order error:', err);
+          return null;
+        }
+      };
+
+      // Try immediate fetch first
+      const initialOrder = await fetchOrder();
+
+      if (initialOrder && initialOrder.status === 'completed' && initialOrder.short_id) {
+        // Order is already completed, show success immediately
+        setShortId(initialOrder.short_id);
+        setOrderId(initialOrder.id);
+        setLoading(false);
+        return;
+      }
+
+      // If not completed yet, start polling (max 30 seconds)
+      const maxAttempts = 30;
+      let attempts = 0;
+
+      const pollInterval = setInterval(async () => {
+        attempts++;
+
+        const order = await fetchOrder();
+
+        if (order && order.status === 'completed' && order.short_id) {
+          clearInterval(pollInterval);
+          setShortId(order.short_id);
+          setOrderId(order.id);
+          setLoading(false);
+        } else if (attempts >= maxAttempts) {
+          clearInterval(pollInterval);
+          setError('Sipariş işlemi tamamlanamadı. Lütfen müşteri hizmetleri ile iletişime geçin.');
+          setLoading(false);
         }
       }, 1000); // Check every second
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { XCircle, Loader2 } from 'lucide-react';
-import { createBrowserSupabaseClient } from '@/lib/supabase-client';
+import { createClient } from '@/lib/supabase-client';
 
 export default function PaymentFailPage() {
   const searchParams = useSearchParams();
@@ -22,7 +22,7 @@ export default function PaymentFailPage() {
         return;
       }
 
-      const supabase = createBrowserSupabaseClient();
+      const supabase = createClient();
 
       try {
         const { data: order, error: orderError } = await supabase
