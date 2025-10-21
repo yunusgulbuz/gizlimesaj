@@ -143,9 +143,35 @@ export async function POST(request: NextRequest) {
 
       console.log('Payment successful for order:', order.id);
 
-      // Redirect user to success page with shortId
-      const successUrl = new URL(`/success/${order.short_id}`, baseUrl);
-      return NextResponse.redirect(successUrl);
+      // Return HTML with JavaScript to redirect parent window (for iframe)
+      const successUrl = `${baseUrl}/success/${order.short_id}`;
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Ödeme Başarılı</title>
+          </head>
+          <body>
+            <script>
+              // Redirect parent window (iframe break out)
+              if (window.top) {
+                window.top.location.href = '${successUrl}';
+              } else {
+                window.location.href = '${successUrl}';
+              }
+            </script>
+            <p>Yönlendiriliyor...</p>
+          </body>
+        </html>
+      `;
+
+      return new Response(html, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+        },
+      });
 
     } else {
       // Payment failed
@@ -165,18 +191,68 @@ export async function POST(request: NextRequest) {
       const errorMessage = paytrHelper.getErrorMessage(paytrCallback);
       console.log('Payment failed for order:', order.id, 'Error:', errorMessage);
 
-      // Redirect user to fail page with error message
-      const failUrl = new URL('/payment/fail', baseUrl);
-      failUrl.searchParams.set('message', errorMessage);
-      return NextResponse.redirect(failUrl);
+      // Return HTML with JavaScript to redirect parent window (for iframe)
+      const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent(errorMessage)}`;
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Ödeme Başarısız</title>
+          </head>
+          <body>
+            <script>
+              // Redirect parent window (iframe break out)
+              if (window.top) {
+                window.top.location.href = '${failUrl}';
+              } else {
+                window.location.href = '${failUrl}';
+              }
+            </script>
+            <p>Yönlendiriliyor...</p>
+          </body>
+        </html>
+      `;
+
+      return new Response(html, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+        },
+      });
     }
 
   } catch (error) {
     console.error('PayTR callback processing error:', error);
-    // Redirect to fail page on error
-    const failUrl = new URL('/payment/fail', baseUrl);
-    failUrl.searchParams.set('message', 'Bir hata oluştu');
-    return NextResponse.redirect(failUrl);
+    // Return HTML with JavaScript to redirect parent window (for iframe)
+    const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent('Bir hata oluştu')}`;
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Hata</title>
+        </head>
+        <body>
+          <script>
+            // Redirect parent window (iframe break out)
+            if (window.top) {
+              window.top.location.href = '${failUrl}';
+            } else {
+              window.location.href = '${failUrl}';
+            }
+          </script>
+          <p>Yönlendiriliyor...</p>
+        </body>
+      </html>
+    `;
+
+    return new Response(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+      },
+    });
   }
 }
 
@@ -195,9 +271,34 @@ export async function GET(request: NextRequest) {
 
   if (!merchantOid) {
     console.error('No merchant_oid in GET request');
-    const failUrl = new URL('/payment/fail', baseUrl);
-    failUrl.searchParams.set('message', 'Sipariş bulunamadı');
-    return NextResponse.redirect(failUrl);
+    const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent('Sipariş bulunamadı')}`;
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Hata</title>
+        </head>
+        <body>
+          <script>
+            // Redirect parent window (iframe break out)
+            if (window.top) {
+              window.top.location.href = '${failUrl}';
+            } else {
+              window.location.href = '${failUrl}';
+            }
+          </script>
+          <p>Yönlendiriliyor...</p>
+        </body>
+      </html>
+    `;
+
+    return new Response(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+      },
+    });
   }
 
   const supabase = await createServerSupabaseClient();
@@ -222,9 +323,34 @@ export async function GET(request: NextRequest) {
 
     console.log('Recent orders for debugging:', allOrders);
 
-    const failUrl = new URL('/payment/fail', baseUrl);
-    failUrl.searchParams.set('message', 'Sipariş bulunamadı');
-    return NextResponse.redirect(failUrl);
+    const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent('Sipariş bulunamadı')}`;
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Hata</title>
+        </head>
+        <body>
+          <script>
+            // Redirect parent window (iframe break out)
+            if (window.top) {
+              window.top.location.href = '${failUrl}';
+            } else {
+              window.location.href = '${failUrl}';
+            }
+          </script>
+          <p>Yönlendiriliyor...</p>
+        </body>
+      </html>
+    `;
+
+    return new Response(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+      },
+    });
   }
 
   console.log('Order found:', {
@@ -233,15 +359,66 @@ export async function GET(request: NextRequest) {
     payment_reference: order.payment_reference
   });
 
-  // Redirect based on status
+  // Return HTML with JavaScript redirect (for iframe)
   if (status === 'success' || order.status === 'completed') {
     console.log('Redirecting to success page:', `/success/${order.short_id}`);
-    const successUrl = new URL(`/success/${order.short_id}`, baseUrl);
-    return NextResponse.redirect(successUrl);
+    const successUrl = `${baseUrl}/success/${order.short_id}`;
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Ödeme Başarılı</title>
+        </head>
+        <body>
+          <script>
+            // Redirect parent window (iframe break out)
+            if (window.top) {
+              window.top.location.href = '${successUrl}';
+            } else {
+              window.location.href = '${successUrl}';
+            }
+          </script>
+          <p>Yönlendiriliyor...</p>
+        </body>
+      </html>
+    `;
+
+    return new Response(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+      },
+    });
   } else {
     console.log('Redirecting to fail page');
-    const failUrl = new URL('/payment/fail', baseUrl);
-    failUrl.searchParams.set('message', 'Ödeme başarısız');
-    return NextResponse.redirect(failUrl);
+    const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent('Ödeme başarısız')}`;
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Ödeme Başarısız</title>
+        </head>
+        <body>
+          <script>
+            // Redirect parent window (iframe break out)
+            if (window.top) {
+              window.top.location.href = '${failUrl}';
+            } else {
+              window.location.href = '${failUrl}';
+            }
+          </script>
+          <p>Yönlendiriliyor...</p>
+        </body>
+      </html>
+    `;
+
+    return new Response(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+      },
+    });
   }
 }
