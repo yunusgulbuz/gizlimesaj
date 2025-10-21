@@ -55,6 +55,17 @@ export async function POST(request: NextRequest) {
 
     if (orderError || !order) {
       console.error('Order not found for reference:', paytrCallback.merchant_oid);
+      console.error('Database error:', orderError);
+
+      // Try to find all orders to debug
+      const { data: allOrders } = await supabase
+        .from('orders')
+        .select('id, payment_reference, short_id, status')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      console.log('Recent orders:', allOrders);
+
       return new Response('OK', { status: 200 }); // Return OK to prevent retries
     }
 
@@ -178,9 +189,12 @@ export async function GET(request: NextRequest) {
   const merchantOid = searchParams.get('merchant_oid');
   const status = searchParams.get('status');
 
-  console.log('PayTR GET callback:', { merchantOid, status });
+  console.log('PayTR GET callback received');
+  console.log('All GET parameters:', Object.fromEntries(searchParams.entries()));
+  console.log('Extracted:', { merchantOid, status });
 
   if (!merchantOid) {
+    console.error('No merchant_oid in GET request');
     const failUrl = new URL('/payment/fail', baseUrl);
     failUrl.searchParams.set('message', 'Sipariş bulunamadı');
     return NextResponse.redirect(failUrl);
@@ -191,22 +205,41 @@ export async function GET(request: NextRequest) {
   // Find order by payment reference
   const { data: order, error: orderError } = await supabase
     .from('orders')
-    .select('short_id, status')
+    .select('short_id, status, id, payment_reference')
     .eq('payment_reference', merchantOid)
     .single();
 
   if (orderError || !order) {
     console.error('Order not found for merchant_oid:', merchantOid);
+    console.error('Database error:', orderError);
+
+    // Try to find all recent orders to debug
+    const { data: allOrders } = await supabase
+      .from('orders')
+      .select('id, payment_reference, short_id, status')
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    console.log('Recent orders for debugging:', allOrders);
+
     const failUrl = new URL('/payment/fail', baseUrl);
     failUrl.searchParams.set('message', 'Sipariş bulunamadı');
     return NextResponse.redirect(failUrl);
   }
 
+  console.log('Order found:', {
+    short_id: order.short_id,
+    status: order.status,
+    payment_reference: order.payment_reference
+  });
+
   // Redirect based on status
   if (status === 'success' || order.status === 'completed') {
+    console.log('Redirecting to success page:', `/success/${order.short_id}`);
     const successUrl = new URL(`/success/${order.short_id}`, baseUrl);
     return NextResponse.redirect(successUrl);
   } else {
+    console.log('Redirecting to fail page');
     const failUrl = new URL('/payment/fail', baseUrl);
     failUrl.searchParams.set('message', 'Ödeme başarısız');
     return NextResponse.redirect(failUrl);
