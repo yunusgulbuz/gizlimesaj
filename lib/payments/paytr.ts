@@ -7,7 +7,6 @@ export interface PayTRConfig {
   testMode: boolean;
   merchantOkUrl: string;
   merchantFailUrl: string;
-  callbackUrl?: string; // Optional: server-to-server callback URL
   language?: string;
   currency?: string;
 }
@@ -248,7 +247,6 @@ export function createPayTRHelper(): PayTRHelper {
     testMode: process.env.PAYTR_TEST_MODE === '1',
     merchantOkUrl: process.env.PAYTR_MERCHANT_OK_URL!,
     merchantFailUrl: process.env.PAYTR_MERCHANT_FAIL_URL!,
-    callbackUrl: process.env.PAYTR_CALLBACK_URL,
     language: process.env.PAYTR_LANGUAGE || 'tr',
     currency: process.env.PAYTR_CURRENCY || 'TL',
   };

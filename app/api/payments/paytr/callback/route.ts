@@ -55,17 +55,6 @@ export async function POST(request: NextRequest) {
 
     if (orderError || !order) {
       console.error('Order not found for reference:', paytrCallback.merchant_oid);
-      console.error('Database error:', orderError);
-
-      // Try to find all orders to debug
-      const { data: allOrders } = await supabase
-        .from('orders')
-        .select('id, payment_reference, short_id, status')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      console.log('Recent orders:', allOrders);
-
       return new Response('OK', { status: 200 }); // Return OK to prevent retries
     }
 
@@ -89,48 +78,29 @@ export async function POST(request: NextRequest) {
         return new Response('OK', { status: 200 });
       }
 
-      // Check if personal page already exists
-      const { data: existingPage } = await supabase
+      // Create personal page record
+      const { error: pageError } = await supabase
         .from('personal_pages')
-        .select('id')
-        .eq('short_id', order.short_id)
-        .single();
+        .insert({
+          order_id: order.id,
+          short_id: order.short_id,
+          template_id: order.template_id,
+          recipient_name: order.recipient_name,
+          sender_name: order.sender_name,
+          message: order.message,
+          special_date: order.special_date,
+          expires_at: order.expires_at,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          text_fields: order.text_fields || {},
+          design_style: order.design_style || 'modern',
+          bg_audio_url: order.bg_audio_url || null
+        });
 
-      let shouldSendEmail = false;
-
-      if (!existingPage) {
-        // Create personal page record only if it doesn't exist
-        const { error: pageError } = await supabase
-          .from('personal_pages')
-          .insert({
-            order_id: order.id,
-            short_id: order.short_id,
-            template_id: order.template_id,
-            recipient_name: order.recipient_name,
-            sender_name: order.sender_name,
-            message: order.message,
-            special_date: order.special_date,
-            expires_at: order.expires_at,
-            is_active: true,
-            created_at: new Date().toISOString(),
-            text_fields: order.text_fields || {},
-            design_style: order.design_style || 'modern',
-            bg_audio_url: order.bg_audio_url || null
-          });
-
-        if (pageError) {
-          console.error('Failed to create personal page:', pageError);
-          // Don't fail the callback, payment was successful
-        } else {
-          console.log('Personal page created successfully for order:', order.id);
-          shouldSendEmail = true;
-        }
+      if (pageError) {
+        console.error('Failed to create personal page:', pageError);
+        // Don't fail the callback, payment was successful
       } else {
-        console.log('Personal page already exists for short_id:', order.short_id);
-        shouldSendEmail = true;
-      }
-
-      if (shouldSendEmail) {
         // Send payment success email
         try {
           const personalPageUrl = `${baseUrl}/m/${order.short_id}`;
@@ -162,35 +132,8 @@ export async function POST(request: NextRequest) {
 
       console.log('Payment successful for order:', order.id);
 
-      // Return HTML with JavaScript to redirect parent window (for iframe)
-      const successUrl = `${baseUrl}/success/${order.short_id}`;
-      const html = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <title>Ödeme Başarılı</title>
-          </head>
-          <body>
-            <script>
-              // Redirect parent window (iframe break out)
-              if (window.top) {
-                window.top.location.href = '${successUrl}';
-              } else {
-                window.location.href = '${successUrl}';
-              }
-            </script>
-            <p>Yönlendiriliyor...</p>
-          </body>
-        </html>
-      `;
-
-      return new Response(html, {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/html; charset=utf-8',
-        },
-      });
+      // Redirect to success page with order ID
+      return NextResponse.redirect(`${baseUrl}/payment/success/${order.id}`);
 
     } else {
       // Payment failed
@@ -210,234 +153,34 @@ export async function POST(request: NextRequest) {
       const errorMessage = paytrHelper.getErrorMessage(paytrCallback);
       console.log('Payment failed for order:', order.id, 'Error:', errorMessage);
 
-      // Return HTML with JavaScript to redirect parent window (for iframe)
-      const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent(errorMessage)}`;
-      const html = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <title>Ödeme Başarısız</title>
-          </head>
-          <body>
-            <script>
-              // Redirect parent window (iframe break out)
-              if (window.top) {
-                window.top.location.href = '${failUrl}';
-              } else {
-                window.location.href = '${failUrl}';
-              }
-            </script>
-            <p>Yönlendiriliyor...</p>
-          </body>
-        </html>
-      `;
-
-      return new Response(html, {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/html; charset=utf-8',
-        },
-      });
+      // Redirect to failure page with order ID
+      return NextResponse.redirect(`${baseUrl}/payment/fail/${order.id}`);
     }
 
   } catch (error) {
     console.error('PayTR callback processing error:', error);
-    // Return HTML with JavaScript to redirect parent window (for iframe)
-    const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent('Bir hata oluştu')}`;
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Hata</title>
-        </head>
-        <body>
-          <script>
-            // Redirect parent window (iframe break out)
-            if (window.top) {
-              window.top.location.href = '${failUrl}';
-            } else {
-              window.location.href = '${failUrl}';
-            }
-          </script>
-          <p>Yönlendiriliyor...</p>
-        </body>
-      </html>
-    `;
-
-    return new Response(html, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-      },
-    });
+    // Return OK even on error to prevent PayTR from retrying
+    return new Response('OK', { status: 200 });
   }
 }
 
 // PayTR might also send GET requests in some cases
 export async function GET(request: NextRequest) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000';
   const url = new URL(request.url);
   const searchParams = url.searchParams;
 
-  const merchantOid = searchParams.get('merchant_oid');
-  const status = searchParams.get('status');
-
-  console.log('PayTR GET callback received');
-  console.log('All GET parameters:', Object.fromEntries(searchParams.entries()));
-  console.log('Extracted:', { merchantOid, status });
-
-  if (!merchantOid) {
-    console.error('No merchant_oid in GET request');
-    const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent('Sipariş bulunamadı')}`;
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Hata</title>
-        </head>
-        <body>
-          <script>
-            // Redirect parent window (iframe break out)
-            if (window.top) {
-              window.top.location.href = '${failUrl}';
-            } else {
-              window.location.href = '${failUrl}';
-            }
-          </script>
-          <p>Yönlendiriliyor...</p>
-        </body>
-      </html>
-    `;
-
-    return new Response(html, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-      },
-    });
-  }
-
-  const supabase = await createServerSupabaseClient();
-
-  // Find order by payment reference
-  const { data: order, error: orderError } = await supabase
-    .from('orders')
-    .select('short_id, status, id, payment_reference')
-    .eq('payment_reference', merchantOid)
-    .single();
-
-  if (orderError || !order) {
-    console.error('Order not found for merchant_oid:', merchantOid);
-    console.error('Database error:', orderError);
-
-    // Try to find all recent orders to debug
-    const { data: allOrders } = await supabase
-      .from('orders')
-      .select('id, payment_reference, short_id, status')
-      .order('created_at', { ascending: false })
-      .limit(5);
-
-    console.log('Recent orders for debugging:', allOrders);
-
-    const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent('Sipariş bulunamadı')}`;
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Hata</title>
-        </head>
-        <body>
-          <script>
-            // Redirect parent window (iframe break out)
-            if (window.top) {
-              window.top.location.href = '${failUrl}';
-            } else {
-              window.location.href = '${failUrl}';
-            }
-          </script>
-          <p>Yönlendiriliyor...</p>
-        </body>
-      </html>
-    `;
-
-    return new Response(html, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-      },
-    });
-  }
-
-  console.log('Order found:', {
-    short_id: order.short_id,
-    status: order.status,
-    payment_reference: order.payment_reference
+  // Convert URL parameters to FormData
+  const formData = new FormData();
+  searchParams.forEach((value, key) => {
+    formData.append(key, value);
   });
 
-  // Return HTML with JavaScript redirect (for iframe)
-  if (status === 'success' || order.status === 'completed') {
-    console.log('Redirecting to success page:', `/success/${order.short_id}`);
-    const successUrl = `${baseUrl}/success/${order.short_id}`;
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Ödeme Başarılı</title>
-        </head>
-        <body>
-          <script>
-            // Redirect parent window (iframe break out)
-            if (window.top) {
-              window.top.location.href = '${successUrl}';
-            } else {
-              window.location.href = '${successUrl}';
-            }
-          </script>
-          <p>Yönlendiriliyor...</p>
-        </body>
-      </html>
-    `;
+  // Create a new POST request with the FormData
+  const newRequest = new NextRequest(request.url, {
+    method: 'POST',
+    body: formData,
+    headers: request.headers,
+  });
 
-    return new Response(html, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-      },
-    });
-  } else {
-    console.log('Redirecting to fail page');
-    const failUrl = `${baseUrl}/payment/fail?message=${encodeURIComponent('Ödeme başarısız')}`;
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Ödeme Başarısız</title>
-        </head>
-        <body>
-          <script>
-            // Redirect parent window (iframe break out)
-            if (window.top) {
-              window.top.location.href = '${failUrl}';
-            } else {
-              window.location.href = '${failUrl}';
-            }
-          </script>
-          <p>Yönlendiriliyor...</p>
-        </body>
-      </html>
-    `;
-
-    return new Response(html, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-      },
-    });
-  }
+  return POST(newRequest);
 }
