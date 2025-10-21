@@ -129,6 +129,10 @@ export class PayTRHelper {
         testMode
       );
 
+      // Add merchant_oid as query parameter to merchant_ok_url and merchant_fail_url
+      const merchantOkUrl = `${this.config.merchantOkUrl}?merchant_oid=${encodeURIComponent(request.merchantOid)}`;
+      const merchantFailUrl = `${this.config.merchantFailUrl}?merchant_oid=${encodeURIComponent(request.merchantOid)}`;
+
       const formData = new URLSearchParams({
         merchant_id: this.config.merchantId,
         merchant_key: this.config.merchantKey,
@@ -139,8 +143,8 @@ export class PayTRHelper {
         user_name: request.userName || '',
         user_address: request.userAddress || '',
         user_phone: request.userPhone || '',
-        merchant_ok_url: this.config.merchantOkUrl,
-        merchant_fail_url: this.config.merchantFailUrl,
+        merchant_ok_url: merchantOkUrl,
+        merchant_fail_url: merchantFailUrl,
         user_basket: userBasket,
         user_ip: userIp,
         timeout_limit: request.timeoutLimit?.toString() || '30',
