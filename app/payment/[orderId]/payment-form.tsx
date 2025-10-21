@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CreditCard, Lock, AlertCircle, Loader2 } from 'lucide-react';
-import { PaynkolayFormData } from '@/lib/payments/paynkolay';
-import { PayTRPaymentForm, PayTRPaymentLoading } from '@/components/ui/paytr-payment-form';
+import { PayTRPaymentForm } from '@/components/ui/paytr-payment-form';
 
 interface PaymentFormProps {
   order: {
@@ -20,10 +19,9 @@ interface PaymentFormProps {
 interface PaymentResponse {
   success: boolean;
   order_id: string;
-  payment_form_data?: PaynkolayFormData;
   payment_url?: string;
   payment_token?: string; // PayTR iframe token
-  payment_type?: 'iframe' | 'form'; // PayTR uses iframe, Paynkolay uses form
+  payment_type?: 'iframe'; // PayTR uses iframe
   amount: number;
   short_id: string;
   error?: string;
@@ -57,18 +55,9 @@ export default function PaymentForm({ order }: PaymentFormProps) {
         }
 
         const result: PaymentResponse = await response.json();
-        
+
         if (result.success) {
           setPaymentData(result);
-          
-          // If we have payment form data, auto-submit after showing loading
-          if (result.payment_form_data && result.payment_url) {
-            setTimeout(() => {
-              if (formRef.current) {
-                formRef.current.submit();
-              }
-            }, 1500);
-          }
         } else {
           throw new Error(result.error || 'Ödeme verileri alınamadı');
         }
@@ -84,81 +73,99 @@ export default function PaymentForm({ order }: PaymentFormProps) {
     initializePayment();
   }, [order.id]);
 
-  return (
-    <>
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 text-red-600" />
-          <span className="text-red-700 text-sm">{error}</span>
-        </div>
-      )}
-
-      {isLoading && <PayTRPaymentLoading />}
-
-      {/* PayTR iFrame Payment */}
-      {!isLoading && paymentData && paymentData.payment_type === 'iframe' && paymentData.payment_token && (
-        <PayTRPaymentForm token={paymentData.payment_token} />
-      )}
-
-      {/* Paynkolay Form Payment (backup) */}
-      {!isLoading && paymentData && paymentData.payment_form_data && paymentData.payment_url && (
-        <>
-          {/* Hidden form for Paynkolay */}
-          <form
-            ref={formRef}
-            method="POST"
-            action={paymentData.payment_url}
-            className="hidden"
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 p-4">
+        <div className="max-w-md mx-auto bg-white rounded-3xl shadow-2xl p-8 text-center w-full">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-red-600" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Bir Sorun Oluştu</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
           >
-            <input type="hidden" name="sx" value={paymentData.payment_form_data.sx} />
-            <input type="hidden" name="amount" value={paymentData.payment_form_data.amount} />
-            <input type="hidden" name="clientRefCode" value={paymentData.payment_form_data.clientRefCode} />
-            <input type="hidden" name="successUrl" value={paymentData.payment_form_data.successUrl} />
-            <input type="hidden" name="failUrl" value={paymentData.payment_form_data.failUrl} />
-            <input type="hidden" name="rnd" value={paymentData.payment_form_data.rnd} />
-            <input type="hidden" name="use3D" value={paymentData.payment_form_data.use3D} />
-            <input type="hidden" name="transactionType" value={paymentData.payment_form_data.transactionType} />
-            {paymentData.payment_form_data.hashData && (
-              <input type="hidden" name="hashData" value={paymentData.payment_form_data.hashData} />
-            )}
-            {paymentData.payment_form_data.hashDataV2 && (
-              <input type="hidden" name="hashDataV2" value={paymentData.payment_form_data.hashDataV2} />
-            )}
+            Tekrar Dene
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-            {paymentData.payment_form_data.language && (
-              <input type="hidden" name="language" value={paymentData.payment_form_data.language} />
-            )}
-            {paymentData.payment_form_data.customerKey && (
-              <input type="hidden" name="customerKey" value={paymentData.payment_form_data.customerKey} />
-            )}
-            {paymentData.payment_form_data.MerchantCustomerNo && (
-              <input type="hidden" name="MerchantCustomerNo" value={paymentData.payment_form_data.MerchantCustomerNo} />
-            )}
-            {paymentData.payment_form_data.cardHolderIP && (
-              <input type="hidden" name="cardHolderIP" value={paymentData.payment_form_data.cardHolderIP} />
-            )}
-          </form>
-        </>
-      )}
-
-      {!isLoading && paymentData && paymentData.error && (
-        <div className="text-center py-4">
-          <p className="text-gray-600 text-sm mb-2">
-            {paymentData.error}
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 p-4">
+        <div className="max-w-md mx-auto bg-white rounded-3xl shadow-2xl p-8 sm:p-10 text-center w-full">
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6">
+            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full animate-pulse"></div>
+            <div className="absolute inset-2 bg-white rounded-full"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 animate-spin" />
+            </div>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Ödeme Hazırlanıyor</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-8">
+            Güvenli ödeme sayfasına yönlendiriliyorsunuz...
           </p>
-          <p className="text-xs text-gray-500">
+          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
+            <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="text-center">256-bit SSL güvenli bağlantı</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show PayTR iFrame
+  if (paymentData?.payment_token) {
+    return <PayTRPaymentForm token={paymentData.payment_token} />;
+  }
+
+  // Show payment error
+  if (paymentData?.error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 p-4">
+        <div className="max-w-md mx-auto bg-white rounded-3xl shadow-2xl p-8 text-center w-full">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-600" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Bilgi</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-2">{paymentData.error}</p>
+          <p className="text-xs sm:text-sm text-gray-500 mb-6">
             Sipariş ID: {paymentData.order_id}
           </p>
+          <button
+            onClick={() => window.location.href = '/templates'}
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
+          >
+            Şablonlara Dön
+          </button>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {!isLoading && !paymentData && !error && (
-        <div className="text-center py-4">
-          <p className="text-gray-600 text-sm">
-            Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.
-          </p>
+  // Show generic error
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 p-4">
+      <div className="max-w-md mx-auto bg-white rounded-3xl shadow-2xl p-8 text-center w-full">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-gray-600" />
         </div>
-      )}
-    </>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Bir Sorun Oluştu</h2>
+        <p className="text-sm sm:text-base text-gray-600 mb-6">
+          Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
+        >
+          Sayfayı Yenile
+        </button>
+      </div>
+    </div>
   );
 }

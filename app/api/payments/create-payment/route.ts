@@ -3,7 +3,6 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createAuthSupabaseClient } from '@/lib/supabase-auth-server';
 import { checkoutRateLimit } from '@/lib/rateLimit';
 import { generateShortId } from '@/lib/shortid';
-import { createPaynkolayHelper } from '@/lib/payments/paynkolay';
 import { createPayTRHelper } from '@/lib/payments/paytr';
 import type { TemplateTextFields } from '@/templates/shared/types';
 
@@ -96,76 +95,38 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Initialize payment for existing order
-      const paymentProvider = process.env.PAYMENT_PROVIDER || 'paytr';
-
+      // Initialize PayTR payment for existing order
       try {
-        if (paymentProvider === 'paytr') {
-          // PayTR payment initialization
-          const paytrHelper = createPayTRHelper();
-          const merchantOid = `ORDER_${existingOrder.id}_${Date.now()}`;
+        const paytrHelper = createPayTRHelper();
+        // Generate alphanumeric merchant_oid (remove dashes from UUID)
+        const merchantOid = `ORDER${existingOrder.id.replace(/-/g, '')}${Date.now()}`;
 
-          const tokenResponse = await paytrHelper.getPaymentToken({
-            amount: parseFloat(existingOrder.total_try),
-            merchantOid,
-            userEmail: existingOrder.buyer_email || normalizedBuyerEmail,
-            userName: existingOrder.sender_name || '',
-            userPhone: '05555555555', // Default for test
-            basketItems: [
-              {
-                name: `Sipariş #${existingOrder.short_id}`,
-                price: parseFloat(existingOrder.total_try).toFixed(2),
-                quantity: 1
-              }
-            ],
-            userIp: request.headers.get('x-forwarded-for') ||
-                   request.headers.get('x-real-ip') ||
-                   '127.0.0.1'
-          });
+        const tokenResponse = await paytrHelper.getPaymentToken({
+          amount: parseFloat(existingOrder.total_try),
+          merchantOid,
+          userEmail: existingOrder.buyer_email || normalizedBuyerEmail,
+          userName: existingOrder.sender_name || '',
+          userAddress: 'Türkiye', // Required field for PayTR
+          userPhone: '05555555555', // Default for test
+          basketItems: [
+            {
+              name: `Sipariş #${existingOrder.short_id}`,
+              price: parseFloat(existingOrder.total_try).toFixed(2),
+              quantity: 1
+            }
+          ],
+          userIp: request.headers.get('x-forwarded-for') ||
+                 request.headers.get('x-real-ip') ||
+                 '127.0.0.1'
+        });
 
-          if (tokenResponse.status === 'success' && tokenResponse.token) {
-            // Update order with payment reference
-            await supabase
-              .from('orders')
-              .update({
-                payment_reference: merchantOid,
-                payment_provider: 'paytr',
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', existingOrder.id);
-
-            return NextResponse.json({
-              success: true,
-              order_id: existingOrder.id,
-              payment_token: tokenResponse.token,
-              payment_type: 'iframe',
-              amount: parseFloat(existingOrder.total_try),
-              short_id: existingOrder.short_id
-            });
-          } else {
-            throw new Error(tokenResponse.reason || 'Failed to get payment token');
-          }
-        } else {
-          // Paynkolay payment initialization (backup)
-          const paynkolayHelper = createPaynkolayHelper();
-          const clientRefCode = `ORDER_${existingOrder.id}_${Date.now()}`;
-
-          const paymentFormData = paynkolayHelper.createPaymentFormData({
-            amount: parseFloat(existingOrder.total_try),
-            clientRefCode,
-            customerKey: existingOrder.id.toString(),
-            merchantCustomerNo: existingOrder.id.toString(),
-            cardHolderIP: request.headers.get('x-forwarded-for') ||
-                         request.headers.get('x-real-ip') ||
-                         '127.0.0.1'
-          });
-
+        if (tokenResponse.status === 'success' && tokenResponse.token) {
           // Update order with payment reference
           await supabase
             .from('orders')
             .update({
-              payment_reference: clientRefCode,
-              payment_provider: 'paynkolay',
+              payment_reference: merchantOid,
+              payment_provider: 'paytr',
               updated_at: new Date().toISOString()
             })
             .eq('id', existingOrder.id);
@@ -173,11 +134,13 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({
             success: true,
             order_id: existingOrder.id,
-            payment_form_data: paymentFormData,
-            payment_url: process.env.PAYNKOLAY_BASE_URL!,
+            payment_token: tokenResponse.token,
+            payment_type: 'iframe',
             amount: parseFloat(existingOrder.total_try),
             short_id: existingOrder.short_id
           });
+        } else {
+          throw new Error(tokenResponse.reason || 'Failed to get payment token');
         }
 
       } catch (error) {
@@ -274,7 +237,7 @@ export async function POST(request: NextRequest) {
         total_try: templatePrice, // Add required total_try field (price in Turkish Lira)
         buyer_email: normalizedBuyerEmail,
         status: 'pending',
-        payment_provider: 'paynkolay', // Add required payment_provider field
+        payment_provider: 'paytr', // PayTR as payment provider
         created_at: new Date().toISOString(),
         text_fields: text_fields || {},
         design_style: design_style || 'modern',
@@ -292,76 +255,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize payment
-    const paymentProvider = process.env.PAYMENT_PROVIDER || 'paytr';
-
+    // Initialize PayTR payment
     try {
-      if (paymentProvider === 'paytr') {
-        // PayTR payment initialization
-        const paytrHelper = createPayTRHelper();
-        const merchantOid = `ORDER_${order.id}_${Date.now()}`;
+      const paytrHelper = createPayTRHelper();
+      // Generate alphanumeric merchant_oid (remove dashes from UUID)
+      const merchantOid = `ORDER${order.id.replace(/-/g, '')}${Date.now()}`;
 
-        const tokenResponse = await paytrHelper.getPaymentToken({
-          amount: templatePrice,
-          merchantOid,
-          userEmail: normalizedBuyerEmail,
-          userName: sender_name,
-          userPhone: '05555555555', // Default for test
-          basketItems: [
-            {
-              name: `Sipariş #${shortId}`,
-              price: templatePrice.toFixed(2),
-              quantity: 1
-            }
-          ],
-          userIp: request.headers.get('x-forwarded-for') ||
-                 request.headers.get('x-real-ip') ||
-                 '127.0.0.1'
-        });
+      const tokenResponse = await paytrHelper.getPaymentToken({
+        amount: templatePrice,
+        merchantOid,
+        userEmail: normalizedBuyerEmail,
+        userName: sender_name,
+        userAddress: 'Türkiye', // Required field for PayTR
+        userPhone: '05555555555', // Default for test
+        basketItems: [
+          {
+            name: `Sipariş #${shortId}`,
+            price: templatePrice.toFixed(2),
+            quantity: 1
+          }
+        ],
+        userIp: request.headers.get('x-forwarded-for') ||
+               request.headers.get('x-real-ip') ||
+               '127.0.0.1'
+      });
 
-        if (tokenResponse.status === 'success' && tokenResponse.token) {
-          // Update order with payment reference and provider
-          await supabase
-            .from('orders')
-            .update({
-              payment_reference: merchantOid,
-              payment_provider: 'paytr',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', order.id);
-
-          return NextResponse.json({
-            success: true,
-            order_id: order.id,
-            payment_token: tokenResponse.token,
-            payment_type: 'iframe',
-            amount: templatePrice,
-            short_id: shortId
-          });
-        } else {
-          throw new Error(tokenResponse.reason || 'Failed to get payment token');
-        }
-      } else {
-        // Paynkolay payment initialization (backup)
-        const paynkolayHelper = createPaynkolayHelper();
-        const clientRefCode = `ORDER_${order.id}_${Date.now()}`;
-
-        const paymentFormData = paynkolayHelper.createPaymentFormData({
-          amount: templatePrice,
-          clientRefCode,
-          customerKey: order.id.toString(),
-          merchantCustomerNo: order.id.toString(),
-          cardHolderIP: request.headers.get('x-forwarded-for') ||
-                       request.headers.get('x-real-ip') ||
-                       '127.0.0.1'
-        });
-
+      if (tokenResponse.status === 'success' && tokenResponse.token) {
         // Update order with payment reference and provider
         await supabase
           .from('orders')
           .update({
-            payment_reference: clientRefCode,
-            payment_provider: 'paynkolay',
+            payment_reference: merchantOid,
+            payment_provider: 'paytr',
             updated_at: new Date().toISOString()
           })
           .eq('id', order.id);
@@ -369,11 +294,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           order_id: order.id,
-          payment_form_data: paymentFormData,
-          payment_url: process.env.PAYNKOLAY_BASE_URL!,
+          payment_token: tokenResponse.token,
+          payment_type: 'iframe',
           amount: templatePrice,
           short_id: shortId
         });
+      } else {
+        throw new Error(tokenResponse.reason || 'Failed to get payment token');
       }
 
     } catch (paymentError) {

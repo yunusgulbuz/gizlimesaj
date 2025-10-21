@@ -131,7 +131,10 @@ export async function POST(request: NextRequest) {
       }
 
       console.log('Payment successful for order:', order.id);
-      return new Response('OK', { status: 200 });
+
+      // Redirect user to success page with shortId
+      const successUrl = new URL(`/success/${order.short_id}`, baseUrl);
+      return NextResponse.redirect(successUrl);
 
     } else {
       // Payment failed
@@ -151,33 +154,61 @@ export async function POST(request: NextRequest) {
       const errorMessage = paytrHelper.getErrorMessage(paytrCallback);
       console.log('Payment failed for order:', order.id, 'Error:', errorMessage);
 
-      return new Response('OK', { status: 200 });
+      // Redirect user to fail page with error message
+      const failUrl = new URL('/payment/fail', baseUrl);
+      failUrl.searchParams.set('message', errorMessage);
+      return NextResponse.redirect(failUrl);
     }
 
   } catch (error) {
     console.error('PayTR callback processing error:', error);
-    // Return OK even on error to prevent PayTR from retrying
-    return new Response('OK', { status: 200 });
+    // Redirect to fail page on error
+    const failUrl = new URL('/payment/fail', baseUrl);
+    failUrl.searchParams.set('message', 'Bir hata oluştu');
+    return NextResponse.redirect(failUrl);
   }
 }
 
 // PayTR might also send GET requests in some cases
 export async function GET(request: NextRequest) {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000';
   const url = new URL(request.url);
   const searchParams = url.searchParams;
 
-  // Convert URL parameters to FormData
-  const formData = new FormData();
-  searchParams.forEach((value, key) => {
-    formData.append(key, value);
-  });
+  const merchantOid = searchParams.get('merchant_oid');
+  const status = searchParams.get('status');
 
-  // Create a new POST request with the FormData
-  const newRequest = new NextRequest(request.url, {
-    method: 'POST',
-    body: formData,
-    headers: request.headers,
-  });
+  console.log('PayTR GET callback:', { merchantOid, status });
 
-  return POST(newRequest);
+  if (!merchantOid) {
+    const failUrl = new URL('/payment/fail', baseUrl);
+    failUrl.searchParams.set('message', 'Sipariş bulunamadı');
+    return NextResponse.redirect(failUrl);
+  }
+
+  const supabase = await createServerSupabaseClient();
+
+  // Find order by payment reference
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .select('short_id, status')
+    .eq('payment_reference', merchantOid)
+    .single();
+
+  if (orderError || !order) {
+    console.error('Order not found for merchant_oid:', merchantOid);
+    const failUrl = new URL('/payment/fail', baseUrl);
+    failUrl.searchParams.set('message', 'Sipariş bulunamadı');
+    return NextResponse.redirect(failUrl);
+  }
+
+  // Redirect based on status
+  if (status === 'success' || order.status === 'completed') {
+    const successUrl = new URL(`/success/${order.short_id}`, baseUrl);
+    return NextResponse.redirect(successUrl);
+  } else {
+    const failUrl = new URL('/payment/fail', baseUrl);
+    failUrl.searchParams.set('message', 'Ödeme başarısız');
+    return NextResponse.redirect(failUrl);
+  }
 }
