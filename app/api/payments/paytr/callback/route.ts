@@ -78,29 +78,47 @@ export async function POST(request: NextRequest) {
         return new Response('OK', { status: 200 });
       }
 
-      // Create personal page record
-      const { error: pageError } = await supabase
+      // Check if personal page already exists
+      const { data: existingPage } = await supabase
         .from('personal_pages')
-        .insert({
-          order_id: order.id,
-          short_id: order.short_id,
-          template_id: order.template_id,
-          recipient_name: order.recipient_name,
-          sender_name: order.sender_name,
-          message: order.message,
-          special_date: order.special_date,
-          expires_at: order.expires_at,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          text_fields: order.text_fields || {},
-          design_style: order.design_style || 'modern',
-          bg_audio_url: order.bg_audio_url || null
-        });
+        .select('id')
+        .eq('order_id', order.id)
+        .single();
 
-      if (pageError) {
-        console.error('Failed to create personal page:', pageError);
-        // Don't fail the callback, payment was successful
+      let pageCreated = false;
+
+      if (!existingPage) {
+        // Create personal page record only if it doesn't exist
+        const { error: pageError } = await supabase
+          .from('personal_pages')
+          .insert({
+            order_id: order.id,
+            short_id: order.short_id,
+            template_id: order.template_id,
+            recipient_name: order.recipient_name,
+            sender_name: order.sender_name,
+            message: order.message,
+            special_date: order.special_date,
+            expires_at: order.expires_at,
+            is_active: true,
+            created_at: new Date().toISOString(),
+            text_fields: order.text_fields || {},
+            design_style: order.design_style || 'modern',
+            bg_audio_url: order.bg_audio_url || null
+          });
+
+        if (pageError) {
+          console.error('Failed to create personal page:', pageError);
+          // Don't fail the callback, payment was successful
+        } else {
+          pageCreated = true;
+        }
       } else {
+        console.log('Personal page already exists for order:', order.id);
+        pageCreated = true;
+      }
+
+      if (pageCreated) {
         // Send payment success email
         try {
           const personalPageUrl = `${baseUrl}/m/${order.short_id}`;
@@ -132,8 +150,31 @@ export async function POST(request: NextRequest) {
 
       console.log('Payment successful for order:', order.id);
 
-      // Redirect to success page with order ID
-      return NextResponse.redirect(`${baseUrl}/payment/success/${order.id}`);
+      // Redirect to success page with order ID using HTML form auto-submit
+      const successUrl = `${baseUrl}/payment/success/${order.id}`;
+      return new Response(
+        `<!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Yönlendiriliyor...</title>
+        </head>
+        <body>
+          <form id="redirectForm" action="${successUrl}" method="GET">
+            <p>Yönlendiriliyor...</p>
+          </form>
+          <script>
+            document.getElementById('redirectForm').submit();
+          </script>
+        </body>
+        </html>`,
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+          },
+        }
+      );
 
     } else {
       // Payment failed
@@ -153,8 +194,31 @@ export async function POST(request: NextRequest) {
       const errorMessage = paytrHelper.getErrorMessage(paytrCallback);
       console.log('Payment failed for order:', order.id, 'Error:', errorMessage);
 
-      // Redirect to failure page with order ID
-      return NextResponse.redirect(`${baseUrl}/payment/fail/${order.id}`);
+      // Redirect to failure page with order ID using HTML form auto-submit
+      const failUrl = `${baseUrl}/payment/fail/${order.id}`;
+      return new Response(
+        `<!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Yönlendiriliyor...</title>
+        </head>
+        <body>
+          <form id="redirectForm" action="${failUrl}" method="GET">
+            <p>Yönlendiriliyor...</p>
+          </form>
+          <script>
+            document.getElementById('redirectForm').submit();
+          </script>
+        </body>
+        </html>`,
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+          },
+        }
+      );
     }
 
   } catch (error) {
