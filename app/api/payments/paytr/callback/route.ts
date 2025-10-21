@@ -89,29 +89,48 @@ export async function POST(request: NextRequest) {
         return new Response('OK', { status: 200 });
       }
 
-      // Create personal page record
-      const { error: pageError } = await supabase
+      // Check if personal page already exists
+      const { data: existingPage } = await supabase
         .from('personal_pages')
-        .insert({
-          order_id: order.id,
-          short_id: order.short_id,
-          template_id: order.template_id,
-          recipient_name: order.recipient_name,
-          sender_name: order.sender_name,
-          message: order.message,
-          special_date: order.special_date,
-          expires_at: order.expires_at,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          text_fields: order.text_fields || {},
-          design_style: order.design_style || 'modern',
-          bg_audio_url: order.bg_audio_url || null
-        });
+        .select('id')
+        .eq('short_id', order.short_id)
+        .single();
 
-      if (pageError) {
-        console.error('Failed to create personal page:', pageError);
-        // Don't fail the callback, payment was successful
+      let shouldSendEmail = false;
+
+      if (!existingPage) {
+        // Create personal page record only if it doesn't exist
+        const { error: pageError } = await supabase
+          .from('personal_pages')
+          .insert({
+            order_id: order.id,
+            short_id: order.short_id,
+            template_id: order.template_id,
+            recipient_name: order.recipient_name,
+            sender_name: order.sender_name,
+            message: order.message,
+            special_date: order.special_date,
+            expires_at: order.expires_at,
+            is_active: true,
+            created_at: new Date().toISOString(),
+            text_fields: order.text_fields || {},
+            design_style: order.design_style || 'modern',
+            bg_audio_url: order.bg_audio_url || null
+          });
+
+        if (pageError) {
+          console.error('Failed to create personal page:', pageError);
+          // Don't fail the callback, payment was successful
+        } else {
+          console.log('Personal page created successfully for order:', order.id);
+          shouldSendEmail = true;
+        }
       } else {
+        console.log('Personal page already exists for short_id:', order.short_id);
+        shouldSendEmail = true;
+      }
+
+      if (shouldSendEmail) {
         // Send payment success email
         try {
           const personalPageUrl = `${baseUrl}/m/${order.short_id}`;
