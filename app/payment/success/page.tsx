@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle, Copy, Share2, ExternalLink, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 
 export default function PaymentSuccessPage() {
@@ -13,11 +13,6 @@ export default function PaymentSuccessPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [shortId, setShortId] = useState<string | null>(null);
-  const [orderId, setOrderId] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-
-  const personalPageUrl = shortId ? `${window.location.origin}/m/${shortId}` : '';
 
   useEffect(() => {
     const checkOrderStatus = async () => {
@@ -54,10 +49,8 @@ export default function PaymentSuccessPage() {
       const initialOrder = await fetchOrder();
 
       if (initialOrder && initialOrder.status === 'completed' && initialOrder.short_id) {
-        // Order is already completed, show success immediately
-        setShortId(initialOrder.short_id);
-        setOrderId(initialOrder.id);
-        setLoading(false);
+        // Order is already completed, redirect to success page
+        router.push(`/success/${initialOrder.short_id}`);
         return;
       }
 
@@ -72,9 +65,7 @@ export default function PaymentSuccessPage() {
 
         if (order && order.status === 'completed' && order.short_id) {
           clearInterval(pollInterval);
-          setShortId(order.short_id);
-          setOrderId(order.id);
-          setLoading(false);
+          router.push(`/success/${order.short_id}`);
         } else if (attempts >= maxAttempts) {
           clearInterval(pollInterval);
           setError('Sipariş işlemi tamamlanamadı. Lütfen müşteri hizmetleri ile iletişime geçin.');
@@ -86,33 +77,7 @@ export default function PaymentSuccessPage() {
     };
 
     checkOrderStatus();
-  }, [merchantOid]);
-
-  const copyToClipboard = async () => {
-    if (personalPageUrl) {
-      await navigator.clipboard.writeText(personalPageUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const shareWhatsApp = () => {
-    const message = `Sana özel bir mesajım var! ${personalPageUrl}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-  };
-
-  const shareInstagram = () => {
-    // Instagram doesn't support direct URL sharing like WhatsApp/Twitter
-    // We'll copy the URL and open Instagram, user can paste it in their story/post
-    copyToClipboard();
-    // Open Instagram web (mobile will redirect to app)
-    window.open('https://www.instagram.com/', '_blank');
-  };
-
-  const shareTwitter = () => {
-    const message = `Sana özel bir mesajım var!`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(personalPageUrl)}`, '_blank');
-  };
+  }, [merchantOid, router]);
 
   // Loading state
   if (loading) {
@@ -156,103 +121,6 @@ export default function PaymentSuccessPage() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-        {/* Success Icon */}
-        <div className="mb-6">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
-        </div>
-
-        {/* Success Message */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Ödeme Başarılı! 🎉
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Kişisel mesaj sayfanız hazırlandı ve artık paylaşabilirsiniz.
-        </p>
-
-        {/* Order Info */}
-        {orderId && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <p className="text-sm text-gray-600">
-              Sipariş No: <span className="font-mono font-semibold">{orderId}</span>
-            </p>
-          </div>
-        )}
-
-        {/* Personal Page URL */}
-        {personalPageUrl && (
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kişisel Mesaj Linkiniz:
-            </label>
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={personalPageUrl}
-                readOnly
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"
-              />
-              <button
-                onClick={copyToClipboard}
-                className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                title="Kopyala"
-              >
-                <Copy className="w-4 h-4" />
-              </button>
-            </div>
-            {copied && (
-              <p className="text-green-600 text-sm mt-1">✓ Kopyalandı!</p>
-            )}
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="space-y-3 mb-6">
-          {personalPageUrl && (
-            <Link
-              href={`/m/${shortId}`}
-              className="w-full bg-purple-500 text-white py-3 px-4 rounded-lg hover:bg-purple-600 transition-colors flex items-center justify-center space-x-2"
-            >
-              <ExternalLink className="w-4 h-4" />
-              <span>Mesajı Görüntüle</span>
-            </Link>
-          )}
-
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={shareWhatsApp}
-              className="bg-green-500 text-white py-2 px-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-1"
-            >
-              <Share2 className="w-4 h-4" />
-              <span className="text-xs">WhatsApp</span>
-            </button>
-            <button
-              onClick={shareInstagram}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-3 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center justify-center space-x-1"
-            >
-              <Share2 className="w-4 h-4" />
-              <span className="text-xs">Instagram</span>
-            </button>
-            <button
-              onClick={shareTwitter}
-              className="bg-blue-400 text-white py-2 px-3 rounded-lg hover:bg-blue-500 transition-colors flex items-center justify-center space-x-1"
-            >
-              <Share2 className="w-4 h-4" />
-              <span className="text-xs">Twitter</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Back to Home */}
-        <Link
-          href="/"
-          className="text-gray-600 hover:text-gray-800 transition-colors"
-        >
-          ← Ana Sayfaya Dön
-        </Link>
-      </div>
-    </div>
-  );
+  // This should never be reached as we always redirect
+  return null;
 }
