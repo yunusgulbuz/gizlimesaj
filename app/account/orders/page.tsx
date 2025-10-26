@@ -5,17 +5,13 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase-client';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ShareVisualGenerator } from '@/components/share/share-visual-generator';
 import {
   ShoppingBag,
   Calendar,
   Eye,
   Loader2,
-  Package,
-  CheckCircle2,
-  XCircle,
-  Clock,
   Copy,
   Share2,
 } from 'lucide-react';
@@ -26,6 +22,7 @@ interface Order {
   template_title: string;
   template_slug: string;
   recipient_name: string;
+  sender_name: string;
   amount: string;
   status: string;
   short_id: string | null;
@@ -33,13 +30,8 @@ interface Order {
   expires_at: string | null;
   buyer_email?: string | null;
   message: string;
+  template_audience?: string | string[];
 }
-
-const statusConfig = {
-  pending: { label: 'Beklemede', icon: Clock, pill: 'border-white/30 bg-white/20 text-white' },
-  completed: { label: 'Tamamlandı', icon: CheckCircle2, pill: 'border-white/30 bg-emerald-300/30 text-white' },
-  failed: { label: 'Başarısız', icon: XCircle, pill: 'border-white/30 bg-red-300/30 text-white' },
-};
 
 const PAGE_SIZE = 5;
 
@@ -172,6 +164,7 @@ export default function OrdersPage() {
             { count: 'exact' }
           )
           .or(filterExpressions.join(','))
+          .eq('status', 'completed')
           .order('created_at', { ascending: false })
           .range(from, to);
 
@@ -185,6 +178,7 @@ export default function OrdersPage() {
             template_title: template?.title || 'Bilinmeyen Şablon',
             template_slug: template?.slug || '',
             recipient_name: order.recipient_name || 'Bilinmeyen Alıcı',
+            sender_name: order.sender_name || 'Bilinmeyen Gönderen',
             amount: order.amount || '0',
             status: order.status || 'pending',
             short_id: order.short_id || null,
@@ -265,8 +259,8 @@ export default function OrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Siparişlerim</h1>
-        <p className="mt-2 text-gray-600">Tüm siparişlerinizi buradan görüntüleyebilirsiniz</p>
+        <h1 className="text-2xl font-bold text-gray-900">Tamamlanan Siparişlerim</h1>
+        <p className="mt-2 text-gray-600">Başarıyla tamamlanmış siparişlerinizi buradan görüntüleyebilirsiniz</p>
       </div>
 
       {orders.length === 0 ? (
@@ -276,7 +270,7 @@ export default function OrdersPage() {
               <ShoppingBag className="h-8 w-8 text-gray-400" />
             </div>
             <h3 className="mb-2 text-lg font-semibold text-gray-900">
-              Henüz siparişiniz yok
+              Henüz tamamlanmış siparişiniz yok
             </h3>
             <p className="mb-6 text-center text-gray-600">
               Sevdiklerinize özel mesajlar oluşturmaya başlayın
@@ -289,12 +283,7 @@ export default function OrdersPage() {
       ) : (
         <div className="space-y-4">
           {orders.map((order) => {
-            const config = statusConfig[order.status as keyof typeof statusConfig];
-            const StatusIcon = config?.icon || Package;
-            const statusLabel = config?.label || order.status;
-            const statusPill = config?.pill || 'border-white/30 bg-white/20 text-white';
             const messageUrl = getMessageUrl(order.short_id);
-            const hasMessageUrl = Boolean(order.short_id);
             const formattedCreated = new Date(order.created_at).toLocaleDateString('tr-TR', {
               day: '2-digit',
               month: 'long',
@@ -328,12 +317,6 @@ export default function OrdersPage() {
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <span
-                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] ${statusPill}`}
-                      >
-                        <StatusIcon className="h-3.5 w-3.5" />
-                        {statusLabel}
-                      </span>
                       <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold">
                         ₺{parseFloat(order.amount).toFixed(2)}
                       </span>
@@ -376,7 +359,7 @@ export default function OrdersPage() {
                     </div>
                   )}
 
-                  {hasMessageUrl && (
+                  {order.short_id && (
                     <div className="rounded-2xl border border-purple-200 bg-purple-50/50 px-4 py-4">
                       <p className="text-xs uppercase tracking-[0.35em] text-purple-500">
                         Mesaj linki
@@ -401,28 +384,25 @@ export default function OrdersPage() {
                   <div className="flex flex-wrap gap-3">
                     <Button
                       asChild
-                      className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-300/40 disabled:cursor-not-allowed disabled:opacity-60"
-                      disabled={!hasMessageUrl || order.status !== 'completed'}
+                      className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-300/40"
                     >
-                      <Link href={hasMessageUrl ? `/m/${order.short_id}` : '#'} prefetch={false}>
+                      <Link href={`/m/${order.short_id}`} prefetch={false}>
                         <Eye className="h-4 w-4" />
                         Mesajı aç
                       </Link>
                     </Button>
                     <Button
                       variant="outline"
-                      className="gap-2 border-purple-200 text-purple-600 hover:border-purple-300 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="gap-2 border-purple-200 text-purple-600 hover:border-purple-300 hover:text-purple-700"
                       onClick={() => copyMessageLink(order.short_id)}
-                      disabled={!hasMessageUrl}
                     >
                       <Copy className="h-4 w-4" />
                       Linki kopyala
                     </Button>
                     <Button
                       variant="ghost"
-                      className="gap-2 text-gray-600 hover:text-purple-600 disabled:cursor-not-allowed disabled:text-gray-400"
+                      className="gap-2 text-gray-600 hover:text-purple-600"
                       onClick={() => handleShareVisual(order)}
-                      disabled={!hasMessageUrl}
                     >
                       <Share2 className="h-4 w-4" />
                       Görsel indir
@@ -466,18 +446,13 @@ export default function OrdersPage() {
           }
         }}
       >
-        <DialogContent className="max-w-3xl border-none bg-white/95 p-0 shadow-2xl shadow-purple-200/60 backdrop-blur-xl sm:max-w-4xl">
-          <DialogHeader className="px-6 pt-6">
-            <DialogTitle className="text-2xl font-semibold text-gray-900">
-              Görsel olarak paylaş
+        <DialogContent className="w-full h-[100dvh] sm:h-auto sm:w-[95vw] max-w-none sm:max-w-7xl max-h-[95vh] overflow-y-auto px-3 pt-3 pb-3 sm:px-6 sm:pt-6 sm:pb-6 m-0 sm:m-4 rounded-none sm:rounded-lg">
+          <DialogHeader className="pb-3 sm:pb-4">
+            <DialogTitle className="text-lg sm:text-2xl font-bold text-gray-900">
+              Görsel Olarak Paylaş
             </DialogTitle>
-            <DialogDescription className="text-gray-500">
-              {shareOrder
-                ? `${shareOrder.recipient_name} için hazırladığın mesajı hikaye ve yatay formatta indir.`
-                : 'Siparişiniz için hikaye formatında görseller oluşturabilirsiniz.'}
-            </DialogDescription>
           </DialogHeader>
-          <div className="px-6 pb-6">
+          <div className="flex-1 min-h-0 overflow-y-auto">
             {shareOrder && (
               <ShareVisualGenerator
                 shortId={shareOrder.short_id!}

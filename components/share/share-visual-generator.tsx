@@ -2096,7 +2096,7 @@ function audienceToTheme(audience?: string): VisualTheme {
     case 'flower':
       return 'daisy-meadow';
     default:
-      return 'aurora-bloom';
+      return 'line-art-love';
   }
 }
 
