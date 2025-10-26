@@ -434,7 +434,7 @@ export default function TemplateFormPage({ template, durations, templatePricing,
         duration_id: selectedDurationData ? selectedDurationData.id : parseInt(selectedDuration),
         text_fields: textFields,
         design_style: selectedDesignStyle,
-        bg_audio_url: template.bg_audio_url
+        bg_audio_url: null
       };
 
       // Call payment API
