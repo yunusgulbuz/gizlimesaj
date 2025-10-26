@@ -258,7 +258,16 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
         duration_id: durationId,
         text_fields: textFields,
         design_style: selectedDesignStyle,
-        bg_audio_url: textFields.musicUrl || template.bg_audio_url
+        bg_audio_url: textFields.musicUrl || template.bg_audio_url,
+        share_preview_meta: selectedSharePreset ? {
+          title: selectedSharePreset.title,
+          description: selectedSharePreset.description,
+          siteName: selectedSharePreset.siteName,
+          image: selectedSharePreset.image || '',
+          category: selectedShareCategory,
+          presetId: selectedSharePreset.id,
+          isCustom: false
+        } : null
       };
 
       const response = await fetch('/api/payments/create-payment', {

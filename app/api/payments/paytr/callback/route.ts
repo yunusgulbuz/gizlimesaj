@@ -94,7 +94,8 @@ export async function POST(request: NextRequest) {
           created_at: new Date().toISOString(),
           text_fields: order.text_fields || {},
           design_style: order.design_style || 'modern',
-          bg_audio_url: order.bg_audio_url || null
+          bg_audio_url: order.bg_audio_url || null,
+          share_preview_meta: order.share_preview_meta || null
         });
 
       if (pageError) {

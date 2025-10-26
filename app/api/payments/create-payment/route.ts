@@ -19,6 +19,15 @@ interface PaymentRequest {
   text_fields?: TemplateTextFields; // Form data fields
   design_style?: string; // Selected design style
   bg_audio_url?: string; // Background audio URL
+  share_preview_meta?: {
+    title: string;
+    description: string;
+    siteName: string;
+    image: string;
+    category: string;
+    presetId: string;
+    isCustom: boolean;
+  } | null; // Share preview metadata
 }
 
 export async function POST(request: NextRequest) {
@@ -47,7 +56,8 @@ export async function POST(request: NextRequest) {
       duration_id,
       text_fields,
       design_style,
-      bg_audio_url
+      bg_audio_url,
+      share_preview_meta
     } = requestBody;
 
     console.log('Extracted template_id:', template_id, 'Type:', typeof template_id);
@@ -242,6 +252,7 @@ export async function POST(request: NextRequest) {
         text_fields: text_fields || {},
         design_style: design_style || 'modern',
         bg_audio_url: bg_audio_url || null,
+        share_preview_meta: share_preview_meta || null,
         user_id: currentUserId
       })
       .select()
