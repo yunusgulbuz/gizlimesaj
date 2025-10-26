@@ -24,7 +24,6 @@ interface SupabasePersonalPage {
     slug: string | null;
     audience: string | string[] | null;
     preview_url: string | null;
-    bg_audio_url: string | null;
   } | null;
   orders: {
     text_fields: Record<string, string> | null;
@@ -59,8 +58,7 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
           title,
           slug,
           audience,
-          preview_url,
-          bg_audio_url
+          preview_url
         ),
         orders!personal_pages_order_id_fkey (
           text_fields,
@@ -102,7 +100,7 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
     template_audience: template?.audience || [],
     template_preview_url: template?.preview_url || null,
     template_bg_audio_url:
-      order?.bg_audio_url || typedData.bg_audio_url || template?.bg_audio_url || null,
+      order?.bg_audio_url || typedData.bg_audio_url || null,
     bg_audio_url: typedData.bg_audio_url,
     design_style: (order?.design_style || typedData.design_style || 'modern') as PersonalPageData['design_style'],
     text_fields: {
