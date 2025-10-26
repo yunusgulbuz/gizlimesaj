@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Play, Pause, Volume2, VolumeX, Music } from 'lucide-react';
+import { Play, Pause, Music } from 'lucide-react';
 import { Button } from './button';
 
 interface YouTubePlayerProps {
@@ -400,7 +400,7 @@ export function YouTubePlayer({
           pointerEvents: 'none'
         }}
       />
-      
+
       {/* Müzik İkonu */}
       <div className="flex items-center space-x-1">
         <Music className={`w-4 h-4 ${themeColors.iconColor}`} />
@@ -421,58 +421,6 @@ export function YouTubePlayer({
           <Play className={`w-4 h-4 ${themeColors.buttonIcon}`} />
         )}
       </Button>
-
-      {/* Mute/Unmute Butonu */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={toggleMute}
-        disabled={!isReady}
-        className={`p-2 rounded-full ${themeColors.buttonBg} backdrop-blur-sm ${themeColors.buttonHover} transition-all disabled:opacity-50`}
-      >
-        {isMuted ? (
-          <VolumeX className={`w-4 h-4 ${themeColors.buttonIcon}`} />
-        ) : (
-          <Volume2 className={`w-4 h-4 ${themeColors.buttonIcon}`} />
-        )}
-      </Button>
-
-      {/* Ses Seviyesi Slider */}
-      <input
-        type="range"
-        min="0"
-        max="100"
-        step="5"
-        value={isMuted ? 0 : volume}
-        onChange={(e) => handleVolumeChange(parseInt(e.target.value))}
-        disabled={!isReady}
-        className="w-16 h-1 rounded-lg appearance-none cursor-pointer slider disabled:opacity-50"
-        style={{
-          background: `linear-gradient(to right, ${themeColors.sliderThumb} ${(isMuted ? 0 : volume)}%, ${themeColors.sliderBg} ${(isMuted ? 0 : volume)}%)`
-        }}
-      />
-
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: ${themeColors.sliderThumb};
-          cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .slider::-moz-range-thumb {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background: ${themeColors.sliderThumb};
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-      `}</style>
     </div>
   );
 }

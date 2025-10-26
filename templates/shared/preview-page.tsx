@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ShoppingCart, Music, Loader2, MessageCircle, Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Music, Loader2, MessageCircle, Star, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import TemplateRenderer from './template-renderer';
@@ -16,6 +16,8 @@ import { LoginRequiredDialog } from '@/components/LoginRequiredDialog';
 import { TemplateComments } from '@/components/template-comments';
 import { StarRating } from '@/components/ui/star-rating';
 import { FavoriteButton } from '@/components/favorite-button';
+import { SharePreviewCard } from '@/components/share-preview-card';
+import { sharePreviewPresets, categories, getPresetsByCategory, type SharePreviewPreset } from '@/lib/share-preview-presets';
 import { createClient } from '@/lib/supabase-client';
 import type { User } from '@supabase/supabase-js';
 
@@ -87,6 +89,9 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [showSharePreview, setShowSharePreview] = useState(false);
+  const [selectedShareCategory, setSelectedShareCategory] = useState<string>('');
+  const [selectedSharePreset, setSelectedSharePreset] = useState<SharePreviewPreset | null>(null);
   const [isMusicInputOpen, setIsMusicInputOpen] = useState(false);
   const supabase = useMemo(() => createClient(), []);
   const [sessionUser, setSessionUser] = useState<User | null>(null);
@@ -332,6 +337,17 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
                 )}
               </Button>
 
+              {/* Share Preview Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSharePreview(true)}
+                className="shrink-0 hover:bg-gray-50"
+              >
+                <Share2 className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Paylaşım Önizlemesi</span>
+              </Button>
+
               {/* Favorite Button */}
               <FavoriteButton
                 templateId={template.id}
@@ -497,6 +513,122 @@ export default function TemplatePreviewPage({ template, durations, templatePrici
                 onCountChange={handleCommentCountUpdate}
                 hideHeader={true}
               />
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Share Preview Sheet */}
+      <Sheet open={showSharePreview} onOpenChange={setShowSharePreview}>
+        <SheetContent
+          side="right"
+          className="w-full sm:w-[540px] sm:max-w-[90vw] overflow-y-auto p-0"
+        >
+          <div className="h-full flex flex-col">
+            <SheetHeader className="px-6 py-4 border-b bg-white/80 backdrop-blur sticky top-0 z-10">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSharePreview(false)}
+                  className="shrink-0 -ml-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <div className="flex-1">
+                  <SheetTitle className="flex items-center gap-2 text-lg">
+                    <Share2 className="w-5 h-5 text-purple-500" />
+                    Paylaşım Önizlemesi
+                  </SheetTitle>
+                  <SheetDescription className="text-sm text-gray-600">
+                    WhatsApp ve sosyal medyada nasıl görüneceğini inceleyin
+                  </SheetDescription>
+                </div>
+              </div>
+            </SheetHeader>
+
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+              {/* Category Selection */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-gray-900">Kategori Seçin</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.value}
+                      onClick={() => {
+                        setSelectedShareCategory(cat.value);
+                        setSelectedSharePreset(null);
+                      }}
+                      className={`rounded-lg border-2 p-3 text-left transition-all ${
+                        selectedShareCategory === cat.value
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 bg-white hover:border-purple-300'
+                      }`}
+                    >
+                      <div className="text-2xl mb-1">{cat.icon}</div>
+                      <div className="text-xs font-medium text-gray-900">{cat.label}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Preset Selection */}
+              {selectedShareCategory && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-900">Hazır Şablon Seçin</Label>
+                  <div className="grid grid-cols-1 gap-2">
+                    {getPresetsByCategory(selectedShareCategory as SharePreviewPreset['category']).map((preset) => (
+                      <button
+                        key={preset.id}
+                        onClick={() => setSelectedSharePreset(preset)}
+                        className={`rounded-lg border-2 p-3 text-left transition-all ${
+                          selectedSharePreset?.id === preset.id
+                            ? 'border-purple-500 bg-purple-50'
+                            : 'border-gray-200 bg-white hover:border-purple-300'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="text-2xl shrink-0">{preset.icon}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-semibold text-gray-900 truncate">
+                              {preset.title}
+                            </div>
+                            <div className="text-xs text-gray-500 line-clamp-1">
+                              {preset.description}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Preview */}
+              {selectedSharePreset && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-900">Önizleme</Label>
+                  <div className="rounded-lg bg-gray-50 p-4">
+                    <SharePreviewCard
+                      title={selectedSharePreset.title}
+                      description={selectedSharePreset.description}
+                      siteName={selectedSharePreset.siteName}
+                      image={selectedSharePreset.image}
+                      url="https://birmesajmutluluk.com/m/ORNEK"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Satın aldıktan sonra başlık, açıklama ve görseli kendi ihtiyaçlarınıza göre özelleştirebilirsiniz.
+                  </p>
+                </div>
+              )}
+
+              {!selectedShareCategory && (
+                <div className="text-center py-8 text-gray-500">
+                  <Share2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">Başlamak için bir kategori seçin</p>
+                </div>
+              )}
             </div>
           </div>
         </SheetContent>
