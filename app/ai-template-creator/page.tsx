@@ -112,11 +112,23 @@ export default function AITemplateCreator() {
       } else {
         setUser(user);
 
-        // Check remaining AI credits
-        const response = await fetch('/api/ai-templates/generate');
-        if (response.ok) {
-          const data = await response.json();
-          setRemainingCredits(data.remainingCredits);
+        // Check remaining AI credits directly from Supabase
+        try {
+          const { data: creditsData, error: creditsError } = await supabase
+            .from('user_ai_credits')
+            .select('remaining_credits')
+            .eq('user_id', user.id)
+            .single();
+
+          if (!creditsError && creditsData) {
+            setRemainingCredits(creditsData.remaining_credits);
+          } else {
+            // User doesn't have credits record yet, initialize with 0
+            setRemainingCredits(0);
+          }
+        } catch (err) {
+          console.error('Error fetching credits:', err);
+          setRemainingCredits(0);
         }
       }
     };
