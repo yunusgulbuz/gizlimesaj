@@ -354,31 +354,74 @@ export class EmailService {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Ödeme Başarılı</title>
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Gizli Mesajınız Hazır! 🎉</h1>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f5f5f5;">
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 40px 30px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">Sürpriziniz Hazır! 🎉</h1>
           </div>
-          
-          <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <p style="font-size: 18px; margin-bottom: 20px;">Ödemeniz başarıyla tamamlandı!</p>
-            
-            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p><strong>Şablon:</strong> ${paymentDetails.templateTitle}</p>
-              <p><strong>Ödenen Tutar:</strong> <span style="color: #10b981; font-weight: bold;">₺${paymentDetails.amount}</span></p>
+
+          <!-- Main Content -->
+          <div style="background: white; padding: 40px 30px;">
+            <p style="font-size: 20px; margin: 0 0 30px 0; color: #1f2937; font-weight: 600;">Ödemeniz başarıyla tamamlandı!</p>
+
+            <!-- Order Details -->
+            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 100%); padding: 25px; border-radius: 12px; margin: 30px 0; border: 1px solid #fde68a;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 600;">Şablon:</td>
+                  <td style="padding: 8px 0; text-align: right; color: #1f2937; font-size: 15px; font-weight: 500;">${paymentDetails.templateTitle}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 600;">Sipariş No:</td>
+                  <td style="padding: 8px 0; text-align: right; color: #1f2937; font-size: 14px; font-family: monospace;">#${paymentDetails.orderId.substring(0, 8)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0 0 0; color: #6b7280; font-size: 14px; font-weight: 600; border-top: 1px solid rgba(0,0,0,0.1);">Ödenen Tutar:</td>
+                  <td style="padding: 12px 0 0 0; text-align: right; color: #10b981; font-size: 24px; font-weight: 700; border-top: 1px solid rgba(0,0,0,0.1);">₺${paymentDetails.amount.toFixed(2)}</td>
+                </tr>
+              </table>
             </div>
-            
-            <p>Gizli mesajınız hazır! Aşağıdaki linki sevdiğiniz kişiyle paylaşabilirsiniz:</p>
-            
+
+            <p style="font-size: 16px; color: #4b5563; margin: 30px 0 20px 0; text-align: center;">Sürpriziniz hazır! Aşağıdaki butonlardan yönetebilir ve paylaşabilirsiniz:</p>
+
+            <!-- Action Buttons -->
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${paymentDetails.personalPageUrl}" style="background: #ec4899; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Gizli Mesajı Görüntüle</a>
+              <a href="${paymentDetails.personalPageUrl}" style="display: inline-block; background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 16px 40px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px; margin: 8px; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); transition: transform 0.2s;">
+                🎁 Sürprizi Görüntüle
+              </a>
+              <br>
+              <a href="${EMAIL_CONFIG.DOMAIN}/account/orders" style="display: inline-block; background: white; color: #ec4899; padding: 16px 40px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px; margin: 8px; border: 2px solid #ec4899; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); transition: transform 0.2s;">
+                ⚙️ Yönetim Paneli
+              </a>
             </div>
-            
-            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
-              <p style="margin: 0; color: #92400e;"><strong>💡 İpucu:</strong> Bu linki WhatsApp, SMS veya sosyal medya üzerinden paylaşabilirsiniz!</p>
+
+            <!-- Info Box -->
+            <div style="background: linear-gradient(135deg, #dbeafe, #e0e7ff); border-left: 4px solid #3b82f6; padding: 20px; margin: 30px 0; border-radius: 8px;">
+              <p style="margin: 0; color: #1e40af; font-size: 15px; line-height: 1.6;">
+                <strong style="font-size: 16px;">💡 İpucu:</strong><br>
+                Bu linki WhatsApp, SMS veya sosyal medya üzerinden sevdiklerinizle paylaşabilirsiniz!<br>
+                <span style="font-size: 14px; color: #3730a3;">Yönetim panelinden sürprizinizi dilediğiniz zaman düzenleyebilirsiniz.</span>
+              </p>
             </div>
-            
-            <p style="color: #666; font-size: 14px; margin-top: 30px;">
-              Teşekkürler! <a href="mailto:${EMAIL_CONFIG.REPLY_TO}" style="color: #ec4899;">destek@gizlimesaj.com</a>
+
+            <!-- Support Section -->
+            <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #f3f4f6; text-align: center;">
+              <p style="color: #9ca3af; font-size: 14px; margin: 0 0 10px 0;">
+                Sorularınız için bize ulaşın
+              </p>
+              <p style="margin: 0;">
+                <a href="mailto:${EMAIL_CONFIG.REPLY_TO}" style="color: #ec4899; text-decoration: none; font-weight: 600; font-size: 15px;">birmesajmutluluk@gmail.com</a>
+              </p>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+            <p style="color: #6b7280; font-size: 13px; margin: 0 0 10px 0;">
+              © ${new Date().getFullYear()} birmesajmutluluk.com - Tüm hakları saklıdır.
+            </p>
+            <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+              Bu email ${paymentDetails.orderId} sipariş numaralı satın alımınız için gönderilmiştir.
             </p>
           </div>
         </body>
