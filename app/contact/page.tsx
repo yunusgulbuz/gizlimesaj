@@ -18,13 +18,13 @@ const contactInfo = [
   {
     icon: Mail,
     title: "E-posta",
-    value: "destek@birmesajmutluluk.com",
+    value: "birmesajmutluluk@gmail.com",
     description: "7/24 e-posta desteği",
   },
   {
     icon: Phone,
     title: "Telefon",
-    value: "+90 (555) 123 45 67",
+    value: "",
     description: "Hafta içi 09:00 - 18:00",
   },
   {
@@ -144,8 +144,8 @@ export default async function ContactPage() {
                       Alternatif İletişim
                     </h3>
                     <p className="mb-4 text-sm text-gray-600">
-                      Ayrıca <span className="font-medium text-gray-900">destek@birmesajmutluluk.com</span> adresine e-posta gönderebilir veya
-                      hafta içi 09:00 - 18:00 saatleri arasında <span className="font-medium text-gray-900">+90 (555) 123 45 67</span> numaralı telefon hattımızdan bize ulaşabilirsiniz.
+                      Ayrıca <span className="font-medium text-gray-900">birmesajmutluluk@gmail.com</span> adresine e-posta gönderebilir veya
+                      hafta içi 09:00 - 18:00 saatleri arasında <span className="font-medium text-gray-900"></span> numaralı telefon hattımızdan bize ulaşabilirsiniz.
                     </p>
                     <div className="grid gap-3 text-sm text-gray-600 sm:grid-cols-2">
                       <div className="rounded-lg border border-rose-100 bg-white p-4">

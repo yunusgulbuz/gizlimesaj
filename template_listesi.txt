@@ -1,0 +1,59 @@
+1️⃣ Romantik & İlişki (duygusal ve etkileşimli içerikler)
+Şablon Adı	Stiller	Öncelik	Paylaşım Formatları
+Seni Seviyorum	modern / klasik / minimalist / eğlenceli	⭐️⭐️⭐️⭐️	kare, story, banner
+Affet Beni	modern / klasik / minimalist / oyunlaştırılmış	⭐️⭐️⭐️⭐️	kare, story
+Benimle Evlenir misin	premium / masalsı / minimalist / interaktif	⭐️⭐️⭐️⭐️⭐️	story, video banner
+Çıkma Teklifi	ultra modern / masalsı / minimalist puzzle / oyunlaştırılmış	⭐️⭐️⭐️⭐️⭐️	story, kare, web
+Yıl Dönümü	timeline / hatıra kutusu / minimalist / quiz & interaktif	⭐️⭐️⭐️⭐️	kare, story, banner
+Teşekkür Ederim Aşkım	zarif / klasik / sade / playful	⭐️⭐️⭐️	kare, story
+Sürpriz Randevu Daveti	modern / neon / gizli mesajlı / minimal	⭐️⭐️⭐️	kare, story
+2️⃣ Kutlama & Tebrik
+Şablon Adı	Stiller	Öncelik	Paylaşım Formatları
+Doğum Günün Kutlu Olsun	modern / klasik / minimalist / eğlenceli	⭐️⭐️⭐️⭐️⭐️	story, kare, banner
+Mutlu Yıllar	premium 3D / klasik art deco / neon minimal / oyunlaştırılmış	⭐️⭐️⭐️⭐️	story, video
+Yeni İş / Terfi Tebriği	modern / klasik / minimal / premium ofis	⭐️⭐️⭐️⭐️	kare, banner
+Mezuniyet Tebriği	genç / klasik / minimal / eğlenceli	⭐️⭐️⭐️	story, kare
+Yeni Ev / Yeni Araç Tebriği	minimal / foto temalı / eğlenceli / klasik	⭐️⭐️⭐️	kare, story
+Düğün / Nişan Tebriği	zarif / çiçekli / sade / altın premium	⭐️⭐️⭐️⭐️	kare, story
+Bayram Tebrikleri	geleneksel / modern / pastel / minimal	⭐️⭐️⭐️	kare, banner
+3️⃣ Arkadaşlık & Sosyal
+Şablon Adı	Stiller	Öncelik	Format
+Uzun Zamandır Görüşmedik	minimal / eğlenceli / fotoğraflı / klasik	⭐️⭐️⭐️	kare, story
+Destek / Moral Kartı (“Yanındayım”)	sade / sıcak / modern / pastel	⭐️⭐️⭐️⭐️	kare
+Arkadaşlık Teklifi	eğlenceli / minimal / oyunlaştırılmış / klasik	⭐️⭐️⭐️	kare, story
+Beni Hatırlıyor musun?	retro / komik / gizemli / minimalist	⭐️⭐️⭐️	kare
+Şaka / Meme Kartı	pop kültür / renkli / animasyonlu / minimal	⭐️⭐️⭐️⭐️	kare, story
+4️⃣ Aile & Özel Günler
+Şablon Adı	Stiller	Öncelik	Format
+Anneler Günü	klasik çiçekli / minimal / modern / fotoğraflı	⭐️⭐️⭐️⭐️	kare, story
+Babalar Günü	koyu tonlu / sade / klasik / esprili	⭐️⭐️⭐️⭐️	kare, story
+Çocuklara Tebrik Kartı	eğlenceli / renkli / oyunlu / minimal	⭐️⭐️⭐️⭐️	kare, story
+Yeni Doğan / Bebek Tebriği	pastel / soft / minimalist / klasik	⭐️⭐️⭐️⭐️	kare, story
+Aile Yemeğine Davet	sıcak / klasik / minimal / modern	⭐️⭐️⭐️	kare
+5️⃣ Hobi & İlgi Alanları
+Şablon Adı	Stiller	Öncelik	Format
+Film Gecesi Daveti	retro / neon / minimal / eğlenceli	⭐️⭐️⭐️⭐️	story, kare
+Konser / Etkinlik Daveti	müzikli / neon / klasik poster / minimal	⭐️⭐️⭐️⭐️	story, banner
+Spor Karşılaşması Tebriği	takım renkli / minimalist / eğlenceli / premium	⭐️⭐️⭐️	kare, banner
+Kitap Kulübü Kartı	sade / sıcak / pastel / klasik	⭐️⭐️⭐️	kare
+Ortak Şarkımız Kartı	müzik dalgası animasyonlu / sade / foto temalı / modern	⭐️⭐️⭐️⭐️	story, kare
+6️⃣ Premium / Kreatif & Oyunlaştırma
+Şablon Adı	Stiller	Öncelik	Format
+Puzzle’lı Mesaj	minimal / renkli / 3D / oyunlu	⭐️⭐️⭐️⭐️⭐️	kare, story
+Çarkıfelek Sürprizi	retro / neon / eğlenceli / pastel	⭐️⭐️⭐️⭐️	story, kare
+Gizli Fotoğraf / Kilidi Aç Mesajı	sade / dramatik / premium / animasyonlu	⭐️⭐️⭐️⭐️⭐️	story, web
+Hediye Avı	oyunlu / renkli / minimal / premium	⭐️⭐️⭐️⭐️⭐️	story, kare
+Time Capsule	minimal / mistik / yıldızlı / premium	⭐️⭐️⭐️⭐️	web, kare
+7️⃣ Kurumsal / Profesyonel
+Şablon Adı	Stiller	Öncelik	Format
+Yeni İş / Terfi Tebriği	modern / klasik / minimal / premium ofis	⭐️⭐️⭐️⭐️	kare, banner
+İş Teklifi / Ortaklık Daveti	sade / zarif / modern / kurumsal	⭐️⭐️⭐️⭐️	kare, banner
+Konferans / Seminer Daveti	profesyonel / minimal / poster / klasik	⭐️⭐️⭐️	banner, kare
+Proje Tamamlanma Kutlaması	modern / sade / premium / dinamik	⭐️⭐️⭐️	kare, story
+8️⃣ Sezonluk / Özel Temalar
+Şablon Adı	Stiller	Öncelik	Format
+Sevgililer Günü	romantik / modern / klasik / oyunlaştırılmış	⭐️⭐️⭐️⭐️⭐️	story, kare
+Yılbaşı	premium 3D / klasik / minimal / eğlenceli	⭐️⭐️⭐️⭐️⭐️	story, video
+Black Friday / Alışveriş Etkinliği	koyu / neon / sade / retro	⭐️⭐️⭐️	banner, kare
+Dünya Kadınlar Günü	zarif / minimal / soft / klasik	⭐️⭐️⭐️⭐️	kare, story
+29 Ekim / 23 Nisan	milli / sade / modern / klasik	⭐️⭐️⭐️⭐️	kare, banner

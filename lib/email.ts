@@ -16,8 +16,8 @@ export const EMAIL_TEMPLATES = {
 
 // Email configuration
 export const EMAIL_CONFIG = {
-  FROM: 'birmesajmutluluk <noreply@birmesajmutluluk.com>',
-  REPLY_TO: 'destek@birmesajmutluluk.com',
+  FROM: 'birmesajmutluluk <birmesajmutluluk@gmail.com>',
+  REPLY_TO: 'birmesajmutluluk@gmail.com',
   DOMAIN: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
 } as const;
 
