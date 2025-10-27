@@ -62,11 +62,11 @@ export async function POST(request: NextRequest) {
     const isPaymentSuccessful = paytrHelper.isPaymentSuccessful(paytrCallback);
 
     if (isPaymentSuccessful) {
-      // Update order status to completed (or 'paid' to match schema)
+      // Update order status to completed
       const { error: updateError } = await supabase
         .from('orders')
         .update({
-          status: 'paid',
+          status: 'completed',
           payment_response: paytrCallback,
           paid_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -86,22 +86,11 @@ export async function POST(request: NextRequest) {
         const credits = order.text_fields?.credits || 0;
         const packageName = order.text_fields?.package_name || 'AI Kredi Paketi';
 
-        console.log('=== CREDIT PURCHASE DETECTED ===');
-        console.log(`Order ID: ${order.id}`);
-        console.log(`User ID: ${order.user_id}`);
-        console.log(`Credits to add: ${credits}`);
-        console.log(`Package: ${packageName}`);
-
-        if (!order.user_id) {
-          console.error('ERROR: No user_id in order for credit purchase!');
-          console.error('Order data:', JSON.stringify(order, null, 2));
-          return new Response('OK', { status: 200 });
-        }
+        console.log(`Adding ${credits} credits to user ${order.user_id}`);
 
         try {
           // Call the database function to add credits
-          console.log('Calling add_user_credits RPC function...');
-          const { data, error: creditError } = await supabase.rpc('add_user_credits', {
+          const { error: creditError } = await supabase.rpc('add_user_credits', {
             p_user_id: order.user_id,
             p_credits: credits,
             p_order_id: order.id,
@@ -109,28 +98,13 @@ export async function POST(request: NextRequest) {
           });
 
           if (creditError) {
-            console.error('❌ Failed to add credits - RPC error:', creditError);
-            console.error('Error details:', JSON.stringify(creditError, null, 2));
+            console.error('Failed to add credits:', creditError);
             // Don't fail the callback, payment was successful
           } else {
-            console.log('✅ Successfully added credits!');
-            console.log('RPC response data:', data);
-
-            // Verify credits were added
-            const { data: userCredits, error: verifyError } = await supabase
-              .from('user_ai_credits')
-              .select('*')
-              .eq('user_id', order.user_id)
-              .single();
-
-            if (verifyError) {
-              console.error('❌ Could not verify credits:', verifyError);
-            } else {
-              console.log('✅ Verified user credits:', userCredits);
-            }
+            console.log(`Successfully added ${credits} credits to user ${order.user_id}`);
           }
         } catch (creditErr) {
-          console.error('❌ Exception adding credits:', creditErr);
+          console.error('Error adding credits:', creditErr);
         }
 
         // Send credit purchase success email
