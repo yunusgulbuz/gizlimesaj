@@ -104,8 +104,9 @@ export class EmailService {
     paymentDetails: {
       orderId: string;
       templateTitle: string;
-      amount: number;
+      amount: string | number;
       personalPageUrl: string;
+      managementUrl?: string;
     }
   ) {
     try {
@@ -343,8 +344,9 @@ export class EmailService {
   private getPaymentSuccessTemplate(paymentDetails: {
     orderId: string;
     templateTitle: string;
-    amount: number;
+    amount: string | number;
     personalPageUrl: string;
+    managementUrl?: string;
   }): string {
     return `
       <!DOCTYPE html>
@@ -377,7 +379,7 @@ export class EmailService {
                 </tr>
                 <tr>
                   <td style="padding: 12px 0 0 0; color: #6b7280; font-size: 14px; font-weight: 600; border-top: 1px solid rgba(0,0,0,0.1);">Ödenen Tutar:</td>
-                  <td style="padding: 12px 0 0 0; text-align: right; color: #10b981; font-size: 24px; font-weight: 700; border-top: 1px solid rgba(0,0,0,0.1);">₺${paymentDetails.amount.toFixed(2)}</td>
+                  <td style="padding: 12px 0 0 0; text-align: right; color: #10b981; font-size: 24px; font-weight: 700; border-top: 1px solid rgba(0,0,0,0.1);">₺${typeof paymentDetails.amount === 'string' ? paymentDetails.amount : paymentDetails.amount.toFixed(2)}</td>
                 </tr>
               </table>
             </div>
@@ -390,7 +392,7 @@ export class EmailService {
                 🎁 Sürprizi Görüntüle
               </a>
               <br>
-              <a href="${EMAIL_CONFIG.DOMAIN}/account/orders" style="display: inline-block; background: white; color: #ec4899; padding: 16px 40px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px; margin: 8px; border: 2px solid #ec4899; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); transition: transform 0.2s;">
+              <a href="${paymentDetails.managementUrl || EMAIL_CONFIG.DOMAIN + '/account/orders'}" style="display: inline-block; background: white; color: #ec4899; padding: 16px 40px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px; margin: 8px; border: 2px solid #ec4899; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); transition: transform 0.2s;">
                 ⚙️ Yönetim Paneli
               </a>
             </div>

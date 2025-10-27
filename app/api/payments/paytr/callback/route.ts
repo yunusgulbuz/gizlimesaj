@@ -171,6 +171,8 @@ export async function POST(request: NextRequest) {
         // Send payment success email
         try {
           const personalPageUrl = `${baseUrl}/m/${order.short_id}`;
+          const managementUrl = `${baseUrl}/success/${order.short_id}`;
+          const amountInTL = ((order.total_try || 0) / 100).toFixed(2);
 
           const emailResponse = await fetch(`${baseUrl}/api/send-email`, {
             method: 'POST',
@@ -183,8 +185,9 @@ export async function POST(request: NextRequest) {
               data: {
                 orderId: order.id,
                 templateTitle: order.templates?.title || 'Gizli Mesaj',
-                amount: (order.total_try || 0) / 100, // Convert from kuruş to TL
-                personalPageUrl: personalPageUrl
+                amount: amountInTL,
+                personalPageUrl: personalPageUrl,
+                managementUrl: managementUrl
               }
             })
           });
