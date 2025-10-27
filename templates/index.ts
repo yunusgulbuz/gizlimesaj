@@ -46,6 +46,8 @@ import SurprizRandevuDavetiForm from './surpriz-randevu-daveti/form';
 import SurprizRandevuDavetiPreview from './surpriz-randevu-daveti/preview';
 import DogumGunuKutlamaForm from './dogum-gunu-kutlama/form';
 import DogumGunuKutlamaPreview from './dogum-gunu-kutlama/preview';
+import YeniEvAracTebrigiForm from './yeni-ev-arac-tebrigi/form';
+import YeniEvAracTebrigiPreview from './yeni-ev-arac-tebrigi/preview';
 import CumaTebrigiForm from './cuma-tebrigi/form';
 import CumaTebrigiPreview from './cuma-tebrigi/preview';
 import KandilTebrigiForm from './kandil-tebrigi/form';
@@ -168,6 +170,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'eglenceli-oyunlu-mesajlar',
     form: EglenceliOyunluMesajlarForm,
     preview: EglenceliOyunluMesajlarPreview,
+  },
+  'yeni-ev-arac-tebrigi': {
+    slug: 'yeni-ev-arac-tebrigi',
+    form: YeniEvAracTebrigiForm,
+    preview: YeniEvAracTebrigiPreview,
   },
   'surpriz-randevu-daveti': {
     slug: 'surpriz-randevu-daveti',

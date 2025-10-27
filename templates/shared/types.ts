@@ -67,6 +67,280 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'yeni-ev-arac-tebrigi': {
+    slug: 'yeni-ev-arac-tebrigi',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 60,
+        defaultValue: 'Sevgili Dostum'
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Yeni ev ve araç tebriği için ana mesajı yazın...',
+        type: 'textarea',
+        required: true,
+        maxLength: 600,
+        defaultValue: 'Bu yeni başlangıcın her anahtarı mutluluk getirsin; evin de aracın da hep hikayelerle dolsun. 🏡🚗'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      },
+      {
+        key: 'keyHeadline',
+        label: 'Anahtar Oyunu Başlığı',
+        placeholder: 'Örn. Anahtarı Yakala! 🗝️',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Anahtarı Yakala! 🗝️'
+      },
+      {
+        key: 'keySubtitle',
+        label: 'Anahtar Oyunu Alt Metni',
+        placeholder: 'Anahtar oyunu için kısa açıklama yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: 'Anahtarlara dokun, tebrik mesajını aç!'
+      },
+      {
+        key: 'keyWords',
+        label: 'Anahtar Kelimeleri',
+        placeholder: 'Her satıra bir kelime veya emoji yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Yeni\nBaşlangıç\nMutluluk\nKilidi\nSende\n🏡🚗'
+      },
+      {
+        key: 'keyCompletionTitle',
+        label: 'Anahtar Final Başlığı',
+        placeholder: 'Tüm anahtarlar toplanınca gösterilecek başlık',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Tüm Anahtarlar Senin! 🔑'
+      },
+      {
+        key: 'keyCompletionMessage',
+        label: 'Anahtar Final Mesajı',
+        placeholder: 'Tüm anahtarlar toplanınca gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Artık her kapı sana açılıyor. Yeni evinde ve aracında güzel anılar biriktir.'
+      },
+      {
+        key: 'keyHint',
+        label: 'Anahtar Oyunu İpucu',
+        placeholder: 'Örn. Ekranda kayan anahtarlara dokun...',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: 'Ekranda kayan anahtarlara dokun; renk değiştirip gizli kelimeleri ortaya çıkarıyor.'
+      },
+      {
+        key: 'garageHeadline',
+        label: 'Garaj Kazı Başlığı',
+        placeholder: 'Örn. Yeni Aracın Hayırlı Olsun! 🚗',
+        type: 'input',
+        required: false,
+        maxLength: 120,
+        defaultValue: 'Yeni Aracın Hayırlı Olsun! 🚗'
+      },
+      {
+        key: 'garageSubtitle',
+        label: 'Garaj Kazı Alt Metni',
+        placeholder: 'Kazı alanı için kısa açıklama yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: 'Parmağınla kazı, garaj kapısı açıldığında sürpriz mesajı gör.'
+      },
+      {
+        key: 'garageHiddenMessage',
+        label: 'Garaj Gizli Mesajı',
+        placeholder: 'Kazındıktan sonra görünecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 360,
+        defaultValue: 'Uzun yollar, güvenli sürüşler ve kahkaha dolu anılar seninle olsun. 🚘✨'
+      },
+      {
+        key: 'garageCompletionTitle',
+        label: 'Garaj Final Başlığı',
+        placeholder: 'Garaj açılınca gösterilecek başlık',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Garaj Kapısı Açıldı! 🎉'
+      },
+      {
+        key: 'garageCompletionText',
+        label: 'Garaj Final Mesajı',
+        placeholder: 'Garaj açılınca gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Kutlamaya hazır mısın? İlk yolculuk nereye olsun, birlikte seçelim.'
+      },
+      {
+        key: 'garageConfettiMessage',
+        label: 'Garaj Konfeti Notu',
+        placeholder: 'Konfeti sonrası gösterilecek not',
+        type: 'textarea',
+        required: false,
+        maxLength: 280,
+        defaultValue: 'Takvime not düş: anahtar teslim kutlamasında kahveler benden! ☕️'
+      },
+      {
+        key: 'garageHint',
+        label: 'Garaj Kazı İpucu',
+        placeholder: 'Örn. Gri katmanı hafifçe kazı...',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: 'Gri katmanı hafifçe kazı; %70\'i açılınca konfeti patlayacak.'
+      },
+      {
+        key: 'garageResetLabel',
+        label: 'Garaj Yenile Butonu',
+        placeholder: 'Örn. Yeniden Kazı',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Yeniden Kazı'
+      },
+      {
+        key: 'parkingHeadline',
+        label: 'Park Oyunu Başlığı',
+        placeholder: 'Örn. Doğru Yere Park Et! 🅿️',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Doğru Yere Park Et! 🅿️'
+      },
+      {
+        key: 'parkingSubtitle',
+        label: 'Park Oyunu Alt Metni',
+        placeholder: 'Park oyunu için kısa açıklama yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: 'Aracı sürükle, hedefe yerleştir ve tebrik mesajını aç.'
+      },
+      {
+        key: 'parkingSuccessTitle',
+        label: 'Park Başarı Başlığı',
+        placeholder: 'Park tamamlanınca gösterilecek başlık',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Park Başarılı! 🎯'
+      },
+      {
+        key: 'parkingSuccessMessage',
+        label: 'Park Başarı Mesajı',
+        placeholder: 'Park tamamlanınca gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Tam çizgi üstünde! Yeni aracınla her park bir başarı hikayesi olsun.'
+      },
+      {
+        key: 'parkingHint',
+        label: 'Park Oyunu İpucu',
+        placeholder: 'Örn. Aracı tutup sürükle...',
+        type: 'textarea',
+        required: false,
+        maxLength: 220,
+        defaultValue: 'Aracı tutup sürükle; sarı çizgilerin içine denk gelince otomatik olarak yerleşir.'
+      },
+      {
+        key: 'parkingResetLabel',
+        label: 'Park Yenile Butonu',
+        placeholder: 'Örn. Tekrar Park Et',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Tekrar Park Et'
+      },
+      {
+        key: 'panoHeadline',
+        label: 'Panorama Puzzle Başlığı',
+        placeholder: 'Örn. Evi Birleştir! 🧩',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Evi Birleştir! 🧩'
+      },
+      {
+        key: 'panoSubtitle',
+        label: 'Panorama Puzzle Alt Metni',
+        placeholder: 'Puzzle için kısa açıklama yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Parçaları doğru yere yerleştir, yeni evin panorama sürprizini keşfet.'
+      },
+      {
+        key: 'panoPhotoUrl',
+        label: 'Panorama Fotoğraf URL',
+        placeholder: 'https://... şeklinde görsel bağlantısı',
+        type: 'input',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1080&q=80'
+      },
+      {
+        key: 'panoCompletionTitle',
+        label: 'Panorama Final Başlığı',
+        placeholder: 'Puzzle tamamlandığında gösterilecek başlık',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Yeni Ev Tamamlandı! 🏡'
+      },
+      {
+        key: 'panoCompletionMessage',
+        label: 'Panorama Final Mesajı',
+        placeholder: 'Puzzle tamamlandığında gösterilecek mesaj',
+        type: 'textarea',
+        required: false,
+        maxLength: 320,
+        defaultValue: 'Her köşesi sevgiyle dolsun; kapın herkese mutluluk açsın.'
+      },
+      {
+        key: 'panoHint',
+        label: 'Panorama Puzzle İpucu',
+        placeholder: 'Örn. Parçayı seç ve başka bir parça ile yer değiştir...',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Parçayı seç ve başka bir parçayla yer değiştir. Her hamle panorama planını tamamlar.'
+      },
+      {
+        key: 'panoResetLabel',
+        label: 'Panorama Yenile Butonu',
+        placeholder: 'Örn. Parçaları Karıştır',
+        type: 'input',
+        required: false,
+        maxLength: 80,
+        defaultValue: 'Parçaları Karıştır'
+      }
+    ]
+  },
   'eglenceli-oyunlu-mesajlar': {
     slug: 'eglenceli-oyunlu-mesajlar',
     fields: [

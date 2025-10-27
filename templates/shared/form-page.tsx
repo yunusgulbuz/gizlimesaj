@@ -133,6 +133,32 @@ const designStyleOverrides: Record<string, Record<DesignStyleKey, DesignStyleMet
       color: "bg-fuchsia-100 text-fuchsia-800",
       preview: "💞"
     }
+  },
+  'yeni-ev-arac-tebrigi': {
+    modern: {
+      label: "Anahtar Yakala",
+      description: "Kayan anahtarlara dokun, gizli kelimeleri topla",
+      color: "bg-cyan-100 text-cyan-800",
+      preview: "🗝️"
+    },
+    classic: {
+      label: "Garaj Kazı-Kazan",
+      description: "Garaj kaplamasını kazı, sürpriz mesajı aç",
+      color: "bg-amber-100 text-amber-800",
+      preview: "🚗"
+    },
+    minimalist: {
+      label: "Park Et Mini Oyun",
+      description: "Aracı sürükle, hedefe yerleştir ve mesajı aç",
+      color: "bg-slate-100 text-slate-800",
+      preview: "🅿️"
+    },
+    eglenceli: {
+      label: "Plan Panorama Puzzle",
+      description: "3x3 parçaları tamamla, yeni ev panoramasını gör",
+      color: "bg-purple-100 text-purple-800",
+      preview: "🧩"
+    }
   }
 };
 
@@ -224,6 +250,39 @@ const eglenceliOyunluDesignFieldMap: Record<DesignStyleKey, string[]> = {
     'puzzleCompletionMessage',
     'puzzleHint',
     'puzzleResetLabel'
+  ]
+};
+
+const yeniEvAracCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as const;
+
+const yeniEvAracDesignFieldMap: Record<DesignStyleKey, string[]> = {
+  modern: ['keyHeadline', 'keySubtitle', 'keyWords', 'keyCompletionTitle', 'keyCompletionMessage', 'keyHint'],
+  classic: [
+    'garageHeadline',
+    'garageSubtitle',
+    'garageHiddenMessage',
+    'garageCompletionTitle',
+    'garageCompletionText',
+    'garageConfettiMessage',
+    'garageHint',
+    'garageResetLabel'
+  ],
+  minimalist: [
+    'parkingHeadline',
+    'parkingSubtitle',
+    'parkingSuccessTitle',
+    'parkingSuccessMessage',
+    'parkingHint',
+    'parkingResetLabel'
+  ],
+  eglenceli: [
+    'panoHeadline',
+    'panoSubtitle',
+    'panoPhotoUrl',
+    'panoCompletionTitle',
+    'panoCompletionMessage',
+    'panoHint',
+    'panoResetLabel'
   ]
 };
 
@@ -349,6 +408,14 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       const allowedKeys = new Set<string>([
         ...eglenceliOyunluCommonFields,
         ...(eglenceliOyunluDesignFieldMap[selectedDesignStyle] ?? [])
+      ]);
+      return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+    }
+
+    if (template.slug === 'yeni-ev-arac-tebrigi') {
+      const allowedKeys = new Set<string>([
+        ...yeniEvAracCommonFields,
+        ...(yeniEvAracDesignFieldMap[selectedDesignStyle] ?? [])
       ]);
       return templateConfig.fields.filter(field => allowedKeys.has(field.key));
     }

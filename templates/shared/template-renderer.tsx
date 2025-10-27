@@ -55,6 +55,7 @@ import RomantikAksamInvitation from '../surpriz-randevu-daveti/components/Romant
 import CleanRomanticPlan from '../surpriz-randevu-daveti/components/CleanRomanticPlan';
 import HiddenSurpriseGame from '../surpriz-randevu-daveti/components/HiddenSurpriseGame';
 import EglenceliOyunluMesajlarTemplate from '../eglenceli-oyunlu-mesajlar/components/EglenceliOyunluMesajlarTemplate';
+import YeniEvAracTebrigiTemplate from '../yeni-ev-arac-tebrigi/components/YeniEvAracTebrigiTemplate';
 import PastelGradientCelebration from '../dogum-gunu-kutlama/components/PastelGradientCelebration';
 import ElegantGoldInvitation from '../dogum-gunu-kutlama/components/ElegantGoldInvitation';
 import SimpleJoyCard from '../dogum-gunu-kutlama/components/SimpleJoyCard';
@@ -900,6 +901,18 @@ export default function TemplateRenderer({
       case 'eglenceli-oyunlu-mesajlar':
         return (
           <EglenceliOyunluMesajlarTemplate
+            recipientName={recipientName}
+            message={message}
+            designStyle={designStyle}
+            creatorName={creatorName}
+            textFields={textFields}
+            isEditable={isEditable}
+            onTextFieldChange={onTextFieldChange}
+          />
+        );
+      case 'yeni-ev-arac-tebrigi':
+        return (
+          <YeniEvAracTebrigiTemplate
             recipientName={recipientName}
             message={message}
             designStyle={designStyle}
