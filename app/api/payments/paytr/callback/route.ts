@@ -109,13 +109,18 @@ export async function POST(request: NextRequest) {
 
         // Send credit purchase success email
         try {
+          // For testing with Resend sandbox mode, use delivered@resend.dev
+          const emailTo = process.env.NODE_ENV === 'production' && process.env.RESEND_DOMAIN_VERIFIED === 'true'
+            ? order.buyer_email
+            : 'delivered@resend.dev';
+
           const emailResponse = await fetch(`${baseUrl}/api/send-email`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              to: order.buyer_email,
+              to: emailTo,
               type: 'credit-purchase-success',
               data: {
                 orderId: order.id,
@@ -134,7 +139,7 @@ export async function POST(request: NextRequest) {
               body: errorText
             });
           } else {
-            console.log('Credit purchase success email sent successfully to:', order.buyer_email);
+            console.log('Credit purchase success email sent successfully to:', emailTo, '(original:', order.buyer_email + ')');
           }
         } catch (emailError) {
           console.error('Error sending credit purchase success email:', emailError);
@@ -172,13 +177,18 @@ export async function POST(request: NextRequest) {
         try {
           const personalPageUrl = `${baseUrl}/m/${order.short_id}`;
 
+          // For testing with Resend sandbox mode, use delivered@resend.dev
+          const emailTo = process.env.NODE_ENV === 'production' && process.env.RESEND_DOMAIN_VERIFIED === 'true'
+            ? order.buyer_email
+            : 'delivered@resend.dev';
+
           const emailResponse = await fetch(`${baseUrl}/api/send-email`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              to: order.buyer_email,
+              to: emailTo,
               type: 'payment-success',
               data: {
                 orderId: order.id,
@@ -197,7 +207,7 @@ export async function POST(request: NextRequest) {
               body: errorText
             });
           } else {
-            console.log('Payment success email sent successfully to:', order.buyer_email);
+            console.log('Payment success email sent successfully to:', emailTo, '(original:', order.buyer_email + ')');
           }
         } catch (emailError) {
           console.error('Error sending payment success email:', emailError);
