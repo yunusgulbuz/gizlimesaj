@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
                 orderId: order.id,
                 packageName: packageName,
                 credits: credits,
-                amount: (order.total_try || 0) / 100 // Convert from kuruş to TL
+                amount: (order.total_try || 0) // Already in TL
               }
             })
           });
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
         try {
           const personalPageUrl = `${baseUrl}/m/${order.short_id}`;
           const managementUrl = `${baseUrl}/success/${order.short_id}`;
-          const amountInTL = ((order.total_try || 0) / 100).toFixed(2);
+          const amountInTL = (order.total_try || 0).toFixed(2);
 
           const emailResponse = await fetch(`${baseUrl}/api/send-email`, {
             method: 'POST',
