@@ -16,7 +16,8 @@ import {
   FileQuestion,
   Loader2,
   Menu,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 
 const navigation = [
@@ -39,6 +40,11 @@ const navigation = [
     name: 'Fiyatlandırma',
     href: '/admin/pricing',
     icon: TrendingUp
+  },
+  {
+    name: 'AI Şablon Fiyatları',
+    href: '/admin/ai-template-pricing',
+    icon: Sparkles
   },
   {
     name: 'Kişisel Sayfalar',

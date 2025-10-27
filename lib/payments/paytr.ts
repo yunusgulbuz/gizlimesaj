@@ -109,7 +109,8 @@ export class PayTRHelper {
   async getPaymentToken(request: PayTRPaymentRequest): Promise<PayTRTokenResponse> {
     try {
       const userBasket = this.encodeBasket(request.basketItems);
-      const paymentAmount = (request.amount * 100).toString(); // Convert to kuruş (multiply by 100)
+      // Convert to kuruş (multiply by 100) and ensure it's an integer
+      const paymentAmount = Math.round(request.amount * 100).toString();
       const userIp = request.userIp || '';
       const noInstallment = request.noInstallment?.toString() || '0';
       const maxInstallment = request.maxInstallment?.toString() || '0';

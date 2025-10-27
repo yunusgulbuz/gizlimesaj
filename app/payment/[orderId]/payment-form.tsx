@@ -50,11 +50,12 @@ export default function PaymentForm({ order }: PaymentFormProps) {
           }),
         });
 
-        if (!response.ok) {
-          throw new Error('Ödeme başlatılamadı');
-        }
-
         const result: PaymentResponse = await response.json();
+
+        if (!response.ok) {
+          console.error('Payment API error:', result);
+          throw new Error(result.error || 'Ödeme başlatılamadı');
+        }
 
         if (result.success) {
           setPaymentData(result);

@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { MobileDrawerMenu } from '@/components/mobile-drawer-menu';
+import HeaderAuthButton from '@/components/auth/header-auth-button';
 import {
   ArrowLeft,
   Sparkles,
@@ -20,7 +22,9 @@ import {
   Star,
   Gift,
   UserCheck,
-  List
+  List,
+  ShoppingCart,
+  Palette
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase-client';
 import { getTemplatesByCategory, type BaseTemplate } from '@/lib/ai-template-bases';
@@ -250,46 +254,96 @@ export default function AITemplateCreator() {
   const selectedCategoryData = CATEGORIES.find(c => c.id === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50">
+      {/* AppBar Header */}
+      <header className="sticky top-0 z-50 border-b border-rose-100/70 bg-white/90 backdrop-blur-xl">
+        <div className="container mx-auto px-4">
+          <nav className="flex h-16 items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 via-purple-500 to-indigo-500 shadow-lg shadow-purple-500/20">
+                <Heart className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg font-semibold tracking-tight text-slate-900">
+                birmesajmutluluk
+              </span>
+            </Link>
+            <div className="flex items-center gap-6">
+              <Link
+                href="/templates"
+                className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
+              >
+                Sürprizler
+              </Link>
+              <Link
+                href="/pricing"
+                className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
+              >
+                AI Kredi Paketleri
+              </Link>
+              <Link
+                href="/about"
+                className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
+              >
+                Hakkımızda
+              </Link>
+              <Link
+                href="/contact"
+                className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
+              >
+                İletişim
+              </Link>
+              <div className="hidden md:block">
+                <HeaderAuthButton />
+              </div>
+              <MobileDrawerMenu user={user} />
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Page Title Section */}
         <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-            >
-              <Link href="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Ana Sayfaya Dön
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-            >
-              <Link href="/my-ai-templates">
-                <List className="h-4 w-4 mr-2" />
-                Tasarımlarım
-              </Link>
-            </Button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <Sparkles className="h-8 w-8 text-purple-600" />
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                Yapay Zeka ile Şablon Oluştur
+              </h1>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="bg-white hover:bg-purple-50 hover:border-purple-300"
+              >
+                <Link href="/my-ai-templates">
+                  <Palette className="h-4 w-4 mr-2" />
+                  Tasarımlarım
+                </Link>
+              </Button>
+              <Button
+                size="sm"
+                asChild
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              >
+                <Link href="/pricing">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  AI Kredi Al
+                </Link>
+              </Button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 mb-2">
-            <Sparkles className="h-8 w-8 text-purple-600" />
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Yapay Zeka ile Şablon Oluştur
-            </h1>
-          </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-3">
             Birkaç adımda, yapay zeka tarafından size özel tasarlanmış şablon oluşturun
           </p>
+
           {remainingCredits !== null && (
             <Badge
               variant="outline"
-              className={`mt-2 ${remainingCredits === 0 ? 'bg-red-50 text-red-700 border-red-300' : 'bg-purple-50 text-purple-700 border-purple-300'}`}
+              className={`${remainingCredits === 0 ? 'bg-red-50 text-red-700 border-red-300' : 'bg-purple-50 text-purple-700 border-purple-300'}`}
             >
               💎 Kalan AI Kredisi: {remainingCredits}
             </Badge>

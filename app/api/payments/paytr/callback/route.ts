@@ -62,11 +62,11 @@ export async function POST(request: NextRequest) {
     const isPaymentSuccessful = paytrHelper.isPaymentSuccessful(paytrCallback);
 
     if (isPaymentSuccessful) {
-      // Update order status to completed
+      // Update order status to completed (or 'paid' to match schema)
       const { error: updateError } = await supabase
         .from('orders')
         .update({
-          status: 'completed',
+          status: 'paid',
           payment_response: paytrCallback,
           paid_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -78,7 +78,66 @@ export async function POST(request: NextRequest) {
         return new Response('OK', { status: 200 });
       }
 
-      // Create personal page record
+      // Check if this is a credit purchase
+      const isCreditPurchase = order.text_fields?.order_type === 'credit_purchase';
+
+      if (isCreditPurchase) {
+        // Add credits to user account
+        const credits = order.text_fields?.credits || 0;
+        const packageName = order.text_fields?.package_name || 'AI Kredi Paketi';
+
+        console.log(`Adding ${credits} credits to user ${order.user_id}`);
+
+        try {
+          // Call the database function to add credits
+          const { error: creditError } = await supabase.rpc('add_user_credits', {
+            p_user_id: order.user_id,
+            p_credits: credits,
+            p_order_id: order.id,
+            p_description: `${packageName} satın alımı`
+          });
+
+          if (creditError) {
+            console.error('Failed to add credits:', creditError);
+            // Don't fail the callback, payment was successful
+          } else {
+            console.log(`Successfully added ${credits} credits to user ${order.user_id}`);
+          }
+        } catch (creditErr) {
+          console.error('Error adding credits:', creditErr);
+        }
+
+        // Send credit purchase success email
+        try {
+          const emailResponse = await fetch(`${baseUrl}/api/send-email`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: order.buyer_email,
+              type: 'credit-purchase-success',
+              data: {
+                orderId: order.id,
+                packageName: packageName,
+                credits: credits,
+                amount: order.total_try
+              }
+            })
+          });
+
+          if (!emailResponse.ok) {
+            console.error('Failed to send credit purchase success email');
+          }
+        } catch (emailError) {
+          console.error('Error sending credit purchase success email:', emailError);
+        }
+
+        console.log('Credit purchase successful for order:', order.id);
+        return new Response('OK', { status: 200 });
+      }
+
+      // Regular template purchase - create personal page record
       const { error: pageError } = await supabase
         .from('personal_pages')
         .insert({

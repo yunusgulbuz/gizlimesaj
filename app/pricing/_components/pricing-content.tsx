@@ -143,7 +143,7 @@ export default function PricingContent() {
                 href="/pricing"
                 className="hidden text-sm font-medium text-slate-900 transition-colors hover:text-slate-900 md:block"
               >
-                Planlar
+                AI Kredi Paketleri
               </Link>
               <Link
                 href="/about"
