@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     // Find order by payment reference
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .select('*')
+      .select('*, templates(*)')
       .eq('payment_reference', paytrCallback.merchant_oid)
       .single();
 
@@ -121,13 +121,20 @@ export async function POST(request: NextRequest) {
                 orderId: order.id,
                 packageName: packageName,
                 credits: credits,
-                amount: order.total_try
+                amount: (order.total_try || 0) / 100 // Convert from kuruş to TL
               }
             })
           });
 
           if (!emailResponse.ok) {
-            console.error('Failed to send credit purchase success email');
+            const errorText = await emailResponse.text();
+            console.error('Failed to send credit purchase success email:', {
+              status: emailResponse.status,
+              statusText: emailResponse.statusText,
+              body: errorText
+            });
+          } else {
+            console.log('Credit purchase success email sent successfully to:', order.buyer_email);
           }
         } catch (emailError) {
           console.error('Error sending credit purchase success email:', emailError);
@@ -176,14 +183,21 @@ export async function POST(request: NextRequest) {
               data: {
                 orderId: order.id,
                 templateTitle: order.templates?.title || 'Gizli Mesaj',
-                amount: order.total_amount,
+                amount: (order.total_try || 0) / 100, // Convert from kuruş to TL
                 personalPageUrl: personalPageUrl
               }
             })
           });
 
           if (!emailResponse.ok) {
-            console.error('Failed to send payment success email');
+            const errorText = await emailResponse.text();
+            console.error('Failed to send payment success email:', {
+              status: emailResponse.status,
+              statusText: emailResponse.statusText,
+              body: errorText
+            });
+          } else {
+            console.log('Payment success email sent successfully to:', order.buyer_email);
           }
         } catch (emailError) {
           console.error('Error sending payment success email:', emailError);
