@@ -48,6 +48,8 @@ import DogumGunuKutlamaForm from './dogum-gunu-kutlama/form';
 import DogumGunuKutlamaPreview from './dogum-gunu-kutlama/preview';
 import YeniEvAracTebrigiForm from './yeni-ev-arac-tebrigi/form';
 import YeniEvAracTebrigiPreview from './yeni-ev-arac-tebrigi/preview';
+import MemeOyunForm from './meme-oyun/form';
+import MemeOyunPreview from './meme-oyun/preview';
 import CumaTebrigiForm from './cuma-tebrigi/form';
 import CumaTebrigiPreview from './cuma-tebrigi/preview';
 import KandilTebrigiForm from './kandil-tebrigi/form';
@@ -175,6 +177,11 @@ export const templateRegistry: Record<string, TemplateEntry> = {
     slug: 'yeni-ev-arac-tebrigi',
     form: YeniEvAracTebrigiForm,
     preview: YeniEvAracTebrigiPreview,
+  },
+  'meme-oyun': {
+    slug: 'meme-oyun',
+    form: MemeOyunForm,
+    preview: MemeOyunPreview,
   },
   'surpriz-randevu-daveti': {
     slug: 'surpriz-randevu-daveti',

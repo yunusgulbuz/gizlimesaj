@@ -159,6 +159,32 @@ const designStyleOverrides: Record<string, Record<DesignStyleKey, DesignStyleMet
       color: "bg-purple-100 text-purple-800",
       preview: "🧩"
     }
+  },
+  'meme-oyun': {
+    modern: {
+      label: "Kaydır ve Aç",
+      description: "Kartları kaydır, punchline'ı yakala",
+      color: "bg-blue-100 text-blue-800",
+      preview: "➡️"
+    },
+    classic: {
+      label: "Başlık Yerleştir",
+      description: "Etiketleri sırala, final mesajını aç",
+      color: "bg-orange-100 text-orange-800",
+      preview: "✍️"
+    },
+    minimalist: {
+      label: "Kahkaha Ölçer",
+      description: "Dokunarak kahkaha seviyesini doldur",
+      color: "bg-lime-100 text-lime-800",
+      preview: "😂"
+    },
+    eglenceli: {
+      label: "Minimal Strip",
+      description: "3 paneli tamamla, şakayı bitir",
+      color: "bg-fuchsia-100 text-fuchsia-800",
+      preview: "🎞️"
+    }
   }
 };
 
@@ -284,6 +310,15 @@ const yeniEvAracDesignFieldMap: Record<DesignStyleKey, string[]> = {
     'panoHint',
     'panoResetLabel'
   ]
+};
+
+const memeOyunCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as const;
+
+const memeOyunDesignFieldMap: Record<DesignStyleKey, string[]> = {
+  modern: ['swipeTitle', 'swipeSubtitle', 'swipeHint1', 'swipeHint2', 'swipeFinalMessage'],
+  classic: ['captionTitle', 'captionSubtitle', 'captionPhotoUrl', 'captionCaptions', 'captionFinalMessage'],
+  minimalist: ['meterTitle', 'meterSubtitle', 'meterGoalPercent', 'meterTapLabel', 'meterFinalMessage'],
+  eglenceli: ['stripTitle', 'stripSubtitle', 'stripPanel1', 'stripPanel2', 'stripPanel3', 'stripFinalMessage']
 };
 
 interface TemplateFormPageProps {
@@ -416,6 +451,14 @@ export default function TemplateFormPage({ template, durations, templatePricing,
       const allowedKeys = new Set<string>([
         ...yeniEvAracCommonFields,
         ...(yeniEvAracDesignFieldMap[selectedDesignStyle] ?? [])
+      ]);
+      return templateConfig.fields.filter(field => allowedKeys.has(field.key));
+    }
+
+    if (template.slug === 'meme-oyun') {
+      const allowedKeys = new Set<string>([
+        ...memeOyunCommonFields,
+        ...(memeOyunDesignFieldMap[selectedDesignStyle] ?? [])
       ]);
       return templateConfig.fields.filter(field => allowedKeys.has(field.key));
     }

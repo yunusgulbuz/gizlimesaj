@@ -341,6 +341,226 @@ export const templateConfigs: Record<string, TemplateConfig> = {
       }
     ]
   },
+  'meme-oyun': {
+    slug: 'meme-oyun',
+    fields: [
+      {
+        key: 'recipientName',
+        label: 'Gönderilecek Kişi Adı',
+        placeholder: 'Mesajı alacak kişinin adını girin',
+        type: 'input',
+        required: true,
+        maxLength: 60,
+        defaultValue: 'Arkadaşım'
+      },
+      {
+        key: 'mainMessage',
+        label: 'Ana Mesajınız',
+        placeholder: 'Finalde göstermek istediğiniz genel mesaj',
+        type: 'textarea',
+        required: true,
+        maxLength: 500,
+        defaultValue: 'Şaka tam gaz, finalde kahkaha garantili! 😄'
+      },
+      {
+        key: 'musicUrl',
+        label: 'YouTube Müzik Linki (İsteğe Bağlı)',
+        placeholder: 'https://www.youtube.com/watch?v=... veya video ID',
+        type: 'input',
+        required: false,
+        maxLength: 200
+      },
+      {
+        key: 'swipeTitle',
+        label: 'Kaydırma Başlığı',
+        placeholder: 'Örn. Kaydır ve Şakayı Aç ➡️',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Kaydır ve Şakayı Aç ➡️'
+      },
+      {
+        key: 'swipeSubtitle',
+        label: 'Kaydırma Alt Metni',
+        placeholder: 'Kartları kaydır, finali yakala...',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Kartları kaydır, finali yakala.'
+      },
+      {
+        key: 'swipeHint1',
+        label: 'Kaydırma İpucu 1',
+        placeholder: 'İlk kart metni',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'İpucu 1'
+      },
+      {
+        key: 'swipeHint2',
+        label: 'Kaydırma İpucu 2',
+        placeholder: 'İkinci kart metni',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'İpucu 2'
+      },
+      {
+        key: 'swipeFinalMessage',
+        label: 'Kaydırma Final Mesajı',
+        placeholder: 'Final kartında gösterilecek metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 280,
+        defaultValue: 'Punchline burada!'
+      },
+      {
+        key: 'captionTitle',
+        label: 'Başlık Oyunu Başlığı',
+        placeholder: 'Örn. Başlığı Yerine Koy ✍️',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Başlığı Yerine Koy ✍️'
+      },
+      {
+        key: 'captionSubtitle',
+        label: 'Başlık Oyunu Alt Metni',
+        placeholder: 'Etiketleri sürükle, komik finali oku...',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Etiketleri sürükle, komik finali oku.'
+      },
+      {
+        key: 'captionPhotoUrl',
+        label: 'Başlık Oyunu Fotoğraf URL',
+        placeholder: 'https://... şeklinde görsel bağlantısı',
+        type: 'input',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=900&q=80'
+      },
+      {
+        key: 'captionCaptions',
+        label: 'Başlık Etiketleri',
+        placeholder: 'Her satıra bir caption yazın',
+        type: 'textarea',
+        required: false,
+        maxLength: 300,
+        defaultValue: 'Caption A\nCaption B\nCaption C'
+      },
+      {
+        key: 'captionFinalMessage',
+        label: 'Başlık Final Mesajı',
+        placeholder: 'Tüm captionlar yerleşince gösterilecek metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 280,
+        defaultValue: 'Tamamlandı! Punchline burada.'
+      },
+      {
+        key: 'meterTitle',
+        label: 'Kahkaha Ölçer Başlığı',
+        placeholder: 'Örn. Kahkaha Ölçer\'i Doldur 😂',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Kahkaha Ölçer\'i Doldur 😂'
+      },
+      {
+        key: 'meterSubtitle',
+        label: 'Kahkaha Ölçer Alt Metni',
+        placeholder: 'Dokundukça yükselsin, finali aç...',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Dokundukça yükselsin, finali aç.'
+      },
+      {
+        key: 'meterGoalPercent',
+        label: 'Kahkaha Ölçer Hedefi',
+        placeholder: 'Örn. 100',
+        type: 'input',
+        required: false,
+        maxLength: 4,
+        defaultValue: '100'
+      },
+      {
+        key: 'meterTapLabel',
+        label: 'Kahkaha Ölçer Buton Yazısı',
+        placeholder: 'Örn. Dokun',
+        type: 'input',
+        required: false,
+        maxLength: 40,
+        defaultValue: 'Dokun'
+      },
+      {
+        key: 'meterFinalMessage',
+        label: 'Kahkaha Ölçer Final Mesajı',
+        placeholder: 'Hedefe ulaşınca gösterilecek metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 280,
+        defaultValue: 'Maksimum kahkaha! Punchline açıldı.'
+      },
+      {
+        key: 'stripTitle',
+        label: '3 Panel Başlığı',
+        placeholder: 'Örn. Mini Komik 3 Panel 🎞️',
+        type: 'input',
+        required: false,
+        maxLength: 140,
+        defaultValue: 'Mini Komik 3 Panel 🎞️'
+      },
+      {
+        key: 'stripSubtitle',
+        label: '3 Panel Alt Metni',
+        placeholder: 'Şaka akışını anlatan kısa metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 240,
+        defaultValue: 'Dokun ve sahneyi ilerlet.'
+      },
+      {
+        key: 'stripPanel1',
+        label: 'Panel 1 Metni',
+        placeholder: 'İlk panel içeriği',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Panel 1 — İpucu'
+      },
+      {
+        key: 'stripPanel2',
+        label: 'Panel 2 Metni',
+        placeholder: 'İkinci panel içeriği',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Panel 2 — Kurulum'
+      },
+      {
+        key: 'stripPanel3',
+        label: 'Panel 3 Metni',
+        placeholder: 'Üçüncü panel içeriği',
+        type: 'input',
+        required: false,
+        maxLength: 160,
+        defaultValue: 'Panel 3 — Punchline'
+      },
+      {
+        key: 'stripFinalMessage',
+        label: '3 Panel Final Mesajı',
+        placeholder: 'Tüm paneller tamamlanınca gösterilecek metin',
+        type: 'textarea',
+        required: false,
+        maxLength: 280,
+        defaultValue: 'Şaka tamamlandı!'
+      }
+    ]
+  },
   'eglenceli-oyunlu-mesajlar': {
     slug: 'eglenceli-oyunlu-mesajlar',
     fields: [
