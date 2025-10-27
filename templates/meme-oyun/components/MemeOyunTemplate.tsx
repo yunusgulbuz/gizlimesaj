@@ -19,21 +19,25 @@ const DEFAULT_FIELDS = {
   musicUrl: '',
   swipeTitle: 'Kaydır ve Şakayı Aç ➡️',
   swipeSubtitle: 'Kartları kaydır, finali yakala.',
+  swipeBadgeText: '',
   swipeHint1: 'İpucu 1',
   swipeHint2: 'İpucu 2',
   swipeFinalMessage: 'Punchline burada!',
   captionTitle: 'Başlığı Yerine Koy ✍️',
   captionSubtitle: 'Etiketleri sürükle, komik finali oku.',
+  captionBadgeText: '',
   captionPhotoUrl: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=900&q=80',
   captionCaptions: 'Caption A\nCaption B\nCaption C',
   captionFinalMessage: 'Tamamlandı! Punchline burada.',
   meterTitle: 'Kahkaha Ölçer\'i Doldur 😂',
   meterSubtitle: 'Dokundukça yükselsin, finali aç.',
+  meterBadgeText: '',
   meterGoalPercent: '100',
   meterTapLabel: 'Dokun',
   meterFinalMessage: 'Maksimum kahkaha! Punchline açıldı.',
   stripTitle: 'Mini Komik 3 Panel 🎞️',
   stripSubtitle: 'Dokun ve sahneyi ilerlet.',
+  stripBadgeText: '',
   stripPanel1: 'Panel 1 — İpucu',
   stripPanel2: 'Panel 2 — Kurulum',
   stripPanel3: 'Panel 3 — Punchline',
@@ -186,8 +190,13 @@ function SwipeRevealGame({ fields, isEditable, onFieldChange, creatorName, mainM
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-xl flex-col items-center px-6 pb-20 pt-20">
         <div className="w-full text-center">
-          <p className="text-xs uppercase tracking-[0.35em] text-white/60">
-            {recipientName ? `${recipientName} ile swipe şakası` : 'Swipe şakası'}
+          <p
+            className={`text-xs uppercase tracking-[0.35em] text-white/60 ${isEditable ? 'cursor-text rounded-full px-4 py-2 hover:bg-white/10' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(event) => onFieldChange('swipeBadgeText', event.currentTarget.textContent || '')}
+          >
+            {fields.swipeBadgeText || (recipientName ? `${recipientName} ile swipe şakası` : 'Swipe şakası')}
           </p>
           <h1
             className={`mt-4 text-3xl font-semibold sm:text-4xl ${isEditable ? 'cursor-text rounded-2xl px-4 py-2 hover:bg-white/10' : ''}`}
@@ -263,13 +272,39 @@ function SwipeRevealGame({ fields, isEditable, onFieldChange, creatorName, mainM
           </div>
         </div>
 
+        {isEditable && (
+          <div className="mt-4 flex items-center justify-center gap-2 text-xs">
+            {cards.map((cardItem, cardIndex) => (
+              <button
+                key={`${cardItem.key}-${cardIndex}`}
+                type="button"
+                onClick={() => setIndex(cardIndex)}
+                className={`rounded-full px-4 py-2 font-semibold transition-all duration-200 ${
+                  index === cardIndex
+                    ? 'bg-white/80 text-slate-900 shadow-[0_12px_25px_rgba(59,130,246,0.25)]'
+                    : 'bg-white/10 text-white/70 hover:bg-white/15'
+                }`}
+              >
+                Kart {cardIndex + 1}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div
           className={`mt-10 w-full rounded-3xl border border-white/10 bg-white/10 p-6 text-center backdrop-blur-xl transition-all duration-500 ${
             index === cards.length - 1 ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
           }`}
         >
           <p className="text-sm uppercase tracking-[0.4em] text-white/50">Final</p>
-          <p className="mt-3 text-base text-white/80">{mainMessage}</p>
+          <p
+            className={`mt-3 text-base text-white/80 ${isEditable ? 'cursor-text rounded-2xl px-3 py-2 hover:bg-white/10' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(event) => onFieldChange('mainMessage', event.currentTarget.textContent || '')}
+          >
+            {mainMessage}
+          </p>
         </div>
 
         {creatorName && (
@@ -314,6 +349,7 @@ function CaptionBuilderGame({ fields, isEditable, onFieldChange, creatorName, ma
   }, [captions.length, selected]);
 
   const isComplete = slots.every(Boolean) && slots.length === captions.length;
+  const showFinal = isComplete || isEditable;
 
   const backgroundUrl = fields.captionPhotoUrl || DEFAULT_FIELDS.captionPhotoUrl;
 
@@ -326,8 +362,13 @@ function CaptionBuilderGame({ fields, isEditable, onFieldChange, creatorName, ma
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center px-6 pb-20 pt-20">
         <div className="w-full text-center">
-          <p className="text-xs uppercase tracking-[0.35em] text-white/60">
-            {recipientName ? `${recipientName} ile caption oyunu` : 'Caption oyunu'}
+          <p
+            className={`text-xs uppercase tracking-[0.35em] text-white/60 ${isEditable ? 'cursor-text rounded-full px-4 py-2 hover:bg-white/10' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(event) => onFieldChange('captionBadgeText', event.currentTarget.textContent || '')}
+          >
+            {fields.captionBadgeText || (recipientName ? `${recipientName} ile caption oyunu` : 'Caption oyunu')}
           </p>
           <h2
             className={`mt-4 text-3xl font-semibold sm:text-4xl ${isEditable ? 'cursor-text rounded-2xl px-4 py-2 hover:bg-white/10' : ''}`}
@@ -432,7 +473,7 @@ function CaptionBuilderGame({ fields, isEditable, onFieldChange, creatorName, ma
 
             <div
               className={`mt-8 rounded-3xl border border-white/10 bg-white/10 p-5 text-center transition-all duration-500 ${
-                isComplete ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                showFinal ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
               }`}
             >
               <p className="text-xs uppercase tracking-[0.4em] text-white/50">Final</p>
@@ -444,7 +485,14 @@ function CaptionBuilderGame({ fields, isEditable, onFieldChange, creatorName, ma
               >
                 {fields.captionFinalMessage || DEFAULT_FIELDS.captionFinalMessage}
               </p>
-              <p className="mt-4 text-sm text-white/70">{mainMessage}</p>
+              <p
+                className={`mt-4 text-sm text-white/70 ${isEditable ? 'cursor-text rounded-2xl px-3 py-2 hover:bg-white/10' : ''}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning
+                onBlur={(event) => onFieldChange('mainMessage', event.currentTarget.textContent || '')}
+              >
+                {mainMessage}
+              </p>
             </div>
           </div>
         </div>
@@ -482,6 +530,7 @@ function ReactionMeterGame({ fields, isEditable, onFieldChange, creatorName, mai
 
   const percent = Math.round((progress / goal) * 100);
   const completed = percent >= 100;
+  const showFinal = completed || isEditable;
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#111827] via-[#1f2937] to-[#0f172a] text-white">
@@ -491,8 +540,13 @@ function ReactionMeterGame({ fields, isEditable, onFieldChange, creatorName, mai
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 pb-20 pt-20 text-center">
-        <p className="text-xs uppercase tracking-[0.35em] text-white/60">
-          {recipientName ? `${recipientName} ile kahkaha ölçer` : 'Kahkaha ölçer oyunu'}
+        <p
+          className={`text-xs uppercase tracking-[0.35em] text-white/60 ${isEditable ? 'cursor-text rounded-full px-4 py-2 hover:bg-white/10' : ''}`}
+          contentEditable={isEditable}
+          suppressContentEditableWarning
+          onBlur={(event) => onFieldChange('meterBadgeText', event.currentTarget.textContent || '')}
+        >
+          {fields.meterBadgeText || (recipientName ? `${recipientName} ile kahkaha ölçer` : 'Kahkaha ölçer oyunu')}
         </p>
         <h2
           className={`mt-4 text-3xl font-semibold sm:text-4xl ${isEditable ? 'cursor-text rounded-2xl px-4 py-2 hover:bg-white/10' : ''}`}
@@ -556,7 +610,7 @@ function ReactionMeterGame({ fields, isEditable, onFieldChange, creatorName, mai
 
         <div
           className={`mt-12 w-full rounded-3xl border border-white/10 bg-white/10 p-6 transition-all duration-500 ${
-            completed ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+            showFinal ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}
         >
           <p className="text-xs uppercase tracking-[0.35em] text-white/50">Final</p>
@@ -568,7 +622,14 @@ function ReactionMeterGame({ fields, isEditable, onFieldChange, creatorName, mai
           >
             {fields.meterFinalMessage || DEFAULT_FIELDS.meterFinalMessage}
           </p>
-          <p className="mt-4 text-sm text-white/70">{mainMessage}</p>
+          <p
+            className={`mt-4 text-sm text-white/70 ${isEditable ? 'cursor-text rounded-2xl px-3 py-2 hover:bg-white/10' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(event) => onFieldChange('mainMessage', event.currentTarget.textContent || '')}
+          >
+            {mainMessage}
+          </p>
         </div>
 
         {creatorName && (
@@ -600,6 +661,8 @@ function MinimalStripGame({ fields, isEditable, onFieldChange, creatorName, main
     setStep((prev) => Math.min(prev + 1, panels.length));
   }, [panels.length, isEditable]);
 
+  const showFinal = step >= panels.length || isEditable;
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#000000] via-[#111827] to-[#25184a] text-white">
       <div className="absolute inset-0">
@@ -609,8 +672,13 @@ function MinimalStripGame({ fields, isEditable, onFieldChange, creatorName, main
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-4xl flex-col items-center px-6 pb-20 pt-20">
         <div className="w-full text-center">
-          <p className="text-xs uppercase tracking-[0.35em] text-white/60">
-            {recipientName ? `${recipientName} ile 3 panel şaka` : '3 panel şaka'}
+          <p
+            className={`text-xs uppercase tracking-[0.35em] text-white/60 ${isEditable ? 'cursor-text rounded-full px-4 py-2 hover:bg-white/10' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(event) => onFieldChange('stripBadgeText', event.currentTarget.textContent || '')}
+          >
+            {fields.stripBadgeText || (recipientName ? `${recipientName} ile 3 panel şaka` : '3 panel şaka')}
           </p>
           <h2
             className={`mt-4 text-3xl font-semibold sm:text-4xl ${isEditable ? 'cursor-text rounded-2xl px-4 py-2 hover:bg-white/10' : ''}`}
@@ -672,7 +740,7 @@ function MinimalStripGame({ fields, isEditable, onFieldChange, creatorName, main
 
         <div
           className={`mt-12 w-full rounded-3xl border border-white/10 bg-white/10 p-6 text-center backdrop-blur-xl transition-all duration-500 ${
-            step >= panels.length ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+            showFinal ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}
         >
           <p className="text-xs uppercase tracking-[0.35em] text-white/50">Final</p>
@@ -684,7 +752,14 @@ function MinimalStripGame({ fields, isEditable, onFieldChange, creatorName, main
           >
             {fields.stripFinalMessage || DEFAULT_FIELDS.stripFinalMessage}
           </p>
-          <p className="mt-4 text-sm text-white/70">{mainMessage}</p>
+          <p
+            className={`mt-4 text-sm text-white/70 ${isEditable ? 'cursor-text rounded-2xl px-3 py-2 hover:bg-white/10' : ''}`}
+            contentEditable={isEditable}
+            suppressContentEditableWarning
+            onBlur={(event) => onFieldChange('mainMessage', event.currentTarget.textContent || '')}
+          >
+            {mainMessage}
+          </p>
         </div>
 
         {creatorName && (

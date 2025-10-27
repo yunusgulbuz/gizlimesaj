@@ -315,10 +315,10 @@ const yeniEvAracDesignFieldMap: Record<DesignStyleKey, string[]> = {
 const memeOyunCommonFields = ['recipientName', 'mainMessage', 'musicUrl'] as const;
 
 const memeOyunDesignFieldMap: Record<DesignStyleKey, string[]> = {
-  modern: ['swipeTitle', 'swipeSubtitle', 'swipeHint1', 'swipeHint2', 'swipeFinalMessage'],
-  classic: ['captionTitle', 'captionSubtitle', 'captionPhotoUrl', 'captionCaptions', 'captionFinalMessage'],
-  minimalist: ['meterTitle', 'meterSubtitle', 'meterGoalPercent', 'meterTapLabel', 'meterFinalMessage'],
-  eglenceli: ['stripTitle', 'stripSubtitle', 'stripPanel1', 'stripPanel2', 'stripPanel3', 'stripFinalMessage']
+  modern: ['swipeTitle', 'swipeSubtitle', 'swipeBadgeText', 'swipeHint1', 'swipeHint2', 'swipeFinalMessage'],
+  classic: ['captionTitle', 'captionSubtitle', 'captionBadgeText', 'captionPhotoUrl', 'captionCaptions', 'captionFinalMessage'],
+  minimalist: ['meterTitle', 'meterSubtitle', 'meterBadgeText', 'meterGoalPercent', 'meterTapLabel', 'meterFinalMessage'],
+  eglenceli: ['stripTitle', 'stripSubtitle', 'stripBadgeText', 'stripPanel1', 'stripPanel2', 'stripPanel3', 'stripFinalMessage']
 };
 
 interface TemplateFormPageProps {

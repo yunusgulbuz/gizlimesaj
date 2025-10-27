@@ -389,6 +389,14 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         defaultValue: 'Kartları kaydır, finali yakala.'
       },
       {
+        key: 'swipeBadgeText',
+        label: 'Kaydırma Üst Etiketi',
+        placeholder: 'Örn. Arkadaşınla swipe şakası',
+        type: 'input',
+        required: false,
+        maxLength: 120
+      },
+      {
         key: 'swipeHint1',
         label: 'Kaydırma İpucu 1',
         placeholder: 'İlk kart metni',
@@ -432,6 +440,14 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         required: false,
         maxLength: 240,
         defaultValue: 'Etiketleri sürükle, komik finali oku.'
+      },
+      {
+        key: 'captionBadgeText',
+        label: 'Başlık Oyunu Üst Etiketi',
+        placeholder: 'Örn. Arkadaşınla caption oyunu',
+        type: 'input',
+        required: false,
+        maxLength: 120
       },
       {
         key: 'captionPhotoUrl',
@@ -479,6 +495,14 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         defaultValue: 'Dokundukça yükselsin, finali aç.'
       },
       {
+        key: 'meterBadgeText',
+        label: 'Kahkaha Ölçer Üst Etiketi',
+        placeholder: 'Örn. Arkadaşınla kahkaha ölçer',
+        type: 'input',
+        required: false,
+        maxLength: 120
+      },
+      {
         key: 'meterGoalPercent',
         label: 'Kahkaha Ölçer Hedefi',
         placeholder: 'Örn. 100',
@@ -522,6 +546,14 @@ export const templateConfigs: Record<string, TemplateConfig> = {
         required: false,
         maxLength: 240,
         defaultValue: 'Dokun ve sahneyi ilerlet.'
+      },
+      {
+        key: 'stripBadgeText',
+        label: '3 Panel Üst Etiketi',
+        placeholder: 'Örn. Arkadaşınla 3 panel şaka',
+        type: 'input',
+        required: false,
+        maxLength: 120
       },
       {
         key: 'stripPanel1',
