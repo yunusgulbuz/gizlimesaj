@@ -76,6 +76,16 @@ export async function POST(request: NextRequest) {
         result = await emailService.sendButtonClickNotificationEmail(to, data);
         break;
 
+      case 'credit-purchase-success':
+        if (!data?.orderId || !data?.packageName || !data?.credits || !data?.amount) {
+          return NextResponse.json(
+            { error: 'Kredi satın alma detayları eksik.' },
+            { status: 400 }
+          );
+        }
+        result = await emailService.sendCreditPurchaseSuccessEmail(to, data);
+        break;
+
       default:
         return NextResponse.json(
           { error: 'Geçersiz email tipi.' },

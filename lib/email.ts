@@ -16,7 +16,7 @@ export const EMAIL_TEMPLATES = {
 
 // Email configuration
 export const EMAIL_CONFIG = {
-  FROM: 'birmesajmutluluk <birmesajmutluluk@gmail.com>',
+  FROM: 'birmesajmutluluk <onboarding@resend.dev>',
   REPLY_TO: 'birmesajmutluluk@gmail.com',
   DOMAIN: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
 } as const;
@@ -203,6 +203,42 @@ export class EmailService {
       return { success: true, data };
     } catch (error) {
       console.error('Button click notification email error:', error);
+      return { success: false, error };
+    }
+  }
+
+  // Send credit purchase success email
+  async sendCreditPurchaseSuccessEmail(
+    to: string,
+    purchaseDetails: {
+      orderId: string;
+      packageName: string;
+      credits: number;
+      amount: number;
+    }
+  ) {
+    try {
+      // Check if API key is properly configured
+      if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'dummy-key-for-build') {
+        console.warn('RESEND_API_KEY not configured, skipping email send');
+        return { success: false, error: 'Email service not configured' };
+      }
+
+      const { data, error } = await resend.emails.send({
+        from: EMAIL_CONFIG.FROM,
+        to: [to],
+        subject: `AI Kredi Satın Alımınız Tamamlandı! 🎉`,
+        html: this.getCreditPurchaseSuccessTemplate(purchaseDetails),
+      });
+
+      if (error) {
+        console.error('Credit purchase success email error:', error);
+        return { success: false, error };
+      }
+
+      return { success: true, data };
+    } catch (error) {
+      console.error('Credit purchase success email error:', error);
       return { success: false, error };
     }
   }
@@ -398,7 +434,7 @@ export class EmailService {
     personalPageUrl: string;
     clickedAt: string;
   }): string {
-    const buttonTypeText = clickDetails.buttonType === 'like' ? 'Beğeni' : 
+    const buttonTypeText = clickDetails.buttonType === 'like' ? 'Beğeni' :
                           clickDetails.buttonType === 'love' ? 'Kalp' :
                           clickDetails.buttonType === 'share' ? 'Paylaşım' :
                           clickDetails.buttonType === 'download' ? 'İndirme' :
@@ -416,30 +452,105 @@ export class EmailService {
           <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
             <h1 style="color: white; margin: 0; font-size: 28px;">Harika Haber! 🎉</h1>
           </div>
-          
+
           <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <p style="font-size: 18px; margin-bottom: 20px;">
               <strong>${clickDetails.recipientName}</strong> gizli mesajınızla etkileşime geçti!
             </p>
-            
+
             <div style="background: #d1fae5; padding: 20px; border-radius: 8px; margin: 20px 0;">
               <p><strong>Şablon:</strong> ${clickDetails.templateTitle}</p>
               <p><strong>Etkileşim Türü:</strong> <span style="color: #059669; font-weight: bold;">${buttonTypeText}</span></p>
               <p><strong>Tarih:</strong> ${new Date(clickDetails.clickedAt).toLocaleString('tr-TR')}</p>
             </div>
-            
+
             <p>Bu, mesajınızın başarıyla ulaştığının ve beğenildiğinin göstergesi! 🎊</p>
-            
+
             <div style="text-align: center; margin: 30px 0;">
               <a href="${clickDetails.personalPageUrl}" style="background: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Mesajı Tekrar Görüntüle</a>
             </div>
-            
+
             <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
               <p style="margin: 0; color: #92400e;"><strong>💡 İpucu:</strong> Daha fazla kişiyle gizli mesajlarınızı paylaşmak için yeni şablonlar oluşturabilirsiniz!</p>
             </div>
-            
+
             <p style="color: #666; font-size: 14px; margin-top: 30px;">
               Teşekkürler! <a href="mailto:${EMAIL_CONFIG.REPLY_TO}" style="color: #10b981;">destek@gizlimesaj.com</a>
+            </p>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  private getCreditPurchaseSuccessTemplate(purchaseDetails: {
+    orderId: string;
+    packageName: string;
+    credits: number;
+    amount: number;
+  }): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>AI Kredi Satın Alımı Başarılı</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #a855f7, #ec4899); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">AI Krediniz Hazır! ✨</h1>
+          </div>
+
+          <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <p style="font-size: 18px; margin-bottom: 20px;">Satın alımınız başarıyla tamamlandı!</p>
+
+            <div style="background: linear-gradient(135deg, #fae8ff, #fce7f3); padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 10px;">🎁</div>
+              <div style="font-size: 42px; font-weight: bold; color: #a855f7; margin-bottom: 5px;">${purchaseDetails.credits}</div>
+              <div style="font-size: 18px; color: #86198f; font-weight: 600;">AI Kredi</div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold;">Paket:</td>
+                  <td style="padding: 8px 0;">${purchaseDetails.packageName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold;">Sipariş No:</td>
+                  <td style="padding: 8px 0;">#${purchaseDetails.orderId}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold;">Ödenen Tutar:</td>
+                  <td style="padding: 8px 0; color: #10b981; font-weight: bold;">₺${purchaseDetails.amount}</td>
+                </tr>
+              </table>
+            </div>
+
+            <p>AI krediniz hesabınıza yüklendi! Artık yapay zeka destekli özel şablonlar oluşturabilirsiniz.</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${EMAIL_CONFIG.DOMAIN}/ai-template-creator" style="background: linear-gradient(135deg, #a855f7, #ec4899); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 12px rgba(168,85,247,0.4);">AI Şablon Oluştur</a>
+            </div>
+
+            <div style="background: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0;">
+              <p style="margin: 0; color: #1e40af;"><strong>💡 İpucu:</strong> Bir AI şablon oluşturma işlemi 1 kredi harcar. Her kredi ile benzersiz, kişiselleştirilmiş şablonlar yaratabilirsiniz!</p>
+            </div>
+
+            <div style="border-top: 2px solid #f1f5f9; margin-top: 30px; padding-top: 20px;">
+              <h3 style="color: #a855f7; margin-top: 0;">AI Şablonlarla Neler Yapabilirsiniz?</h3>
+              <ul style="margin: 0; padding-left: 20px; color: #64748b;">
+                <li style="margin-bottom: 8px;">🎨 Yapay zeka ile özel tasarımlar oluşturun</li>
+                <li style="margin-bottom: 8px;">💝 Kişiye özel romantik mesajlar yazın</li>
+                <li style="margin-bottom: 8px;">🎂 Doğum günü sürprizleri hazırlayın</li>
+                <li style="margin-bottom: 8px;">✨ Benzersiz animasyonlar ekleyin</li>
+              </ul>
+            </div>
+
+            <p style="color: #666; font-size: 14px; margin-top: 30px; text-align: center;">
+              Teşekkürler! <br>
+              Sorularınız için: <a href="mailto:${EMAIL_CONFIG.REPLY_TO}" style="color: #a855f7;">birmesajmutluluk@gmail.com</a>
             </p>
           </div>
         </body>
