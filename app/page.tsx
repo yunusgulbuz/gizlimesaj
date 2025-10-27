@@ -325,7 +325,7 @@ export default async function HomePage() {
                 href="/pricing"
                 className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block"
               >
-                Planlar
+                AI Kredi Paketleri
               </Link>
               <Link
                 href="/about"
@@ -419,6 +419,7 @@ export default async function HomePage() {
                 </div>
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+{/*
                     <Button
                       size="lg"
                       className="h-11 gap-2 rounded-full bg-gradient-to-r from-rose-500 to-amber-400 px-6 text-white shadow-lg shadow-rose-200/60 transition hover:shadow-xl hover:shadow-rose-200/80"
@@ -432,8 +433,9 @@ export default async function HomePage() {
                       className="h-11 gap-2 rounded-full border-rose-200/80 bg-white/90 px-6 text-rose-600 backdrop-blur transition hover:border-rose-300 hover:bg-white"
                       asChild
                     >
-                      <Link href="/pricing">Planları Gör</Link>
+                      <Link href="/pricing">AI Kredi Paketleri</Link>
                     </Button>
+*/}
                   </div>
                   {/* AI Template Creator CTA */}
                   <Button
@@ -443,7 +445,7 @@ export default async function HomePage() {
                   >
                     <Link href="/ai-template-creator">
                       <Sparkles className="h-4 w-4" />
-                      Yapay Zeka ile Sürpriz Oluştur
+                      Yapay Zeka ile Sürpriz Oluştur (Beta)
                     </Link>
                   </Button>
                 </div>

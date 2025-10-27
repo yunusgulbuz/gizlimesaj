@@ -88,7 +88,7 @@ export default async function AboutPage() {
                 Sürprizler
               </Link>
               <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
-                Planlar
+                AI Kredi Paketleri
               </Link>
               <Link href="/about" className="hidden text-sm font-medium text-gray-900 md:block">
                 Hakkımızda

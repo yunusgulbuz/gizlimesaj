@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -466,19 +467,32 @@ cek.
                         : 'border-gray-200 hover:border-purple-300'
                     }`}
                   >
-                    {/* Thumbnail placeholder */}
+                    {/* Thumbnail */}
                     <div className="relative mb-3 aspect-[4/3] rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                      <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                        <Sparkles className="h-12 w-12" />
-                      </div>
+                      <Image
+                        src={template.thumbnail}
+                        alt={template.name}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                      {/* Overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
                       {/* Selected indicator */}
                       {selectedTemplateId === template.id && (
-                        <div className="absolute top-2 right-2 bg-purple-600 text-white rounded-full p-1.5">
+                        <div className="absolute top-2 right-2 bg-purple-600 text-white rounded-full p-1.5 shadow-lg z-10">
                           <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         </div>
                       )}
+
+                      {/* AI Badge */}
+                      <div className="absolute bottom-2 left-2 bg-purple-600/90 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                        <Sparkles className="h-3 w-3" />
+                        <span>AI Destekli</span>
+                      </div>
                     </div>
 
                     {/* Template info */}

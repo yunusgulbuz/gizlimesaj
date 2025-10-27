@@ -76,7 +76,7 @@ export function MobileDrawerMenu({ user }: MobileDrawerMenuProps) {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100">
                   <ShoppingBag className="h-4 w-4 text-green-600" />
                 </div>
-                <span className="font-medium">Planlar</span>
+                <span className="font-medium">AI Kredi Paketleri</span>
               </Link>
               <Link
                 href="/about"

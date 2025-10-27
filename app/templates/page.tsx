@@ -352,7 +352,7 @@ export default async function TemplatesPage({
                 Sürprizler
               </Link>
               <Link href="/pricing" className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block">
-                Planlar
+                AI Kredi Paketleri
               </Link>
               <Link href="/about" className="hidden text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 md:block">
                 Hakkımızda
@@ -674,7 +674,7 @@ export default async function TemplatesPage({
                 <Link href="/register">Hemen Kaydol</Link>
               </Button>
               <Button size="lg" variant="outline" className="h-12 px-8 text-base" asChild>
-                <Link href="/pricing">Planları Gör</Link>
+                <Link href="/pricing">AI Kredi Paketlerir</Link>
               </Button>
             </div>
           </div>

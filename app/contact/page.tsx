@@ -63,7 +63,7 @@ export default async function ContactPage() {
                 Sürprizler
               </Link>
               <Link href="/pricing" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
-                Planlar
+                AI Kredi Paketleri
               </Link>
               <Link href="/about" className="hidden text-sm font-medium text-gray-600 hover:text-gray-900 md:block">
                 Hakkımızda
@@ -282,7 +282,7 @@ export default async function ContactPage() {
                 </li>
                 <li>
                   <Link href="/pricing" className="transition hover:text-rose-500">
-                    Planlar
+                    AI Kredi Paketleri
                   </Link>
                 </li>
                 <li>
