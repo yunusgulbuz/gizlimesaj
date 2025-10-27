@@ -42,7 +42,7 @@ export function FavoriteButton({
           .select('id')
           .eq('user_id', user.id)
           .eq('template_id', templateId)
-          .single();
+          .maybeSingle();
 
         if (!error && data) {
           setIsFavorite(true);
