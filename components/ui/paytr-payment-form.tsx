@@ -18,8 +18,8 @@ export function PayTRPaymentForm({ token, onLoad }: PayTRPaymentFormProps) {
   }, [onLoad]);
 
   return (
-    <div className="w-full min-h-screen flex flex-col">
-      <div className="w-full bg-white shadow-lg flex-1 flex flex-col">
+    <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
+      <div className="w-full max-w-5xl mx-auto bg-white shadow-2xl flex-1 flex flex-col my-4 rounded-2xl overflow-hidden">
         {/* Compact Header */}
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-1">
@@ -40,19 +40,33 @@ export function PayTRPaymentForm({ token, onLoad }: PayTRPaymentFormProps) {
           onLoad={() => {
             // Initialize iframe resizer after script loads
             if (typeof window !== 'undefined' && (window as any).iFrameResize) {
-              (window as any).iFrameResize({}, '#paytriframe');
+              (window as any).iFrameResize({
+                log: false,
+                checkOrigin: false,
+                heightCalculationMethod: 'taggedElement',
+                minHeight: 1000,
+                autoResize: true,
+                sizeHeight: true,
+                sizeWidth: false,
+                tolerance: 50
+              }, '#paytriframe');
             }
           }}
         />
 
         {/* PayTR Payment iFrame - Full screen */}
-        <div className="flex-1 w-full">
+        <div className="flex-1 w-full relative overflow-auto" style={{ minHeight: '1000px', maxHeight: 'calc(100vh - 200px)' }}>
           <iframe
             src={`https://www.paytr.com/odeme/guvenli/${token}`}
             id="paytriframe"
             frameBorder="0"
-            scrolling="yes"
-            style={{ width: '100%', height: '100%', minHeight: '70vh' }}
+            scrolling="no"
+            style={{
+              width: '100%',
+              height: '100%',
+              minHeight: '1000px',
+              border: 'none'
+            }}
             className="bg-white"
           />
         </div>
