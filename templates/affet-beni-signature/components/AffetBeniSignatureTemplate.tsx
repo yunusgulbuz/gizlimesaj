@@ -31,7 +31,12 @@ export default function AffetBeniSignatureTemplate({
   const [editableValues, setEditableValues] = useState<EditableMap>({});
   const [noButtonOffset, setNoButtonOffset] = useState({ x: 0, y: 0 });
   const [showBurst, setShowBurst] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const burstTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -113,8 +118,8 @@ export default function AffetBeniSignatureTemplate({
     `${base} ${isEditable ? 'cursor-text rounded-md px-1 transition-colors duration-200 hover:bg-white/10 focus:outline-none editable-focus' : ''}`;
 
   const handleRejectHover = () => {
-    const randomX = (Math.random() - 0.5) * 160;
-    const randomY = (Math.random() - 0.5) * 120;
+    const randomX = (Math.random() - 0.5) * 400;
+    const randomY = (Math.random() - 0.5) * 300;
     setNoButtonOffset({ x: randomX, y: randomY });
   };
 
@@ -177,7 +182,7 @@ export default function AffetBeniSignatureTemplate({
   const modernBackground = (
     <div className="absolute inset-0">
       <div className="absolute inset-0 bg-gradient-to-br from-[#fde2df] via-[#fff5ef] to-[#ffe9f0]" />
-      {[...Array(18)].map((_, index) => (
+      {isMounted && [...Array(18)].map((_, index) => (
         <span
           key={index}
           className="absolute h-32 w-32 rounded-full bg-white/30 blur-3xl animate-pulse"
@@ -188,7 +193,7 @@ export default function AffetBeniSignatureTemplate({
           }}
         />
       ))}
-      {[...Array(12)].map((_, index) => (
+      {isMounted && [...Array(12)].map((_, index) => (
         <span
           key={`heart-${index}`}
           className="absolute text-3xl text-rose-200/60"
@@ -208,7 +213,7 @@ export default function AffetBeniSignatureTemplate({
     <div className="absolute inset-0">
       <div className="absolute inset-0 bg-[#fef4ec]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.8),_transparent_70%)]" />
-      {[...Array(10)].map((_, index) => (
+      {isMounted && [...Array(10)].map((_, index) => (
         <span
           key={`ink-${index}`}
           className="absolute rounded-full bg-amber-900/5"
@@ -231,7 +236,7 @@ export default function AffetBeniSignatureTemplate({
   const playfulBackground = (
     <div className="absolute inset-0 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-[#ffe4f1] via-[#ffd6d6] to-[#c8f7ff]" />
-      {[...Array(20)].map((_, index) => (
+      {isMounted && [...Array(20)].map((_, index) => (
         <span
           key={`float-heart-${index}`}
           className="absolute text-4xl animate-bounce"
@@ -244,7 +249,7 @@ export default function AffetBeniSignatureTemplate({
           💘
         </span>
       ))}
-      {[...Array(15)].map((_, index) => (
+      {isMounted && [...Array(15)].map((_, index) => (
         <span
           key={`cloud-${index}`}
           className="absolute rounded-full bg-white/35 blur-3xl"
