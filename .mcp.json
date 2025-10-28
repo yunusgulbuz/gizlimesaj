@@ -1,16 +1,16 @@
 {
-    "mcpServers": {
-      "supabase": {
-        "command": "npx",
-        "args": [
-          "-y",
-          "@supabase/mcp-server-supabase@latest",
-          "--read-only",
-          "--project-ref=tqqpucmqqdzimesskbsf"
-        ],
-        "env": {
-          "SUPABASE_ACCESS_TOKEN": "sbp_73c81c944c6383a625979aca037c99f1792f6606"
-        }
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--read-only",
+        "--project-ref=tqqpucmqqdzimesskbsf"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_4351ada75e9ef29434e00381281f0f4cf782eef9"
       }
     }
   }
+}

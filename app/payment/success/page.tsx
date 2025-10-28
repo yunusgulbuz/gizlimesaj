@@ -29,7 +29,7 @@ export default function PaymentSuccessPage() {
         try {
           const { data: order, error: orderError } = await supabase
             .from('orders')
-            .select('id, short_id, status')
+            .select('id, short_id, status, text_fields')
             .eq('payment_reference', merchantOid)
             .single();
 
@@ -48,9 +48,15 @@ export default function PaymentSuccessPage() {
       // Try immediate fetch first
       const initialOrder = await fetchOrder();
 
-      if (initialOrder && initialOrder.status === 'completed' && initialOrder.short_id) {
-        // Order is already completed, redirect to success page
-        router.push(`/success/${initialOrder.short_id}`);
+      if (initialOrder && initialOrder.status === 'completed') {
+        // Order is already completed, redirect based on order type
+        const isCreditPurchase = initialOrder.text_fields?.order_type === 'credit_purchase';
+
+        if (isCreditPurchase) {
+          router.push(`/payment/${initialOrder.id}?status=success`);
+        } else if (initialOrder.short_id) {
+          router.push(`/success/${initialOrder.short_id}`);
+        }
         return;
       }
 
@@ -63,9 +69,16 @@ export default function PaymentSuccessPage() {
 
         const order = await fetchOrder();
 
-        if (order && order.status === 'completed' && order.short_id) {
+        if (order && order.status === 'completed') {
           clearInterval(pollInterval);
-          router.push(`/success/${order.short_id}`);
+
+          const isCreditPurchase = order.text_fields?.order_type === 'credit_purchase';
+
+          if (isCreditPurchase) {
+            router.push(`/payment/${order.id}?status=success`);
+          } else if (order.short_id) {
+            router.push(`/success/${order.short_id}`);
+          }
         } else if (attempts >= maxAttempts) {
           clearInterval(pollInterval);
           setError('Sipariş işlemi tamamlanamadı. Lütfen müşteri hizmetleri ile iletişime geçin.');
