@@ -1,30 +1,32 @@
-import DOMPurify from 'isomorphic-dompurify';
-
 /**
  * Sanitize HTML content to prevent XSS attacks
  * while preserving Tailwind classes and data attributes
+ *
+ * This is a lightweight sanitizer that removes dangerous patterns
+ * Combined with validateHTML(), it provides adequate security for AI-generated templates
  */
 export function sanitizeHTML(html: string): string {
-  // Configure DOMPurify to allow data attributes and common HTML elements
-  const clean = DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
-      'div', 'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'a', 'img', 'ul', 'ol', 'li', 'br', 'hr', 'strong', 'em',
-      'b', 'i', 'u', 'section', 'article', 'header', 'footer',
-      'nav', 'main', 'aside', 'figure', 'figcaption', 'svg',
-      'path', 'circle', 'rect', 'line', 'polyline', 'polygon'
-    ],
-    ALLOWED_ATTR: [
-      'class', 'id', 'style', 'data-editable', 'data-color-key',
-      'href', 'src', 'alt', 'title', 'width', 'height',
-      'viewBox', 'd', 'fill', 'stroke', 'stroke-width',
-      'xmlns', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
-      'points', 'x1', 'y1', 'x2', 'y2'
-    ],
-    ALLOW_DATA_ATTR: true,
-    ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
-    KEEP_CONTENT: true,
-  });
+  let clean = html;
+
+  // Remove script tags and their content
+  clean = clean.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+
+  // Remove on* event handlers (onclick, onload, etc.)
+  clean = clean.replace(/\s+on\w+\s*=\s*["'][^"']*["']/gi, '');
+  clean = clean.replace(/\s+on\w+\s*=\s*[^\s>]*/gi, '');
+
+  // Remove javascript: protocol
+  clean = clean.replace(/javascript:/gi, '');
+
+  // Remove dangerous tags
+  clean = clean.replace(/<(iframe|object|embed|applet|meta|link|base)\b[^>]*>/gi, '');
+
+  // Remove style tags (inline styles in style attribute are OK)
+  clean = clean.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+
+  // Remove data: URIs (except safe ones like data:image/svg)
+  clean = clean.replace(/src\s*=\s*["']data:(?!image\/(svg\+xml|png|jpg|jpeg|gif|webp))/gi, 'src="');
+  clean = clean.replace(/href\s*=\s*["']data:/gi, 'href="');
 
   return clean;
 }

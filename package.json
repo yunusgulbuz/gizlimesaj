@@ -30,7 +30,6 @@
     "dotenv": "^17.2.2",
     "framer-motion": "^12.23.18",
     "html2canvas": "^1.4.1",
-    "isomorphic-dompurify": "^2.29.0",
     "lucide-react": "^0.544.0",
     "nanoid": "^5.1.6",
     "next": "15.5.3",
