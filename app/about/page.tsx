@@ -333,6 +333,21 @@ export default async function AboutPage() {
               <h4 className="mb-4 font-semibold text-gray-900">Yasal</h4>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>
+                  <Link href="/satis-sozlesmesi" className="hover:text-rose-600">
+                    Satış Sözleşmesi
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/teslimat-kosullari" className="hover:text-rose-600">
+                    Teslimat Koşulları
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/iptal-iade" className="hover:text-rose-600">
+                    İptal ve İade
+                  </Link>
+                </li>
+                <li>
                   <Link href="/privacy" className="hover:text-rose-600">
                     Gizlilik Politikası
                   </Link>

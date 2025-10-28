@@ -859,6 +859,21 @@ export default async function HomePage() {
               <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Yasal</h4>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li>
+                  <Link href="/satis-sozlesmesi" className="transition hover:text-rose-500">
+                    Satış Sözleşmesi
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/teslimat-kosullari" className="transition hover:text-rose-500">
+                    Teslimat Koşulları
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/iptal-iade" className="transition hover:text-rose-500">
+                    İptal ve İade
+                  </Link>
+                </li>
+                <li>
                   <Link href="/privacy" className="transition hover:text-rose-500">
                     Gizlilik Politikası
                   </Link>
