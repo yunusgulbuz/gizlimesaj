@@ -21,16 +21,13 @@ import {
   CreditCard,
 } from 'lucide-react';
 
-const PACKAGE_INFO: Record<string, { name: string; subtitle: string; credits: number; price: string; icon: any; gradient: string; features: string[] }> = {
+// UI config for icons and gradients
+const UI_CONFIG: Record<string, { icon: any; gradient: string; features: string[] }> = {
   'credits-10': {
-    name: 'Başlangıç',
-    subtitle: '10 AI Kullanım Hakkı',
-    credits: 10,
-    price: '199',
     icon: Sparkles,
     gradient: 'from-blue-500 to-cyan-500',
     features: [
-      '10 AI template oluşturma/düzenleme',
+      'AI template oluşturma/düzenleme',
       'Sınırsız taslak saklama',
       'Generate + Refine aynı havuzdan',
       'Kredi asla bitmesin',
@@ -38,14 +35,10 @@ const PACKAGE_INFO: Record<string, { name: string; subtitle: string; credits: nu
     ],
   },
   'credits-30': {
-    name: 'Popüler',
-    subtitle: '30 AI Kullanım Hakkı',
-    credits: 30,
-    price: '499',
     icon: Star,
     gradient: 'from-purple-500 to-pink-500',
     features: [
-      '30 AI template oluşturma/düzenleme',
+      'AI template oluşturma/düzenleme',
       'Sınırsız taslak saklama',
       'Generate + Refine aynı havuzdan',
       'Kredi asla bitmesin',
@@ -54,14 +47,10 @@ const PACKAGE_INFO: Record<string, { name: string; subtitle: string; credits: nu
     ],
   },
   'credits-100': {
-    name: 'Premium',
-    subtitle: '100 AI Kullanım Hakkı',
-    credits: 100,
-    price: '999',
     icon: Crown,
     gradient: 'from-amber-500 to-orange-500',
     features: [
-      '100 AI template oluşturma/düzenleme',
+      'AI template oluşturma/düzenleme',
       'Sınırsız taslak saklama',
       'Generate + Refine aynı havuzdan',
       'Kredi asla bitmesin',
@@ -82,6 +71,7 @@ export default function CreditsCheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [packageInfo, setPackageInfo] = useState<any>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -93,6 +83,34 @@ export default function CreditsCheckoutPage() {
       }
 
       setUser(user);
+
+      // Fetch package info from database
+      if (packageId) {
+        const { data: pkg } = await supabase
+          .from('ai_credit_packages')
+          .select('*')
+          .eq('id', packageId)
+          .eq('is_active', true)
+          .single();
+
+        if (pkg) {
+          const uiConfig = UI_CONFIG[packageId] || UI_CONFIG['credits-10'];
+          const features = uiConfig.features.map(f =>
+            f.replace(/\d+/, pkg.credits.toString())
+          );
+
+          setPackageInfo({
+            name: pkg.name,
+            subtitle: `${pkg.credits} AI Kullanım Hakkı`,
+            credits: pkg.credits,
+            price: parseFloat(pkg.price).toFixed(0),
+            icon: uiConfig.icon,
+            gradient: uiConfig.gradient,
+            features,
+          });
+        }
+      }
+
       setLoading(false);
     };
 
@@ -110,7 +128,7 @@ export default function CreditsCheckoutPage() {
     );
   }
 
-  if (!packageId || !PACKAGE_INFO[packageId]) {
+  if (!packageId || !packageInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50 px-4">
         <Card className="max-w-md w-full">
@@ -134,7 +152,6 @@ export default function CreditsCheckoutPage() {
     );
   }
 
-  const packageInfo = PACKAGE_INFO[packageId];
   const Icon = packageInfo.icon;
   const priceNum = parseFloat(packageInfo.price);
   const tax = priceNum * 0.20; // 20% KDV

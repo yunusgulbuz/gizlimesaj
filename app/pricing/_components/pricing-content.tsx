@@ -30,54 +30,56 @@ type SupabaseUser = {
   [key: string]: any;
 } | null;
 
-const creditPackages = [
-  {
-    id: 'credits-10',
-    name: 'Başlangıç',
-    subtitle: '10 AI Kullanım Hakkı',
-    credits: 10,
-    price: '199',
+type CreditPackage = {
+  id: string;
+  name: string;
+  subtitle: string | null;
+  credits: number;
+  price: string;
+  is_popular: boolean;
+  is_active: boolean;
+};
+
+// UI enhancements mapping
+const packageUIConfig: Record<string, {
+  icon: any;
+  gradient: string;
+  description: string;
+  features: string[];
+  badge?: string;
+}> = {
+  'credits-10': {
+    icon: Sparkles,
+    gradient: 'from-blue-500 to-cyan-500',
     description: 'AI ile tasarım yapmaya başlayın',
     features: [
-      '10 AI template oluşturma/düzenleme',
+      'AI template oluşturma/düzenleme',
       'Sınırsız taslak saklama',
       'Generate + Refine aynı havuzdan',
       'Kredi asla bitmesin',
       'İstediğiniz zaman kullanın',
     ],
-    highlight: false,
-    icon: Sparkles,
-    gradient: 'from-blue-500 to-cyan-500',
   },
-  {
-    id: 'credits-30',
-    name: 'Popüler',
-    subtitle: '30 AI Kullanım Hakkı',
-    credits: 30,
-    price: '499',
+  'credits-30': {
+    icon: Star,
+    gradient: 'from-purple-500 to-pink-500',
     description: 'En çok tercih edilen paket',
     features: [
-      '30 AI template oluşturma/düzenleme',
+      'AI template oluşturma/düzenleme',
       'Sınırsız taslak saklama',
       'Generate + Refine aynı havuzdan',
       'Kredi asla bitmesin',
       'İstediğiniz zaman kullanın',
       '33% daha avantajlı!',
     ],
-    highlight: true,
-    icon: Star,
-    gradient: 'from-purple-500 to-pink-500',
     badge: 'En Avantajlı',
   },
-  {
-    id: 'credits-100',
-    name: 'Premium',
-    subtitle: '100 AI Kullanım Hakkı',
-    credits: 100,
-    price: '999',
+  'credits-100': {
+    icon: Crown,
+    gradient: 'from-amber-500 to-orange-500',
     description: 'Sınırsız yaratıcılık için',
     features: [
-      '100 AI template oluşturma/düzenleme',
+      'AI template oluşturma/düzenleme',
       'Sınırsız taslak saklama',
       'Generate + Refine aynı havuzdan',
       'Kredi asla bitmesin',
@@ -85,13 +87,14 @@ const creditPackages = [
       '50% daha avantajlı!',
       'Öncelikli AI üretimi',
     ],
-    highlight: false,
-    icon: Crown,
-    gradient: 'from-amber-500 to-orange-500',
   },
-];
+};
 
-export default function PricingContent() {
+type PricingContentProps = {
+  packages: CreditPackage[];
+};
+
+export default function PricingContent({ packages }: PricingContentProps) {
   const supabase = useMemo(() => createClient(), []);
   const [user, setUser] = useState<SupabaseUser>(null);
   const [loading, setLoading] = useState(true);
@@ -186,32 +189,38 @@ export default function PricingContent() {
       {/* Pricing Cards */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {creditPackages.map((pkg) => {
-            const Icon = pkg.icon;
+          {packages.map((pkg) => {
+            const uiConfig = packageUIConfig[pkg.id] || packageUIConfig['credits-10'];
+            const Icon = uiConfig.icon;
+            const features = uiConfig.features.map(f =>
+              f.replace(/\d+/, pkg.credits.toString())
+            );
+            const subtitle = `${pkg.credits} AI Kullanım Hakkı`;
+
             return (
               <Card
                 key={pkg.id}
                 className={`relative overflow-hidden transition-all hover:shadow-2xl ${
-                  pkg.highlight
+                  pkg.is_popular
                     ? 'border-2 border-purple-500 shadow-xl scale-105'
                     : 'border-gray-200'
                 }`}
               >
-                {pkg.highlight && (
+                {pkg.is_popular && uiConfig.badge && (
                   <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg">
-                    {pkg.badge}
+                    {uiConfig.badge}
                   </div>
                 )}
 
                 <CardHeader>
                   <div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pkg.gradient} flex items-center justify-center mb-4`}
+                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${uiConfig.gradient} flex items-center justify-center mb-4`}
                   >
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-2xl">{pkg.name}</CardTitle>
                   <CardDescription className="text-base">
-                    {pkg.subtitle}
+                    {subtitle}
                   </CardDescription>
                 </CardHeader>
 
@@ -219,7 +228,7 @@ export default function PricingContent() {
                   <div className="mb-6">
                     <div className="flex items-baseline gap-1">
                       <span className="text-4xl font-bold text-gray-900">
-                        ₺{pkg.price}
+                        ₺{parseFloat(pkg.price).toFixed(0)}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
@@ -228,11 +237,11 @@ export default function PricingContent() {
                   </div>
 
                   <p className="text-sm text-gray-700 mb-6">
-                    {pkg.description}
+                    {uiConfig.description}
                   </p>
 
                   <ul className="space-y-3 mb-6">
-                    {pkg.features.map((feature, index) => (
+                    {features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
                         <span className="text-sm text-gray-700">{feature}</span>
@@ -245,7 +254,7 @@ export default function PricingContent() {
                   <Button
                     asChild
                     className={`w-full ${
-                      pkg.highlight
+                      pkg.is_popular
                         ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
                         : ''
                     }`}
