@@ -17,10 +17,11 @@ export interface PersonalPageData {
   template_preview_url: string | null;
   template_bg_audio_url: string | null;
   bg_audio_url: string | null;
-  design_style: 'modern' | 'classic' | 'minimalist' | 'eglenceli';
+  design_style: 'modern' | 'classic' | 'minimalist' | 'eglenceli' | 'ai-generated';
   text_fields: Record<string, string>;
   expires_at: string;
   special_date: string | null;
   is_active: boolean;
   share_preview_meta?: PersonalPageShareMeta | null;
+  ai_template_code?: string | null; // AI-generated template HTML code
 }

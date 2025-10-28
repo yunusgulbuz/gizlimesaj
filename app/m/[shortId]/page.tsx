@@ -19,6 +19,7 @@ interface SupabasePersonalPage {
   special_date: string | null;
   is_active: boolean;
   share_preview_meta: PersonalPageData['share_preview_meta'];
+  ai_template_code: string | null;
   templates: {
     title: string | null;
     slug: string | null;
@@ -29,6 +30,7 @@ interface SupabasePersonalPage {
     text_fields: Record<string, string> | null;
     design_style: PersonalPageData['design_style'] | null;
     bg_audio_url: string | null;
+    ai_template_id: string | null;
   } | null;
 }
 
@@ -54,6 +56,7 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
         special_date,
         is_active,
         share_preview_meta,
+        ai_template_code,
         templates!personal_pages_template_id_fkey (
           title,
           slug,
@@ -63,7 +66,8 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
         orders!personal_pages_order_id_fkey (
           text_fields,
           design_style,
-          bg_audio_url
+          bg_audio_url,
+          ai_template_id
         )
       `
     )
@@ -89,6 +93,20 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
   const template = typedData.templates;
   const order = typedData.orders;
 
+  // If ai_template_code is missing but order has ai_template_id, fetch it
+  let aiTemplateCode = typedData.ai_template_code;
+  if (!aiTemplateCode && order?.ai_template_id) {
+    const { data: aiTemplate } = await supabase
+      .from('ai_generated_templates')
+      .select('template_code')
+      .eq('id', order.ai_template_id)
+      .single();
+
+    if (aiTemplate) {
+      aiTemplateCode = aiTemplate.template_code;
+    }
+  }
+
   return {
     id: typedData.id,
     short_id: typedData.short_id,
@@ -111,6 +129,7 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
     special_date: typedData.special_date,
     is_active: typedData.is_active,
     share_preview_meta: typedData.share_preview_meta || null,
+    ai_template_code: aiTemplateCode,
   };
 }
 

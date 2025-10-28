@@ -97,8 +97,7 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
         setTemplate(aiTemplate);
         setMetadata(aiTemplate.metadata || {});
 
-        // Get durations for pricing (we'll use a default template's pricing for now)
-        // In production, you might want to create a separate pricing system for AI templates
+        // Get durations for pricing
         const { data: durationsData } = await supabase
           .from('durations')
           .select('*')
@@ -107,12 +106,11 @@ export default function AITemplatePreview({ slug }: AITemplatePreviewProps) {
 
         setDurations(durationsData || []);
 
-        // Get a sample pricing (you can modify this to use specific AI template pricing)
+        // Get AI template specific pricing from ai_template_pricing table
         const { data: pricingData } = await supabase
-          .from('template_pricing')
+          .from('ai_template_pricing')
           .select('*')
-          .eq('is_active', true)
-          .limit(10);
+          .eq('is_active', true);
 
         setTemplatePricing(pricingData || []);
 

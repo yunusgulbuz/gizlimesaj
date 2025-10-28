@@ -19,6 +19,7 @@ interface PaymentRequest {
   text_fields?: TemplateTextFields; // Form data fields
   design_style?: string; // Selected design style
   bg_audio_url?: string; // Background audio URL
+  ai_template_id?: string; // AI template ID
   share_preview_meta?: {
     title: string;
     description: string;
@@ -57,6 +58,7 @@ export async function POST(request: NextRequest) {
       text_fields,
       design_style,
       bg_audio_url,
+      ai_template_id,
       share_preview_meta
     } = requestBody;
 
@@ -180,50 +182,106 @@ export async function POST(request: NextRequest) {
 
     console.log('Looking for template with ID:', template_id);
 
-    // Get template details
-    const { data: template, error: templateError } = await supabase
-      .from('templates')
-      .select('id, title, is_active')
-      .eq('id', template_id)
-      .single();
+    let template: any;
+    let templatePrice: number;
 
-    console.log('Template query result:', { template, templateError });
+    // Check if this is an AI template
+    if (ai_template_id) {
+      console.log('Processing AI template:', ai_template_id);
 
-    if (templateError || !template) {
-      console.log('Template not found error:', templateError);
-      return NextResponse.json(
-        { error: 'Template not found' },
-        { status: 404 }
-      );
+      // Get AI template details
+      const { data: aiTemplate, error: aiTemplateError } = await supabase
+        .from('ai_generated_templates')
+        .select('id, title, is_active')
+        .eq('id', ai_template_id)
+        .single();
+
+      console.log('AI Template query result:', { aiTemplate, aiTemplateError });
+
+      if (aiTemplateError || !aiTemplate) {
+        console.log('AI Template not found error:', aiTemplateError);
+        return NextResponse.json(
+          { error: 'AI Template not found' },
+          { status: 404 }
+        );
+      }
+
+      if (!aiTemplate.is_active) {
+        return NextResponse.json(
+          { error: 'AI Template is not available' },
+          { status: 400 }
+        );
+      }
+
+      template = aiTemplate;
+
+      // Get AI template pricing
+      const { data: aiPricing, error: aiPricingError } = await supabase
+        .from('ai_template_pricing')
+        .select('price_try')
+        .eq('duration_id', duration_id)
+        .eq('is_active', true)
+        .single();
+
+      console.log('AI Template pricing result:', { aiPricing, aiPricingError });
+
+      if (aiPricingError || !aiPricing) {
+        console.log('AI Template pricing not found error:', aiPricingError);
+        return NextResponse.json(
+          { error: 'AI Template pricing not found for selected duration' },
+          { status: 404 }
+        );
+      }
+
+      templatePrice = parseFloat(aiPricing.price_try);
+    } else {
+      // Regular template flow
+      const { data: regularTemplate, error: templateError } = await supabase
+        .from('templates')
+        .select('id, title, is_active')
+        .eq('id', template_id)
+        .single();
+
+      console.log('Template query result:', { regularTemplate, templateError });
+
+      if (templateError || !regularTemplate) {
+        console.log('Template not found error:', templateError);
+        return NextResponse.json(
+          { error: 'Template not found' },
+          { status: 404 }
+        );
+      }
+
+      if (!regularTemplate.is_active) {
+        return NextResponse.json(
+          { error: 'Template is not available' },
+          { status: 400 }
+        );
+      }
+
+      template = regularTemplate;
+
+      // Get template pricing based on template_id and duration_id
+      const { data: templatePricing, error: pricingError } = await supabase
+        .from('template_pricing')
+        .select('price_try')
+        .eq('template_id', template_id)
+        .eq('duration_id', duration_id)
+        .eq('is_active', true)
+        .single();
+
+      console.log('Template pricing result:', { templatePricing, pricingError });
+
+      if (pricingError || !templatePricing) {
+        console.log('Template pricing not found error:', pricingError);
+        return NextResponse.json(
+          { error: 'Template pricing not found for selected duration' },
+          { status: 404 }
+        );
+      }
+
+      templatePrice = parseFloat(templatePricing.price_try);
     }
-
-    if (!template.is_active) {
-      return NextResponse.json(
-        { error: 'Template is not available' },
-        { status: 400 }
-      );
-    }
-
-    // Get template pricing based on template_id and duration_id
-    const { data: templatePricing, error: pricingError } = await supabase
-      .from('template_pricing')
-      .select('price_try')
-      .eq('template_id', template_id)
-      .eq('duration_id', duration_id)
-      .eq('is_active', true)
-      .single();
-
-    console.log('Template pricing result:', { templatePricing, pricingError });
-
-    if (pricingError || !templatePricing) {
-      console.log('Template pricing not found error:', pricingError);
-      return NextResponse.json(
-        { error: 'Template pricing not found for selected duration' },
-        { status: 404 }
-      );
-    }
-
-    const templatePrice = parseFloat(templatePricing.price_try);
 
     // Generate unique short ID for the personal page
     const shortId = generateShortId();
@@ -233,28 +291,36 @@ export async function POST(request: NextRequest) {
     expiresAt.setHours(expiresAt.getHours() + expires_in_hours);
 
     // Create order record
+    const orderData: any = {
+      recipient_name,
+      sender_name,
+      message,
+      special_date: special_date || null,
+      expires_at: expiresAt.toISOString(),
+      short_id: shortId,
+      amount: templatePrice,
+      total_try: templatePrice, // Add required total_try field (price in Turkish Lira)
+      buyer_email: normalizedBuyerEmail,
+      status: 'pending',
+      payment_provider: 'paytr', // PayTR as payment provider
+      created_at: new Date().toISOString(),
+      text_fields: text_fields || {},
+      design_style: design_style || (ai_template_id ? 'ai-generated' : 'modern'),
+      bg_audio_url: bg_audio_url || null,
+      share_preview_meta: share_preview_meta || null,
+      user_id: currentUserId
+    };
+
+    // Set either ai_template_id or template_id, not both
+    if (ai_template_id) {
+      orderData.ai_template_id = ai_template_id;
+    } else {
+      orderData.template_id = template_id;
+    }
+
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .insert({
-        template_id,
-        recipient_name,
-        sender_name,
-        message,
-        special_date: special_date || null,
-        expires_at: expiresAt.toISOString(),
-        short_id: shortId,
-        amount: templatePrice,
-        total_try: templatePrice, // Add required total_try field (price in Turkish Lira)
-        buyer_email: normalizedBuyerEmail,
-        status: 'pending',
-        payment_provider: 'paytr', // PayTR as payment provider
-        created_at: new Date().toISOString(),
-        text_fields: text_fields || {},
-        design_style: design_style || 'modern',
-        bg_audio_url: bg_audio_url || null,
-        share_preview_meta: share_preview_meta || null,
-        user_id: currentUserId
-      })
+      .insert(orderData)
       .select()
       .single();
 

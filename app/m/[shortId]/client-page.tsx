@@ -8,6 +8,7 @@ import { YouTubePlayer, extractVideoId } from '@/components/ui/youtube-player';
 import { Button } from '@/components/ui/button';
 import { createAnalyticsTracker } from '@/lib/analytics';
 import TemplateRenderer from '@/templates/shared/template-renderer';
+import AITemplateRenderer from '@/components/ai-template-renderer';
 import { getDefaultTextFields } from '@/templates/shared/types';
 import { ShareButton } from '@/components/share-button';
 import { ShareVisualGenerator } from '@/components/share/share-visual-generator';
@@ -285,32 +286,44 @@ export function PersonalMessagePageClient({
       )}
 
       <div className="w-full min-h-[100dvh]">
-        <TemplateRenderer
-          template={{
-            id: personalPage.id,
-            slug: personalPage.template_slug,
-            title: personalPage.template_title,
-            audience: Array.isArray(personalPage.template_audience)
-              ? personalPage.template_audience
-              : [personalPage.template_audience],
-            bg_audio_url: personalPage.template_bg_audio_url,
-          }}
-          recipientName={personalPage.recipient_name}
-          message={personalPage.message}
-          designStyle={personalPage.design_style}
-          creatorName={personalPage.sender_name}
-          isPreview={false}
-          textFields={{
-            ...getDefaultTextFields(personalPage.template_slug),
-            ...personalPage.text_fields,
-            recipient_name: personalPage.recipient_name,
-            sender_name: personalPage.sender_name,
-            message: personalPage.message,
-            ...(personalPage.special_date && {
-              special_date: personalPage.special_date,
-            }),
-          }}
-        />
+        {personalPage.ai_template_code ? (
+          // AI-generated template
+          <AITemplateRenderer
+            templateCode={personalPage.ai_template_code}
+            metadata={personalPage.text_fields}
+            creatorName={personalPage.sender_name}
+            bgAudioUrl={personalPage.bg_audio_url}
+            isEditable={false}
+          />
+        ) : (
+          // Regular template
+          <TemplateRenderer
+            template={{
+              id: personalPage.id,
+              slug: personalPage.template_slug,
+              title: personalPage.template_title,
+              audience: Array.isArray(personalPage.template_audience)
+                ? personalPage.template_audience
+                : [personalPage.template_audience],
+              bg_audio_url: personalPage.template_bg_audio_url,
+            }}
+            recipientName={personalPage.recipient_name}
+            message={personalPage.message}
+            designStyle={personalPage.design_style}
+            creatorName={personalPage.sender_name}
+            isPreview={false}
+            textFields={{
+              ...getDefaultTextFields(personalPage.template_slug),
+              ...personalPage.text_fields,
+              recipient_name: personalPage.recipient_name,
+              sender_name: personalPage.sender_name,
+              message: personalPage.message,
+              ...(personalPage.special_date && {
+                special_date: personalPage.special_date,
+              }),
+            }}
+          />
+        )}
       </div>
 
       <FloatingHearts isActive />

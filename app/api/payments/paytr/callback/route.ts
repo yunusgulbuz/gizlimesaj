@@ -53,6 +53,19 @@ export async function POST(request: NextRequest) {
       .eq('payment_reference', paytrCallback.merchant_oid)
       .single();
 
+    // If order has ai_template_id, fetch the AI template separately
+    if (order && order.ai_template_id) {
+      const { data: aiTemplate } = await supabase
+        .from('ai_generated_templates')
+        .select('*')
+        .eq('id', order.ai_template_id)
+        .single();
+
+      if (aiTemplate) {
+        order.ai_generated_templates = aiTemplate;
+      }
+    }
+
     if (orderError || !order) {
       console.error('Order not found for reference:', paytrCallback.merchant_oid);
       return new Response('OK', { status: 200 }); // Return OK to prevent retries
@@ -145,24 +158,35 @@ export async function POST(request: NextRequest) {
       }
 
       // Regular template purchase - create personal page record
+      const personalPageData: any = {
+        order_id: order.id,
+        short_id: order.short_id,
+        recipient_name: order.recipient_name,
+        sender_name: order.sender_name,
+        message: order.message,
+        special_date: order.special_date,
+        expires_at: order.expires_at,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        text_fields: order.text_fields || {},
+        design_style: order.design_style || 'modern',
+        bg_audio_url: order.bg_audio_url || null,
+        share_preview_meta: order.share_preview_meta || null
+      };
+
+      // Check if this is an AI template or regular template
+      if (order.ai_template_id && order.ai_generated_templates) {
+        // AI template - store the template code
+        personalPageData.template_id = order.ai_template_id;
+        personalPageData.ai_template_code = order.ai_generated_templates.template_code;
+      } else {
+        // Regular template
+        personalPageData.template_id = order.template_id;
+      }
+
       const { error: pageError } = await supabase
         .from('personal_pages')
-        .insert({
-          order_id: order.id,
-          short_id: order.short_id,
-          template_id: order.template_id,
-          recipient_name: order.recipient_name,
-          sender_name: order.sender_name,
-          message: order.message,
-          special_date: order.special_date,
-          expires_at: order.expires_at,
-          is_active: true,
-          created_at: new Date().toISOString(),
-          text_fields: order.text_fields || {},
-          design_style: order.design_style || 'modern',
-          bg_audio_url: order.bg_audio_url || null,
-          share_preview_meta: order.share_preview_meta || null
-        });
+        .insert(personalPageData);
 
       if (pageError) {
         console.error('Failed to create personal page:', pageError);
@@ -174,6 +198,8 @@ export async function POST(request: NextRequest) {
           const managementUrl = `${baseUrl}/success/${order.short_id}`;
           const amountInTL = (order.total_try || 0).toFixed(2);
 
+          const templateTitle = order.ai_generated_templates?.title || order.templates?.title || 'Gizli Mesaj';
+
           const emailResponse = await fetch(`${baseUrl}/api/send-email`, {
             method: 'POST',
             headers: {
@@ -184,7 +210,7 @@ export async function POST(request: NextRequest) {
               type: 'payment-success',
               data: {
                 orderId: order.id,
-                templateTitle: order.templates?.title || 'Gizli Mesaj',
+                templateTitle: templateTitle,
                 amount: amountInTL,
                 personalPageUrl: personalPageUrl,
                 managementUrl: managementUrl
