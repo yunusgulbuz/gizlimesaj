@@ -72,7 +72,7 @@ export default function GlassLoveCard({
         message ||
         DEFAULTS.modernAfterClickText,
       modernSupportingText: textFields?.modernSupportingText || DEFAULTS.modernSupportingText,
-      modernPhotoUrl: textFields?.modernPhotoUrl || '',
+      modernPhotoUrl: textFields?.modernPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
       modernPhotoPlaceholder: textFields?.modernPhotoPlaceholder || DEFAULTS.modernPhotoPlaceholder,
       modernCreatorLabel: textFields?.modernCreatorLabel || DEFAULTS.modernCreatorLabel,
     }),

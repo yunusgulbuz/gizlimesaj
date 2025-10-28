@@ -19,7 +19,7 @@ const DEFAULTS = {
   minimalAfterMessage: 'Yeni bir sayfa başladı ✨',
   minimalBodyMessage:
     'Geçmişin ağırlığını geride bırakıp, umut dolu bir yılın kapısını aralıyoruz. Her yeni gün, hafif bir nefes ve sıcak bir tebessüm getirsin.',
-  minimalPhotoUrl: '',
+  minimalPhotoUrl: 'https://i.hizliresim.com/mojpwcv.png',
 };
 
 export default function PureNewBeginning({

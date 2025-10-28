@@ -47,7 +47,7 @@ export default function InteractivePartyMode({
       partySubtitle: textFields?.partySubtitle || DEFAULTS.partySubtitle,
       partyButtonLabel: textFields?.partyButtonLabel || DEFAULTS.partyButtonLabel,
       partyRevealMessage: textFields?.partyRevealMessage || message || DEFAULTS.partyRevealMessage,
-      partyPhotoUrl: textFields?.partyPhotoUrl || '',
+      partyPhotoUrl: textFields?.partyPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
       partyPhotoHint: textFields?.partyPhotoHint || DEFAULTS.partyPhotoHint,
     }),
     [textFields, message]

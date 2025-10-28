@@ -68,7 +68,7 @@ export default function SoftGlassInvitation({
     modernPanelTitle: textFields?.modernPanelTitle || DEFAULTS.modernPanelTitle,
     modernPanelMessage: textFields?.modernPanelMessage || message || DEFAULTS.modernPanelMessage,
     modernPanelSecondary: textFields?.modernPanelSecondary || DEFAULTS.modernPanelSecondary,
-    modernPhotoUrl: textFields?.modernPhotoUrl || '',
+    modernPhotoUrl: textFields?.modernPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     modernPhotoHint: textFields?.modernPhotoHint || DEFAULTS.modernPhotoHint,
     modernSignatureLabel: textFields?.modernSignatureLabel || DEFAULTS.modernSignatureLabel,
   }), [textFields, recipientName, message]);

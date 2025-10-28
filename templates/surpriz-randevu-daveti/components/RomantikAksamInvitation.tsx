@@ -56,7 +56,7 @@ export default function RomantikAksamInvitation({
     classicEnvelopeHeading: textFields?.classicEnvelopeHeading || DEFAULTS.classicEnvelopeHeading,
     classicEnvelopeMessage: textFields?.classicEnvelopeMessage || message || DEFAULTS.classicEnvelopeMessage,
     classicEnvelopeFooter: textFields?.classicEnvelopeFooter || DEFAULTS.classicEnvelopeFooter,
-    classicPhotoUrl: textFields?.classicPhotoUrl || '',
+    classicPhotoUrl: textFields?.classicPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     classicPhotoHint: textFields?.classicPhotoHint || DEFAULTS.classicPhotoHint,
     classicSignatureLabel: textFields?.classicSignatureLabel || DEFAULTS.classicSignatureLabel,
   }), [textFields, recipientName, message]);

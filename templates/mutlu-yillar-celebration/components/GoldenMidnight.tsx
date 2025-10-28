@@ -21,7 +21,7 @@ const DEFAULTS = {
   goldAfterMessage: 'Nice Mutlu Senelere!',
   goldBodyMessage:
     'Gece yarısının altın saatinde, tüm dileklerin yıldız tozuyla gerçek olsun. Yeni başlangıçlara birlikte kadeh kaldıralım.',
-  goldPhotoUrl: '',
+  goldPhotoUrl: 'https://i.hizliresim.com/mojpwcv.png',
 };
 
 export default function GoldenMidnight({

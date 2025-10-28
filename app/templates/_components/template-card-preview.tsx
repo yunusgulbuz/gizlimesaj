@@ -33,6 +33,11 @@ const TEMPLATE_CARD_DEFAULTS: Partial<Record<string, 'modern' | 'classic' | 'min
   'mutlu-yillar-celebration': 'eglenceli',
   'saka-yaptim': 'classic',
   'mezuniyet-tebrigi': 'classic',
+  'meme-oyun': 'minimalist',
+  'is-tebrigi': 'classic',
+  'yeni-ev-arac-tebrigi': 'classic',
+  'dogum-gunu-kutlama': 'minimalist',
+  'affet-beni-signature':'eglenceli'
 };
 
 function pickDesignStyle(slug: string): 'modern' | 'classic' | 'minimalist' | 'eglenceli' {

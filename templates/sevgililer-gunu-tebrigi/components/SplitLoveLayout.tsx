@@ -58,7 +58,7 @@ export default function SplitLoveLayout({
       minimalToggleLabel: textFields?.minimalToggleLabel || DEFAULTS.minimalToggleLabel,
       minimalToggleOnLabel: textFields?.minimalToggleOnLabel || DEFAULTS.minimalToggleOnLabel,
       minimalToggleOffLabel: textFields?.minimalToggleOffLabel || DEFAULTS.minimalToggleOffLabel,
-      minimalPhotoUrl: textFields?.minimalPhotoUrl || '',
+      minimalPhotoUrl: textFields?.minimalPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
       minimalPhotoHelper: textFields?.minimalPhotoHelper || DEFAULTS.minimalPhotoHelper,
       minimalCreatorLabel: textFields?.minimalCreatorLabel || DEFAULTS.minimalCreatorLabel,
     }),

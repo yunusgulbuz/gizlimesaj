@@ -56,7 +56,7 @@ export default function HeartBubblesThanks({
       funBubbleMessage2: textFields?.funBubbleMessage2 || FUN_DEFAULTS.funBubbleMessage2,
       funBubbleMessage3: textFields?.funBubbleMessage3 || FUN_DEFAULTS.funBubbleMessage3,
       funBubbleMessage4: textFields?.funBubbleMessage4 || message || FUN_DEFAULTS.funBubbleMessage4,
-      funPhotoUrl: textFields?.funPhotoUrl || '',
+      funPhotoUrl: textFields?.funPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     }),
     [textFields, recipientName, message]
   );

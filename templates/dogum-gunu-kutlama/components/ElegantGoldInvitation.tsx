@@ -47,7 +47,7 @@ export default function ElegantGoldInvitation({
       klasikSubtitle: textFields?.klasikSubtitle || DEFAULTS.klasikSubtitle,
       klasikButtonLabel: textFields?.klasikButtonLabel || DEFAULTS.klasikButtonLabel,
       klasikModalMessage: textFields?.klasikModalMessage || message || DEFAULTS.klasikModalMessage,
-      klasikPhotoUrl: textFields?.klasikPhotoUrl || '',
+      klasikPhotoUrl: textFields?.klasikPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
       klasikPhotoHint: textFields?.klasikPhotoHint || DEFAULTS.klasikPhotoHint,
     }),
     [textFields, message]

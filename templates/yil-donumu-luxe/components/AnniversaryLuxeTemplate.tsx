@@ -85,14 +85,14 @@ const parseTimelineEntries = (entries: string | undefined): TimelineEntry[] => {
         year: year || '—',
         title: title || 'Unutulmaz An',
         message: message || 'Bu kısmı kendi anınızla doldurun.',
-        photoUrl: photoUrl || ''
+        photoUrl: photoUrl || 'https://i.hizliresim.com/mojpwcv.png'
       };
     })
     .filter((item) => item.title.length > 0 || item.message.length > 0);
 };
 
 const serializeTimelineEntries = (entries: TimelineEntry[]): string =>
-  entries.map((entry) => `${entry.year}|${entry.title}|${entry.message}|${entry.photoUrl || ''}`).join('\n');
+  entries.map((entry) => `${entry.year}|${entry.title}|${entry.message}|${entry.photoUrl || 'https://i.hizliresim.com/mojpwcv.png'}`).join('\n');
 
 const buildInitialFields = (
   recipientName: string,
@@ -110,7 +110,7 @@ const buildInitialFields = (
     glassButtonLabel: textFields?.glassButtonLabel || 'Özel Notu Gör',
     glassLightNote: textFields?.glassLightNote || 'Işığımız hiç sönmesin.',
     glassPhotoInitial: textFields?.glassPhotoInitial || '♥',
-    glassPhotoUrl: textFields?.glassPhotoUrl || '',
+    glassPhotoUrl: textFields?.glassPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     timelineHeading: textFields?.timelineHeading || 'Zaman Tünelimiz',
     timelineIntro: textFields?.timelineIntro || 'Hatıralarımızı kaydırırken her anı yeniden yaşıyoruz.',
     timelineEntries: textFields?.timelineEntries || FALLBACK_TIMELINE,
@@ -124,7 +124,7 @@ const buildInitialFields = (
     minimalCelebrationBadge: textFields?.minimalCelebrationBadge || 'Kutlama',
     minimalCelebrationTitle: textFields?.minimalCelebrationTitle || 'Kutlama Başlıyor!',
     minimalCelebrationSubtitle: textFields?.minimalCelebrationSubtitle || 'Sevgiyle dolu bu anı birlikte kutluyoruz.',
-    minimalPhotoUrl: textFields?.minimalPhotoUrl || '',
+    minimalPhotoUrl: textFields?.minimalPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     minimalButtonLabel: textFields?.minimalButtonLabel || 'Kutlamayı Paylaş',
     funHeading: textFields?.funHeading || 'Mutlu Yıl Dönümü',
     funSubheading: textFields?.funSubheading || `${recipientName} + Ben`,
@@ -132,7 +132,7 @@ const buildInitialFields = (
     funButtonLabel: textFields?.funButtonLabel || 'Kutlamayı Gör',
     funConfettiMessage: textFields?.funConfettiMessage || 'Aşkımız gökyüzünü konfetiye boğuyor!',
     funFloatingNote: textFields?.funFloatingNote || 'Birlikte nice senelere!',
-    funPhotoUrl: textFields?.funPhotoUrl || '',
+    funPhotoUrl: textFields?.funPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     funCelebrationTitle: textFields?.funCelebrationTitle || 'Parti Başlıyor!'
   } satisfies Record<string, string>;
 };
@@ -672,7 +672,7 @@ function TimelineScrollExperience({
                       {isEditable && (
                         <input
                           type="url"
-                          value={entry.photoUrl || ''}
+                          value={entry.photoUrl || 'https://i.hizliresim.com/mojpwcv.png'}
                           onChange={(event) => onTimelineEntryChange(index, 'photoUrl', event.currentTarget.value)}
                           placeholder="Fotoğraf bağlantısı (isteğe bağlı)"
                           className="mt-3 w-full rounded-xl border border-amber-200/80 bg-white px-3 py-2 text-sm text-amber-800 outline-none transition focus:border-amber-300 focus:ring-2 focus:ring-amber-200"

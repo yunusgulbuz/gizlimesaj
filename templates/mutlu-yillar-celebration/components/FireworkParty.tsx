@@ -23,7 +23,7 @@ const DEFAULTS = {
   partyAfterMessage: 'Harika Bir Yıl Seninle!',
   partyBodyMessage:
     'Gökyüzü patlayan renklerle doluyor; dileklerin anında ışığa dönüşüyor. Yeni yılın her günü, bu an kadar eğlenceli ve renkli olsun!',
-  partyPhotoUrl: '',
+  partyPhotoUrl: 'https://i.hizliresim.com/mojpwcv.png',
 };
 
 export default function FireworkParty({

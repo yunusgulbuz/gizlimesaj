@@ -78,7 +78,7 @@ export default function HiddenSurpriseGame({
     funButtonTwoMessage: textFields?.funButtonTwoMessage || DEFAULTS.funButtonTwoMessage,
     funButtonThreeMessage: textFields?.funButtonThreeMessage || message || DEFAULTS.funButtonThreeMessage,
     funSuccessMessage: textFields?.funSuccessMessage || DEFAULTS.funSuccessMessage,
-    funPhotoUrl: textFields?.funPhotoUrl || '',
+    funPhotoUrl: textFields?.funPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     funPhotoHint: textFields?.funPhotoHint || DEFAULTS.funPhotoHint,
     funSignatureLabel: textFields?.funSignatureLabel || DEFAULTS.funSignatureLabel,
   }), [textFields, recipientName, message]);

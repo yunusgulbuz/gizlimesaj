@@ -19,7 +19,7 @@ const DEFAULTS = {
   holoAfterMessage: 'Harika bir yıl seni bekliyor',
   holoBodyMessage:
     'Bu yıl gökyüzündeki her yıldız senin için parlasın. Dileklerin holografik ışıklar gibi hayatına yansısın.',
-  holoPhotoUrl: '',
+  holoPhotoUrl: 'https://i.hizliresim.com/mojpwcv.png',
 };
 
 type ConfettiStyle = CSSProperties & Record<'--duration' | '--delay', string>;

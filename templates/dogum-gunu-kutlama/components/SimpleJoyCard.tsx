@@ -46,7 +46,7 @@ export default function SimpleJoyCard({
       minimalSubtitle: textFields?.minimalSubtitle || message || DEFAULTS.minimalSubtitle,
       minimalButtonLabel: textFields?.minimalButtonLabel || DEFAULTS.minimalButtonLabel,
       minimalWishText: textFields?.minimalWishText || DEFAULTS.minimalWishText,
-      minimalPhotoUrl: textFields?.minimalPhotoUrl || '',
+      minimalPhotoUrl: textFields?.minimalPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
       minimalPhotoHint: textFields?.minimalPhotoHint || DEFAULTS.minimalPhotoHint,
     }),
     [textFields, message]

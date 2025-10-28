@@ -111,7 +111,7 @@ export default function ClassicMemoryBoxTemplate({
 
     // Update textFields
     const serialized = updatedMemories
-      .map(m => `${m.title}|${m.description}|${m.year || ''}|${m.photoUrl || ''}`)
+      .map(m => `${m.title}|${m.description}|${m.year || ''}|${m.photoUrl || 'https://i.hizliresim.com/mojpwcv.png'}`)
       .join('\n');
 
     if (onTextFieldChange) {
@@ -281,7 +281,7 @@ export default function ClassicMemoryBoxTemplate({
                         <input
                           type="url"
                           placeholder="Fotoğraf URL'i..."
-                          value={memories[activeIndex]?.photoUrl || ''}
+                          value={memories[activeIndex]?.photoUrl || 'https://i.hizliresim.com/mojpwcv.png'}
                           onChange={(e) => handleMemoryChange(activeIndex, 'photoUrl', e.target.value)}
                           className="mt-2 text-xs bg-white/20 border border-white/30 text-white placeholder:text-white/60 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-300"
                         />
@@ -329,7 +329,7 @@ export default function ClassicMemoryBoxTemplate({
                           <input
                             type="url"
                             placeholder="Fotoğraf URL'i ekleyin..."
-                            value={memories[activeIndex]?.photoUrl || ''}
+                            value={memories[activeIndex]?.photoUrl || 'https://i.hizliresim.com/mojpwcv.png'}
                             onChange={(e) => handleMemoryChange(activeIndex, 'photoUrl', e.target.value)}
                             className="mt-2 text-xs bg-white/70 border border-rose-200 text-rose-700 placeholder:text-rose-400 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-300"
                           />

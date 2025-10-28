@@ -47,7 +47,7 @@ export default function PastelGradientCelebration({
       pastelSubtitle: textFields?.pastelSubtitle || message || DEFAULTS.pastelSubtitle,
       pastelButtonLabel: textFields?.pastelButtonLabel || DEFAULTS.pastelButtonLabel,
       pastelWishText: textFields?.pastelWishText || DEFAULTS.pastelWishText,
-      pastelPhotoUrl: textFields?.pastelPhotoUrl || '',
+      pastelPhotoUrl: textFields?.pastelPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
       pastelPhotoHint: textFields?.pastelPhotoHint || DEFAULTS.pastelPhotoHint,
     }),
     [textFields, message]

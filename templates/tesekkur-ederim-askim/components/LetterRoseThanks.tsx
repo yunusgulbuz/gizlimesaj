@@ -50,7 +50,7 @@ export default function LetterRoseThanks({
       classicButtonLabel: textFields?.classicButtonLabel || CLASSIC_DEFAULTS.classicButtonLabel,
       classicLetterMessage: textFields?.classicLetterMessage || message || CLASSIC_DEFAULTS.classicLetterMessage,
       classicLetterSignature: textFields?.classicLetterSignature || CLASSIC_DEFAULTS.classicLetterSignature,
-      classicPhotoUrl: textFields?.classicPhotoUrl || '',
+      classicPhotoUrl: textFields?.classicPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     }),
     [textFields, recipientName, message]
   );

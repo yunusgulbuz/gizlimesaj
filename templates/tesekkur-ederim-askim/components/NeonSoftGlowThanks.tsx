@@ -51,7 +51,7 @@ export default function NeonSoftGlowThanks({
       modernButtonLabel: textFields?.modernButtonLabel || DEFAULTS.modernButtonLabel,
       modernDrawerMessage: textFields?.modernDrawerMessage || message || DEFAULTS.modernDrawerMessage,
       modernSecondaryLine: textFields?.modernSecondaryLine || DEFAULTS.modernSecondaryLine,
-      modernPhotoUrl: textFields?.modernPhotoUrl || '',
+      modernPhotoUrl: textFields?.modernPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     }),
     [textFields, recipientName, message]
   );

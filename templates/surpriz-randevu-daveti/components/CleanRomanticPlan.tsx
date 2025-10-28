@@ -50,7 +50,7 @@ export default function CleanRomanticPlan({
       (recipientName ? `${recipientName} için planım: ${DEFAULTS.minimalSubtitle}` : DEFAULTS.minimalSubtitle),
     minimalButtonLabel: textFields?.minimalButtonLabel || DEFAULTS.minimalButtonLabel,
     minimalBubbleText: textFields?.minimalBubbleText || message || DEFAULTS.minimalBubbleText,
-    minimalPhotoUrl: textFields?.minimalPhotoUrl || '',
+    minimalPhotoUrl: textFields?.minimalPhotoUrl || 'https://i.hizliresim.com/mojpwcv.png',
     minimalPhotoHint: textFields?.minimalPhotoHint || DEFAULTS.minimalPhotoHint,
     minimalSignatureLabel: textFields?.minimalSignatureLabel || DEFAULTS.minimalSignatureLabel,
   }), [textFields, recipientName, message]);
