@@ -165,6 +165,7 @@ export async function POST(request: NextRequest) {
         sender_name: order.sender_name,
         message: order.message,
         special_date: order.special_date,
+        start_at: new Date().toISOString(),
         expires_at: order.expires_at,
         is_active: true,
         created_at: new Date().toISOString(),
