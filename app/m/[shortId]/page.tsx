@@ -57,13 +57,13 @@ async function fetchPersonalPage(shortId: string): Promise<PersonalPageData | nu
         is_active,
         share_preview_meta,
         ai_template_code,
-        templates:template_id (
+        templates!personal_pages_template_id_fkey (
           title,
           slug,
           audience,
           preview_url
         ),
-        orders:order_id (
+        orders!personal_pages_order_id_fkey (
           text_fields,
           design_style,
           bg_audio_url,

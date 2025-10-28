@@ -177,8 +177,8 @@ export async function POST(request: NextRequest) {
 
       // Check if this is an AI template or regular template
       if (order.ai_template_id && order.ai_generated_templates) {
-        // AI template - store the template code
-        personalPageData.template_id = order.ai_template_id;
+        // AI template - store the template code, template_id is NULL for AI templates
+        personalPageData.template_id = null;
         personalPageData.ai_template_code = order.ai_generated_templates.template_code;
       } else {
         // Regular template
