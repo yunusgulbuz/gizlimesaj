@@ -24,13 +24,13 @@ const contactInfo = [
   {
     icon: Phone,
     title: "Telefon",
-    value: "",
+    value: "530 772 06 23",
     description: "Hafta içi 09:00 - 18:00",
   },
   {
     icon: MapPin,
     title: "Adres",
-    value: "İstanbul, Türkiye",
+    value: "Çaydaçıra mahallesi 4023 sokak no:12 / Elazığ",
     description: "Merkez ofisimiz",
   },
   {
